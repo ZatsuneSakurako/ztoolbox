@@ -1,6 +1,8 @@
 # Z-ToolBox
 Web Extension to test various things.
 
+**Warning**, this Web Extension has no intension to be used as something "stable", contains **debug functions** and **test aims**. 
+
 The icon of the addon is made from https://pixabay.com/photo-1674891/ (in [CC0 Public Domain](https://pixabay.com/fr/service/terms/#usage)).
 
 Sources:

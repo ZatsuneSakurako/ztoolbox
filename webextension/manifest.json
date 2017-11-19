@@ -2,6 +2,7 @@
 	"applications": {
 		"gecko": {
 			"id": "ztoolbox_dev@zatsunenomokou.eu",
+			"update_url": "https://gitlab.com/ZatsuneNoMokou/ztoolbox/raw/master/dist/z_toolbox_dev.xpi",
 			"strict_min_version": "56.0"
 		}
 	},
@@ -10,7 +11,7 @@
 	"short_name": "ZToolBoxDev",
 	"description": "__MSG_extShortDesc__",
 	"author": "Zatsune No Mokou",
-	"version": "0.0.1",
+	"version": "0.0.2",
 	"icons": {
 		"16": "/icon_16.png",
 		"48": "/icon_48.png",
