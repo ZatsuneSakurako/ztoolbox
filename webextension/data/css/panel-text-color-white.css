@@ -1,0 +1,34 @@
+/*			---- Primary text / Icons ----			*/
+body, header button, button, input[type='number'], input[type='checkbox'], input[type='radio'], select, #searchInput{
+	color: #FFFFFF;
+}
+select:hover{
+	color:unset !important;
+}
+/*		--- Secondary text / Base Color ----		*/
+.panel-item,
+input[type='text'], input[type='number'], input[type='url'], textarea,
+#tooltip {
+	color: #FFFFFF;
+	color: rgba(255, 255, 255, 0.8);
+}
+/*			---- Disabled / Hint text ----			*/
+footer{
+	color: #FFFFFF;
+	color: rgba(255, 255, 255, 0.3);
+}
+/*			---- Stream Title / Links ----			*/
+a{
+	color: #0062BD;
+	color: rgba(50, 159, 255, 0.8);
+}
+
+input:invalid {
+	background-color: lightpink;
+	color: red;
+	font-weight: 700;
+}
+
+#patreonlogo{
+	background-image: url("/data/images/Patreon_Logo.png");
+}

@@ -1,0 +1,75 @@
+{
+	"language": "en",
+
+	"Open_in_browser": "Open in browser",
+	"Close": "Close",
+	"Add": "Add",
+	"Delete": "Delete",
+	"DeleteIgnore": "Delete / Ignore",
+	"Cancel": "Cancel",
+	"Yes": "Yes",
+	"No": "No",
+	"Ok": "Ok",
+
+	"GloballyDisabledNotifications": "All notifications are disabled",
+	"GloballyDisableNotifications": "Temporarly disable notifications",
+
+	"Settings": "Settings",
+
+	"OpenWithoutPlaylist": "Open without playlist",
+
+	"clipboard_success": "Copied into the clipboad.",
+	"clipboard_failed": "Failed to copy to clipboad.\nIt is not supported or the permission is missing",
+
+	"Addon_have_been_updated": "Addon have been updated (version {{version}})",
+
+	"blacklist_title": "Blacklist",
+	"whitelist_title": "Whitelist",
+
+	"vocal_volume_title": "Volume of vocal notifiations",
+	"vocal_volume_description": "In percent",
+
+	"open_optionpage": "Open option page",
+
+	"timeout_delay_title": "Timeout delay of requests",
+	"timeout_delay_description": "Timeout delay of requests, in sec (between 10 and 30)",
+
+	"panel_height_title": "Panel's height",
+	"panel_height_description": "Size in pixels",
+
+	"panel_width_title": "Panel's width",
+	"panel_width_description": "Size in pixels",
+
+	"panel_theme_title": "Panel theme",
+	"panel_theme_description": "Choose the theme of the panel",
+	"panel_theme_dark": "Dark",
+	"panel_theme_light": "Light",
+
+	"background_color_title": "Panel color",
+	"background_color_description": "Choose base color of the panel",
+
+	"export_preferences_title": "Export preferences in a file",
+	"export_preferences": "Export",
+	"import_preferences_title": "Import preferences from a file",
+	"import_preferences": "Import",
+
+	"showAdvanced_title": "Show advanced settings",
+	"showAdvanced_description": "Enabled when checked",
+	"showExperimented_title": "Show setting for experimented users",
+	"showExperimented_description": "Enabled when checked",
+
+	"options_saved": "Options saved.",
+	"options_saved_sync": "Options saved in synchronisation.",
+
+	"save": "Save",
+	"sync_title": "Save / Restaure preferences from/to synchronization",
+	"restaure_sync": "Restaure",
+	"save_sync": "Save",
+	"debugInfo": "",
+	"debugDataLabel": "Error(s):",
+	"noErrorToShow": "No error to show.",
+	"debug_checkingLivesState": "State of the stream refresh",
+	"footer_title": "Addon under GPL v3 licence.",
+	"footer_by": "by",
+	"supportWithPatreon": "Support this addon and his creator"
+}

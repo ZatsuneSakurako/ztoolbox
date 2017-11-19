@@ -1,0 +1,75 @@
+{
+	"language": "fr",
+
+	"Open_in_browser": "Ouvrir dans le navigateur",
+	"Close": "Fermer",
+	"Add": "Ajouter",
+	"Delete": "Supprimer",
+	"DeleteIgnore": "Supprimer / Ignorer",
+	"Cancel": "Annuler",
+	"Yes": "Oui",
+	"No": "Non",
+	"Ok": "Ok",
+
+	"GloballyDisabledNotifications": "Toutes les notifications sont désactivées",
+	"GloballyDisableNotifications": "Désactiver temporairement les notifications",
+
+	"Settings": "Options",
+
+	"OpenWithoutPlaylist": "Ouvrir sans playlist",
+
+	"clipboard_success": "Copié dans le presse-papier",
+	"clipboard_failed": "Echec de la copie dans le presse-papier. Ceci n'est pas supporté, ou la permission est manquante",
+
+	"Addon_have_been_updated": "Extension mise à jour (version {{version}})",
+
+	"blacklist_title": "Liste noire",
+	"whitelist_title": "Liste blanche",
+
+	"vocal_volume_title": "Volume des notifications vocales",
+	"vocal_volume_description": "En pourcent",
+
+	"open_optionpage": "Ouvrir la page d'option",
+
+	"timeout_delay_title": "Délai de timeout des requêtes",
+	"timeout_delay_description": "Délai de timeout des requêtes, en secondes (entre 10 et 30)",
+
+	"panel_height_title": "Hauteur du panel",
+	"panel_height_description": "Taille en pixels",
+
+	"panel_width_title": "Largeur du panel",
+	"panel_width_description": "Taille en pixels",
+
+	"panel_theme_title": "Thème du panel",
+	"panel_theme_description": "Choix du thème pour le panel",
+	"panel_theme_dark": "Sombre",
+	"panel_theme_light": "Clair",
+
+	"background_color_title": "Couleur du panel",
+	"background_color_description": "Choix de la couleur de base du panel",
+
+	"export_preferences_title": "Exporter les préférences dans un fichier",
+	"export_preferences": "Exporter",
+	"import_preferences_title": "Importer les préférences depuis un fichier",
+	"import_preferences": "Importer",
+
+	"showAdvanced_title": "Afficher les options avancées",
+	"showAdvanced_description": "Activé si coché",
+	"showExperimented_title": "Afficher les options pour utilisateur experimenté",
+	"showExperimented_description": "Activé si coché",
+
+	"options_saved": "Options enregistrées.",
+	"options_saved_sync": "Options enregistrées dans la synchronisation.",
+
+	"save": "Enregistrer",
+	"sync_title": "Enregistrer / Restaurer les préférences depuis/vers la synchronisation",
+	"restaure_sync": "Restaurer",
+	"save_sync": "Enregistrer",
+	"debugInfo": "Les erreurs sont en Anglais (principalement parce que les APIs sont en Anglais). ",
+	"debugDataLabel": "Erreur(s):",
+	"noErrorToShow": "Aucune erreur à afficher.",
+	"debug_checkingLivesState": "Etat de vérification des streams",
+	"footer_title": "Addon sous licence GPL v3.",
+	"footer_by": "par",
+	"supportWithPatreon": "Supportez l'addon et son créateur"
+}

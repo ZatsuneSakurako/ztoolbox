@@ -1,0 +1,13 @@
+{
+	"extName": {
+		"message": "Live notifier",
+		"description": ""
+	},
+	"extShortDesc": {
+		"message": "Web Extension pour tester diverses choses.",
+		"description": "this will be used as short description in web stores: MUST BE 132 characters OR LESS"
+	},
+	"language": {
+		"message": "fr"
+	}
+}
