@@ -78,6 +78,14 @@ function scrollbar_update(nodeId){
 	}
 }
 
+function current_version(version){
+	let current_version_node = document.querySelector("#current_version");
+	//current_version_node.textContent = version;
+	current_version_node.dataset.currentVersion = version;
+}
+current_version(appGlobal["version"]);
+
+
 loadTranslations();
 
 sendDataToMain("panel_onload");

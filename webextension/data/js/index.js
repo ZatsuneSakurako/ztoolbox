@@ -103,3 +103,5 @@ function urlParamToJson(url){
 		return result;
 	}
 }
+
+let current_version = appGlobal["version"] = browser.runtime.getManifest().version;
