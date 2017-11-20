@@ -4,6 +4,7 @@ let sendDataToMain = function (id, data) {
 	appGlobal.sendDataToMain("ZToolBox_Panel", id, data);
 };
 
+
 const delegate = (function () {
 	const Delegate = domDelegate.Delegate;
 	return new Delegate(document.body);
@@ -35,6 +36,7 @@ liveEvent("click", "#settings", function(){
 	browser.runtime.openOptionsPage();
 });
 
+
 function theme_update(){
 	let panelColorStylesheet = theme_cache_update(document.querySelector("#generated-color-stylesheet"));
 
@@ -53,6 +55,7 @@ function theme_update(){
 backgroundPage.panel__UpdateData = (data)=>{
 	updatePanelData(data);
 };
+
 
 let psList = new Map();
 function load_scrollbar(id){
@@ -77,6 +80,7 @@ function scrollbar_update(nodeId){
 		}
 	}
 }
+
 
 function current_version(version){
 	let current_version_node = document.querySelector("#current_version");

@@ -104,4 +104,21 @@ function urlParamToJson(url){
 	}
 }
 
+chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
+	if(sender.hasOwnProperty("url")){
+		console.info(`Receiving message from: ${sender.url} (${sender.id})`);
+	}
+	if(typeof message === "object" && message.hasOwnProperty("data")){
+		if(message.data.id==="getPreferences"){
+			let reply = {};
+			message.data.preferences.forEach(prefId=>{
+				reply[prefId] = getPreference(prefId);
+			});
+			sendResponse({
+				"preferences": reply
+			})
+		}
+	}
+});
+
 let current_version = appGlobal["version"] = browser.runtime.getManifest().version;

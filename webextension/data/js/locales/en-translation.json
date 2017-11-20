@@ -34,6 +34,9 @@
 	"timeout_delay_title": "Timeout delay of requests",
 	"timeout_delay_description": "Timeout delay of requests, in sec (between 10 and 30)",
 
+	"twitchClientId_title": "Twitch API's client id",
+	"twitchClientId_description": "Twitch API for more information",
+
 	"panel_height_title": "Panel's height",
 	"panel_height_description": "Size in pixels",
 

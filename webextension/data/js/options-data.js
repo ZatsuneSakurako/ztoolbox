@@ -13,6 +13,14 @@ const options = {
 		"group": "checking",
 		"prefLevel": "experimented"
 	},
+	/*			Content Script Prefs			*/
+	"twitchClientId": {
+		"title": "Twitch API's client id",
+		"description": "Twitch API for more information",
+		"type": "string",
+		"value": "",
+		"group": "contentScripts"
+	},
 	/*			Notifications			*/
 	"vocal_volume": {
 		"title": "Volume of vocal notifiations",
