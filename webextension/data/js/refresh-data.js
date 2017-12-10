@@ -143,7 +143,9 @@ async function refreshWebsitesData(){
 		promises.set(website, refreshWebsite(website));
 		promises.get(website)
 			.then(()=>{
-				doNotifyWebsite(website);
+				if(appGlobal["notificationGlobalyDisabled"]===false){
+					doNotifyWebsite(website);
+				}
 			})
 			.catch((data) => {ZDK.consoleDir(data,"refreshWebsitesData");});
 	});
@@ -174,7 +176,7 @@ async function refreshWebsitesData(){
 		console.groupEnd();
 	}
 
-	chrome.browserAction.setTitle({title: (count === null)? _("no_website_logged") : label});
+	// chrome.browserAction.setTitle({title: (count === null)? i18ex._("no_website_logged") : label});
 
 	let displayedCount;
 	if(count === null){

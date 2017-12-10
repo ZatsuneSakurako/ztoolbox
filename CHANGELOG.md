@@ -1,3 +1,7 @@
+# 0.0.8
+* Fix: Disable label change on addon button
+* Fix: Disable notifications
+
 # 0.0.7
 * +: Replaced Tooltip system with OpenTip
 * +: deviantArt notification checking imported from [z-Notifier](https://gitlab.com/ZatsuneNoMokou/znotifier)
