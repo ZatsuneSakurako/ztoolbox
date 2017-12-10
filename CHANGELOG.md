@@ -1,3 +1,7 @@
+# 0.0.9
+* Fix: deviantArt loading
+* Fix: ZDK consoleMsg
+
 # 0.0.8
 * Fix: Disable label change on addon button
 * Fix: Disable notifications

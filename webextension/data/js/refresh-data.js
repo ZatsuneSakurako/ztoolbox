@@ -233,7 +233,7 @@ let interval,
 appGlobal["websites"] = websites;
 appGlobal["websitesData"] = websitesData;
 (async function(){
-	await zDK.loadJS(document, ["/platforms/deviantart.js"]);
+	await zDK.loadJS(document, ["platforms/deviantart.js"]);
 
 	websites.forEach((websiteAPI, website) => {
 		websitesData.set(website, new websiteDefaultData());

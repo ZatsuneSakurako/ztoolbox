@@ -130,7 +130,7 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
 });
 
 function openTabIfNotExist(url){
-	//consoleMsg("log",url);
+	//console.log(url);
 	chrome.tabs.query({}, function(tabs) {
 		let custom_url = url.toLowerCase().replace(/http(?:s)?\:\/\/(?:www\.)?/i,"");
 		for(let tab of tabs){
@@ -190,7 +190,7 @@ function doNotif(options, suffixConfirmIfNoButtons=false){
 			})
 			.catch(err=>{
 				/*if(err){
-					consoleMsg("warn", err);
+					console.warn(err);
 				}*/
 				reject(err);
 			})

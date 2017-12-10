@@ -314,6 +314,8 @@ class ZDK{
 	}
 }
 
+var consoleMsg = ZDK.consoleMsg;
+
 if(typeof Promise.prototype.finally!=="function"){
 	Promise.prototype.finally = function(fn){
 		this.then(fn).catch(fn);
