@@ -136,7 +136,7 @@ class ZDK{
 		if(myMap instanceof Map){
 			let obj = {};
 			myMap.forEach((value, index) => {
-				obj[index] = (value instanceof Map)? mapToObj(value) : value;
+				obj[index] = (value instanceof Map)? ZDK.mapToObj(value) : value;
 			});
 			return obj;
 		} else {
@@ -292,12 +292,33 @@ class ZDK{
 	insertBefore(selector, html, doc=document){
 		return this.insertHtml("insertBefore",selector,html,doc);
 	}
+
+	/**
+	 * Return the top and left position of a node, relative to the document
+	 * @param node
+	 * @return {{top: number, left: number}}
+	 */
+	static getOffset(node){
+		let x = 0,
+			y = 0
+		;
+		while(node && !isNaN(node.offsetLeft) && !isNaN(node.offsetTop)){
+			x += node.offsetLeft - node.scrollLeft;
+			y += node.offsetTop - node.scrollTop;
+			node = node.offsetParent;
+		}
+		return {
+			"top": y,
+			"left": x,
+		};
+	}
 }
 
-Promise.prototype.complete = function(fn){
-	this.then(fn).catch(fn);
-};
-
+if(typeof Promise.prototype.finally!=="function"){
+	Promise.prototype.finally = function(fn){
+		this.then(fn).catch(fn);
+	};
+}
 
 const splitUri = (function() { // https://codereview.stackexchange.com/questions/9574/faster-and-cleaner-way-to-parse-parameters-from-url-in-javascript-jquery/9630#9630
 	const splitRegExp = new RegExp(
@@ -465,7 +486,7 @@ function Request(options){
 						let result = options.Request_documentParseToJSON(xhr);
 						if(result instanceof Map){
 							response.map = result;
-							response.json = mapToObj(result);
+							response.json = ZDK.mapToObj(result);
 						} else {
 							response.json = result;
 						}

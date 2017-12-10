@@ -27,17 +27,43 @@ function translateNodes(){
 		}
 	}
 }
+
+if(typeof Opentip!=="undefined"){
+	Opentip.styles.myDark = {
+		// Make it look like the alert style. If you omit this, it will default to "standard"
+		extends: "dark",
+		background: "#212121",
+		borderColor: "#212121"
+	};
+	Opentip.defaultStyle = "myDark"; // The default is "standard"
+}
+
 function translateNodes_title(){
 	for(let node of document.querySelectorAll("[data-translate-title]")){
 		if(typeof node.tagName === "string"){
-			node.dataset.tooltipText = i18ex._(node.dataset.translateTitle);
-			delete node.dataset.translateTitle;
+			const titleText =  i18ex._(node.dataset.translateTitle);
+
+			let error = false;
+			try{
+				const Ot = Opentip;
+				if(node.dataset.tooltipPosition){
+					const myOpentip = new Ot(node, titleText, "", {
+						"tipJoint": node.dataset.tooltipPosition
+					})
+				} else {
+					const myOpentip = new Ot(node, titleText)
+				}
+			} catch (err){
+				console.warn(err);
+				error = true;
+			}
+
+			if(error===false){
+				delete node.dataset.translateTitle;
+				node.removeAttribute("title");
+			}
 		}
 	}
-	tooltip.setOptions({
-		offsetDefault: 20
-	});
-	tooltip.refresh();
 }
 
 function loadTranslations(){

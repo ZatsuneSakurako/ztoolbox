@@ -40,6 +40,7 @@ var appGlobal = {};
 
 	const templatesSource = new Map();
 	templatesSource.set("backgroundTheme", "/data/js/backgroundTheme.mst");
+	templatesSource.set("panelCheckedDataItem", "/data/js/panelCheckedDataItem.mst");
 
 	loadMustacheTemplates(templatesSource)
 		.then(async (loadMap)=>{
@@ -48,5 +49,5 @@ var appGlobal = {};
 			await zDK.loadJS(document, ["backgroundTheme.js"]);
 		})
 	;
-	await zDK.loadJS(document, ["index.js"]);
+	await zDK.loadJS(document, ["index.js", "refresh-data.js"]);
 })();

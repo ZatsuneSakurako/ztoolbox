@@ -14,6 +14,8 @@
 	"GloballyDisabledNotifications": "Toutes les notifications sont désactivées",
 	"GloballyDisableNotifications": "Désactiver temporairement les notifications",
 
+	"Refresh": "Rafraîchir",
+
 	"Settings": "Options",
 
 	"OpenWithoutPlaylist": "Ouvrir sans playlist",
@@ -26,10 +28,21 @@
 	"blacklist_title": "Liste noire",
 	"whitelist_title": "Liste blanche",
 
+
+	"notify_checkedData_title": "Affiche une notification pour deviantArt",
+	"notify_checkedData_description": "Notification quand cochée",
+
+	"notify_all_viewed_title": "Affiche une notification quand tout est vu pour un/des site(s)",
+	"notify_all_viewed_description": "Notification quand cochée",
+
 	"vocal_volume_title": "Volume des notifications vocales",
 	"vocal_volume_description": "En pourcent",
 
+
 	"open_optionpage": "Ouvrir la page d'option",
+
+	"check_delay_title": "Délais de vérification de streams",
+	"check_delay_description": "Délai entre chaque vérification, en minute",
 
 	"timeout_delay_title": "Délai de timeout des requêtes",
 	"timeout_delay_description": "Délai de timeout des requêtes, en secondes (entre 10 et 30)",
@@ -74,5 +87,21 @@
 	"debug_checkingLivesState": "Etat de vérification des streams",
 	"footer_title": "Addon sous licence GPL v3.",
 	"footer_by": "par",
-	"supportWithPatreon": "Supportez l'addon et son créateur"
+	"supportWithPatreon": "Supportez l'addon et son créateur",
+
+
+	"website_notif": "Notification(s) {{website}}",
+	"website_not_logged": "Aucun compte {{website}} connecté",
+
+	"not_logged": "Non connecté",
+	"no_website_logged": "Aucun compte connecté",
+	"inbox": "Boîte de réception",
+	"spam": "Pourriel",
+
+	"open_folder": "Ouvrir le dossier",
+
+	"count_new_notif": "{{count}} nouvelles notification(s)",
+	"count_new_notif_noplural": "{{count}} nouvelles notification",
+
+	"all_viewed": "Tout est vu"
 }

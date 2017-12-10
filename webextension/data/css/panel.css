@@ -112,6 +112,58 @@ footer, footer *{
 	font-size:12px;
 }
 
+
+#panelContent{
+	overflow:hidden;
+	position:relative;
+	height:100%;
+	padding:0 10px 3px 4px;
+}
+#panelContent .websiteItem{
+	background-repeat:no-repeat;
+	background-position:3px center;
+	font-size: 14px;
+	justify-content:space-between;
+	flex-direction:column;
+	margin:7px 0;
+	padding:7px 14px;
+}
+#panelContent .websiteItem{
+	padding-left:42px;
+	min-height:37px;
+	background-size: 32px auto;
+}
+#panelContent .websiteItem .websiteTitle::before{
+	content: attr(data-website);
+}
+#panelContent .websiteItem[data-Logged=true] .websiteTitle::after{
+	content: " (" attr(data-count) ")";
+}
+#panelContent .websiteItem .websiteTitle{
+	font-size: 1.1em;
+	font-weight: 700;
+}
+#panelContent .websiteItem .websiteData{
+	padding-left: 21px;
+	font-size: 0.9em;
+	display:flex;
+	flex-direction:column;
+}
+#panelContent .websiteItem[data-Logged=true] .websiteData .folder[data-folder-url]::before{
+	content:"open_in_browser";
+	font-family:'Material Icons';
+	font-size:1.5em;
+}
+#panelContent .websiteItem .websiteData .folder{
+	display: flex;
+	flex-direction:row;
+	align-items:center;
+}
+#panelContent .websiteItem[data-Logged=true] .websiteData .folder::after{
+	content:attr(data-folder-title)": "attr(data-folder-count);
+}
+
+
 #stream_right_container{
 	display: flex;
 	flex-direction: column;

@@ -1,6 +1,14 @@
 'use strict';
 
 const options = {
+	"check_delay": {
+		"title": "Streams status delay",
+		"description": "Delay between checks, in minute",
+		"type": "integer",
+		"value": 5,
+		"minValue": 1,
+		"prefLevel": "advanced"
+	},
 	"timeout_delay": {
 		"title": "Streams timeout delay",
 		"description": "Timeout delay of requests, in sec (between 10 and 30)",
@@ -22,11 +30,28 @@ const options = {
 		"group": "contentScripts"
 	},
 	/*			Notifications			*/
+	"notify_checkedData": {
+		"title": "Show a notification for deviantArt",
+		"description": "Notification when checked",
+		"type": "bool",
+		"value": true,
+		"group": "notifications",
+		"prefLevel": "basic"
+	},
+	"notify_all_viewed": {
+		"title": "Show a notification when all view in website(s)",
+		"description": "Notification when checked",
+		"type": "bool",
+		"value": false,
+		"group": "notifications",
+		"prefLevel": "advanced"
+	},
 	"vocal_volume": {
 		"title": "Volume of vocal notifiations",
 		"description": "In percent",
 		"type": "integer",
 		"value": 70,
+		"group": "notifications",
 		"minValue": 0,
 		"maxValue": 100,
 		"rangeInput": true,

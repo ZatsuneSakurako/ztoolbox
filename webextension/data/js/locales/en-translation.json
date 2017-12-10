@@ -14,6 +14,8 @@
 	"GloballyDisabledNotifications": "All notifications are disabled",
 	"GloballyDisableNotifications": "Temporarly disable notifications",
 
+	"Refresh": "Refresh",
+
 	"Settings": "Settings",
 
 	"OpenWithoutPlaylist": "Open without playlist",
@@ -26,10 +28,21 @@
 	"blacklist_title": "Blacklist",
 	"whitelist_title": "Whitelist",
 
+
+	"notify_checkedData_title": "Show a notification for deviantArt",
+	"notify_checkedData_description": "Notification when checked",
+
+	"notify_all_viewed_title": "Show a notification when all view in website(s)",
+	"notify_all_viewed_description": "Notification when checked",
+
 	"vocal_volume_title": "Volume of vocal notifiations",
 	"vocal_volume_description": "In percent",
 
+
 	"open_optionpage": "Open option page",
+
+	"check_delay_title": "Streams verification delay",
+	"check_delay_description": "Delay between verifications, in minute",
 
 	"timeout_delay_title": "Timeout delay of requests",
 	"timeout_delay_description": "Timeout delay of requests, in sec (between 10 and 30)",
@@ -74,5 +87,21 @@
 	"debug_checkingLivesState": "State of the stream refresh",
 	"footer_title": "Addon under GPL v3 licence.",
 	"footer_by": "by",
-	"supportWithPatreon": "Support this addon and his creator"
+	"supportWithPatreon": "Support this addon and his creator",
+
+
+	"website_notif": "{{website}} notification(s)",
+	"website_not_logged": "No {{website}} account logged",
+
+	"not_logged": "Not logged",
+	"no_website_logged": "No account logged",
+	"inbox": "Inbox",
+	"spam": "Spam",
+
+	"open_folder": "Open folder",
+
+	"count_new_notif": "{{count}} new notification(s)",
+	"count_new_notif_noplural": "{{count}} new notification",
+
+	"all_viewed": "Everything viewed"
 }

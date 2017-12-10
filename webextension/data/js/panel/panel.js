@@ -1,5 +1,7 @@
 const appGlobal = backgroundPage.appGlobal;
 
+let {websites, websitesData, zDK, mustacheTemplates} = appGlobal;
+
 let sendDataToMain = function (id, data) {
 	appGlobal.sendDataToMain("ZToolBox_Panel", id, data);
 };
@@ -25,11 +27,13 @@ liveEvent("click", "#disableNotifications", ()=>{
 	appGlobal["notificationGlobalyDisabled"] = !appGlobal["notificationGlobalyDisabled"];
 	disableNotificationsButton.classList.toggle("off", backgroundPage.appGlobal["notificationGlobalyDisabled"]);
 
-	disableNotificationsButton.dataset.originalTitle = disableNotificationsButton.dataset.tooltipText = i18ex._((backgroundPage.appGlobal["notificationGlobalyDisabled"])? "GloballyDisabledNotifications" : "GloballyDisableNotifications");
-
-	if(typeof window.tooltip==="object"){
-		window.tooltip.refresh();
+	if(disableNotificationsButton.dataset.opentipId){
+		document.querySelector(`#opentip-${disableNotificationsButton.dataset.opentipId} .ot-content`).textContent = i18ex._((backgroundPage.appGlobal["notificationGlobalyDisabled"])? "GloballyDisabledNotifications" : "GloballyDisableNotifications");
 	}
+});
+
+liveEvent("click", "#refreshStreams", function(){
+	appGlobal.refreshWebsitesData();
 });
 
 liveEvent("click", "#settings", function(){
@@ -52,6 +56,67 @@ function theme_update(){
 	}
 }
 
+function removeAllChildren(node){
+	// Taken from https://stackoverflow.com/questions/683366/remove-all-the-children-dom-elements-in-div
+	while(node.hasChildNodes()){
+		node.removeChild(node.lastChild);
+	}
+}
+
+function updatePanelData() {
+	console.log("Updating panel data");
+
+	let websiteDataList_Node = document.querySelector("#panelContent");
+	removeAllChildren(websiteDataList_Node);
+
+	websitesData.forEach((websiteData, website) => {
+		let websiteRenderData = {
+			"logged": websiteData.logged,
+			"count": websiteData.count,
+			"website": website,
+			"websiteIcon": websiteData.websiteIcon,
+			"folders": []
+		};
+
+		if(websiteData.logged){
+			websiteData.folders.forEach((folderData, folderName) => {
+				let count = folderData.folderCount;
+				if(typeof count === "number" && !isNaN(count) && count > 0){
+					let folderRenderData = {
+						"folderCount": count,
+						"folderTitle": (typeof folderData.folderName === "string")? folderData.folderName : folderName
+					};
+
+					if(typeof folderData.folderUrl === "string" && folderData.folderUrl !== ""){
+						folderRenderData.folderHaveUrl = true;
+						folderRenderData.folderUrl = folderData.folderUrl;
+					}
+					websiteRenderData.folders.push(folderRenderData);
+				}
+			})
+		}
+
+		let websiteNode = document.createElement("article");
+		websiteDataList_Node.appendChild(websiteNode);
+		websiteNode.outerHTML = backgroundPage.Mustache.render(mustacheTemplates.get("panelCheckedDataItem"), websiteRenderData);
+	});
+
+	scrollbar_update("websiteDataList");
+}
+liveEvent("click", "#panelContent .websiteItem .folder", function (event, node) {
+	event.stopPropagation();
+	backgroundPage.openTabIfNotExist(node.dataset.folderUrl);
+	return false;
+});
+liveEvent("click", "#panelContent .websiteItem", function (event, node) {
+	event.stopPropagation();
+	let website = node.dataset.website,
+		websiteAPI = websites.get(website),
+		websiteData = websitesData.get(website)
+	;
+	backgroundPage.openTabIfNotExist(websiteAPI[(node.dataset.logged)? "getViewURL" : "getLoginURL"](websiteData));
+	return false;
+});
 backgroundPage.panel__UpdateData = (data)=>{
 	updatePanelData(data);
 };

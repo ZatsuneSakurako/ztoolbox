@@ -1,0 +1,23 @@
+<article class="websiteItem cursor"
+         data-logged="{{logged}}" data-website="{{website}}"
+         style="background-image: url('{{websiteIcon}}')">
+
+	<div class="websiteTitle" data-website="{{website}}" data-count="{{count}}"></div>
+
+	<div class="websiteData">
+		{{#logged}}
+			{{#folders}}
+				<span class="folder"
+				      {{#folderHaveUrl}}
+					      data-translate-title="open_folder"
+					      data-folder-url="{{folderUrl}}"
+				      {{/folderHaveUrl}}
+						data-folder-title="{{folderTitle}}"
+						data-folder-count="{{folderCount}}"></span>
+			{{/folders}}
+		{{/logged}}
+		{{^logged}}
+			<span class="folder" data-translate-id="not_logged"></span>
+		{{/logged}}
+	</div>
+</article>

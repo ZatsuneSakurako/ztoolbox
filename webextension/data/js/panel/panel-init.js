@@ -7,7 +7,10 @@ const applyPanelSize = ()=>{
 	const html = document.querySelector("html"),
 		body = document.querySelector("body");
 	html.style.height = backgroundPage.getPreference("panel_height");
-	body.style.width = backgroundPage.getPreference("panel_width");
+
+	const panelWidth = backgroundPage.getPreference("panel_width");
+	body.style.width = panelWidth;
+	document.documentElement.style.setProperty('--opentip-maxwidth', `${((panelWidth/2<300)? (panelWidth/2) : panelWidth)}px`);
 };
 applyPanelSize();
 
@@ -30,7 +33,7 @@ document.querySelector("#disableNotifications").dataset.translateTitle = (backgr
 
 window.onload = function () {
 	window.onload = null;
-	let jsFiles = ["lib/dom-delegate.min.js", "lib/perfect-scrollbar.min.js"/*, "lib/Tooltip_modified_znm.js"*/];
+	let jsFiles = ["lib/dom-delegate.min.js", "lib/perfect-scrollbar.min.js", "lib/opentip-native_modified.js"];
 	if(typeof browser==="undefined"||browser===null){
 		backgroundPage.zDK.isFirefox = false;
 		jsFiles.push("/lib/browser-polyfill.min.js");

@@ -11,7 +11,8 @@ Sources:
 - i18next and i18next-xhr-backend are from https://github.com/i18next/i18next and https://github.com/i18next/i18next-xhr-backend (License MIT).
 - mustache.js (or Mustache), from https://github.com/janl/mustache.js (License MIT).
 - XML2jsobj, from https://www.sitepoint.com/how-to-convert-xml-to-a-javascript-object/
-- Tooltip (version in Live Notifier is a modified one), from https://github.com/matthias-schuetz/Tooltip/ (License MIT)
+- Opentip from https://github.com/enyo/opentip (License MIT)
+  - Version in Z-Toolbox is a modified one because it is the same modified version as Live Notifier (prevent conflicts because of some data-attributes)
 - ftdomdelegate, from https://github.com/ftlabs/ftdomdelegate (License MIT)
 
 
