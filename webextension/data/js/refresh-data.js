@@ -192,6 +192,10 @@ async function refreshWebsitesData(){
 	chrome.browserAction.setBadgeText({text: displayedCount});
 	chrome.browserAction.setBadgeBackgroundColor({color: (count !== null && count > 0)? "#FF0000" : "#424242"});
 
+	if(typeof panel__UpdateData==="function"){
+		panel__UpdateData();
+	}
+
 	setTimeout(function () {
 		isRefreshingData = false;
 	}, 5 * 1000);

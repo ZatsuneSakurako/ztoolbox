@@ -1,3 +1,6 @@
+# 0.0.10
+* +: Update panel data on data refresh end
+
 # 0.0.9
 * Fix: deviantArt loading
 * Fix: ZDK consoleMsg
