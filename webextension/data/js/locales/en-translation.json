@@ -103,5 +103,10 @@
 	"count_new_notif": "{{count}} new notification(s)",
 	"count_new_notif_noplural": "{{count}} new notification",
 
-	"all_viewed": "Everything viewed"
+	"all_viewed": "Everything viewed",
+
+
+	"no_other_window": "No other window",
+	"move_tab_of_window": "Move tab of window",
+	"window_windowId": "Window {{windowId}} \"{{window}}\""
 }

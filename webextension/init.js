@@ -25,6 +25,7 @@ async function loadMustacheTemplates(map) {
 
 // appGlobal: Accessible with browser.extension.getBackgroundPage();
 var appGlobal = {};
+const stringEllipse = ZDK.stringEllipse;
 
 (async ()=>{
 	await zDK.loadJS(document, [

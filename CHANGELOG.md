@@ -1,3 +1,9 @@
+# 0.1.0
+* +: Context menu to move a tab of window
+* i: ZDK update
+	* i: JSDoc added on some functions
+	* +: ZDK.stringEllipse()
+
 # 0.0.10
 * +: Update panel data on data refresh end
 
