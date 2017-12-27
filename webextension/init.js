@@ -3,6 +3,7 @@ const zDK = new ZDK("/data/js/");
 if(browser.extension.getBackgroundPage() !== null){
 	browser.extension.getBackgroundPage().zDK = zDK;
 }
+
 async function loadMustacheTemplates(map) {
 	let templatePromises = new Map(),
 		templateMap = new Map();
@@ -24,7 +25,7 @@ async function loadMustacheTemplates(map) {
 }
 
 // appGlobal: Accessible with browser.extension.getBackgroundPage();
-var appGlobal = {};
+window.appGlobal = {};
 const stringEllipse = ZDK.stringEllipse;
 
 (async ()=>{
@@ -50,5 +51,9 @@ const stringEllipse = ZDK.stringEllipse;
 			await zDK.loadJS(document, ["backgroundTheme.js"]);
 		})
 	;
-	await zDK.loadJS(document, ["index.js", "refresh-data.js"]);
+	await zDK.loadJS(document, [
+		"index.js",
+		"refresh-data.js",
+		"windowsContextMenu.js"
+	]);
 })();

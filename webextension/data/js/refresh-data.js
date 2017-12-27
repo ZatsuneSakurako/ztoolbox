@@ -1,6 +1,5 @@
 'use strict';
 
-let _ = browser.i18n.getMessage;
 
 class ExtendedMap extends Map{
 	addValue(id, newValue) {
@@ -24,6 +23,7 @@ class ExtendedMap extends Map{
 		return bestUrl;
 	}
 }
+
 
 function doNotifyWebsite(website){
 	let websiteAPI = websites.get(website),
@@ -127,6 +127,7 @@ class websiteDefaultData{
 	}
 }
 
+
 let isRefreshingData = false;
 async function refreshWebsitesData(){
 	if(isRefreshingData===true){
@@ -156,8 +157,6 @@ async function refreshWebsitesData(){
 	interval = setInterval(refreshWebsitesData, getPreference('check_delay') * 60000);
 
 	let count = null;
-	let label = chrome.runtime.getManifest().name;
-
 
 	websitesData.forEach((websiteData, website) => {
 		if(websiteData.logged && websiteData.count !== null){
@@ -202,6 +201,8 @@ async function refreshWebsitesData(){
 	return data;
 }
 appGlobal["refreshWebsitesData"] = refreshWebsitesData;
+
+
 async function refreshWebsite(website){
 	const xhrRequest = await Request({
 		url: websites.get(website).dataURL,

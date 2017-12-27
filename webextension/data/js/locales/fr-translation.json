@@ -107,6 +107,7 @@
 
 
 	"no_other_window": "Aucune autre fenêtre",
+	"open_link_to_window": "Ouvrir le lien dans l'autre fenêtre",
 	"move_tab_of_window": "Déplacer l'onglet de fenêtre",
 	"window_windowId": "Fenêtre {{windowId}} \"{{window}}\""
 }

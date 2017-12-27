@@ -1,3 +1,7 @@
+# 0.2.0
+* +: Open link to other window
+* Fix: Moved tab keep its original active state
+
 # 0.1.0
 * +: Context menu to move a tab of window
 * i: ZDK update
