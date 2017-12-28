@@ -156,8 +156,12 @@ async function refreshWebsitesData(){
 	clearInterval(interval);
 	interval = setInterval(refreshWebsitesData, getPreference('check_delay') * 60000);
 
-	let count = null;
+	setTimeout(()=>{
+		isRefreshingData = false;
+	}, 5 * 1000);
 
+
+	let count = null;
 	websitesData.forEach((websiteData, website) => {
 		if(websiteData.logged && websiteData.count !== null){
 			if(count === null){
@@ -195,9 +199,6 @@ async function refreshWebsitesData(){
 		panel__UpdateData();
 	}
 
-	setTimeout(function () {
-		isRefreshingData = false;
-	}, 5 * 1000);
 	return data;
 }
 appGlobal["refreshWebsitesData"] = refreshWebsitesData;

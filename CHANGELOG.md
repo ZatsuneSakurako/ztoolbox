@@ -1,3 +1,7 @@
+# 0.2.1
+* Fix: Context menu text
+* Fix: Refresh limiter
+
 # 0.2.0
 * +: Open link to other window
 * Fix: Moved tab keep its original active state
