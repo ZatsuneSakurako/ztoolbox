@@ -50,6 +50,9 @@
 	"twitchClientId_title": "Id client de l'API Twitch",
 	"twitchClientId_description": "API Twitch pour plus d'informations",
 
+	"hourlyAlarm_title": "Notification par heure",
+	"hourlyAlarm_description": "Affiche une notification par heure quand coché",
+
 	"panel_height_title": "Hauteur du panel",
 	"panel_height_description": "Taille en pixels",
 
@@ -109,5 +112,8 @@
 	"no_other_window": "Aucune autre fenêtre",
 	"move_tab_of_window": "Déplacer l'onglet de fenêtre",
 	"open_link_to_window": "Ouvrir le lien dans une autre fenêtre",
-	"window_windowId": "Fenêtre {{windowId}} \"{{window}}\""
+	"window_windowId": "Fenêtre {{windowId}} \"{{window}}\"",
+
+
+	"timeIsNow": "Il est maintenant {{currentTime}}"
 }

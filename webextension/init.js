@@ -53,7 +53,8 @@ const stringEllipse = ZDK.stringEllipse;
 	;
 	await zDK.loadJS(document, [
 		"index.js",
-		"refresh-data.js",
-		"windowsContextMenu.js"
+		"variousFeatures/refresh-data.js",
+		"variousFeatures/windowsContextMenu.js",
+		"variousFeatures/hourly-alarm.js"
 	]);
 })();

@@ -23,7 +23,7 @@ theme_update();
 
 
 function sendDataToMain(id, data){
-	backgroundPage.appGlobal.sendDataToMain("Live_Notifier_Options", id,  data);
+	backgroundPage.appGlobal.sendDataToMain("ZToolBox_Options", id,  data);
 }
 
 loadPreferences("section#preferences");

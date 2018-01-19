@@ -21,13 +21,20 @@ const options = {
 		"group": "checking",
 		"prefLevel": "experimented"
 	},
-	/*			Content Script Prefs			*/
+	/*			Features Prefs			*/
 	"twitchClientId": {
 		"title": "Twitch API's client id",
 		"description": "Twitch API for more information",
 		"type": "string",
 		"value": "",
-		"group": "contentScripts"
+		"group": "featurePreference"
+	},
+	"hourlyAlarm": {
+		"title": "Hourly alarm",
+		"description": "Display a notification per hour when checked",
+		"type": "bool",
+		"value": false,
+		"group": "featurePreference"
 	},
 	/*			Notifications			*/
 	"notify_checkedData": {

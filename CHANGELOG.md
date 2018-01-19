@@ -1,3 +1,8 @@
+# 0.3.0
+* i: Moved "feature" script to a dedicated folder
+* +: Hourly alarm (disabled by default) using Web Extensions's [alarms](https://developer.mozilla.org//Add-ons/WebExtensions/API/alarms)
+* Fix: sendDataToMain id in option page
+
 # 0.2.1
 * Fix: Context menu text
 * Fix: Refresh limiter

@@ -186,6 +186,9 @@ function refreshSettings(event){
 			if(prefId === "panel_theme" || prefId === "background_color" && typeof theme_update === "function"){
 				theme_update();
 			}
+			if(prefId === "hourlyAlarm"){
+				sendDataToMain("hourlyAlarm_update");
+			}
 			if(
 				typeof applyPanelSize === "function"
 				&&

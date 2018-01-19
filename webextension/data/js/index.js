@@ -2,7 +2,7 @@
 
 appGlobal.notificationGlobalyDisabled = false;
 
-appGlobal.sendDataToMain = (source, id, data)=>{
+appGlobal.sendDataToMain = function(source, id, data){
 	console.dir([
 		source,
 		id,
@@ -15,6 +15,25 @@ appGlobal.sendDataToMain = (source, id, data)=>{
 		} else {
 			console.warn("panel__UpdateData not found");
 		}
+	} else if(source==="ZToolBox_Options" && id==="hourlyAlarm_update"){
+		isEnabledHourlyAlarm()
+			.then(async function (isActivated) {
+				if(typeof isActivated==="boolean" && getPreference("hourlyAlarm")!==isActivated){
+					if(getPreference("hourlyAlarm")===true){
+						await enableHourlyAlarm();
+					} else {
+						await disableHourlyAlarm();
+					}
+				}
+			})
+			.catch(async function (err) {
+				consoleMsg("warn", err);
+				await disableHourlyAlarm();
+
+				if(getPreference("hourlyAlarm")){
+					await enableHourlyAlarm();
+				}
+			})
 	}
 };
 

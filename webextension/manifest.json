@@ -11,7 +11,7 @@
 	"short_name": "ZToolBoxDev",
 	"description": "__MSG_extShortDesc__",
 	"author": "Zatsune No Mokou",
-	"version": "0.2.1",
+	"version": "0.3.0",
 	"icons": {
 		"16": "/icon_16.png",
 		"48": "/icon_48.png",
@@ -66,7 +66,8 @@
 		"storage",
 		"unlimitedStorage",
 		"http://*/*",
-		"https://*/*"
+		"https://*/*",
+		"alarms"
 	],
 	"optional_permissions": [
 		"clipboardWrite"
