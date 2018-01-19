@@ -1,3 +1,6 @@
+# 0.3.2
+* Fix: Hourly alarm, debug that was not supposed to be commited
+
 # 0.3.1
 * Fix: Hourly alarm, Firefox sending undefined with [alarms.get()](https://developer.mozilla.org//Add-ons/WebExtensions/API/alarms/get) if nothing to return
 
