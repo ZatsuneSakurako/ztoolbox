@@ -69,7 +69,7 @@ async function isEnabledHourlyAlarm(){
 	if(Array.isArray(retrievedData) && retrievedData.length>=2){
 		throw "Several alarms found!";
 	} else {
-		return !(Array.isArray(retrievedData) && retrievedData.length===0);
+		return !(retrievedData===undefined || (Array.isArray(retrievedData) && retrievedData.length===0));
 	}
 }
 async function disableHourlyAlarm() {

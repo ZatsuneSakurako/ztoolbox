@@ -1,3 +1,6 @@
+# 0.3.1
+* Fix: Hourly alarm, Firefox sending undefined with [alarms.get()](https://developer.mozilla.org//Add-ons/WebExtensions/API/alarms/get) if nothing to return
+
 # 0.3.0
 * i: Moved "feature" script to a dedicated folder
 * +: Hourly alarm (disabled by default) using Web Extensions's [alarms](https://developer.mozilla.org//Add-ons/WebExtensions/API/alarms)

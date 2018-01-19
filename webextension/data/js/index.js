@@ -18,6 +18,7 @@ appGlobal.sendDataToMain = function(source, id, data){
 	} else if(source==="ZToolBox_Options" && id==="hourlyAlarm_update"){
 		isEnabledHourlyAlarm()
 			.then(async function (isActivated) {
+				console.info(isActivated)
 				if(typeof isActivated==="boolean" && getPreference("hourlyAlarm")!==isActivated){
 					if(getPreference("hourlyAlarm")===true){
 						await enableHourlyAlarm();
