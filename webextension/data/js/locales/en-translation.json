@@ -35,6 +35,9 @@
 	"notify_all_viewed_title": "Show a notification when all view in website(s)",
 	"notify_all_viewed_description": "Notification when checked",
 
+	"notify_vocal_title": "Play a vocal notifications",
+	"notify_vocal_description": "Notification when checked",
+
 	"vocal_volume_title": "Volume of vocal notifiations",
 	"vocal_volume_description": "In percent",
 
@@ -115,5 +118,6 @@
 	"window_windowId": "Window {{windowId}} \"{{window}}\"",
 
 
-	"timeIsNow": "It is now {{currentTime}}"
+	"timeIsNow": "It is now {{currentTime}}",
+	"spokenTimeFormat": "hA"
 }

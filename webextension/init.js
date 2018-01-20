@@ -44,6 +44,8 @@ const stringEllipse = ZDK.stringEllipse;
 	templatesSource.set("backgroundTheme", "/data/js/backgroundTheme.mst");
 	templatesSource.set("panelCheckedDataItem", "/data/js/panelCheckedDataItem.mst");
 
+	moment.locale(browser.i18n.getMessage("language"));
+
 	loadMustacheTemplates(templatesSource)
 		.then(async (loadMap)=>{
 			appGlobal.mustacheTemplates = loadMap;

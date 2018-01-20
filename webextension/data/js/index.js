@@ -16,22 +16,22 @@ appGlobal.sendDataToMain = function(source, id, data){
 			console.warn("panel__UpdateData not found");
 		}
 	} else if(source==="ZToolBox_Options" && id==="hourlyAlarm_update"){
-		isEnabledHourlyAlarm()
+		HourlyAlarm.isEnabledHourlyAlarm()
 			.then(async function (isActivated) {
 				if(typeof isActivated==="boolean" && getPreference("hourlyAlarm")!==isActivated){
 					if(getPreference("hourlyAlarm")===true){
-						await enableHourlyAlarm();
+						await hourlyAlarm.enableHourlyAlarm();
 					} else {
-						await disableHourlyAlarm();
+						await hourlyAlarm.disableHourlyAlarm();
 					}
 				}
 			})
 			.catch(async function (err) {
 				consoleMsg("warn", err);
-				await disableHourlyAlarm();
+				await hourlyAlarm.disableHourlyAlarm();
 
 				if(getPreference("hourlyAlarm")){
-					await enableHourlyAlarm();
+					await hourlyAlarm.enableHourlyAlarm();
 				}
 			})
 	}

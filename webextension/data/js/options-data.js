@@ -53,6 +53,14 @@ const options = {
 		"group": "notifications",
 		"prefLevel": "advanced"
 	},
+	"notify_vocal": {
+		"title": "Read a vocal notifications",
+		"description": "Notification when checked",
+		"type": "bool",
+		"value": false,
+		"group": "notifications",
+		"prefLevel": "basic"
+	},
 	"vocal_volume": {
 		"title": "Volume of vocal notifiations",
 		"description": "In percent",

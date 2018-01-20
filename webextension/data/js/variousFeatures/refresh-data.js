@@ -88,8 +88,9 @@ function doNotifyWebsite(website){
 		}
 
 		if(getPreference("notify_vocal")){
-			voiceReadMessage("fr", i18ex._("count_new_notif", {"count": websiteData.count}));
+			voiceReadMessage(i18ex._("language"), i18ex._("count_new_notif", {"count": websiteData.count}));
 		}
+
 	} else if(getPreference("notify_all_viewed") && (typeof websiteData.count === "number" && websiteData.count === 0) && (typeof websiteData.notificationState.count === "number" && websiteData.notificationState.count > 0)){
 		doNotif({
 			"title": i18ex._("website_notif", {"website": website}),

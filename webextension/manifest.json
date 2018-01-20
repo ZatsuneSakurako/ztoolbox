@@ -11,7 +11,7 @@
 	"short_name": "ZToolBoxDev",
 	"description": "__MSG_extShortDesc__",
 	"author": "Zatsune No Mokou",
-	"version": "0.3.2",
+	"version": "0.4.0",
 	"icons": {
 		"16": "/icon_16.png",
 		"48": "/icon_48.png",
@@ -25,6 +25,9 @@
 			"/data/js/lib/i18next.min.js",
 			"/data/js/lib/i18nextXHRBackend.min.js",
 			"/data/js/lib/mustache.min.js",
+
+			"/data/js/lib/moment.js",
+			"/data/js/lib/moment-locale-fr.js",
 
 			"/data/js/lib/xml2jsobj.js",
 

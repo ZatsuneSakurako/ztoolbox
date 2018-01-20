@@ -14,6 +14,7 @@ Sources:
 - Opentip from https://github.com/enyo/opentip (License MIT)
   - Version in Z-Toolbox is a modified one because it is the same modified version as Live Notifier (prevent conflicts because of some data-attributes)
 - ftdomdelegate, from https://github.com/ftlabs/ftdomdelegate (License MIT)
+- Moment.js, from http://momentjs.com/ (License MIT)
 
 
 The "Material Icons" (version 2.11 and later) font is part of Google material design, in Apache 2.0 license (open source), is available [here](https://google.github.io/material-design-icons/).

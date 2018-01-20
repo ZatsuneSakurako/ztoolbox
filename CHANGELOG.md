@@ -1,3 +1,13 @@
+# 0.4.0
+* i: Moved hourly alarm to a class
+* i: Hourly alarm
+	* +: Vocal notifications
+	* Fix: Cleaning hourly alarms before enabling it
+	* Fix: Risk of several onAlarm listeners
+	* Fix: Respect the globaly disabled notifications state
+* Fix: Missing setting to enable vocal notifications
+* Fix: Localization of vocal notification language of refresh-data
+
 # 0.3.2
 * Fix: Hourly alarm, debug that was not supposed to be commited
 

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-moduleList="perfect-scrollbar mustache perfect-scrollbar webextension-polyfill i18next i18next-xhr-backend"
+moduleList="perfect-scrollbar mustache perfect-scrollbar webextension-polyfill i18next i18next-xhr-backend moment"
 npm install $moduleList
 npm update $moduleList
 npm update lodash-cli -g
@@ -42,3 +42,7 @@ cp ./node_modules/i18next-xhr-backend/i18nextXHRBackend.min.js $jsLib
 
 echo Downloading/Copying dom-delegate...
 curl -L -# -o $jsLib/dom-delegate.min.js http://wzrd.in/standalone/dom-delegate@latest
+
+echo Copying Moment.js...
+cp ./node_modules/moment/moment.js $jsLib
+cp ./node_modules/moment/locale/fr.js $jsLib/moment-locale-fr.js
