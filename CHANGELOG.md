@@ -4,6 +4,7 @@
 	* +: \[ChromePreferences] Core to import/export from/to file
 	* +: \[ZDK] Simulate click, now needed by ChromePreferences*
 	* +: \[ChromePreferences] New setting type: File
+	* +: \[ChromeNotificationControler] Sound support on notifications, using [notifications.onShown](https://developer.mozilla.org//Add-ons/WebExtensions/API/notifications/onShown) to begin it, when supported
 * Fix: Exclude private windows for windowsContextMenu
 * Fix: Hourly alarm - Wrong parameter to define next alarm
 

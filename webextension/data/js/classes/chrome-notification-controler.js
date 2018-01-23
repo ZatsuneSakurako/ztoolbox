@@ -18,7 +18,10 @@ class ChromeNotificationControler{
 		this.onShownSupported = browser.notifications.hasOwnProperty("onShown");
 		if(this.onShownSupported===true){
 			browser.notifications.onShown.addListener(notificationId=>{
-				consoleMsg("info", `Notification "${notificationId}" shown.`)
+				consoleMsg("info", `Notification "${notificationId}" shown.`);
+				if(this.chromeNotifications.has(notificationId) && typeof this.chromeNotifications.get(notificationId).fnOnShown === "function"){
+					this.chromeNotifications.get(notificationId).fnOnShown();
+				}
 			})
 		}
 		browser.notifications.onClosed.addListener((notificationId, byUser=false)=>{
@@ -98,13 +101,26 @@ class ChromeNotificationControler{
 				delete options.buttons;
 			}
 
+			let sound = null;
 			sendNotification(options)
 				.then(notificationId=>{
 					consoleMsg("info", `Notification "${notificationId}" created.`);
+					if(customOption!==null && typeof customOption.soundObject==="object" && customOption.soundObject!==null && typeof customOption.soundObject.data==="string"){
+						sound = new Audio(customOption.soundObject.data);
+						if(this.onShownSupported===false){
+							sound.play();
+						}
+					}
+
 					this.chromeNotifications.set(notificationId, {
 						"isClosed": false,
 						"fn": (triggeredType, buttonIndex = null)=>{
 							this.clear(notificationId);
+
+							if(sound!==null){
+								sound.currentTime = 0;
+								sound.pause();
+							}
 
 							if (
 								triggeredType === "timeout"
@@ -130,10 +146,21 @@ class ChromeNotificationControler{
 									"buttonIndex": buttonIndex
 								});
 							}
+						},
+						"fnOnShown": ()=>{
+							if(this.onShownSupported===false){
+								sound.play();
+							}
 						}
 					});
 				})
-				.catch(reject)
+				.catch(error=>{
+					if(sound!==null){
+						sound.currentTime = 0;
+						sound.pause();
+					}
+					reject(error);
+				})
 			;
 		});
 	};
