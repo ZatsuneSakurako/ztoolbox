@@ -2,7 +2,7 @@
 * i: ZDK update
 	* +: \[ZDK] loadBlob can now read as text with a second argument
 	* +: \[ChromePreferences] Core to import/export from/to file
-	* +: \[ZDK] Simulate click, now needed by ChromePreferences*
+	* +: \[ZDK] Simulate click, now needed by ChromePreferences
 	* +: \[ChromePreferences] New setting type: File
 	* +: \[ChromeNotificationControler] Sound support on notifications, using [notifications.onShown](https://developer.mozilla.org//Add-ons/WebExtensions/API/notifications/onShown) to begin it, when supported
 * Fix: Exclude private windows for windowsContextMenu

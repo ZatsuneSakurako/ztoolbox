@@ -48,6 +48,18 @@ const options = {
 		"value": {},
 		"group": "featurePreference"
 	},
+	"hourlyAlarm_sound_volume": {
+		"title": "Sound volume for the notification",
+		"description": "In percent",
+		"type": "integer",
+		"value": 70,
+		"minValue": 0,
+		"maxValue": 100,
+		"rangeInput": true,
+		"rangeOutputUnit": "%",
+		"prefLevel": "basic",
+		"group": "featurePreference"
+	},
 	/*			Notifications			*/
 	"notify_checkedData": {
 		"title": "Show a notification for deviantArt",

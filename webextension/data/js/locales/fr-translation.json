@@ -56,9 +56,12 @@
 	"hourlyAlarm_title": "Notification par heure",
 	"hourlyAlarm_description": "Affiche une notification par heure quand coché",
 
-	"hourlyAlarm_sound_title": "Lit un son avec les notifications",
+	"hourlyAlarm_sound_title": "Lit un son avec les notifications par heure",
 	"hourlyAlarm_sound_description": "Importe un fichier audio",
 	"hourlyAlarm_sound": "Importer",
+
+	"hourlyAlarm_sound_volume_title": "Volume son pour les notification par heure",
+	"hourlyAlarm_sound_volume_description": "En pourcentage",
 
 	"panel_height_title": "Hauteur du panel",
 	"panel_height_description": "Taille en pixels",

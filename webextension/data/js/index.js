@@ -216,11 +216,13 @@ function doNotif(options, suffixConfirmIfNoButtons=false){
 		}
 
 		let customOptions = null;
-		if(options.hasOwnProperty("soundObject")){
+		if(options.hasOwnProperty("soundObject") && options.hasOwnProperty("soundObjectVolume")){
 			customOptions = {
-				"soundObject": options.soundObject
+				"soundObject": options.soundObject,
+				"soundObjectVolume": options.soundObjectVolume
 			};
 			delete options.soundObject;
+			delete options.soundObjectVolume;
 		}
 
 		chromeNotifications.send(options, customOptions)

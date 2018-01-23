@@ -14,7 +14,8 @@ class HourlyAlarm {
 			if(appGlobal["notificationGlobalyDisabled"]===false){
 				doNotif({
 					"message": msg,
-					"soundObject": getPreference("hourlyAlarm_sound")
+					"soundObject": getPreference("hourlyAlarm_sound"),
+					"soundObjectVolume": getPreference("hourlyAlarm_sound_volume")
 				});
 
 				if(getPreference("notify_vocal")){

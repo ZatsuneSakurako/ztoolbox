@@ -53,6 +53,7 @@ class ChromeNotificationControler{
 	 * @param {Object=null} customOption
 	 * @param {Object} customOption.soundObject
 	 * @param {String} customOption.soundObject.data
+	 * @param {Number} customOption.soundObjectVolume
 	 * @return {Promise<Object>}
 	 */
 	send(options=null, customOption=null){
@@ -107,6 +108,7 @@ class ChromeNotificationControler{
 					consoleMsg("info", `Notification "${notificationId}" created.`);
 					if(customOption!==null && typeof customOption.soundObject==="object" && customOption.soundObject!==null && typeof customOption.soundObject.data==="string"){
 						sound = new Audio(customOption.soundObject.data);
+						sound.volume = customOption.soundObjectVolume / 100;
 						if(this.onShownSupported===false){
 							sound.play();
 						}
