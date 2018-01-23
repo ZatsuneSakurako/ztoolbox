@@ -41,6 +41,7 @@ const options = {
 		"description": "Import audio file",
 		"label": "Import",
 		"type": "file",
+		"sync": false,
 		"fileMaxSize": 5 * 1024 * 1024,
 		"inputAccept": "audio/*",
 		"fileTypes": /^audio\//,

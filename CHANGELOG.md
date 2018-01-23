@@ -1,3 +1,6 @@
+# 0.5.1
+* Fix: Do not sync hourly alarm sound file
+
 # 0.5.0
 * i: ZDK update
 	* +: \[ZDK] loadBlob can now read as text with a second argument
