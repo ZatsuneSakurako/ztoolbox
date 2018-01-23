@@ -1,6 +1,6 @@
 {
 	"name": "ztoolbox",
-	"version": "0.4.0",
+	"version": "0.5.0",
 	"description": "Web Extension to test various things.",
 	"dependencies": {
 		"i18next": "^10.3.0",

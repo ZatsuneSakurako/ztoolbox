@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+cd $(dirname $0)/..
+echo "Current dir: $(pwd)"
 
 cssLib='./webextension/data/css/lib'
 jsLib='./webextension/data/js/lib'

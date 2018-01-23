@@ -1,4 +1,4 @@
-# 0.*
+# 0.5.0
 * i: ZDK update
 	* +: \[ZDK] loadBlob can now read as text with a second argument
 	* +: \[ChromePreferences] Core to import/export from/to file
