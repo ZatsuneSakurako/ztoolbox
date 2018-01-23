@@ -56,6 +56,10 @@
 	"hourlyAlarm_title": "Hourly notification",
 	"hourlyAlarm_description": "Display a notification per hour when checked",
 
+	"hourlyAlarm_sound_title": "Play sound with notifications",
+	"hourlyAlarm_sound_description": "Import audio file",
+	"hourlyAlarm_sound": "Import",
+
 	"panel_height_title": "Panel's height",
 	"panel_height_description": "Size in pixels",
 
@@ -118,6 +122,8 @@
 	"window_windowId": "Window {{windowId}} \"{{window}}\"",
 
 
+	"FileTooBig": "File is too big",
+	"WrongFileType": "Wrong file type",
 	"timeIsNow": "It is now {{currentTime}}",
 	"spokenTimeFormat": "hA"
 }

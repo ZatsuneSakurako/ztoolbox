@@ -1,3 +1,11 @@
+# 0.*
+* i: ZDK update
+	* +: \[ZDK] loadBlob can now read as text with a second argument
+	* +: \[ChromePreferences] Core to import/export from/to file
+	* +: \[ZDK] Simulate click, now needed by ChromePreferences*
+	* +: \[ChromePreferences] New setting type: File
+* Fix: Exclude private windows for windowsContextMenu
+
 # 0.4.0
 * i: Moved hourly alarm to a class
 * i: Hourly alarm

@@ -216,16 +216,22 @@ class ZDK{
 	/**
 	 *
 	 * @param {Blob} blob
+	 * @param {Boolean} readType
 	 * @return {Promise}
 	 */
-	loadBlob(blob){
+	loadBlob(blob, readType=null){
 		return new Promise((resolve, reject)=>{
 			const reader = new FileReader();
-			reader.readAsDataURL(blob);
 			reader.addEventListener("loadend", function() {
 				resolve(reader.result);
 			});
 			reader.addEventListener("error", reject);
+
+			if(readType==="text"){
+				reader.readAsText(blob);
+			} else {
+				reader.readAsDataURL(blob);
+			}
 		})
 	}
 	async getBase64Image(pictureNode, settings={}){
@@ -346,6 +352,16 @@ class ZDK{
 			"top": y,
 			"left": x,
 		};
+	}
+
+	static simulateClick(node) {
+		let evt = new MouseEvent("click", {
+			bubbles: true,
+			cancelable: true,
+			view: window,
+		});
+		// Return true is the event haven't been canceled
+		return node.dispatchEvent(evt);
 	}
 }
 

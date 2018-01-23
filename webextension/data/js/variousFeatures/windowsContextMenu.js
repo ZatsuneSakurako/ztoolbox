@@ -21,6 +21,12 @@ async function getCurrentWindowIds() {
 		windowTypes: ["normal"]
 	});
 
+	browserWindows.forEach(function (window, index, array) {
+		if(window.incognito===true){
+			array.splice(index, 1);
+		}
+	});
+
 	await browser.contextMenus.update(windowSwitchContextMenu, {
 		"enabled": browserWindows.length > 1,
 		"title": browserWindows.length > 1? i18ex._("move_tab_of_window") : i18ex._("no_other_window")
