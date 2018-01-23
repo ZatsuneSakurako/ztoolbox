@@ -15,6 +15,12 @@ class ChromeNotificationControler{
 				}
 			});
 		}
+		this.onShownSupported = browser.notifications.hasOwnProperty("onShown");
+		if(this.onShownSupported===true){
+			browser.notifications.onShown.addListener(notificationId=>{
+				consoleMsg("info", `Notification "${notificationId}" shown.`)
+			})
+		}
 		browser.notifications.onClosed.addListener((notificationId, byUser=false)=>{
 			if(byUser===true && this.chromeNotifications.has(notificationId)){
 				this.chromeNotifications.get(notificationId).isClosed = true;
@@ -38,7 +44,15 @@ class ChromeNotificationControler{
 		}, 10 * 1000);
 	}
 
-	send(options=null){
+	/**
+	 *
+	 * @param options Options from chrome.notifications.NotificationOptions
+	 * @param {Object=null} customOption
+	 * @param {Object} customOption.soundObject
+	 * @param {String} customOption.soundObject.data
+	 * @return {Promise<Object>}
+	 */
+	send(options=null, customOption=null){
 		const sendNotification = (options)=>{
 			return new Promise((resolve, reject)=>{
 				const onError = (error)=>{
@@ -52,6 +66,7 @@ class ChromeNotificationControler{
 						browser.notifications.create(options)
 							.then(resolve)
 							.catch(onError)
+						;
 					} else {
 						reject(error);
 					}
@@ -60,8 +75,8 @@ class ChromeNotificationControler{
 					browser.notifications.create(options)
 						.then(resolve)
 						.catch(onError)
-				}
-				catch(err){
+					;
+				} catch(err){
 					onError(err);
 				}
 			})
@@ -85,6 +100,7 @@ class ChromeNotificationControler{
 
 			sendNotification(options)
 				.then(notificationId=>{
+					consoleMsg("info", `Notification "${notificationId}" created.`);
 					this.chromeNotifications.set(notificationId, {
 						"isClosed": false,
 						"fn": (triggeredType, buttonIndex = null)=>{

@@ -1,10 +1,5 @@
 #!/usr/bin/env bash
 
-moduleList="perfect-scrollbar mustache perfect-scrollbar webextension-polyfill i18next i18next-xhr-backend moment"
-npm install $moduleList
-npm update $moduleList
-npm update lodash-cli -g
-
 cssLib='./webextension/data/css/lib'
 jsLib='./webextension/data/js/lib'
 

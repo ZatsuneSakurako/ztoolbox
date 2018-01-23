@@ -5,6 +5,7 @@
 	* +: \[ZDK] Simulate click, now needed by ChromePreferences*
 	* +: \[ChromePreferences] New setting type: File
 * Fix: Exclude private windows for windowsContextMenu
+* Fix: Hourly alarm - Wrong parameter to define next alarm
 
 # 0.4.0
 * i: Moved hourly alarm to a class
