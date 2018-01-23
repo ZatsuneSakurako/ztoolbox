@@ -36,6 +36,30 @@ const options = {
 		"value": false,
 		"group": "featurePreference"
 	},
+	"hourlyAlarm_sound": {
+		"title": "Play sound with notifications",
+		"description": "Import audio file",
+		"label": "Import",
+		"type": "file",
+		"fileMaxSize": 5 * 1024 * 1024,
+		"inputAccept": "audio/*",
+		"fileTypes": /^audio\//,
+		"readType": "dataUrl",
+		"value": {},
+		"group": "featurePreference"
+	},
+	"hourlyAlarm_sound_volume": {
+		"title": "Sound volume for the notification",
+		"description": "In percent",
+		"type": "integer",
+		"value": 70,
+		"minValue": 0,
+		"maxValue": 100,
+		"rangeInput": true,
+		"rangeOutputUnit": "%",
+		"prefLevel": "basic",
+		"group": "featurePreference"
+	},
 	/*			Notifications			*/
 	"notify_checkedData": {
 		"title": "Show a notification for deviantArt",

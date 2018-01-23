@@ -13,7 +13,9 @@ class HourlyAlarm {
 
 			if(appGlobal["notificationGlobalyDisabled"]===false){
 				doNotif({
-					"message": msg
+					"message": msg,
+					"soundObject": getPreference("hourlyAlarm_sound"),
+					"soundObjectVolume": getPreference("hourlyAlarm_sound_volume")
 				});
 
 				if(getPreference("notify_vocal")){
@@ -48,7 +50,7 @@ class HourlyAlarm {
 		}
 
 		browser.alarms.create("hourlyAlarm", {
-			"when": roundDate(new Date(), "Hours").getTime(),
+			"when": roundDate(new Date(), "Minutes").getTime(),
 			"periodInMinutes": 60
 		});
 	}

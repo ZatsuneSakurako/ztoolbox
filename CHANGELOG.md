@@ -1,3 +1,13 @@
+# 0.5.0
+* i: ZDK update
+	* +: \[ZDK] loadBlob can now read as text with a second argument
+	* +: \[ChromePreferences] Core to import/export from/to file
+	* +: \[ZDK] Simulate click, now needed by ChromePreferences
+	* +: \[ChromePreferences] New setting type: File
+	* +: \[ChromeNotificationControler] Sound support on notifications, using [notifications.onShown](https://developer.mozilla.org//Add-ons/WebExtensions/API/notifications/onShown) to begin it, when supported
+* Fix: Exclude private windows for windowsContextMenu
+* Fix: Hourly alarm - Wrong parameter to define next alarm
+
 # 0.4.0
 * i: Moved hourly alarm to a class
 * i: Hourly alarm

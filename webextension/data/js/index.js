@@ -215,7 +215,17 @@ function doNotif(options, suffixConfirmIfNoButtons=false){
 			options.buttons = [notifButtons.close];
 		}
 
-		chromeNotifications.send(options)
+		let customOptions = null;
+		if(options.hasOwnProperty("soundObject") && options.hasOwnProperty("soundObjectVolume")){
+			customOptions = {
+				"soundObject": options.soundObject,
+				"soundObjectVolume": options.soundObjectVolume
+			};
+			delete options.soundObject;
+			delete options.soundObjectVolume;
+		}
+
+		chromeNotifications.send(options, customOptions)
 			.then(result=>{
 				const {triggeredType, notificationId, buttonIndex} = result;
 				console.info(`${notificationId}: ${triggeredType}${(buttonIndex && buttonIndex !==null)? ` (Button index: ${buttonIndex})`:""}`);
@@ -228,9 +238,6 @@ function doNotif(options, suffixConfirmIfNoButtons=false){
 				}
 			})
 			.catch(err=>{
-				/*if(err){
-					console.warn(err);
-				}*/
 				reject(err);
 			})
 		;
