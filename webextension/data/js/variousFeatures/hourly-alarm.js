@@ -8,7 +8,8 @@ class HourlyAlarm {
 
 		function actionOnAlarm(alarm) {
 			const msg = i18ex._("timeIsNow", {
-				currentTime: new Date(alarm.scheduledTime).toLocaleTimeString()
+				//currentTime: new Date(alarm.scheduledTime).toLocaleTimeString()
+				currentTime: moment().format(i18ex._("displayTimeFormat"))
 			});
 
 			if(appGlobal["notificationGlobalyDisabled"]===false){
@@ -20,7 +21,7 @@ class HourlyAlarm {
 
 				if(getPreference("notify_vocal")){
 					voiceReadMessage(i18ex._("language"), i18ex._("timeIsNow", {
-						currentTime: moment(new Date(alarm.scheduledTime)).format(i18ex._("spokenTimeFormat"))
+						currentTime: moment().format(i18ex._("spokenTimeFormat"))
 					}));
 				}
 			}

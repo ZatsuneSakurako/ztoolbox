@@ -128,5 +128,6 @@
 	"FileTooBig": "File is too big",
 	"WrongFileType": "Wrong file type",
 	"timeIsNow": "It is now {{currentTime}}",
+	"displayTimeFormat": "hh:mmA",
 	"spokenTimeFormat": "hA"
 }

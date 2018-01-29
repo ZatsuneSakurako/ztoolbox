@@ -150,7 +150,7 @@ class ChromeNotificationControler{
 							}
 						},
 						"fnOnShown": ()=>{
-							if(this.onShownSupported===false){
+							if(sound!==null && this.onShownSupported===true){
 								sound.play();
 							}
 						}
