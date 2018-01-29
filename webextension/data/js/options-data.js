@@ -44,7 +44,7 @@ const options = {
 		"sync": false,
 		"fileMaxSize": 5 * 1024 * 1024,
 		"inputAccept": "audio/*",
-		"fileTypes": /^audio\//,
+		"fileTypes": /^(audio\/|video\/ogg)/,
 		"readType": "dataUrl",
 		"value": {},
 		"group": "featurePreference"

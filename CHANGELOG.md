@@ -1,3 +1,7 @@
+# 0.5.2
+* Fix: Hourly alarm - Hour formats and definition
+* Fix: No sound on notifications, on Firefox (user setting might be required)
+
 # 0.5.1
 * Fix: Do not sync hourly alarm sound file
 
