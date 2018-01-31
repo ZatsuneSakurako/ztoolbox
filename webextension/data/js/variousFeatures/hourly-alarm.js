@@ -51,7 +51,7 @@ class HourlyAlarm {
 		}
 
 		browser.alarms.create("hourlyAlarm", {
-			"when": roundDate(new Date(), "Minutes").getTime(),
+			"when": moment().startOf("hour").add(1, "h").valueOf(), // moment#valueOf is just like Date#valueOf (which is Like Date#getTime)
 			"periodInMinutes": 60
 		});
 	}
@@ -71,52 +71,5 @@ class HourlyAlarm {
 		return await browser.alarms.clear("hourlyAlarm");
 	}
 }
-
-const roundDate = (function () {
-	const dateElements = [
-			"FullYear",
-			"Month",
-			"Date",
-			"Hours",
-			"Minutes",
-			"Seconds",
-			"Milliseconds"
-		];
-
-	const getDateElement = function (date, dateElementPosition) {
-		if(dateElementPosition <= 0){
-			throw "Wrong date element to round.";
-		}
-
-		return Date.prototype["get"+dateElements[dateElementPosition]].call(date);
-	};
-
-	const setDateElement = function (date, dateElementPosition, newValue) {
-		if(dateElementPosition <= 0){
-			throw "Wrong date element to round.";
-		}
-
-		return Date.prototype["set"+dateElements[dateElementPosition]].call(date, newValue);
-	};
-
-	return function(date, dateElement){
-		if(!(date instanceof Date)){
-			throw "First argument must be a date";
-		}
-
-		const dateElementPosition = dateElements.indexOf(dateElement);
-
-		if(dateElementPosition <= 0){
-			throw "Wrong date element to round.";
-		}
-
-		setDateElement(date, dateElementPosition-1, getDateElement(date, dateElementPosition - 1) + 1);
-		for(let i=dateElementPosition; i<dateElement.length; i++){
-			setDateElement(date, i, 0);
-		}
-
-		return date;
-	}
-})();
 
 const hourlyAlarm = new HourlyAlarm();

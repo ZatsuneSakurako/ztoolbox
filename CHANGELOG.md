@@ -1,3 +1,6 @@
+# 0.5.3
+* i: Use Moment.js to get next hour instead of self made function
+
 # 0.5.2
 * Fix: Hourly alarm - Hour formats and definition
 * Fix: No sound on notifications, on Firefox (user setting might be required)
