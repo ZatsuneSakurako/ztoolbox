@@ -1,23 +1,7 @@
 const
-	_fs = require('fs'),
-	_path = require('path'),
-	_cp = require('cp')
+	_fs = require('fs-extra'),
+	_path = require('path')
 ;
-
-
-/**
- *
- * @param path
- * @param mode
- * @return {Promise<>}
- */
-function fsAccess(path, mode=_fs.constants.R_OK) {
-	return new Promise(resolve=>{
-		_fs.access(path, mode, err=>{
-			resolve(err===null);
-		})
-	})
-}
 
 function fsReadFile(filePath) {
 	return new Promise((resolve, reject)=>{
@@ -44,13 +28,10 @@ function cp(src, dest) {
 			dest = _path.resolve(dest, "./" + _path.basename(src));
 		}
 
-		_cp(src, dest, err=>{
-			if(err){
-				reject(err);
-			} else {
-				resolve();
-			}
-		});
+		_fs.copyFile(src, dest)
+			.then(resolve)
+			.catch(reject)
+		;
 	})
 }
 
@@ -59,7 +40,6 @@ function cp(src, dest) {
 
 
 module.exports = {
-	"fsAccess": fsAccess,
 	"fsReadFile": fsReadFile,
 	"cp": cp
 };

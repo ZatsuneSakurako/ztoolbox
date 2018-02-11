@@ -1,6 +1,7 @@
 const
 	echo = console.log,
 
+	fs = require('fs-extra'),
 	path = require('path'),
 	pwd = path.join(__dirname, ".."),
 
@@ -10,7 +11,7 @@ const
 	jsLib = path.join(pwd, './webextension/data/js/lib/')
 ;
 
-const {fsAccess, cp} = require("./file-operations");
+const {cp} = require("./file-operations");
 const {error, warning, info, success} = require("./custom-console");
 
 
@@ -55,8 +56,8 @@ function exec(cmd) {
 
 
 async function init() {
-	const exist_cssLib = await fsAccess(cssLib),
-		exist_jsLib = await fsAccess(jsLib)
+	const exist_cssLib = await fs.pathExists(cssLib),
+		exist_jsLib = await fs.pathExists(jsLib)
 	;
 
 	const _cp = function (src, dest) {

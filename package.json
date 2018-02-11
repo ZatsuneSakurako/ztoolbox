@@ -4,7 +4,6 @@
 	"description": "Web Extension to test various things.",
 	"dependencies": {
 		"chalk": "^2.3.1",
-		"cp": "^0.2.0",
 		"fs-extra": "^5.0.0",
 		"i18next": "^10.3.0",
 		"i18next-xhr-backend": "^1.5.1",
