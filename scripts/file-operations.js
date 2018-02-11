@@ -5,13 +5,10 @@ const
 
 function fsReadFile(filePath) {
 	return new Promise((resolve, reject)=>{
-		_fs.readFile(filePath, {encoding: 'utf-8'}, function(err, data){
-			if (err) {
-				reject(err);
-			} else {
-				resolve(data);
-			}
-		});
+		_fs.readFile(filePath, {encoding: 'utf-8'})
+			.then(resolve)
+			.catch(reject)
+		;
 	})
 }
 
