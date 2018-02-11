@@ -5,6 +5,7 @@
 	"dependencies": {
 		"chalk": "^2.3.1",
 		"cp": "^0.2.0",
+		"fs-extra": "^5.0.0",
 		"i18next": "^10.3.0",
 		"i18next-xhr-backend": "^1.5.1",
 		"lodash-cli": "^4.17.5",
@@ -16,7 +17,7 @@
 	"devDependencies": {},
 	"scripts": {
 		"postinstall": "node ./scripts/installDependencies.js",
-		"release:dev": "bash scripts/make_web-ext_dev_build.sh",
+		"release:dev": "node ./scripts/release-dev.js",
 		"test": "echo \"Error: no test specified\" && exit 1",
 		"update": "npm run postinstall"
 	},
