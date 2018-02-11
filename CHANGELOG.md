@@ -1,3 +1,8 @@
+# 0.*
+* i: ZDK update
+	* +: \[ZDK] Promise based setTimeout
+	* +: \[ZDK] getPageSize to get the page actuel size
+
 # 0.5.3
 * i: Use Moment.js to get next hour instead of self made function
 
