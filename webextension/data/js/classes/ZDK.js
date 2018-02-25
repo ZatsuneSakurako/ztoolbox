@@ -248,9 +248,9 @@ class ZDK{
 				pictureRatio = pictureNode.naturalWidth / pictureNode.naturalHeight;
 
 			if( // Allow picture sized generation of the data, in a "contain" mode, to not lose any part of the Image
-				(settings.hasOwnProperty("height") && typeof settings.height==="number" && !isNaN(settings.height))
-				||
-				(settings.hasOwnProperty("width") && typeof settings.width==="number"&&!isNaN(settings.width))
+			(settings.hasOwnProperty("height") && typeof settings.height==="number" && !isNaN(settings.height))
+			||
+			(settings.hasOwnProperty("width") && typeof settings.width==="number"&&!isNaN(settings.width))
 			){
 				let newHeight,
 					newWidth;
@@ -362,6 +362,39 @@ class ZDK{
 		});
 		// Return true is the event haven't been canceled
 		return node.dispatchEvent(evt);
+	}
+
+	/**
+	 *
+	 * @param {Number} millisecond
+	 * @return {Promise<void>}
+	 */
+	static setTimeout(millisecond) {
+		return new Promise(resolve=>{
+			setTimeout(resolve, millisecond);
+		})
+	}
+
+	/**
+	 *
+	 * @param {Window=window} win
+	 * @return {{height: number, width: number}}
+	 */
+	static getPageSize(win=window) {
+		const doc = win.document;
+		return {
+			'height': win.innerHeight || doc.documentElement.clientHeight || doc.body.clientHeight,
+			'width': win.innerWidth || doc.documentElement.clientWidth || doc.body.clientWidth
+		}
+	}
+
+	/**
+	 *
+	 * @param {Window=window} win
+	 * @return {boolean} Return true if window have ontouchstart event
+	 */
+	static hasTouch(win=window) {
+		return win.hasOwnProperty('ontouchstart');
 	}
 }
 

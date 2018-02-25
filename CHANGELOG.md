@@ -1,3 +1,10 @@
+# 0.5.4
+* i: ZDK update
+	* +: \[ZDK] Promise based setTimeout
+	* +: \[ZDK] getPageSize to get the page actuel size
+	* +: \[ZDK] hasTouch to detect pages with touch screen
+* Fix: openTabIfNotExist using wrong arguments on [browser.tabs.query()](https://developer.mozilla.org//Add-ons/WebExtensions/API/tabs/query)
+
 # 0.5.3
 * i: Use Moment.js to get next hour instead of self made function
 
