@@ -154,19 +154,24 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
 
 function openTabIfNotExist(url){
 	//console.log(url);
-	browser.tabs.query({}, function(tabs) {
-		let custom_url = url.toLowerCase().replace(/http(?:s):\/\/(?:www\.)?/i,"");
-		for(let tab of tabs){
-			if(tab.url.toLowerCase().indexOf(custom_url) !== -1){ // Mean the url was already opened in a tab
-				browser.tabs.highlight({tabs: tab.index}); // Show the already opened tab
-				browser.tabs.reload(tab.id); // Reload the already opened tab
-				return true; // Return true to stop the function as the tab is already opened
+	browser.tabs.query({})
+		.then(function(tabs) {
+			let custom_url = url.toLowerCase().replace(/http(?:s):\/\/(?:www\.)?/i,"");
+			for(let tab of tabs){
+				if(tab.url.toLowerCase().indexOf(custom_url) !== -1){ // Mean the url was already opened in a tab
+					browser.tabs.highlight({tabs: tab.index}); // Show the already opened tab
+					browser.tabs.reload(tab.id); // Reload the already opened tab
+					return true; // Return true to stop the function as the tab is already opened
+				}
 			}
-		}
-		// If the function is still running, it mean that the url isn't detected to be opened, so, we can open it
-		browser.tabs.create({ "url": url });
-		return false; // Return false because the url wasn't already in a tab
-	});
+			// If the function is still running, it mean that the url isn't detected to be opened, so, we can open it
+			browser.tabs.create({ "url": url });
+			return false; // Return false because the url wasn't already in a tab
+		})
+		.catch(err=>{
+			if(err) consoleMsg("warn", err);
+		})
+	;
 }
 
 const chromeNotifications = new ChromeNotificationControler(),

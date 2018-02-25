@@ -248,9 +248,9 @@ class ZDK{
 				pictureRatio = pictureNode.naturalWidth / pictureNode.naturalHeight;
 
 			if( // Allow picture sized generation of the data, in a "contain" mode, to not lose any part of the Image
-				(settings.hasOwnProperty("height") && typeof settings.height==="number" && !isNaN(settings.height))
-				||
-				(settings.hasOwnProperty("width") && typeof settings.width==="number"&&!isNaN(settings.width))
+			(settings.hasOwnProperty("height") && typeof settings.height==="number" && !isNaN(settings.height))
+			||
+			(settings.hasOwnProperty("width") && typeof settings.width==="number"&&!isNaN(settings.width))
 			){
 				let newHeight,
 					newWidth;
@@ -386,6 +386,15 @@ class ZDK{
 			'height': win.innerHeight || doc.documentElement.clientHeight || doc.body.clientHeight,
 			'width': win.innerWidth || doc.documentElement.clientWidth || doc.body.clientWidth
 		}
+	}
+
+	/**
+	 *
+	 * @param {Window=window} win
+	 * @return {boolean} Return true if window have ontouchstart event
+	 */
+	static hasTouch(win=window) {
+		return win.hasOwnProperty('ontouchstart');
 	}
 }
 
