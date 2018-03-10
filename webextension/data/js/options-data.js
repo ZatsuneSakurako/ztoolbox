@@ -29,6 +29,13 @@ const options = {
 		"value": "",
 		"group": "featurePreference"
 	},
+	"launchpadAddLink": {
+		"title": "Add link to go back to PPA page from index page",
+		"description": "Will link if checked",
+		"type": "bool",
+		"value": false,
+		"group": "featurePreference"
+	},
 	"hourlyAlarm": {
 		"title": "Hourly alarm",
 		"description": "Display a notification per hour when checked",

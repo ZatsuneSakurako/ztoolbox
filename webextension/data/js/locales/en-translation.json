@@ -53,6 +53,9 @@
 	"twitchClientId_title": "Twitch API's client id",
 	"twitchClientId_description": "Twitch API for more information",
 
+	"launchpadAddLink_title": "Add link to go Launchpad PPA page from an index page",
+	"launchpadAddLink_description": "Will add link if checked",
+
 	"hourlyAlarm_title": "Hourly notification",
 	"hourlyAlarm_description": "Display a notification per hour when checked",
 

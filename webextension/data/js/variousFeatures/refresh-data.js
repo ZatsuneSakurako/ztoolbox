@@ -63,7 +63,11 @@ function doNotifyWebsite(website){
 				]
 			})
 				.then(()=>{
-					openTabIfNotExist(websiteAPI.getLoginURL(websiteData));
+					ZDK.openTabIfNotExist(websiteAPI.getLoginURL(websiteData))
+						.catch(err=>{
+							consoleMsg("warn", err);
+						})
+					;
 				})
 				.catch(console.warn)
 			;
@@ -81,7 +85,11 @@ function doNotifyWebsite(website){
 				]
 			})
 				.then(()=>{
-					openTabIfNotExist(websiteAPI.getViewURL(websiteData));
+					ZDK.openTabIfNotExist(websiteAPI.getViewURL(websiteData))
+						.catch(err=>{
+							consoleMsg("warn", err);
+						})
+					;
 				})
 				.catch(console.warn)
 			;
@@ -102,7 +110,11 @@ function doNotifyWebsite(website){
 			]
 		})
 			.then(()=>{
-				openTabIfNotExist(websiteAPI.getViewURL(websiteData));
+				ZDK.openTabIfNotExist(websiteAPI.getViewURL(websiteData))
+					.catch(err=>{
+						consoleMsg("warn", err);
+					})
+				;
 			})
 			.catch(console.warn)
 		;
