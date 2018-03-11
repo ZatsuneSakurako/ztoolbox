@@ -6,9 +6,9 @@ const
 
 	{ exec:_exec } = require('child_process'),
 
-	{fsReadFile} = require("./file-operations"),
+	{fsReadFile} = require("./common/file-operations"),
 	echo = console.log,
-	{error, warning, info, success} = require("./custom-console")
+	{error, warning, info, success} = require("./common/custom-console")
 ;
 
 

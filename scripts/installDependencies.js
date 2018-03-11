@@ -11,8 +11,8 @@ const
 	jsLib = path.join(pwd, './webextension/data/js/lib/')
 ;
 
-const {cp} = require("./file-operations");
-const {error, warning, info, success} = require("./custom-console");
+const {cp} = require("./common/file-operations");
+const {error, warning, info, success} = require("./common/custom-console");
 
 
 /**
