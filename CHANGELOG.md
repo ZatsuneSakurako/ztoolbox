@@ -1,3 +1,9 @@
+# 0.6.0
+* i: Moved function to open tab if not already exist to ZDK
+* +: Add link in Launchpad index page to go to PPA page
+* Fix: ChromePreferences - Export file name
+* Fix CSS code style
+
 # 0.5.4
 * i: ZDK update
 	* +: \[ZDK] Promise based setTimeout

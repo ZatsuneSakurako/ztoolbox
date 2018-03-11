@@ -248,9 +248,9 @@ class ZDK{
 				pictureRatio = pictureNode.naturalWidth / pictureNode.naturalHeight;
 
 			if( // Allow picture sized generation of the data, in a "contain" mode, to not lose any part of the Image
-			(settings.hasOwnProperty("height") && typeof settings.height==="number" && !isNaN(settings.height))
-			||
-			(settings.hasOwnProperty("width") && typeof settings.width==="number"&&!isNaN(settings.width))
+				(settings.hasOwnProperty("height") && typeof settings.height==="number" && !isNaN(settings.height))
+				||
+				(settings.hasOwnProperty("width") && typeof settings.width==="number"&&!isNaN(settings.width))
 			){
 				let newHeight,
 					newWidth;
@@ -276,6 +276,38 @@ class ZDK{
 		} else {
 			throw "InvalidParameter";
 		}
+	}
+
+	static async openTabIfNotExist(url){
+		consoleMsg("log", url);
+
+		const tabs = await browser.tabs.query({});
+
+		let custom_url = url.toLowerCase().replace(/http(?:s)?:\/\/(?:www\.)?/i,"");
+		for(let tab of tabs){
+			if(tab.url.toLowerCase().indexOf(custom_url) !== -1){ // Mean the url was already opened in a tab
+				browser.tabs.highlight({tabs: tab.index}); // Show the already opened tab
+				return true; // Return true to stop the function as the tab is already opened
+			}
+		}
+
+		const browserWindows = await browser.windows.getAll({
+			populate: false,
+			windowTypes: ["normal"]
+		});
+
+		// If the function is still running, it mean that the url isn't detected to be opened, so, we can open it
+		if(browserWindows.length===0){
+			await browser.windows.create({
+				"focused": true,
+				"type": "normal",
+				"url": url
+			});
+		} else{
+			await browser.tabs.create({ "url": url });
+		}
+
+		return false; // Return false because the url wasn't already in a tab
 	}
 
 	/**
