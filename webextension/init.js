@@ -26,6 +26,7 @@ async function loadMustacheTemplates(map) {
 
 // appGlobal: Accessible with browser.extension.getBackgroundPage();
 window.appGlobal = {};
+window.openTabIfNotExist = ZDK.openTabIfNotExist;
 const stringEllipse = ZDK.stringEllipse;
 
 (async ()=>{
