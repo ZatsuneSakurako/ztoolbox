@@ -68,21 +68,43 @@ class ContextMenusController extends Map {
 				throw "targetUrlPattern must be an array";
 			}
 
+
+			const contextData = {
+				"title": title,
+				"targetUrlPatterns": targetUrlPatterns,
+				"onClick": onClick,
+				"targetUrlPatterns_processed": targetUrlPatterns_processed
+			};
+
 			this.set(browser.contextMenus.create({
 				"contexts": [
-					"link",
-					"page"
+					"link"
 				],
 				"targetUrlPatterns": targetUrlPatterns_processed,
 				"enabled": true,
 				"onclick": onClick,
 				"title": title
-			}), {
-				"title": title,
-				"targetUrlPatterns": targetUrlPatterns,
-				"onClick": onClick,
-				"targetUrlPatterns_processed": targetUrlPatterns_processed
-			});
+			}), contextData);
+
+
+
+			const pageTypeContexts = [];
+			if(browser.contextMenus.ContextType.hasOwnProperty("PAGE")){
+				pageTypeContexts.push(browser.contextMenus.ContextType.PAGE)
+			}
+			if(browser.contextMenus.ContextType.hasOwnProperty("TAB")){
+				pageTypeContexts.push(browser.contextMenus.ContextType.TAB)
+			}
+
+			if(pageTypeContexts.length>0){
+				this.set(browser.contextMenus.create({
+					"contexts": pageTypeContexts,
+					"documentUrlPatterns": targetUrlPatterns_processed,
+					"enabled": true,
+					"onclick": onClick,
+					"title": title
+				}), contextData);
+			}
 		}
 	}
 }
