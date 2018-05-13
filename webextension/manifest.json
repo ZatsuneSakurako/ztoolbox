@@ -60,7 +60,8 @@
 		},
 		{
 			"matches": ["*://*.twitch.tv/*"],
-			"js": ["/data/js/contentscripts/twitch.js"]
+			"js": ["/data/js/contentscripts/twitch.js"],
+			"run_at": "document_start"
 		}
 	],
 	"default_locale": "en",
