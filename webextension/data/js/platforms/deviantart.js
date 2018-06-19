@@ -16,9 +16,18 @@ let deviantArt = {
 		function(websiteState){
 			return "http://www.deviantart.com/notifications/"; // dA will redirect it to https://www.deviantart.com/users/login?ref=*
 		},
+	/**
+	 *
+	 * @param {XMLHttpRequest} xhrRequest
+	 * @return {Object | null}
+	 */
 	Request_documentParseToJSON:
 		function(xhrRequest){
 			let dataDocument = xhrRequest.response;
+
+			if(typeof dataDocument !== "object" || dataDocument===null){
+				return null;
+			}
 
 			let result = null;
 

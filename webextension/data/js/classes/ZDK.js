@@ -2,6 +2,21 @@ class ZDK{
 	constructor(addonJsRoot){
 		this.addonJsRoot = addonJsRoot;
 
+
+
+		// https://stackoverflow.com/questions/9847580/how-to-detect-safari-chrome-ie-firefox-and-opera-browser/9851769#9851769
+
+		const userAgent = (navigator && navigator.userAgent) || '';
+
+		// Firefox 1.0+
+		Object.defineProperty(this, "isFirefox", {
+			value: typeof InstallTrigger !== 'undefined' || /(?:firefox|fxios)\/(\d+)/i.test(userAgent),
+			configurable: false,
+			writable: false
+		});
+
+
+
 		if(typeof ChromeNotificationControler==="function"){
 			Object.defineProperty(this, "ChromeNotificationControler", {
 				value: ChromeNotificationControler,
@@ -42,6 +57,15 @@ class ZDK{
 			});
 		} else {
 			console.warn(`"Queue" not found.`)
+		}
+		if(typeof DataStore==="function"){
+			Object.defineProperty(this, "DataStore", {
+				value: DataStore,
+				configurable: false,
+				writable: false
+			});
+		} else {
+			console.warn(`"DataStore" not found.`)
 		}
 	}
 
@@ -324,7 +348,8 @@ class ZDK{
 		}
 
 		const nodes = (typeof html==="object")? [html] : new DOMParser().parseFromString(html, 'text/html').body.childNodes,
-			target = (typeof selector==="object")? selector : doc.querySelector(selector)
+			target = (typeof selector==="object")? selector : doc.querySelector(selector),
+			output = []
 		;
 		if(target!==null){
 			for(let i in nodes){
@@ -332,15 +357,15 @@ class ZDK{
 					const node = nodes[i];
 					switch(action){
 						case "appendTo":
-							target.appendChild(node);
+							output[i] = target.appendChild(node);
 							break;
 						case "insertBefore":
-							target.parentNode.insertBefore(node, target);
+							output[i] = target.parentNode.insertBefore(node, target);
 							break;
 					}
 				}
 			}
-			return nodes;
+			return output;
 		} else {
 			return null;
 		}
@@ -612,6 +637,15 @@ function Request(options){
 							default:
 								consoleMsg("warn", `[Request] Unknown custom JSON parse ${options.customJSONParse}`);
 						}
+					} else if(typeof options.customJSONParse === "function"){
+						let data = null;
+						try {
+							data = options.customJSONParse(xhr);
+						} catch (e) {
+							consoleMsg("error", e);
+						}
+
+						response.json = data;
 					} else if(xhr.responseType === "document" && typeof options.Request_documentParseToJSON === "function"){
 						let result = options.Request_documentParseToJSON(xhr);
 						if(result instanceof Map){
