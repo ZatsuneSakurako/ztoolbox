@@ -1,3 +1,7 @@
+# 0.6.3
+* i : ZDK updates
+* Fix : deviantArt if incorrect request answer
+
 # 0.6.2
 * Fix : Page context menu wrongly showing Youtube Playlist one
 * Fix : Reworked Twitch content script, now supporting channel currently hosting on page load
