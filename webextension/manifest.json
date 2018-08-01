@@ -3,7 +3,7 @@
 		"gecko": {
 			"id": "ztoolbox_dev@zatsunenomokou.eu",
 			"update_url": "https://gitlab.com/ZatsuneNoMokou/ztoolbox/raw/master/dist/z_toolbox_dev.update.json",
-			"strict_min_version": "56.0"
+			"strict_min_version": "60.0"
 		}
 	},
 	"manifest_version": 2,
@@ -11,7 +11,7 @@
 	"short_name": "ZToolBoxDev",
 	"description": "__MSG_extShortDesc__",
 	"author": "Zatsune No Mokou",
-	"version": "0.6.3",
+	"version": "0.6.4",
 	"icons": {
 		"16": "/icon_16.png",
 		"48": "/icon_48.png",
@@ -84,5 +84,5 @@
 		"page": "data/options.html",
 		"chrome_style": false
 	},
-	"minimum_chrome_version": "58.0"
+	"minimum_chrome_version": "61.0"
 }
