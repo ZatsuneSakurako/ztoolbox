@@ -1,5 +1,7 @@
 (async function () {
-	const reg_getId = /twitch\.tv\/([^\/?]+)/;
+	const reg_getId = /twitch\.tv\/([^\/?]+)/,
+		reg_VideoUrl = /twitch\.tv\/videos\/[^\/?]+/
+	;
 
 	let baseNode = null;
 
@@ -68,6 +70,26 @@
 		}
 	};
 
+	/**
+	 *
+	 * @return {String | null}
+	 */
+	const getChannelId = function(){
+		if(reg_VideoUrl.test(location.href)){
+			const baseNode = document.querySelector('[data-target="channel-header__channel-link"]');
+
+			if(baseNode!==null){
+				const [,id] = reg_getId.exec(baseNode.href);
+				return id;
+			}
+		} else if(reg_getId.test(location.href)){
+			const [,id] = reg_getId.exec(location.href);
+			return id;
+		}
+
+		return null;
+	};
+
 
 
 	await onNodeState(document, "complete");
@@ -83,8 +105,8 @@
 		console.info("Base node not found");
 	} else if(typeof client_id !== "string" || client_id===""){
 		console.info("Twitch API's client_id not found");
-	} else if(reg_getId.test(location.href)){
-		const [result, id] = reg_getId.exec(location.href);
+	} else if(reg_getId.test(location.href) || reg_VideoUrl.test(location.href)){
+		const id = getChannelId();
 		console.info(id);
 
 		const request = new XMLHttpRequest();
