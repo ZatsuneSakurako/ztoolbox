@@ -1,3 +1,6 @@
+# 0.6.4
+* Fix : Twitch channel created on video page
+
 # 0.6.3
 * i : ZDK updates
 * Fix : deviantArt if incorrect request answer
