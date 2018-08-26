@@ -17,56 +17,29 @@ class ZDK{
 
 
 
-		if(typeof ChromeNotificationControler==="function"){
-			Object.defineProperty(this, "ChromeNotificationControler", {
-				value: ChromeNotificationControler,
-				configurable: false,
-				writable: false
-			});
-		} else {
-			console.warn(`"ChromeNotificationControler" not found.`)
+		const _define = (name, classFn) => {
+			if(typeof classFn==="function"){
+				Object.defineProperty(this, name, {
+					value: classFn,
+					configurable: false,
+					writable: false
+				});
+			} else {
+				console.warn(`"${name}" not found.`)
+			}
+		};
+
+		_define('ChromeNotificationControler', ChromeNotificationControler);
+		_define('ChromePreferences', ChromePreferences);
+		_define('i18extended', i18extended);
+		_define('Queue', Queue);
+		_define('DataStore', DataStore);
+		_define('ZTimer', ZTimer);
+		if(typeof ZTimer==="function"){
+			_define('setTimeout', ZTimer.setTimeout);
+			_define('setInterval', ZTimer.setInterval);
 		}
-		if(typeof ChromePreferences==="function"){
-			Object.defineProperty(this, "ChromePreferences", {
-				value: ChromePreferences,
-				configurable: false,
-				writable: false
-			});
-		} else {
-			console.warn(`"ChromePreferences" not found.`)
-		}
-		if(typeof i18extended==="function"){
-			Object.defineProperty(this, "i18extended", {
-				value: i18extended,
-				configurable: false,
-				writable: false
-			});
-		} else {
-			console.warn(`"i18extended" not found.`)
-		}
-		if(typeof Queue==="function"){
-			Object.defineProperty(this, "Queue", {
-				value: Queue,
-				configurable: false,
-				writable: false
-			});
-			Object.defineProperty(this, "queue", {
-				value: Queue,
-				configurable: false,
-				writable: false
-			});
-		} else {
-			console.warn(`"Queue" not found.`)
-		}
-		if(typeof DataStore==="function"){
-			Object.defineProperty(this, "DataStore", {
-				value: DataStore,
-				configurable: false,
-				writable: false
-			});
-		} else {
-			console.warn(`"DataStore" not found.`)
-		}
+		_define('Version', Version);
 	}
 
 
@@ -136,7 +109,7 @@ class ZDK{
 
 
 	static consoleMsg(level,str){
-		let msg = (typeof str.toString === "function")? str.toString() : str;
+		let msg = (str && typeof str.toString === "function")? str.toString() : str;
 		if(getPreference("showAdvanced") && getPreference("showExperimented")){
 			if(typeof console[level] === "function"){
 				console[level](str);
@@ -456,6 +429,19 @@ class ZDK{
 	 */
 	static hasTouch(win=window) {
 		return win.hasOwnProperty('ontouchstart');
+	}
+
+	/**
+	 *
+	 * @param date
+	 * @return {boolean}
+	 */
+	static isValidDate(date){
+		return date instanceof Date && !isNaN(date.getTime())
+	}
+
+	static validDateOrNull(date){
+		return ZDK.isValidDate(date)? date : null;
 	}
 }
 

@@ -5,6 +5,7 @@ class DataStore {
 	 */
 	constructor(win=window){
 		this.storage = win.localStorage;
+		this.window = win;
 
 		this.types = {
 			"object": 0,
@@ -16,6 +17,17 @@ class DataStore {
 
 		this.compressions = new Map();
 		this.decompressions = new Map();
+
+
+
+		this.DATA_STORE_VERSION = "11.3";
+
+		if(!this.has("_", "DataStore_version") || this.get("_", "DataStore_version")!==this.DATA_STORE_VERSION){
+			consoleMsg("warn", "New version of DataStore, clearing old data.");
+			this.storage.clear();
+		}
+
+		this.set("_", "DataStore_version", "11.3");
 	}
 
 	/**
@@ -23,28 +35,50 @@ class DataStore {
 	 * @param {String} key
 	 * @param {Function} fnCompression
 	 * @param {Function} fnDecompression
+	 * @param {*} context
 	 */
-	setCompression(key, fnCompression, fnDecompression){
+	setCompression(key, fnCompression, fnDecompression, context=null){
 		if(typeof key!=="string" || typeof fnCompression!=="function" || typeof fnDecompression!=="function"){
 			throw "Wrong argument type";
 		}
 
-		this.compressions.set(key, fnCompression);
-		this.decompressions.set(key, fnDecompression);
+		this.compressions.set(key, [context, fnCompression]);
+		this.decompressions.set(key, [context, fnDecompression]);
 	}
 
 	/**
 	 *
 	 * @param {String} key
+	 * @param {String} id
 	 * @param {*} data
 	 */
-	compressData(key, data){
-		let result;
+	compressData(key, id, data){
+		let result,
+			fn = null
+		;
 
 		if(this.compressions.has(key)){
-			result = this.compressions.get(key)(data);
-		} else {
+			fn = this.compressions.get(key);
+		} else if(Array.isArray(key) && key.length>0){
+			if(this.compressions.has(key[0])){
+				fn = this.compressions.get(key[0]);
+			}
+			if(key.length>1){
+				for(let i=1;i<key.length;i++){
+					const keySlice = key.slice(0, i);
+					if(this.compressions.has(keySlice)){
+						fn = this.compressions.get(keySlice);
+					}
+				}
+			}
+		}
+
+		if(fn===null){
 			result = data;
+		} else if(fn[0]!==null){
+			result = fn[1].call(fn[0], key, id, data);
+		} else {
+			result = fn[1](key, id, data);
 		}
 
 		return result;
@@ -53,15 +87,36 @@ class DataStore {
 	/**
 	 *
 	 * @param {String} key
+	 * @param {String} id
 	 * @param {*} data
 	 */
-	decompressData(key, data){
-		let result;
+	decompressData(key, id, data){
+		let result,
+			fn = null
+		;
 
 		if(this.decompressions.has(key)){
-			result = this.decompressions.get(key)(data);
-		} else {
+			fn = this.decompressions.get(key);
+		} else if(Array.isArray(key) && key.length>0){
+			if(this.decompressions.has(key[0])){
+				fn = this.decompressions.get(key[0]);
+			}
+			if(key.length>1){
+				for(let i=1;i<key.length;i++){
+					const keySlice = key.slice(0, i);
+					if(this.decompressions.has(keySlice)){
+						fn = this.decompressions.get(keySlice);
+					}
+				}
+			}
+		}
+
+		if(fn===null){
 			result = data;
+		} else if(fn[0]!==null){
+			result = fn[1].call(fn[0], key, id, data);
+		} else {
+			result = fn[1](key, id, data);
 		}
 
 		return result;
@@ -74,7 +129,7 @@ class DataStore {
 	 * @return {Object}
 	 */
 	static compressWithPattern(sourceData, patternObj){
-		let data = Object.assign({}, sourceData);
+		let data = DataStore.cloneVariable(sourceData);
 		if(typeof data==="object" && data!==null){
 			for(let i in patternObj){
 				if(!patternObj.hasOwnProperty(i)){
@@ -105,7 +160,7 @@ class DataStore {
 	 * @return {Object}
 	 */
 	static decompressWithPattern(sourceData, patternObj){
-		let data = Object.assign({}, sourceData);
+		let data = DataStore.cloneVariable(sourceData);
 		if(typeof data==="object" && data!==null){
 			for(let i in patternObj){
 				if(!patternObj.hasOwnProperty(i)){
@@ -138,10 +193,56 @@ class DataStore {
 	 */
 	static renameProperty(object, oldName, newName){
 		if(object.hasOwnProperty(oldName)) {
-			object[newName] = this[oldName];
+			object[newName] = DataStore.cloneVariable(object[oldName]);
 			delete object[oldName];
 		}
 		return object;
+	}
+
+	static cloneVariable(object){
+		if(object instanceof Map){
+			return new Map(object);
+		} else if(Array.isArray(object)){
+			return object.slice(0);
+		} else if(object===null){
+			return null;
+		} else if(typeof object==="object"){
+			return Object.assign({}, object);
+		} else {
+			return object;
+		}
+	}
+
+	/**
+	 * @param {Object} defaultData
+	 * @param {Object} data
+	 * @returns {Object} Returns `object`.
+	 * @see _.defaults
+	 */
+	static extendsWithDefault(defaultData, data){
+		return _.defaultsDeep(data, defaultData);
+	}
+
+	/**
+	 * @param {Object} defaultData
+	 * @param {Object} data to modify
+	 * @returns {Object} dat without the defaultData
+	 */
+	static removeDefault(defaultData, data){
+		for(let name in data){
+			if(!data.hasOwnProperty(name) || !defaultData.hasOwnProperty(name)){ // If prototype element or nothing to compare
+				continue;
+			}
+
+			if(typeof data[name]==="object" && data[name]!==null){
+				// Recursive call to compare non-null object
+				data[name] = DataStore.removeDefault(defaultData[name], data[name]);
+			} else if(data[name]===defaultData[name]){
+				delete data[name];
+			}
+		}
+
+		return data;
 	}
 
 	/**
@@ -166,7 +267,7 @@ class DataStore {
 	 * @return {Object} storage
 	 * @return {String} storage.key
 	 * @return {String[]} storage.keys
-	 * @return {String} storage.id
+	 * @return {String|Object} storage.id
 	 */
 	static extractStorageId(string){
 		const array = string.split("/"),
@@ -194,7 +295,7 @@ class DataStore {
 	 * @param {Boolean|String|Number|JSON} data
 	 */
 	set(keys, id, data){
-		data = this.compressData(keys, data);
+		data = this.compressData(keys, id, data);
 
 		const dataToStore = [];
 
@@ -243,7 +344,7 @@ class DataStore {
 	 * @return {Boolean|String|Number|JSON} data
 	 */
 	get(keys, id){
-		if((typeof keys!=="string" || Array.isArray(keys)) && typeof id==="string"){
+		if((typeof keys==="string" || Array.isArray(keys)) && typeof id==="string"){
 			const rawData = JSON.parse(this.storage.getItem(DataStore.generateStorageId(keys, id)));
 
 			let data = null;
@@ -267,10 +368,10 @@ class DataStore {
 					data = new Map(rawData[1]);
 					break;
 				default:
-					throws `Unexpected type "${rawData[0]}"`;
+					throw `Unexpected type "${rawData[0]}"`;
 			}
 
-			return this.decompressData(keys, data);
+			return this.decompressData(keys, id, data);
 		} else {
 			throw "Wrong argument";
 		}
@@ -283,8 +384,27 @@ class DataStore {
 	 * @return {Boolean}
 	 */
 	has(keys, id){
-		if((typeof keys!=="string" || Array.isArray(keys)) && typeof id==="string") {
+		if(typeof id!=="string"){
+			throw "Wrong argument";
+		}
+
+		if(typeof keys==="string"){
 			return this.storage.getItem(DataStore.generateStorageId(keys, id)) !== null;
+		} else if(Array.isArray(keys)){
+			if(this.storage.getItem(DataStore.generateStorageId(keys, id)) !== null){
+				return true;
+			}
+
+			const arrayToTest = DataStore.cloneVariable(keys);
+			arrayToTest.push(id);
+
+			let result = false;
+			this.forEach(arrayToTest, ()=>{
+				result = true;
+				return true;
+			}, false);
+
+			return result;
 		} else {
 			throw "Wrong argument";
 		}
@@ -296,8 +416,23 @@ class DataStore {
 	 * @param {String} id
 	 */
 	remove(keys, id){
-		if((typeof keys!=="string" || Array.isArray(keys)) && typeof id==="string"){
-			return this.storage.removeItem(DataStore.generateStorageId(keys, id));
+		if(typeof id!=="string"){
+			throw "Wrong argument";
+		}
+
+		if(typeof keys==="string"){
+			return this.storage.getItem(DataStore.generateStorageId(keys, id)) !== null;
+		} else if(Array.isArray(keys)){
+			if(this.storage.getItem(DataStore.generateStorageId(keys, id)) !== null){
+				return this.storage.removeItem(DataStore.generateStorageId(keys, id));
+			}
+
+			const arrayToTest = DataStore.cloneVariable(keys);
+			arrayToTest.push(id);
+
+			this.forEach(arrayToTest, (_keys, _id)=>{
+				this.storage.removeItem(DataStore.generateStorageId(_keys, _id));
+			}, false);
 		} else {
 			throw "Wrong argument";
 		}
@@ -305,38 +440,113 @@ class DataStore {
 
 	/**
 	 *
-	 * @param {String} keys
-	 * @param {Function} fn
+	 * @param {String|String[]} keys
 	 */
-	forEach(keys, fn){
-		for(let i in this.storage){
-			if(this.storage.hasOwnProperty(i)){
-				let storageIds=null;
-				try{
-					storageIds = DataStore.extractStorageId(i);
-				} catch (e){}
+	clear(keys){
+		if(typeof keys==="string" ||Array.isArray(keys)){
+			this.forEach(keys, (_keys, _id)=>{
+				this.storage.removeItem(DataStore.generateStorageId(_keys, _id));
+			}, false);
+		} else {
+			throw "Wrong argument";
+		}
+	}
 
-				if(storageIds!==null){
-					if(storageIds.hasOwnProperty("key") && storageIds.key===keys){
-						fn(storageIds.key, storageIds.id, this.get(storageIds.key, storageIds.id));
-					} else if(storageIds.hasOwnProperty("keys")){
-						if(storageIds.keys.length >= keys.length){
-							let equals = true;
+	/**
+	 *
+	 * @param {String|String[]} keys
+	 * @param {String} id
+	 * @param {Boolean=true} withData
+	 * @return {null | Array} Array like [key|keys, id, data] (with data if withData=true)
+	 */
+	getArgumentsFromStorage(keys, id, withData=true) {
+		let storageIds=null;
+		try{
+			storageIds = DataStore.extractStorageId(id);
+		} catch (e){}
 
-							for(let i=0;i<keys.length;i++){
-								if(keys[i]!==storageIds.keys[i]){
-									equals = false;
-									break;
-								}
-							}
+		if(storageIds!==null){
+			if(storageIds.hasOwnProperty("key") && storageIds.key===keys){
+				if(withData===true){
+					return [storageIds.key, storageIds.id, this.get(storageIds.key, storageIds.id)];
+				} else {
+					return [storageIds.key, storageIds.id];
+				}
+			} else if(storageIds.hasOwnProperty("keys")){
+				if(storageIds.keys.length >= keys.length){
+					let equals = true;
 
-							if(equals===true){
-								fn(storageIds.keys, storageIds.id, this.get(storageIds.keys, storageIds.id));
-							}
+					for(let i=0;i<keys.length;i++){
+						if(keys[i]!==storageIds.keys[i]){
+							equals = false;
+							break;
+						}
+					}
+
+					if(equals===true){
+						if(withData===true){
+							return [storageIds.keys, storageIds.id, this.get(storageIds.keys, storageIds.id)];
+						} else {
+							return [storageIds.keys, storageIds.id];
 						}
 					}
 				}
 			}
 		}
+
+		return null;
+	}
+
+	/**
+	 *
+	 * @param {String|String[]} keys
+	 * @param {Function} fn Return true to break loop
+	 * @param {Boolean=true} withData
+	 */
+	forEach(keys, fn, withData=true){
+		for(let i in this.storage){
+			if(this.storage.hasOwnProperty(i)){
+				const fnArguments = this.getArgumentsFromStorage(keys, i, withData);
+
+				if (fnArguments !== null && Array.isArray(fnArguments)) {
+					let breakLoop = false;
+
+					try {
+						breakLoop = fn.apply(this, fnArguments)
+					} catch (e) {
+						console.error(e);
+					}
+
+					if (breakLoop === true) {
+						break;
+					}
+				}
+			}
+		}
+	}
+
+	/**
+	 *
+	 * @param {String|String[]} keys
+	 * @param {Function} fn
+	 * @param {Boolean=true} withData
+	 * @param {Window} win
+	 */
+	onChange(keys, fn, withData=true, win=this.window){
+		if(typeof fn !== "function"){
+			throw 'WrongArgument';
+		}
+
+		const _this = this;
+		win.addEventListener("storage", function (event) {
+			if (win.localStorage === event.storageArea) {
+				const fnArguments = _this.getArgumentsFromStorage(keys, event.key, withData);
+
+				if (fnArguments !== null && Array.isArray(fnArguments)){
+					fnArguments.unshift(event);
+					fn.apply(_this, fnArguments);
+				}
+			}
+		}, false);
 	}
 }
