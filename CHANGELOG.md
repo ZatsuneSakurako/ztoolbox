@@ -1,3 +1,7 @@
+# 0.6.5
+* i : ZDK updates
+* Fix : WIP android support
+
 # 0.6.4
 * Fix : Twitch channel created on video page
 
@@ -23,7 +27,7 @@
 	* \+ : \[ZDK] Promise based setTimeout
 	* \+ : \[ZDK] getPageSize to get the page actuel size
 	* \+ : \[ZDK] hasTouch to detect pages with touch screen
-* Fix : openTabIfNotExist using wrong arguments on [browser.tabs.query()](https ://developer.mozilla.org//Add-ons/WebExtensions/API/tabs/query)
+* Fix : openTabIfNotExist using wrong arguments on [browser.tabs.query()](https://developer.mozilla.org//Add-ons/WebExtensions/API/tabs/query)
 
 # 0.5.3
 * i : Use Moment.js to get next hour instead of self made function
@@ -41,7 +45,7 @@
 	* \+ : \[ChromePreferences] Core to import/export from/to file
 	* \+ : \[ZDK] Simulate click, now needed by ChromePreferences
 	* \+ : \[ChromePreferences] New setting type : File
-	* \+ : \[ChromeNotificationControler] Sound support on notifications, using [notifications.onShown](https ://developer.mozilla.org//Add-ons/WebExtensions/API/notifications/onShown) to begin it, when supported
+	* \+ : \[ChromeNotificationControler] Sound support on notifications, using [notifications.onShown](https://developer.mozilla.org//Add-ons/WebExtensions/API/notifications/onShown) to begin it, when supported
 * Fix : Exclude private windows for windowsContextMenu
 * Fix : Hourly alarm - Wrong parameter to define next alarm
 
@@ -59,11 +63,11 @@
 * Fix : Hourly alarm, debug that was not supposed to be commited
 
 # 0.3.1
-* Fix : Hourly alarm, Firefox sending undefined with [alarms.get()](https ://developer.mozilla.org//Add-ons/WebExtensions/API/alarms/get) if nothing to return
+* Fix : Hourly alarm, Firefox sending undefined with [alarms.get()](https://developer.mozilla.org//Add-ons/WebExtensions/API/alarms/get) if nothing to return
 
 # 0.3.0
 * i : Moved "feature" script to a dedicated folder
-* \+ : Hourly alarm (disabled by default) using Web Extensions's [alarms](https ://developer.mozilla.org//Add-ons/WebExtensions/API/alarms)
+* \+ : Hourly alarm (disabled by default) using Web Extensions's [alarms](https://developer.mozilla.org//Add-ons/WebExtensions/API/alarms)
 * Fix : sendDataToMain id in option page
 
 # 0.2.1
@@ -93,7 +97,7 @@
 
 # 0.0.7
 * \+ : Replaced Tooltip system with OpenTip
-* \+ : deviantArt notification checking imported from [z-Notifier](https ://gitlab.com/ZatsuneNoMokou/znotifier)
+* \+ : deviantArt notification checking imported from [z-Notifier](https://gitlab.com/ZatsuneNoMokou/znotifier)
 * Fix : ZDK Request now use mapToObj from itself
 
 # 0.0.6

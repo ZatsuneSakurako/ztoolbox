@@ -6,7 +6,7 @@ function encodeString(string){
 	} else {
 		// Using a regexp with g flag, in a replace method let it replace all
 		string = string.replace(/%/g,"%25");
-		string = string.replace(/\:/g,"%3A");
+		string = string.replace(/:/g,"%3A");
 		string = string.replace(/,/g,"%2C");
 	}
 	return string;
@@ -28,7 +28,6 @@ function getBooleanFromVar(string){
 	switch(typeof string){
 		case "boolean":
 			return string;
-			break;
 		case "number":
 		case "string":
 			if(string === "true" || string === "on" || string === 1){
@@ -39,7 +38,6 @@ function getBooleanFromVar(string){
 				console.warn(`getBooleanFromVar: Unkown boolean (${string})`);
 				return string;
 			}
-			break;
 		default:
 			console.warn(`getBooleanFromVar: Unknown type to make boolean (${typeof string})`);
 	}
@@ -66,7 +64,15 @@ function getFilterListFromPreference(string){
 function getValueFromNode(node){
 	const tagName = node.tagName.toLowerCase();
 	if(tagName === "textarea"){
-		if(node.dataset.stringTextarea === "true"){
+		if(node.dataset.settingType==="json"){
+			let json;
+			try {
+				json = JSON.parse(node.value);
+			} catch (err) {
+				console.error(err);
+			}
+			return json;
+		} else if(node.dataset.stringTextarea === "true"){
 			return node.value.replace(/\n/g, "");
 		} else if(node.dataset.stringList === "true"){
 			// Split as list, encode item, then make it back a string
@@ -85,6 +91,10 @@ function getValueFromNode(node){
 	}
 }
 
+const CHROME_PREFERENCES_UPDATED_ID = '_updated',
+	CHROME_PREFERENCES_SYNC_ID = '_synchronisedAt'
+;
+
 class ChromePreferences extends Map{
 	constructor(options){
 		super(new Map());
@@ -93,12 +103,36 @@ class ChromePreferences extends Map{
 			throw "Missing argument"
 		}
 
+
+		options[CHROME_PREFERENCES_UPDATED_ID] = {
+			"hidden": true,
+			"prefLevel": "experimented",
+			"sync": true,
+			"type": "string",
+			"value": ""
+		};
+		options[CHROME_PREFERENCES_SYNC_ID] = {
+			"hidden": true,
+			"prefLevel": "experimented",
+			"sync": false,
+			"type": "string",
+			"value": ""
+		};
+
+
 		let mapOptions = new Map();
 		for(let i in options){
 			if(options.hasOwnProperty(i)){
 				mapOptions.set(i, options[i]);
 			}
 		}
+
+		Object.defineProperty(this, "CHROME_PREFERENCES_UPDATED_ID", {
+			value: CHROME_PREFERENCES_UPDATED_ID,
+			configurable: false,
+			writable: false
+		});
+
 		Object.defineProperty(this, "options", {
 			value: mapOptions,
 			writable: false
@@ -204,6 +238,11 @@ class ChromePreferences extends Map{
 		const oldExisting = this.has(prefId);
 		oldValue = (oldValue===null)? this.has(prefId) : oldValue;
 		if(this.loadingState==="success") {
+			if(prefId!==CHROME_PREFERENCES_UPDATED_ID){
+				// Keep '_updated' value up-to-date with the last change date
+				super.set(CHROME_PREFERENCES_UPDATED_ID, new Date());
+			}
+
 			super.set(prefId, getSettableValue(value));
 			browser.storage.local.set({[prefId] : value})
 				.catch(err => {
@@ -256,10 +295,10 @@ ${err}`);
 			if(this.options.has(prefId)) {
 				switch (this.options.get(prefId).type) {
 					case "string":
+					case "json":
 					case "color":
 					case "menulist":
 						return current_pref;
-						break;
 					case "integer":
 						if (isNaN(parseInt(current_pref))) {
 							console.warn(`${prefId} is not a number (${current_pref})`);
@@ -271,14 +310,10 @@ ${err}`);
 						} else {
 							return parseInt(current_pref);
 						}
-						break;
 					case "bool":
 						return getBooleanFromVar(current_pref);
-						break;
-						break;
 					case "file":
 						return current_pref;
-						break;
 				}
 			} else {
 				console.warn(`Unknown preference "${prefId}"`);
@@ -311,56 +346,96 @@ ${err}`);
 		});
 		return keysArray;
 	}
+
+	/**
+	 *
+	 * @param {JSON} preferences
+	 * @param {Boolean=false} mergePreferences
+	 */
 	importFromJSON(preferences, mergePreferences=false){
 		for(let prefId in preferences){
-			if(preferences.hasOwnProperty(prefId)){
-				if(prefId==="hitbox_user_id"){
-					preferences["smashcast_user_id"] = preferences["hitbox_user_id"];
-					delete preferences["hitbox_user_id"];
-					prefId="smashcast_user_id";
-				}
-				if(prefId==="beam_user_id"){
-					preferences["mixer_user_id"] = preferences["beam_user_id"];
-					delete preferences["beam_user_id"];
-					prefId="mixer_user_id";
-				}
-				if(this.options.has(prefId) && typeof this.options.get(prefId).type !== "undefined" && this.options.get(prefId).type !== "control" && this.options.get(prefId).type !== "file" && typeof preferences[prefId] === typeof this.defaultSettingsSync.get(prefId)){
-					if(mergePreferences){
-						let oldPref = this.get(prefId);
-						let newPrefArray;
-						switch(prefId){
-							case "stream_keys_list":
-								let oldPrefArray = oldPref.split(",");
-								newPrefArray = preferences[prefId].split(/,\s*/);
-								newPrefArray = oldPrefArray.concat(newPrefArray);
+			if(!preferences.hasOwnProperty(prefId)){
+				continue;
+			}
 
-								this.set(prefId, newPrefArray.join());
-								let streamListSetting = new appGlobal.streamListFromSetting("", true);
-								streamListSetting.update();
-								break;
-							case "statusBlacklist":
-							case "statusWhitelist":
-							case "gameBlacklist":
-							case "gameWhitelist":
-								let toLowerCase = (str)=>{return str.toLowerCase()};
-								let oldPrefArrayLowerCase = oldPref.split(/,\s*/).map(toLowerCase);
-								newPrefArray = oldPref.split(/,\s*/);
-								preferences[prefId].split(/,\s*/).forEach(value=>{
-									if(oldPrefArrayLowerCase.indexOf(value.toLowerCase()) === -1){
-										newPrefArray.push(value);
+
+
+			if(prefId==="hitbox_user_id"){
+				preferences["smashcast_user_id"] = preferences["hitbox_user_id"];
+				delete preferences["hitbox_user_id"];
+				prefId="smashcast_user_id";
+			}
+			if(prefId==="beam_user_id"){
+				preferences["mixer_user_id"] = preferences["beam_user_id"];
+				delete preferences["beam_user_id"];
+				prefId="mixer_user_id";
+			}
+
+			if(this.options.has(prefId) && typeof this.options.get(prefId).type !== "undefined" && this.options.get(prefId).type !== "control" && this.options.get(prefId).type !== "file" && typeof preferences[prefId] === typeof this.defaultSettingsSync.get(prefId)){
+				if(mergePreferences){
+					let oldPref = this.get(prefId),
+						newPrefArray
+					;
+
+					switch(prefId){
+						case "stream_keys_list":
+							let prefData = null;
+							try {
+								prefData = JSON.parse(oldPref);
+							} catch (e) {
+								consoleMsg('error', e);
+							}
+
+							if(prefData===null){
+								prefData = oldPref;
+							}
+
+							let streamListSetting = new appGlobal.StreamListFromSetting(false);
+
+							streamListSetting.parseSetting(prefData).forEach((website, websiteMap)=>{
+								websiteMap.forEach((id, streamSetting)=>{
+									let newStreamSettings;
+									if(streamListSetting.streamExist(website, id)){
+										newStreamSettings = streamListSetting.streamExist(website, id);
+									} else {
+										newStreamSettings = StreamListFromSetting.getDefault();
 									}
+
+									for(let settingName in streamSetting){
+										if(streamSetting.hasOwnProperty(settingName)){
+											newStreamSettings[settingName] = streamSetting[settingName];
+										}
+									}
+
+									streamListSetting.mapDataAll.get(website).set(id, newStreamSettings);
 								});
-								this.set(prefId, newPrefArray.join(","));
-								break;
-							default:
-								this.set(prefId, preferences[prefId]);
-						}
-					} else {
-						this.set(prefId, preferences[prefId]);
+							});
+
+							streamListSetting.update();
+
+							break;
+						case "statusBlacklist":
+						case "statusWhitelist":
+						case "gameBlacklist":
+						case "gameWhitelist":
+							let toLowerCase = (str)=>{return str.toLowerCase()};
+							let oldPrefArrayLowerCase = oldPref.split(/,\s*/).map(toLowerCase);
+							newPrefArray = oldPref.split(/,\s*/);
+							preferences[prefId].split(/,\s*/).forEach(value=>{
+								if(oldPrefArrayLowerCase.indexOf(value.toLowerCase()) === -1){
+									newPrefArray.push(value);
+								}
+							});
+							this.set(prefId, newPrefArray.join(","));
+							break;
+						default:
+							this.set(prefId, preferences[prefId]);
 					}
 				} else {
-					console.warn(`Error trying to import ${prefId}`);
+					this.set(prefId, preferences[prefId]);
 				}
+			} else {
+				console.warn(`Error trying to import ${prefId}`);
 			}
 		}
 	}
@@ -383,7 +458,7 @@ ${err}`);
 							newPrefArray = oldPrefArray.concat(newPrefArray);
 
 							this.set(prefId, newPrefArray.join());
-							let streamListSetting = new appGlobal.streamListFromSetting("", true);
+							let streamListSetting = new appGlobal.StreamListFromSetting(true);
 							streamListSetting.update();
 							break;
 						case "statusBlacklist":
@@ -507,6 +582,11 @@ ${err}`);
 			afterInputNode = null,
 			output;
 		switch(prefObj.type){
+			case "json":
+				prefNode = document.createElement("textarea");
+				prefNode.dataset.stringTextarea = true;
+				prefNode.value = JSON.stringify(this.get(id));
+				break;
 			case "string":
 				if(typeof prefObj.stringTextArea === "boolean" && prefObj.stringTextArea === true){
 					prefNode = document.createElement("textarea");
@@ -520,7 +600,13 @@ ${err}`);
 					node.classList.add("stringList");
 				} else {
 					prefNode = document.createElement("input");
-					prefNode.type = "text";
+
+					if(prefObj.hasOwnProperty("password") && prefObj.password===true){
+						prefNode.type = "password";
+					} else {
+						prefNode.type = "text";
+					}
+
 					prefNode.value = this.get(id);
 				}
 				break;
@@ -701,7 +787,7 @@ ${err}`);
 		link.setAttribute("download", `${appName}_preferences.json`);
 
 		const url = URL.createObjectURL(new Blob([
-				JSON.stringify(exportData, null, '\t')
+				JSON.stringify(exportData, null, null)
 			], {type: 'application/json'}))
 		;
 
