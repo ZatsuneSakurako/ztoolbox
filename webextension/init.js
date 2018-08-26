@@ -54,10 +54,16 @@ const stringEllipse = ZDK.stringEllipse;
 			await zDK.loadJS(document, ["backgroundTheme.js"]);
 		})
 	;
-	await zDK.loadJS(document, [
+
+	let scriptsToLoad = [
 		"index.js",
 		"variousFeatures/refresh-data.js",
-		"variousFeatures/windowsContextMenu.js",
 		"variousFeatures/hourly-alarm.js"
-	]);
+	];
+
+	if (typeof browser.windows !== "undefined") {
+		scriptsToLoad.push("variousFeatures/windowsContextMenu.js");
+	}
+
+	await zDK.loadJS(document, scriptsToLoad);
 })();

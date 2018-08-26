@@ -53,7 +53,7 @@ class ContextMenusController extends Map {
 			// tools_menu is available with it
 			console.info("browser.menu available");
 		}*/
-		if(browser.contextMenus!==undefined && browser.contextMenus !== null){
+		if (browser.contextMenus !== undefined && browser.contextMenus !== null && typeof browser.contextMenus.create === "function") {
 			let targetUrlPatterns_processed = [];
 			if(Array.isArray(targetUrlPatterns)){
 				targetUrlPatterns.forEach(url=>{

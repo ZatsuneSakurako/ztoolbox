@@ -194,19 +194,21 @@ async function refreshWebsitesData(){
 
 	// chrome.browserAction.setTitle({title: (count === null)? i18ex._("no_website_logged") : label});
 
-	let displayedCount;
-	if(count === null){
-		displayedCount = "";
-	} else if(count>=1000000){
-		displayedCount = parseInt(count / 1000000)+"M";
-	} else if(count>=10000){
-		displayedCount = parseInt(count / 1000)+"k";
-	} else {
-		displayedCount = count.toString();
-	}
+	if (typeof chrome.browserAction.setBadgeText === "function") {
+		let displayedCount;
+		if(count === null){
+			displayedCount = "";
+		} else if(count>=1000000){
+			displayedCount = parseInt(count / 1000000)+"M";
+		} else if(count>=10000){
+			displayedCount = parseInt(count / 1000)+"k";
+		} else {
+			displayedCount = count.toString();
+		}
 
-	chrome.browserAction.setBadgeText({text: displayedCount});
-	chrome.browserAction.setBadgeBackgroundColor({color: (count !== null && count > 0)? "#FF0000" : "#424242"});
+		chrome.browserAction.setBadgeText({text: displayedCount});
+		chrome.browserAction.setBadgeBackgroundColor({color: (count !== null && count > 0)? "#FF0000" : "#424242"});
+	}
 
 	if(typeof panel__UpdateData==="function"){
 		panel__UpdateData();
