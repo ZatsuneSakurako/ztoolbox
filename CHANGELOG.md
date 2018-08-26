@@ -1,3 +1,7 @@
+# 0.6.5
+* i : ZDK updates
+* Fix : WIP android support
+
 # 0.6.4
 * Fix : Twitch channel created on video page
 
