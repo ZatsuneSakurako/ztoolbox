@@ -2,7 +2,7 @@
 	"addons": {
 		"ztoolbox_dev@zatsunenomokou.eu": {
 			"updates": [
-				{ "version": "0.6.4",
+				{ "version": "0.6.5",
 					"update_link": "https://gitlab.com/ZatsuneNoMokou/ztoolbox/raw/master/dist/z_toolbox_dev.xpi",
 					"applications": {
 						"gecko": { "strict_min_version": "61" } } }
