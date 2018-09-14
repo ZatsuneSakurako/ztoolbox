@@ -103,7 +103,7 @@ function updatePanelData() {
 
 	scrollbar_update("websiteDataList");
 }
-console.dir(backgroundPage.openTabIfNotExist)
+
 liveEvent("click", "#panelContent .websiteItem .folder", function (event, node) {
 	event.stopPropagation();
 	backgroundPage.openTabIfNotExist(node.dataset.folderUrl);
