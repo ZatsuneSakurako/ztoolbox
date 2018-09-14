@@ -106,7 +106,8 @@
 	"supportWithPatreon": "Support this addon and his creator",
 
 
-	"website_notif": "{{website}} notification(s)",
+	"website_notif": "{{website}} notification",
+	"website_notif_plural": "{{website}} notifications",
 	"website_not_logged": "No {{website}} account logged",
 
 	"not_logged": "Not logged",
@@ -116,8 +117,8 @@
 
 	"open_folder": "Open folder",
 
-	"count_new_notif": "{{count}} new notification(s)",
-	"count_new_notif_noplural": "{{count}} new notification",
+	"count_new_notif": "{{count}} new notification",
+	"count_new_notif_plural": "{{count}} new notifications",
 
 	"all_viewed": "Everything viewed",
 
