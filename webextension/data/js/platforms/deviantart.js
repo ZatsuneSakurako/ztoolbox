@@ -5,7 +5,7 @@ let deviantArt = {
 			if(websiteState.count > 0){
 				return "http://www.deviantart.com/notifications/";
 			} else if(websiteState.logged !== null && websiteState.logged && websiteState.loginId !== ""){
-				return `http:\/\/${websiteState.loginId}.deviantart.com/`;
+				return `http://www.deviantart.com/${websiteState.loginId}`;
 			} else if(websiteState.logged !== null && websiteState.logged === false){
 				return "http://www.deviantart.com/notifications/"; // dA will redirect it to https://www.deviantart.com/users/login?ref=*
 			} else {
