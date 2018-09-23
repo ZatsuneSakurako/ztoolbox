@@ -1,3 +1,13 @@
+# 0.6.8
+* Fix : deviantArt profil url
+
+# 0.6.7
+* Fix : Translations
+* i : ZDK updates
+
+# 0.6.6
+* i : ZDK Loading
+
 # 0.6.5
 * i : ZDK updates
 * Fix : WIP android support
