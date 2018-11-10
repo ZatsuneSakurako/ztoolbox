@@ -5,14 +5,14 @@
 		rssLinks = Array.from(document.querySelectorAll('link[rel="alternate"][type]'));
 
 		rssLinks = rssLinks
+			.filter(value => value.type.includes('rss') || value.type.includes('atom'))
 			.map(value => {
 				return {
 					'href': value.href,
-					'type': value.type,
+					'type': value.type.includes('rss')? 'rss' : 'atom',
 					'title': value.title
 				}
 			})
-			.filter(value => value.type.includes('rss') || value.type.includes('atom'))
 		;
 	};
 
