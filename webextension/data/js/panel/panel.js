@@ -101,7 +101,73 @@ function updatePanelData() {
 		websiteNode.outerHTML = backgroundPage.Mustache.render(mustacheTemplates.get("panelCheckedDataItem"), websiteRenderData);
 	});
 
+	loadRss()
+		.then(rssLinks => {
+			if (typeof rssLinks !== 'undefined' && Array.isArray(rssLinks)) {
+				const html = backgroundPage.Mustache.render(mustacheTemplates.get("panelRssLinks"), {
+					'rssLinks': rssLinks,
+					'error': ''
+				});
+
+				appendTo(websiteDataList_Node, html);
+				scrollbar_update("websiteDataList");
+			}
+		})
+		.catch(err => {
+			console.error(err);
+
+			let error = 'rssSomeError';
+			if (err && err === 'InvalidPage') {
+				error = 'rssForbidenPage';
+			}
+
+			const html = backgroundPage.Mustache.render(mustacheTemplates.get("panelRssLinks"), {
+				'rssLinks': [],
+				'error': error
+			});
+
+			appendTo(websiteDataList_Node, html);
+		})
+	;
+
 	scrollbar_update("websiteDataList");
+}
+
+async function loadRss() {
+	return new Promise(async (resolve, reject) => {
+		const win = await browser.windows.getCurrent({
+			'populate': true,
+			'windowTypes': ['normal']
+		});
+
+
+
+		if (win !== undefined) {
+			const tabs = win.tabs.filter(tab => {
+				return tab.hasOwnProperty('active') && tab.active === true;
+			});
+
+			if (tabs.length > 0) {
+				const tab = tabs[0];
+
+				if (/^https?:\/\//.test(tab.url)) {
+					const port = chrome.tabs.connect(tab.id, {
+						'name': 'ztoolbox_rss-retrieve'
+					});
+
+					port.onMessage.addListener(rssLinks => {
+						resolve(rssLinks);
+					});
+				} else {
+					reject('InvalidPage')
+				}
+			} else {
+				reject('NoActiveTab');
+			}
+		} else {
+			reject('NoCurrentWindow');
+		}
+	});
 }
 
 liveEvent("click", "#panelContent .websiteItem .folder", function (event, node) {
@@ -111,11 +177,17 @@ liveEvent("click", "#panelContent .websiteItem .folder", function (event, node) 
 });
 liveEvent("click", "#panelContent .websiteItem", function (event, node) {
 	event.stopPropagation();
-	let website = node.dataset.website,
-		websiteAPI = websites.get(website),
-		websiteData = websitesData.get(website)
-	;
-	backgroundPage.openTabIfNotExist(websiteAPI[(node.dataset.logged)? "getViewURL" : "getLoginURL"](websiteData));
+
+	if (node.classList.contains('rssItem')) {
+		backgroundPage.openTabIfNotExist(node.dataset.href);
+	} else {
+		let website = node.dataset.website,
+			websiteAPI = websites.get(website),
+			websiteData = websitesData.get(website)
+		;
+		backgroundPage.openTabIfNotExist(websiteAPI[(node.dataset.logged)? "getViewURL" : "getLoginURL"](websiteData));
+	}
+
 	return false;
 });
 backgroundPage.panel__UpdateData = (data)=>{

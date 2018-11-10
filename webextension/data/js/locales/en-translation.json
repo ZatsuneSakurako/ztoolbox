@@ -106,6 +106,13 @@
 	"supportWithPatreon": "Support this addon and his creator",
 
 
+
+	"rssSomeError": "Some error occurred",
+	"rssForbidenPage": "Unauthorized page",
+	"rssNoItem": "No rss detected",
+
+
+
 	"website_notif": "{{website}} notification",
 	"website_notif_plural": "{{website}} notifications",
 	"website_not_logged": "No {{website}} account logged",

@@ -44,6 +44,7 @@ const stringEllipse = ZDK.stringEllipse;
 	const templatesSource = new Map();
 	templatesSource.set("backgroundTheme", "/data/js/backgroundTheme.mst");
 	templatesSource.set("panelCheckedDataItem", "/data/js/panelCheckedDataItem.mst");
+	templatesSource.set("panelRssLinks", "/data/js/panelRssLinks.mst");
 
 	moment.locale(browser.i18n.getMessage("language"));
 
