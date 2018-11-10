@@ -1,3 +1,6 @@
+# 0.7.0
+* + : Translation fix
+
 # 0.6.8
 * Fix : deviantArt profil url
 
