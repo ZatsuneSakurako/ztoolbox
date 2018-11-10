@@ -1,6 +1,6 @@
 {{#rssLinks}}
 <article class="websiteItem rssItem cursor" data-rss-type="{{type}}" data-href="{{href}}">
-	<div class="websiteTitle">{{title}}</div>
+	<div class="websiteTitle" {{^title}}data-translate-id="rssNoTitle"{{/title}}>{{title}}</div>
 	<div class="websiteData">{{type}}</div>
 </article>
 {{/rssLinks}}
