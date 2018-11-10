@@ -44,7 +44,7 @@
 
 	"open_optionpage": "Ouvrir la page d'option",
 
-	"check_delay_title": "Délais de vérification de streams",
+	"check_delay_title": "Délais de vérification de deviantArt",
 	"check_delay_description": "Délai entre chaque vérification, en minute",
 
 	"timeout_delay_title": "Délai de timeout des requêtes",
@@ -104,6 +104,14 @@
 	"footer_title": "Addon sous licence GPL v3.",
 	"footer_by": "par",
 	"supportWithPatreon": "Supportez l'addon et son créateur",
+
+
+
+	"rssSomeError": "Une erreur est survenue",
+	"rssForbidenPage": "Page non autorisée",
+	"rssNoItem": "Aucun rss détecté",
+	"rssNoTitle": "Aucun titre",
+
 
 
 	"website_notif": "Notification {{website}}",

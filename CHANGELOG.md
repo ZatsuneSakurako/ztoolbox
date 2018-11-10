@@ -1,3 +1,7 @@
+# 0.7.0
+* + : RSS Feeds detection
+* + : Translation fix
+
 # 0.6.8
 * Fix : deviantArt profil url
 

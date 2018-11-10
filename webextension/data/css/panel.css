@@ -152,6 +152,13 @@ footer * {
 #panelContent .websiteItem[data-Logged="true"] .websiteData .folder::after {
 	content: attr(data-folder-title)": "attr(data-folder-count);
 }
+.websiteItem.rssItem {
+	background-image: url("/data/images/rss-2440955.svg");
+}
+#panelContent .websiteItem.rssItem .websiteData {
+	padding-left: 0;
+	text-transform: capitalize;
+}
 
 
 #stream_right_container {

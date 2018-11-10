@@ -44,7 +44,7 @@
 
 	"open_optionpage": "Open option page",
 
-	"check_delay_title": "Streams verification delay",
+	"check_delay_title": "deviantArt verification delay",
 	"check_delay_description": "Delay between verifications, in minute",
 
 	"timeout_delay_title": "Timeout delay of requests",
@@ -104,6 +104,14 @@
 	"footer_title": "Addon under GPL v3 licence.",
 	"footer_by": "by",
 	"supportWithPatreon": "Support this addon and his creator",
+
+
+
+	"rssSomeError": "Some error occurred",
+	"rssForbidenPage": "Unauthorized page",
+	"rssNoItem": "No rss detected",
+	"rssNoTitle": "No title",
+
 
 
 	"website_notif": "{{website}} notification",
