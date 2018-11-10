@@ -44,7 +44,7 @@
 
 	"open_optionpage": "Ouvrir la page d'option",
 
-	"check_delay_title": "Délais de vérification de streams",
+	"check_delay_title": "Délais de vérification de deviantArt",
 	"check_delay_description": "Délai entre chaque vérification, en minute",
 
 	"timeout_delay_title": "Délai de timeout des requêtes",
