@@ -1,3 +1,6 @@
+# 0.7.1
+* + : RSS Feeds refresh
+
 # 0.7.0
 * + : RSS Feeds detection
 * + : Translation fix
