@@ -101,37 +101,18 @@ function updatePanelData() {
 		websiteNode.outerHTML = backgroundPage.Mustache.render(mustacheTemplates.get("panelCheckedDataItem"), websiteRenderData);
 	});
 
-	loadRss()
-		.then(rssLinks => {
-			if (typeof rssLinks !== 'undefined' && Array.isArray(rssLinks)) {
-				const html = backgroundPage.Mustache.render(mustacheTemplates.get("panelRssLinks"), {
-					'rssLinks': rssLinks,
-					'error': ''
-				});
-
-				appendTo(websiteDataList_Node, html);
-				scrollbar_update("websiteDataList");
-			}
-		})
+	updateDisplayedRss()
 		.catch(err => {
 			console.error(err);
-
-			let error = 'rssSomeError';
-			if (err && err === 'InvalidPage') {
-				error = 'rssForbidenPage';
-			}
-
-			const html = backgroundPage.Mustache.render(mustacheTemplates.get("panelRssLinks"), {
-				'rssLinks': [],
-				'error': error
-			});
-
-			appendTo(websiteDataList_Node, html);
 		})
 	;
 
 	scrollbar_update("websiteDataList");
 }
+
+
+
+
 
 async function loadRss() {
 	return new Promise(async (resolve, reject) => {
@@ -169,6 +150,63 @@ async function loadRss() {
 		}
 	});
 }
+
+async function updateDisplayedRss() {
+	let rssLinks, error, renderData;
+
+	try {
+		rssLinks = await loadRss();
+	} catch (e) {
+		console.error(e);
+		error = e;
+	}
+
+	if (typeof rssLinks !== 'undefined' && Array.isArray(rssLinks)) {
+		renderData = {
+			'rssLinks': rssLinks,
+			'error': ''
+		};
+	} else {
+		let errorMsg = 'rssSomeError';
+
+		if (error !== undefined && error === 'InvalidPage') {
+			errorMsg = 'rssForbidenPage';
+		}
+
+		renderData = {
+			'rssLinks': [],
+			'error': errorMsg
+		};
+	}
+
+
+
+	const html = backgroundPage.Mustache.render(mustacheTemplates.get("panelRssLinks"), renderData),
+		websiteDataList_Node = document.querySelector("#panelContent")
+	;
+
+	websiteDataList_Node.querySelectorAll(':scope .websiteItem.rssItem').forEach(node => {
+		node.remove()
+	});
+
+	appendTo(websiteDataList_Node, html);
+}
+
+const onTabChange = _.debounce(() => {
+	updateDisplayedRss()
+		.catch(err => {
+			console.error(err);
+		})
+	;
+}, 100, {
+	maxWait: 200
+});
+browser.windows.onFocusChanged.addListener(onTabChange);
+browser.tabs.onActivated.addListener(onTabChange);
+
+
+
+
 
 liveEvent("click", "#panelContent .websiteItem .folder", function (event, node) {
 	event.stopPropagation();
