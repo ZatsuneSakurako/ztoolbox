@@ -1,3 +1,8 @@
+# 0.7.2
+* + : RSS Feeds refresh
+* + : RSS Feeds messsages
+* Fix : Panel - Keep display order between deviantArt and RSS Feed
+
 # 0.7.1
 * + : RSS Feeds refresh
 

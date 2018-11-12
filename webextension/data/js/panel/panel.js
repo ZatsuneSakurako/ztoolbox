@@ -66,7 +66,7 @@ function removeAllChildren(node){
 function updatePanelData() {
 	console.log("Updating panel data");
 
-	let websiteDataList_Node = document.querySelector("#panelContent");
+	let websiteDataList_Node = document.querySelector("#panelContent #refreshItem");
 	removeAllChildren(websiteDataList_Node);
 
 	websitesData.forEach((websiteData, website) => {
@@ -101,12 +101,6 @@ function updatePanelData() {
 		websiteNode.outerHTML = backgroundPage.Mustache.render(mustacheTemplates.get("panelCheckedDataItem"), websiteRenderData);
 	});
 
-	updateDisplayedRss()
-		.catch(err => {
-			console.error(err);
-		})
-	;
-
 	scrollbar_update("websiteDataList");
 }
 
@@ -114,12 +108,17 @@ function updatePanelData() {
 
 
 
+let tabPort = null;
 async function loadRss() {
 	return new Promise(async (resolve, reject) => {
 		const win = await browser.windows.getCurrent({
 			'populate': true,
 			'windowTypes': ['normal']
 		});
+		if (tabPort !== null) {
+			tabPort.disconnect();
+			tabPort = null;
+		}
 
 
 
@@ -132,11 +131,12 @@ async function loadRss() {
 				const tab = tabs[0];
 
 				if (/^https?:\/\//.test(tab.url)) {
-					const port = chrome.tabs.connect(tab.id, {
+					tabPort = chrome.tabs.connect(tab.id, {
 						'name': 'ztoolbox_rss-retrieve'
 					});
 
-					port.onMessage.addListener(rssLinks => {
+					tabPort.onMessage.addListener(rssLinks => {
+						console.dir(rssLinks);
 						resolve(rssLinks);
 					});
 				} else {
@@ -152,6 +152,24 @@ async function loadRss() {
 }
 
 async function updateDisplayedRss() {
+	const websiteDataList_Node = document.querySelector("#panelContent #rssItem");
+	removeAllChildren(websiteDataList_Node);
+
+	let tmpNodes = null;
+	let loadDelay = setTimeout(() => {
+		tmpNodes = appendTo(websiteDataList_Node, backgroundPage.Mustache.render(mustacheTemplates.get("panelRssLinks"), {
+			'rssLinks': [],
+			'error': 'loading',
+			'errorInfo': 'reloadTabs'
+		}));
+
+		loadDelay = setTimeout(() => {
+			tmpNodes[0].classList.remove('rssItem--hideData');
+		}, 1500);
+	}, 500);
+
+
+
 	let rssLinks, error, renderData;
 
 	try {
@@ -181,15 +199,13 @@ async function updateDisplayedRss() {
 
 
 
-	const html = backgroundPage.Mustache.render(mustacheTemplates.get("panelRssLinks"), renderData),
-		websiteDataList_Node = document.querySelector("#panelContent")
-	;
-
-	websiteDataList_Node.querySelectorAll(':scope .websiteItem.rssItem').forEach(node => {
-		node.remove()
-	});
-
-	appendTo(websiteDataList_Node, html);
+	clearTimeout(loadDelay);
+	if (tmpNodes !== null) {
+		tmpNodes.forEach(node => {
+			node.remove()
+		});
+	}
+	appendTo(websiteDataList_Node, backgroundPage.Mustache.render(mustacheTemplates.get("panelRssLinks"), renderData));
 }
 
 const onTabChange = _.debounce(() => {
@@ -203,6 +219,12 @@ const onTabChange = _.debounce(() => {
 });
 browser.windows.onFocusChanged.addListener(onTabChange);
 browser.tabs.onActivated.addListener(onTabChange);
+browser.runtime.onMessage.addListener(function (data, sender) {
+	if (sender.id === chrome.runtime.id && data.name && data.name === 'ztoolbox_rss-retrieve' && sender.tab && sender.tab.active === true) {
+		onTabChange();
+	}
+});
+onTabChange();
 
 
 

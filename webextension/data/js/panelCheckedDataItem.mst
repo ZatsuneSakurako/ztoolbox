@@ -1,4 +1,4 @@
-<article class="websiteItem cursor"
+<article class="websiteItem refreshItem cursor"
          data-logged="{{logged}}" data-website="{{website}}"
          style="background-image: url('{{websiteIcon}}')">
 
