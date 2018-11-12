@@ -111,6 +111,8 @@
 	"rssForbidenPage": "Unauthorized page",
 	"rssNoItem": "No rss detected",
 	"rssNoTitle": "No title",
+	"loading": "Loading... <i></i>",
+	"reloadTabs": "After activation / update / installation, a page refresh is necessary",
 
 
 

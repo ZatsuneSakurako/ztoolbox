@@ -157,7 +157,12 @@ footer * {
 }
 #panelContent .websiteItem.rssItem .websiteData {
 	padding-left: 0;
+}
+#panelContent .websiteItem.rssItem.rssItem--successs .websiteData {
 	text-transform: capitalize;
+}
+#panelContent .websiteItem.rssItem.rssItem--hideData .websiteData {
+	display: none;
 }
 
 

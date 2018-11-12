@@ -51,4 +51,9 @@
 			onConnect(port);
 		}
 	});
+
+	chrome.runtime.sendMessage({
+		'name': 'ztoolbox_rss-retrieve',
+		'data': 'tabLoad'
+	})
 })();

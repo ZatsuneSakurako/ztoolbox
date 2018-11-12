@@ -111,7 +111,8 @@
 	"rssForbidenPage": "Page non autorisée",
 	"rssNoItem": "Aucun rss détecté",
 	"rssNoTitle": "Aucun titre",
-
+	"loading": "Chargement en cours...",
+	"reloadTabs": "Après activation / mise à jour / installation, un rafraîchissement des pages est nécessaire",
 
 
 	"website_notif": "Notification {{website}}",

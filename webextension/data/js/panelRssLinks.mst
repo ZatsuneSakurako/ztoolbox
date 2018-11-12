@@ -1,12 +1,12 @@
 {{#rssLinks}}
-<article class="websiteItem rssItem cursor" data-rss-type="{{type}}" data-href="{{href}}">
+<article class="websiteItem rssItem rssItem--success cursor" data-rss-type="{{type}}" data-href="{{href}}">
 	<div class="websiteTitle" {{^title}}data-translate-id="rssNoTitle"{{/title}}>{{title}}</div>
 	<div class="websiteData">{{type}}</div>
 </article>
 {{/rssLinks}}
 {{^rssLinks}}
-<article class="websiteItem rssItem">
+<article class="websiteItem rssItem rssItem--error rssItem--hideData">
 <div class="websiteTitle" data-translate-id="{{error}}{{^error}}rssNoItem{{/error}}"></div>
-<div class="websiteData"></div>
+<div class="websiteData"{{#errorInfo}} data-translate-id="{{errorInfo}}"{{/errorInfo}}></div>
 </article>
 {{/rssLinks}}
