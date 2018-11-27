@@ -1,3 +1,6 @@
+# 0.7.3
+* Fix : Twitch now use [History API](https://developer.mozilla.org/en-US/docs/Web/API/History_API)
+
 # 0.7.2
 * + : RSS Feeds refresh
 * + : RSS Feeds messsages
