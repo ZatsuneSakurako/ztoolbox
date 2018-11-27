@@ -3,7 +3,7 @@
 		reg_VideoUrl = /twitch\.tv\/videos\/[^\/?]+/
 	;
 
-	let baseNode = null;
+
 
 	const onNodeState = function(node=document, state="complete", errorStates=[]){
 		return new Promise((resolve, reject) => {
@@ -92,56 +92,82 @@
 
 
 
+
+
+	/**
+	 *
+	 * @type {?HTMLElement}
+	 */
+	let currentInfoNode = null;
+	window.addEventListener('popstate', function() {
+		if (currentInfoNode !== null) {
+			currentInfoNode.remove()
+		}
+
+		loadChannelCreation()
+			.catch(console.error)
+		;
+	});
+
+	const loadChannelCreation = async function() {
+		await wait(700);
+
+		let baseNode = getBaseNode();
+		if(baseNode===null){
+			console.info("Base node not found");
+		} else if(typeof client_id !== "string" || client_id===""){
+			console.info("Twitch API's client_id not found");
+		} else if(reg_getId.test(location.href) || reg_VideoUrl.test(location.href)){
+			const id = getChannelId();
+			console.info(id);
+
+			let data = null;
+			try {
+				data = await (await fetch(`https://api.twitch.tv/kraken/users/${id}?client_id=${client_id}`)).json()
+			} catch (e) {
+				console.error(e);
+			}
+
+
+
+			if (data === null) {
+				return null;
+			}
+
+
+
+			if(baseNode.dataset.target === "channel-header-left"){
+				let channelCreatedDateNode__header = document.createElement("span");
+				channelCreatedDateNode__header.classList.add("channel-header__item", "tw-align-items-center", "tw-flex-shrink-0");
+				channelCreatedDateNode__header.innerHTML = `<div class="tw-flex tw-pd-x-2" title="Channel creation"><span class="tw-font-size-5">Creation</span><div class="channel-header__item-count tw-flex tw-mg-l-05"><span class="tw-font-size-5">${new Date(data.created_at).toLocaleString()}</span></div></div>`;
+
+
+				baseNode.appendChild(channelCreatedDateNode__header);
+
+				currentInfoNode = channelCreatedDateNode__header;
+			} else {
+				let channelCreatedDateNode = document.createElement("div");
+				channelCreatedDateNode.title = "Channel creation";
+				channelCreatedDateNode.style.margin = "0 0.5em";
+				channelCreatedDateNode.textContent = new Date(data.created_at).toLocaleString();
+
+
+				baseNode.parentNode.insertBefore(channelCreatedDateNode, baseNode.nextSibling);
+
+				currentInfoNode = channelCreatedDateNode;
+			}
+		}
+	};
+
+
+
+
+
 	await onNodeState(document, "complete");
 
 	const client_id = await getPreference("twitchClientId");
 
-
-
-	await wait(700);
-
-	baseNode = getBaseNode();
-	if(baseNode===null){
-		console.info("Base node not found");
-	} else if(typeof client_id !== "string" || client_id===""){
-		console.info("Twitch API's client_id not found");
-	} else if(reg_getId.test(location.href) || reg_VideoUrl.test(location.href)){
-		const id = getChannelId();
-		console.info(id);
-
-		const request = new XMLHttpRequest();
-
-		request.open('GET', `https://api.twitch.tv/kraken/users/${id}?client_id=${client_id}`, true);
-		request.send();
-
-		await onNodeState(request, XMLHttpRequest['DONE']);
-
-
-
-		let data = null;
-		try{
-			data = JSON.parse(request.responseText);
-		} catch(err){
-			console.dir(request);
-		}
-
-
-
-		if(baseNode.dataset.target === "channel-header-left"){
-			let channelCreatedDateNode__header = document.createElement("span");
-			channelCreatedDateNode__header.classList.add("channel-header__item", "tw-align-items-center", "tw-flex-shrink-0");
-			channelCreatedDateNode__header.innerHTML = `<div class="tw-flex tw-pd-x-2" title="Channel creation"><span class="tw-font-size-5">Creation</span><div class="channel-header__item-count tw-flex tw-mg-l-05"><span class="tw-font-size-5">${new Date(data.created_at).toLocaleString()}</span></div></div>`;
-
-
-			baseNode.appendChild(channelCreatedDateNode__header);
-		} else {
-			let channelCreatedDateNode = document.createElement("div");
-			channelCreatedDateNode.title = "Channel creation";
-			channelCreatedDateNode.style.margin = "0 0.5em";
-			channelCreatedDateNode.textContent = new Date(data.created_at).toLocaleString();
-
-
-			baseNode.parentNode.insertBefore(channelCreatedDateNode, baseNode.nextSibling);
-		}
-	}
+	loadChannelCreation()
+		.catch(console.error)
+	;
 })();
