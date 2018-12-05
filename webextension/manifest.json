@@ -11,7 +11,7 @@
 	"short_name": "ZToolBoxDev",
 	"description": "__MSG_extShortDesc__",
 	"author": "Zatsune No Mokou",
-	"version": "0.7.3",
+	"version": "0.8.0",
 	"icons": {
 		"16": "/icon_16.png",
 		"48": "/icon_48.png",
@@ -70,6 +70,11 @@
 			"matches": ["*://*/*"],
 			"js": ["/data/js/contentscripts/rss-retrieve.js"],
 			"run_at": "document_idle"
+		},
+		{
+			"matches": ["*://*/*"],
+			"js": ["/data/js/contentscripts/muted-pause.js"],
+			"run_at": "document_start"
 		}
 	],
 	"default_locale": "en",

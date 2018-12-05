@@ -1,3 +1,6 @@
+# 0.8.0
+* Fix : Muted pause
+
 # 0.7.3
 * Fix : Twitch now use [History API](https://developer.mozilla.org/en-US/docs/Web/API/History_API)
 

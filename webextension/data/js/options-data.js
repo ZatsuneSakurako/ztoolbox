@@ -68,6 +68,14 @@ const options = {
 		"prefLevel": "basic",
 		"group": "featurePreference"
 	},
+	"muted_pause_enabled": {
+		"title": "Play/Pause on mute tab button",
+		"description": "Enabled when checked",
+		"type": "bool",
+		"value": false,
+		"prefLevel": "basic",
+		"group": "featurePreference"
+	},
 	/*			Notifications			*/
 	"notify_checkedData": {
 		"title": "Show a notification for deviantArt",

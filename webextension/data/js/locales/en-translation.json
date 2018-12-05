@@ -66,6 +66,9 @@
 	"hourlyAlarm_sound_volume_title": "Sound volume for the hourly notification",
 	"hourlyAlarm_sound_volume_description": "In percent",
 
+	"muted_pause_enabled_title": "Play/Pause on mute tab button",
+	"muted_pause_enabled_description": "Enabled when checked",
+
 	"panel_height_title": "Panel's height",
 	"panel_height_description": "Size in pixels",
 
