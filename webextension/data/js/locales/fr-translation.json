@@ -66,6 +66,9 @@
 	"hourlyAlarm_sound_volume_title": "Volume son pour les notification par heure",
 	"hourlyAlarm_sound_volume_description": "En pourcentage",
 
+	"muted_pause_enabled_title": "Lecture/Pause au click du bouton sourdine des onglets",
+	"muted_pause_enabled_description": "Enabled when checked",
+
 	"panel_height_title": "Hauteur du panel",
 	"panel_height_description": "Taille en pixels",
 

@@ -70,6 +70,11 @@
 			"matches": ["*://*/*"],
 			"js": ["/data/js/contentscripts/rss-retrieve.js"],
 			"run_at": "document_idle"
+		},
+		{
+			"matches": ["*://*/*"],
+			"js": ["/data/js/contentscripts/muted-pause.js"],
+			"run_at": "document_start"
 		}
 	],
 	"default_locale": "en",
