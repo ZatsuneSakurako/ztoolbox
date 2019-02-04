@@ -1,3 +1,6 @@
+# 0.8.1
+* Fix : Link cleaning
+
 # 0.8.0
 * Fix : Muted pause
 
