@@ -1,9 +1,9 @@
 # Z-ToolBox
 Web Extension to test various things.
 
-**Warning**, this Web Extension has no intension to be used as something "stable", contains **debug functions** and **test aims**. 
+**Warning**, this Web Extension has no intention to be used as something "stable", contains **debug functions** and **test aims**. 
 
-The icon of the addon is made from https://pixabay.com/photo-1674891/ (in [CC0 Public Domain](https://pixabay.com/fr/service/terms/#usage)).
+The icon of the web extension is made from https://pixabay.com/photo-1674891/ (in [CC0 Public Domain](https://pixabay.com/fr/service/terms/#usage)).
 
 Sources:
 - perfect-scrollbar, from https://github.com/noraesae/perfect-scrollbar (License MIT).
@@ -19,5 +19,3 @@ Sources:
 
 
 The "Material Icons" (version 2.11 and later) font is part of Google material design, in Apache 2.0 license (open source), is available [here](https://google.github.io/material-design-icons/).
-
-Patreon logo from https://www.patreon.com/toolbox/media
