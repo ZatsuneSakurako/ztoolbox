@@ -8,7 +8,7 @@ class i18extended{
 					lng: 'en',
 					backend: {
 						// for all available options read the backend's repository readme file
-						loadPath: chrome.extension.getURL('/data/js/locales/{{lng}}-{{ns}}.json')
+						loadPath: chrome.extension.getURL('/data/js/locales/') + '{{lng}}-{{ns}}.json'
 					}
 				}, ()=>{
 					i18next.changeLanguage(currentLanguage, err=>{

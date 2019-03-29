@@ -22,8 +22,8 @@
 		"scripts": [
 			"/data/js/lib/browser-polyfill.min.js",
 
-			"/data/js/lib/i18next.min.js",
-			"/data/js/lib/i18nextXHRBackend.min.js",
+			"/data/js/lib/i18next.js",
+			"/data/js/lib/i18nextXHRBackend.js",
 			"/data/js/lib/mustache.min.js",
 
 			"/data/js/lib/moment.js",
