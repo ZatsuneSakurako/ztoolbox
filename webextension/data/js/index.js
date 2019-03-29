@@ -111,51 +111,26 @@ class ContextMenusController extends Map {
 
 const contextMenusController = new ContextMenusController();
 
-const EXTRACT_SEARCHPARAMS_REG = /^([^?]*)\?([^#]*)(.*)/;
-
 contextMenusController.create(i18ex._("OpenWithoutPlaylist"), ["*.youtube.com/watch?*&list=*","*.youtube.com/watch?list=*"], function (info, tab) {
-	const removePlaylistFromUrl = url=>{
-		let urlObj = EXTRACT_SEARCHPARAMS_REG.exec(url);
-
-		const searchParams = new URLSearchParams(urlObj[2]); // https://developer.mozilla.org/en-US/docs/Web/API/URLSearchParams
-		searchParams.delete("list");
-		searchParams.delete("index");
-
-		return `${urlObj[1]}?${searchParams.toString()}${urlObj[3]}`;
+	const removePlaylistFromUrl = url => {
+		const urlObj = new URL(url); // https://developer.mozilla.org/en-US/docs/Web/API/URL - https://developer.mozilla.org/en-US/docs/Web/API/URLSearchParams
+		urlObj.searchParams.delete("list");
+		urlObj.searchParams.delete("index");
+		return urlObj.toString();
 	};
 
-	if(info.hasOwnProperty("linkUrl")){
+	if (info.hasOwnProperty("linkUrl")) {
 		browser.tabs.create({ "url": removePlaylistFromUrl(info.linkUrl) })
-			.catch(err=>{
-				if(err){
-					console.error(err);
-				}
-			})
+			.catch(console.error)
 		;
 	} else {
 		browser.tabs.update(tab.id, {
 			"url": removePlaylistFromUrl(tab.url)
 		})
-			.catch(err=>{
-				if(err){
-					console.error(err);
-				}
-			})
+			.catch(console.error)
 		;
 	}
 });
-
-function urlParamToJson(url){
-	const extractSearchParam = /^[^?]*\?([^#]*)/.exec(url);
-	if(extractSearchParam!==null){
-		const searchParams = new URLSearchParams(extractSearchParam[1]);
-		let result = {};
-		for (let p of searchParams){
-			result[p[0]] = p[1];
-		}
-		return result;
-	}
-}
 
 chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
 	if(sender.hasOwnProperty("url")){

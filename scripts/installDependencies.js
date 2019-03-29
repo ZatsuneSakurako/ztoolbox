@@ -98,10 +98,10 @@ async function init() {
 		}
 
 		echo("Copying i18next...");
-		await _cp("./node_modules/i18next/i18next.min.js", jsLib);
+		await _cp("./node_modules/i18next/i18next.js", jsLib);
 
 		echo("Copying i18next-xhr-backend...");
-		await _cp("./node_modules/i18next-xhr-backend/i18nextXHRBackend.min.js", jsLib);
+		await _cp("./node_modules/i18next-xhr-backend/i18nextXHRBackend.js", jsLib);
 
 		/*
 		echo("Downloading Tooltip...");

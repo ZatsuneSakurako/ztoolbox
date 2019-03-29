@@ -1,3 +1,10 @@
+# 0.10.0
+* i : Refactor with open without playlist
+* \Fix : URL with i18next
+
+# 0.9.0
+* \+ : RSS Feeds detection
+
 # 0.8.1
 * Fix : Link cleaning
 
@@ -8,16 +15,16 @@
 * Fix : Twitch now use [History API](https://developer.mozilla.org/en-US/docs/Web/API/History_API)
 
 # 0.7.2
-* + : RSS Feeds refresh
-* + : RSS Feeds messsages
+* \+ : RSS Feeds refresh
+* \+ : RSS Feeds messsages
 * Fix : Panel - Keep display order between deviantArt and RSS Feed
 
 # 0.7.1
 * + : RSS Feeds refresh
 
 # 0.7.0
-* + : RSS Feeds detection
-* + : Translation fix
+* \+ : RSS Feeds detection
+* \+ : Translation fix
 
 # 0.6.8
 * Fix : deviantArt profil url
