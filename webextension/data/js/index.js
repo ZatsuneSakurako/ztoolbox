@@ -191,8 +191,6 @@ function doNotif(options, suffixConfirmIfNoButtons=false){
 
 		if(suffixConfirmIfNoButtons === true){
 			options.title = `${options.title} (${i18ex._("click_to_confirm")})`;
-		} else if(chromeNotifications.chromeAPI_button_availability === true && (!options.buttons || !Array.isArray(options.buttons))){ // 2 buttons max per notification, the 2nd button is used as a cancel (no action) button in Live Notifier
-			options.buttons = [notifButtons.close];
 		}
 
 		let customOptions = null;
@@ -206,18 +204,19 @@ function doNotif(options, suffixConfirmIfNoButtons=false){
 		}
 
 		chromeNotifications.send(options, customOptions)
-			.then(result=>{
+			.then(result => {
 				const {triggeredType, notificationId, buttonIndex} = result;
-				console.info(`${notificationId}: ${triggeredType}${(buttonIndex && buttonIndex !==null)? ` (Button index: ${buttonIndex})`:""}`);
+				console.info(`${notificationId}: ${triggeredType}${(buttonIndex && buttonIndex !== null)? ` (Button index: ${buttonIndex})`:""}`);
 
+				console.dir(buttonIndex)
 				// 0 is the first button, used as button of action
-				if((buttonIndex===null || buttonIndex===0)){
+				if ((buttonIndex === null || buttonIndex === 0)) {
 					resolve(result);
 				} else {
 					reject(result);
 				}
 			})
-			.catch(err=>{
+			.catch(err => {
 				reject(err);
 			})
 		;
