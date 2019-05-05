@@ -56,20 +56,14 @@ function doNotifyWebsite(website){
 			doNotif({
 				"title": i18ex._("website_notif", {"website": website}),
 				"message": i18ex._("website_not_logged", {"website": website}),
-				"iconUrl": websiteData.websiteIcon,
-				"buttons": [
-					notifButtons.openUrl,
-					notifButtons.close
-				]
+				"iconUrl": websiteData.websiteIcon
 			})
-				.then(()=>{
+				.then(() => {
 					ZDK.openTabIfNotExist(websiteAPI.getLoginURL(websiteData))
-						.catch(err=>{
-							consoleMsg("warn", err);
-						})
+						.catch(console.error)
 					;
 				})
-				.catch(console.warn)
+				.catch(console.error)
 			;
 		}
 		websiteData.notificationState.logged = websiteData.logged;
@@ -78,20 +72,14 @@ function doNotifyWebsite(website){
 			doNotif({
 				"title": i18ex._("website_notif", {"website": website}),
 				"message": i18ex._("count_new_notif", {"count": websiteData.count}) + "\n" + foldersList,
-				"iconUrl": websiteData.websiteIcon,
-				"buttons": [
-					notifButtons.openUrl,
-					notifButtons.close
-				]
+				"iconUrl": websiteData.websiteIcon
 			})
-				.then(()=>{
+				.then(() => {
 					ZDK.openTabIfNotExist(websiteAPI.getViewURL(websiteData))
-						.catch(err=>{
-							consoleMsg("warn", err);
-						})
+						.catch(console.error)
 					;
 				})
-				.catch(console.warn)
+				.catch(console.error)
 			;
 		}
 
@@ -103,17 +91,11 @@ function doNotifyWebsite(website){
 		doNotif({
 			"title": i18ex._("website_notif", {"website": website}),
 			"message": i18ex._("all_viewed"),
-			"iconUrl": websiteData.websiteIcon,
-			"buttons": [
-				notifButtons.openUrl,
-				notifButtons.close
-			]
+			"iconUrl": websiteData.websiteIcon
 		})
-			.then(()=>{
+			.then(() => {
 				ZDK.openTabIfNotExist(websiteAPI.getViewURL(websiteData))
-					.catch(err=>{
-						consoleMsg("warn", err);
-					})
+					.catch(console.error)
 				;
 			})
 			.catch(console.warn)
@@ -127,15 +109,15 @@ function doNotifyWebsite(website){
 class websiteDefaultData{
 	constructor(){
 		return {
-			"notificationState": {
-				"count": null,
-				"logged": null
+			notificationState: {
+				count: null,
+				logged: null
 			},
-			"count": 0,
-			"folders": new ExtendedMap(),
-			"websiteIcon": "",
-			"logged": null,
-			"loginId": ""
+			count: 0,
+			folders: new ExtendedMap(),
+			websiteIcon: '',
+			logged: null,
+			loginId: ''
 		};
 	}
 }
@@ -143,14 +125,14 @@ class websiteDefaultData{
 
 let isRefreshingData = false;
 async function refreshWebsitesData(){
-	if(isRefreshingData===true){
-		console.warn("Already refreshing...");
+	if (isRefreshingData === true) {
+		console.warn('Already refreshing...');
 		return false;
 	}
 
 	isRefreshingData = true;
 
-	console.info("Refreshing websites data...");
+	console.info('Refreshing websites data...');
 	let promises = new Map();
 
 	websites.forEach((websiteAPI, website) =>{
@@ -176,15 +158,15 @@ async function refreshWebsitesData(){
 
 	let count = null;
 	websitesData.forEach((websiteData, website) => {
-		if(websiteData.logged && websiteData.count !== null){
-			if(count === null){
+		if (websiteData.logged && websiteData.count !== null) {
+			if (count === null) {
 				count = 0;
 			}
 			count += websiteData.count;
 		}
 	});
 
-	if(getPreference("showAdvanced") && getPreference("showExperimented")){
+	if(getPreference('showAdvanced') && getPreference('showExperimented')){
 		console.group();
 		console.info("Websites check end");
 		ZDK.consoleDir(data, "xhrRequests:");
@@ -194,14 +176,14 @@ async function refreshWebsitesData(){
 
 	// chrome.browserAction.setTitle({title: (count === null)? i18ex._("no_website_logged") : label});
 
-	if (typeof chrome.browserAction.setBadgeText === "function") {
+	if (typeof chrome.browserAction.setBadgeText === 'function') {
 		let displayedCount;
-		if(count === null){
-			displayedCount = "";
-		} else if(count>=1000000){
-			displayedCount = parseInt(count / 1000000)+"M";
-		} else if(count>=10000){
-			displayedCount = parseInt(count / 1000)+"k";
+		if (count === null) {
+			displayedCount = '';
+		} else if (count >= 1000000) {
+			displayedCount = `${parseInt(count / 1000000)}M`;
+		} else if (count >= 10000) {
+			displayedCount = `${parseInt(count / 1000)}k`;
 		} else {
 			displayedCount = count.toString();
 		}
@@ -210,7 +192,7 @@ async function refreshWebsitesData(){
 		chrome.browserAction.setBadgeBackgroundColor({color: (count !== null && count > 0)? "#FF0000" : "#424242"});
 	}
 
-	if(typeof panel__UpdateData==="function"){
+	if (typeof panel__UpdateData === 'function') {
 		panel__UpdateData();
 	}
 
@@ -222,8 +204,8 @@ appGlobal["refreshWebsitesData"] = refreshWebsitesData;
 async function refreshWebsite(website){
 	const xhrRequest = await Request({
 		url: websites.get(website).dataURL,
-		overrideMimeType: "text/html; charset=utf-8",
-		contentType: "document",
+		overrideMimeType: 'text/html; charset=utf-8',
+		contentType: 'document',
 		Request_documentParseToJSON: websites.get(website).Request_documentParseToJSON
 	}).get();
 
