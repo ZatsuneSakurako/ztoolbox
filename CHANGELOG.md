@@ -1,4 +1,4 @@
-# 0.10.1
+# 0.11.0
 * i : Detect RSS links like /feeds/*.xml
 * - : Stop using buttons on notification when it is not necessary
 * Fix : Remove spaces from link of RSS links with [trim()](https://developer.mozilla.org//docs/Web/JavaScript/Reference/Global_Objects/String/Trim)
