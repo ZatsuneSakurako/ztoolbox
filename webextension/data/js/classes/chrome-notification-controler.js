@@ -58,8 +58,8 @@ class ChromeNotificationControler{
 	 */
 	send(options=null, customOption=null){
 		const sendNotification = (options)=>{
-			return new Promise((resolve, reject)=>{
-				const onError = (error)=>{
+			return new Promise((resolve, reject) => {
+				const onError = (error) => {
 					if(error && typeof error.message === "string" && (error.message === "Adding buttons to notifications is not supported." || error.message.indexOf("\"buttons\"") !== -1)){
 						this.chromeAPI_button_availability = false;
 						consoleMsg("log", "Buttons not supported, retrying notification without them.");
@@ -80,7 +80,7 @@ class ChromeNotificationControler{
 						.then(resolve)
 						.catch(onError)
 					;
-				} catch(err){
+				} catch(err) {
 					onError(err);
 				}
 			})
@@ -104,7 +104,7 @@ class ChromeNotificationControler{
 
 			let sound = null;
 			sendNotification(options)
-				.then(notificationId=>{
+				.then(notificationId => {
 					consoleMsg("info", `Notification "${notificationId}" created.`);
 					if(customOption!==null && typeof customOption.soundObject==="object" && customOption.soundObject!==null && typeof customOption.soundObject.data==="string"){
 						sound = new Audio(customOption.soundObject.data);
@@ -116,7 +116,7 @@ class ChromeNotificationControler{
 
 					this.chromeNotifications.set(notificationId, {
 						"isClosed": false,
-						"fn": (triggeredType, buttonIndex = null)=>{
+						"fn": (triggeredType, buttonIndex = null) => {
 							this.clear(notificationId);
 
 							if(sound!==null){
@@ -130,7 +130,7 @@ class ChromeNotificationControler{
 								triggeredType === "closed"
 								||
 								(
-									(this.chromeAPI_button_availability === true && typeof buttonIndex !== "number")
+									(this.chromeAPI_button_availability === true && options.hasOwnProperty('buttons') === true && typeof buttonIndex !== "number")
 									||
 									(this.chromeAPI_button_availability === false && buttonIndex !== null)
 								)
@@ -149,15 +149,15 @@ class ChromeNotificationControler{
 								});
 							}
 						},
-						"fnOnShown": ()=>{
+						"fnOnShown": () => {
 							if(sound!==null && this.onShownSupported===true){
 								sound.play();
 							}
 						}
 					});
 				})
-				.catch(error=>{
-					if(sound!==null){
+				.catch(error => {
+					if (sound!==null) {
 						sound.currentTime = 0;
 						sound.pause();
 					}

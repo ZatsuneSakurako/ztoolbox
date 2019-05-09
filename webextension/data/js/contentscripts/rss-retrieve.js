@@ -32,14 +32,14 @@
 		;
 
 		rssLinks = rssLinks.concat(
-			Array.from(document.body.querySelectorAll('[href*="/rss/"],[href*="/atom/"]'))
+			Array.from(document.body.querySelectorAll('[href*="/rss/"],[href*="/atom/"],[href*="/feeds/"][href$=".xml"]'))
 				.filter(function (node) {
 					return node.tagName !== 'link' || link.rel !== 'alternate'
 				})
 				.map(node => ({
 					'href': node.href,
 					'type': node.href.includes('rss') ? 'rss-link' : 'atom-link',
-					'title': (node.textContent.length === 0) ? null : node.textContent
+					'title': (node.textContent.length === 0) ? null : node.textContent.trim()
 				}))
 		);
 

@@ -1,6 +1,11 @@
+# 0.11.0
+* i : Detect RSS links like /feeds/*.xml
+* - : Stop using buttons on notification when it is not necessary
+* Fix : Remove spaces from link of RSS links with [trim()](https://developer.mozilla.org//docs/Web/JavaScript/Reference/Global_Objects/String/Trim)
+
 # 0.10.0
 * i : Refactor with open without playlist
-* \Fix : URL with i18next
+* Fix : URL with i18next
 
 # 0.9.0
 * \+ : RSS Feeds detection
