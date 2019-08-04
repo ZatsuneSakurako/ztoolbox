@@ -1,3 +1,6 @@
+# 0.11.1
+* Fix : New deviantArt support (no folder url yet)
+
 # 0.11.0
 * i : Detect RSS links like /feeds/*.xml
 * - : Stop using buttons on notification when it is not necessary
