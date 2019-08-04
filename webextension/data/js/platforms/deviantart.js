@@ -87,6 +87,11 @@ let deviantArt = {
 				}
 
 				try {
+					/*
+					 * Double JSON.parse
+					 * 1st to unescape \" ....
+					 * 2nd to get the object
+					 */
 					initialData = JSON.parse(JSON.parse(`"${initialData[1]}"`));
 				} catch (e) {
 					console.error(e);
