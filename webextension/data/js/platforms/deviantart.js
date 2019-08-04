@@ -32,7 +32,7 @@ let deviantArt = {
 			let result = null;
 
 			let nodes = dataDocument.querySelectorAll('.oh-menuctrl .oh-menu.iconset-messages a.mi');
-			if (nodes !== null && Array.isArray(nodes) && nodes.length > 0) {
+			if (nodes !== null && nodes.length > 0) {
 				result = new ExtendedMap();
 
 				result.set('count', 0);
@@ -119,6 +119,26 @@ let deviantArt = {
 						if (Number.isNaN(folderCount)) {
 							continue;
 						}
+
+						result.addValue('count', folderCount);
+						result.get('folders').set(folderName, {
+							'folderCount': folderCount,
+							'folderName': folderName
+						});
+					}
+				}
+
+				if (initialData.hasOwnProperty('@@streams')) {
+					const streams = initialData['@@streams'];
+					for (let name in streams) {
+						if (streams.hasOwnProperty(name) === false) {
+							continue;
+						}
+
+						const item = streams[name],
+							folderCount = item.items.length,
+							folderName = item.streamParams.notificationType
+						;
 
 						result.addValue('count', folderCount);
 						result.get('folders').set(folderName, {

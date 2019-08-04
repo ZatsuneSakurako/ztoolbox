@@ -230,7 +230,7 @@ onTabChange();
 
 
 
-liveEvent("click", "#panelContent .websiteItem .folder", function (event, node) {
+liveEvent("click", "#panelContent .websiteItem .folder[data-folder-url]", function (event, node) {
 	event.stopPropagation();
 	backgroundPage.openTabIfNotExist(node.dataset.folderUrl);
 	return false;
