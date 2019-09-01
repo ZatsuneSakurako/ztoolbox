@@ -1,4 +1,17 @@
 (async function () {
+	/*
+	 * New Twitch API doesn't provide creation date anymore
+	 */
+	const date = new Date('2019-09-13T00:00:00.000Z');
+	if (new Date() >= date) {
+		console.warn('Deprecated Twitch API has been stopped');
+		return;
+	}
+
+
+
+
+
 	const reg_getId = /twitch\.tv\/([^\/?]+)/,
 		reg_VideoUrl = /twitch\.tv\/videos\/[^\/?]+/
 	;
