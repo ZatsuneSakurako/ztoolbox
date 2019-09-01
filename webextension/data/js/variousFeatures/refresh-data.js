@@ -28,14 +28,14 @@ class ExtendedMap extends Map{
 function doNotifyWebsite(website){
 	let websiteAPI = websites.get(website),
 		websiteData = websitesData.get(website),
-		foldersList = ""
+		foldersList = ''
 	;
 
 	let notificationList = [],
 		labelArray = [];
 
-	if(websiteData.logged){
-		if(websiteData.hasOwnProperty("folders")){
+	if (websiteData.logged) {
+		if (websiteData.hasOwnProperty("folders")) {
 			websiteData.folders.forEach((folderData, name) => {
 				let count = folderData.folderCount;
 				if(typeof count === "number" && !isNaN(count) && count > 0){
@@ -44,19 +44,20 @@ function doNotifyWebsite(website){
 						suffix=` (+${websiteData.count - websiteData.notificationState.count})`;
 					}
 					labelArray.push(`${name}: ${count}${suffix}`);
-					notificationList.push({"title": `${(typeof folderData.folderName === "string")? folderData.folderName : name}: `, "message": count.toString()});
+					notificationList.push({"title": `${(typeof folderData.folderName === 'string')? folderData.folderName : name}: `, 'message': count.toString()});
 				}
 			});
 			foldersList += labelArray.join("\n");
 		}
 	}
 
-	if(!websiteData.logged){
-		if(websiteData.notificationState.logged === null || websiteData.notificationState.logged === true){
+	if (!websiteData.logged) {
+		const oldLoggedState = websiteData.notificationState.logged;
+		if (oldLoggedState === true || oldLoggedState === undefined) {
 			doNotif({
-				"title": i18ex._("website_notif", {"website": website}),
-				"message": i18ex._("website_not_logged", {"website": website}),
-				"iconUrl": websiteData.websiteIcon
+				'title': i18ex._('website_notif', {'website': website}),
+				'message': i18ex._('website_not_logged', {'website': website}),
+				'iconUrl': websiteData.websiteIcon
 			})
 				.then(() => {
 					ZDK.openTabIfNotExist(websiteAPI.getLoginURL(websiteData))
@@ -67,11 +68,11 @@ function doNotifyWebsite(website){
 			;
 		}
 		websiteData.notificationState.logged = websiteData.logged;
-	} else if(typeof websiteData.count === "number" && !isNaN(websiteData.count) && (websiteData.notificationState.count === null || websiteData.count > websiteData.notificationState.count)){
-		if(getPreference("notify_checkedData")){
+	} else if (typeof websiteData.count === 'number' && !isNaN(websiteData.count) && (websiteData.notificationState.count === null || websiteData.count > websiteData.notificationState.count)) {
+		if (getPreference('notify_checkedData')) {
 			doNotif({
-				"title": i18ex._("website_notif", {"website": website}),
-				"message": i18ex._("count_new_notif", {"count": websiteData.count}) + "\n" + foldersList,
+				"title": i18ex._('website_notif', {'website': website}),
+				"message": i18ex._('count_new_notif', {'count': websiteData.count}) + "\n" + foldersList,
 				"iconUrl": websiteData.websiteIcon
 			})
 				.then(() => {
@@ -83,14 +84,14 @@ function doNotifyWebsite(website){
 			;
 		}
 
-		if(getPreference("notify_vocal")){
-			voiceReadMessage(i18ex._("language"), i18ex._("count_new_notif", {"count": websiteData.count}));
+		if (getPreference('notify_vocal')) {
+			voiceReadMessage(i18ex._("language"), i18ex._('count_new_notif', {'count': websiteData.count}));
 		}
 
-	} else if(getPreference("notify_all_viewed") && (typeof websiteData.count === "number" && websiteData.count === 0) && (typeof websiteData.notificationState.count === "number" && websiteData.notificationState.count > 0)){
+	} else if (getPreference('notify_all_viewed') && (typeof websiteData.count === 'number' && websiteData.count === 0) && (typeof websiteData.notificationState.count === 'number' && websiteData.notificationState.count > 0)) {
 		doNotif({
-			"title": i18ex._("website_notif", {"website": website}),
-			"message": i18ex._("all_viewed"),
+			"title": i18ex._('website_notif', {'website': website}),
+			"message": i18ex._('all_viewed'),
 			"iconUrl": websiteData.websiteIcon
 		})
 			.then(() => {
@@ -106,12 +107,16 @@ function doNotifyWebsite(website){
 }
 
 
-class websiteDefaultData{
-	constructor(){
+class websiteDefaultData {
+	constructor() {
 		return {
 			notificationState: {
 				count: null,
-				logged: null
+				/**
+				 * Undefined to know when we're checking the first time
+				 * @type {?boolean}
+				 */
+				logged: undefined
 			},
 			count: 0,
 			folders: new ExtendedMap(),
