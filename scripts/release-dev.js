@@ -87,7 +87,24 @@ async function init() {
 	echo("Copying into tmp folder");
 	await errorHandler(exec("cd " + pwd + " && cp -rt tmp ./webextension/data ./webextension/_locales ./webextension/icon*.png ./webextension/init.js ./webextension/LICENSE ./webextension/manifest.json"));
 
-	await errorHandler(exec("cd " + pwd + " && web-ext build --artifacts-dir ./ --source-dir ./tmp"));
+	const ignoredFiles = [];
+
+	try {
+		const packageJson = fs.readJSONSync(path.resolve(process.cwd(), './package.json'));
+		if (Array.isArray(packageJson.webExt.ignoreFiles)) {
+			ignoredFiles.push(...packageJson.webExt.ignoreFiles);
+		}
+	} catch (e) {
+		console.error(e);
+	}
+
+	let ignoredFilesArgument = '';
+	if (ignoredFiles.length > 0) {
+		info('Ignored files : \n' + ignoredFiles.join('\n'));
+		ignoredFilesArgument = ` --ignore-files ${(ignoredFiles.join(' '))}`;
+	}
+
+	await errorHandler(exec(`cd ${pwd} && web-ext build --artifacts-dir ./ --source-dir ./tmp ${ignoredFilesArgument}`));
 
 	await errorHandler(fs.remove(tmpPath));
 }
