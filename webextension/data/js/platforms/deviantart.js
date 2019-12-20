@@ -31,6 +31,15 @@ let deviantArt = {
 
 			let result = null;
 
+			let iconNodes = dataDocument.querySelectorAll('link[sizes][rel*=icon][href]');
+			let icons = new ExtendedMap();
+			for (let iconNode of iconNodes) {
+				if (iconNode.getAttribute('sizes') !== null) {
+					icons.set(iconNode.getAttribute('sizes'), iconNode.href);
+				}
+			}
+			let iconUrl = icons.getBestIcon();
+
 			let nodes = dataDocument.querySelectorAll('.oh-menuctrl .oh-menu.iconset-messages a.mi');
 			if (nodes !== null && nodes.length > 0) {
 				result = new ExtendedMap();
@@ -45,16 +54,6 @@ let deviantArt = {
 					result.set('logged', true);
 					result.set('loginId', dA_userId_node.textContent);
 				}
-				
-				let iconNodes = dataDocument.querySelectorAll('link[sizes][rel*=icon][href]');
-				let icons = new ExtendedMap();
-				for (let iconNode of iconNodes) {
-					if (iconNode.getAttribute('sizes') !== null) {
-						icons.set(iconNode.getAttribute('sizes'), iconNode.href);
-					}
-				}
-				let iconUrl = icons.getBestIcon();
-				result.set("websiteIcon", iconUrl);
 
 				for (let node of nodes) {
 					if (typeof node.tagName === 'string' && node.hasChildNodes() && node.children.length > 0) { // children exclude text and comment nodes
@@ -114,26 +113,31 @@ let deviantArt = {
 				result.set('loginId', data.user.username);
 				result.set('folders', new Map());
 
-				result.set("websiteIcon", 'https://www.deviantart.com/favicon.ico');
+				result.set("websiteIcon", iconUrl);
 
 
 
-				for (let folderName in data.counts) {
-					if (data.counts.hasOwnProperty(folderName)) {
-						const folderCount = data.counts[folderName];
-						if (Number.isNaN(folderCount)) {
-							continue;
+				if (initialData.hasOwnProperty('@@streams') === false) {
+					for (let folderName in data.counts) {
+						if (data.counts.hasOwnProperty(folderName)) {
+							const folderCount = data.counts[folderName];
+							if (Number.isNaN(folderCount)) {
+								continue;
+							}
+
+							if (['points', 'cart'].includes(folderName)) {
+								continue;
+							}
+
+							result.addValue('count', folderCount);
+							result.get('folders').set(folderName, {
+								'folderCount': folderCount,
+								'folderName': folderName
+							});
 						}
-
-						result.addValue('count', folderCount);
-						result.get('folders').set(folderName, {
-							'folderCount': folderCount,
-							'folderName': folderName
-						});
 					}
-				}
-
-				if (initialData.hasOwnProperty('@@streams')) {
+				} else {
+					console.log('@@streams', initialData['@@streams']);
 					const streams = initialData['@@streams'];
 					for (let name in streams) {
 						if (streams.hasOwnProperty(name) === false) {
