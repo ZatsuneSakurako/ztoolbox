@@ -50,9 +50,7 @@ function throwException(msg) {
  * @return {Promise<*>}
  */
 function errorHandler(promise) {
-	promise.catch(err=>{
-		throwException(err);
-	});
+	promise.catch(throwException);
 	return promise;
 }
 
