@@ -1,3 +1,6 @@
+# 0.11.3
+* Fix : Fix deviantArt update
+
 # 0.11.2
 * - : "Not logged" notification with deviantArt launched every checked
 * - : Twitch channel created will stop working after 13rd of September, avoid unnecessary errors

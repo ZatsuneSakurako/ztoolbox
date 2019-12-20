@@ -2,30 +2,55 @@ const VERSION_NUMBERS_REG =  /^(\d+)\.(\d+)\.(\d+)(?:\.(\d+))?$/;
 
 class Version extends Array {
 	constructor(str) {
-		if (VERSION_NUMBERS_REG.test(str) === false) {
-			// throw 'InvalidString';
+		if (typeof str !== 'string' && VERSION_NUMBERS_REG.test(str) === false) {
 			super();
 		} else {
-			const [, ...arr] = VERSION_NUMBERS_REG.exec(str);
-
-			if (arr.length > 0) {
-				if (arr.length === 4 && arr[3] === undefined) {
-					arr.splice(3, 1);
-				}
-
-				arr.forEach((v, i)=>{
-					arr[i] = parseInt(v);
-				})
-			}
-
 			super();
-			Array.prototype.push.apply(this, arr);
+			this._setVersion(str);
 		}
 	}
 
 	/**
+	 *
+	 * @param {string} stringVersion
+	 * @return {this}
+	 * @private
+	 */
+	_setVersion(stringVersion) {
+		const [, ...arr] = VERSION_NUMBERS_REG.exec(stringVersion);
+
+		if (arr.length > 0) {
+			if (arr.length === 4 && arr[3] === undefined) {
+				arr.splice(3, 1);
+			}
+
+			arr.map(v => {
+				return parseInt(v);
+			});
+		}
+
+		this.splice(0, this.length);
+		this.push(...arr);
+
+		return this;
+	}
+
+	/**
+	 *
+	 * @param {string} stringVersion
+	 * @return {this}
+	 */
+	setVersion(stringVersion) {
+		if (typeof str !== 'string' && VERSION_NUMBERS_REG.test(stringVersion) === false) {
+			throw 'InvalidString';
+		}
+
+		return this._setVersion(stringVersion);
+	}
+
+	/**
 	 * @param {Version} otherVersion
-	 * @returns {Number} -1 : < || 0 : = || 1 : >
+	 * @return {number} -1 : < || 0 : = || 1 : >
 	 */
 	compareTo(otherVersion) {
 		if (!(otherVersion instanceof Version)) {
@@ -60,7 +85,7 @@ class Version extends Array {
 	}
 
 	/**
-	 * @returns {Number}
+	 * @return {number}
 	 */
 	toNumber() {
 		let version = 0;
