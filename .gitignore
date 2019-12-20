@@ -1,5 +1,6 @@
 z-toolbox_dev_-*.zip
 .goutputstream*
+.env
 *.nex
 *.pem
 *.crx

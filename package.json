@@ -1,6 +1,6 @@
 {
 	"name": "ztoolbox",
-	"version": "0.11.2",
+	"version": "0.11.3",
 	"description": "Web Extension to test various things.",
 	"dependencies": {
 		"chalk": "^2.3.1",
@@ -14,7 +14,11 @@
 		"webextension-polyfill": "^0.2.1"
 	},
 	"devDependencies": {
+		"@types/dotenv": "^6.1.1",
 		"@types/fs-extra": "^8.0.0",
+		"chrome-webstore-upload": "^0.2.2",
+		"dotenv": "^8.1.0",
+		"node-fetch": "^2.6.0",
 		"stylelint": "^9.1.1",
 		"stylelint-config-recommended": "^2.1.0",
 		"web-ext": "^3.1.1",

@@ -4,12 +4,17 @@ const
 	path = require("path"),
 	pwd = path.join(__dirname, ".."),
 
+	webExt = require('web-ext').default,
+	chromeWebStoreUpload = require('chrome-webstore-upload'),
+
 	{ exec:_exec } = require('child_process'),
 
 	{fsReadFile} = require("./common/file-operations"),
 	echo = console.log,
 	{error, warning, info, success} = require("./common/custom-console")
 ;
+require('dotenv').config();
+
 
 
 /**
@@ -53,7 +58,8 @@ function errorHandler(promise) {
 
 
 async function init() {
-	if(await fs.pathExists(path.join(pwd, `./z-toolbox_dev_-${pjson.version}.zip`))){
+	const fileTarget = `./z-toolbox_dev_-${pjson.version}.zip`;
+	if(await fs.pathExists(path.join(pwd, fileTarget))){
 		throwException(`Zip package already exist for version ${pjson.version}!`);
 	}
 
@@ -98,13 +104,51 @@ async function init() {
 		console.error(e);
 	}
 
-	let ignoredFilesArgument = '';
+	/*let ignoredFilesArgument = '';
 	if (ignoredFiles.length > 0) {
 		info('Ignored files : \n' + ignoredFiles.join('\n'));
 		ignoredFilesArgument = ` --ignore-files ${(ignoredFiles.join(' '))}`;
+	}*/
+
+	await errorHandler(webExt.cmd.build({
+		sourceDir: path.resolve(pwd, './tmp'),
+		artifactsDir: '.',
+		ignoreFiles: ignoredFiles
+	}, {
+		shouldExitProgram: false,
+	}));
+
+	if (!!process.env.FIREFOX_API_KEY && !!process.env.FIREFOX_API_SECRET) {
+		await errorHandler(webExt.cmd.sign({
+			sourceDir: path.resolve(pwd, './tmp'),
+			artifactsDir: '.',
+			ignoreFiles: ignoredFiles,
+			apiKey: process.env.FIREFOX_API_KEY,
+			apiSecret: process.env.FIREFOX_API_SECRET,
+			channel: 'unlisted',
+			timeout: 30000
+		}, {
+			build: false,
+			signAddon: true,
+			shouldExitProgram: false,
+		}));
 	}
 
-	await errorHandler(exec(`cd ${pwd} && web-ext build --artifacts-dir ./ --source-dir ./tmp ${ignoredFilesArgument}`));
+	if (!!process.env.CHROME_EXTENSION_ID && !!process.env.CHROME_CLIENT_ID && !!process.env.CHROME_CLIENT_SECRET && !!process.env.CHROME_REFRESH_TOKEN) {
+		const webStore = chromeWebStoreUpload({
+			extensionId: process.env.CHROME_EXTENSION_ID,
+			clientId: process.env.CHROME_CLIENT_ID,
+			clientSecret: process.env.CHROME_CLIENT_SECRET,
+			refreshToken: process.env.CHROME_REFRESH_TOKEN
+		});
+
+		/*
+		 * Response is a Resource Representation
+		 * https://developer.chrome.com/webstore/webstore_api/items#resource
+		 */
+		const response = await errorHandler(webStore.uploadExisting(fileTarget/*, token*/));
+		await errorHandler(await webStore.publish('trustedTesters'/*, token*/))
+	}
 
 	await errorHandler(fs.remove(tmpPath));
 }
