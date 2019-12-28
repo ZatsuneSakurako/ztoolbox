@@ -118,6 +118,11 @@
 	"reloadTabs": "Après activation / mise à jour / installation, un rafraîchissement des pages est nécessaire",
 
 
+
+	"SearchOnIqdb": "Rechercher sur IQDB",
+
+
+
 	"website_notif": "Notification {{website}}",
 	"website_notif_plural": "Notifications {{website}}",
 	"website_not_logged": "Aucun compte {{website}} connecté",

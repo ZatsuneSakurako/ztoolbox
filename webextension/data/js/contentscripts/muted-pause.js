@@ -13,9 +13,9 @@
 					media.play();
 				}
 			}
-		}
 
-		sendResponse(true);
+			sendResponse(true);
+		}
 	});
 
 
