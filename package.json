@@ -1,6 +1,7 @@
 {
 	"name": "ztoolbox",
-	"version": "0.11.3",
+	"version": "0.12.0",
+	"private": true,
 	"description": "Web Extension to test various things.",
 	"dependencies": {
 		"chalk": "^2.3.1",
