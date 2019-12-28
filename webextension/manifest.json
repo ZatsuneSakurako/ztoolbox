@@ -75,6 +75,11 @@
 			"matches": ["*://*/*"],
 			"js": ["/data/js/contentscripts/muted-pause.js"],
 			"run_at": "document_start"
+		},
+		{
+			"matches": ["https://iqdb.org/"],
+			"js": ["/data/js/contentscripts/iqdb_search.js"],
+			"run_at": "document_start"
 		}
 	],
 	"default_locale": "en",

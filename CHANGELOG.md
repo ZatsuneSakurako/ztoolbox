@@ -1,3 +1,6 @@
+# 0.12.0
+* \+ : Search image with IQDB from context menu
+
 # 0.11.3
 * Fix : Fix deviantArt update
 

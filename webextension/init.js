@@ -60,7 +60,8 @@ const stringEllipse = ZDK.stringEllipse;
 		"index.js",
 		"variousFeatures/refresh-data.js",
 		"variousFeatures/hourly-alarm.js",
-		"variousFeatures/muted-pause.js"
+		"variousFeatures/muted-pause.js",
+		'variousFeatures/iqdb.js',
 	];
 
 	if (typeof browser.windows !== "undefined") {
