@@ -57,10 +57,10 @@ const stringEllipse = ZDK.stringEllipse;
 	;
 
 	let scriptsToLoad = [
-		"index.js",
-		"variousFeatures/refresh-data.js",
-		"variousFeatures/hourly-alarm.js",
-		"variousFeatures/muted-pause.js",
+		'index.js',
+		'variousFeatures/refresh-data.js',
+		'variousFeatures/hourly-alarm.js',
+		'variousFeatures/muted-pause.js',
 		'variousFeatures/iqdb.js',
 	];
 

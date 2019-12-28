@@ -62,11 +62,6 @@
 			"js": ["/data/js/contentscripts/launchpad-addlink.js"]
 		},
 		{
-			"matches": ["*://*.twitch.tv/*"],
-			"js": ["/data/js/contentscripts/twitch.js"],
-			"run_at": "document_start"
-		},
-		{
 			"matches": ["*://*/*"],
 			"js": ["/data/js/contentscripts/rss-retrieve.js"],
 			"run_at": "document_idle"

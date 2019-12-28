@@ -1,19 +1,20 @@
 # 0.12.0
 * \+ : Search image with IQDB from context menu
+* \- : Delete Twitch content script
 
 # 0.11.3
 * Fix : Fix deviantArt update
 
 # 0.11.2
-* - : "Not logged" notification with deviantArt launched every checked
-* - : Twitch channel created will stop working after 13rd of September, avoid unnecessary errors
+* \- : "Not logged" notification with deviantArt launched every checked
+* \- : Twitch channel created will stop working after 13rd of September, avoid unnecessary errors
 
 # 0.11.1
 * Fix : New deviantArt support (no folder url yet)
 
 # 0.11.0
 * i : Detect RSS links like /feeds/*.xml
-* - : Stop using buttons on notification when it is not necessary
+* \- : Stop using buttons on notification when it is not necessary
 * Fix : Remove spaces from link of RSS links with [trim()](https://developer.mozilla.org//docs/Web/JavaScript/Reference/Global_Objects/String/Trim)
 
 # 0.10.0
