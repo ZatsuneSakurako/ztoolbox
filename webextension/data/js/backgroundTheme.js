@@ -98,4 +98,4 @@ function theme_cache_update(colorStylesheetNode){
 // Build theme cache on addon load
 theme_cache_update(null);
 
-var backgroundTheme = {"color": color, "theme_cache_update": theme_cache_update};
+window.backgroundTheme = {"color": color, "theme_cache_update": theme_cache_update};

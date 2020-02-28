@@ -1,6 +1,10 @@
+import { loadTranslations } from '../options-api.js';
+
+
+const backgroundPage = chrome.extension.getBackgroundPage();
 const appGlobal = backgroundPage.appGlobal;
 
-let {websites, websitesData, zDK, mustacheTemplates} = appGlobal;
+let {websites, websitesData, mustacheTemplates} = appGlobal;
 
 let sendDataToMain = function (id, data) {
 	appGlobal.sendDataToMain("ZToolBox_Panel", id, data);

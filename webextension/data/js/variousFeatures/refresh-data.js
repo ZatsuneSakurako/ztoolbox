@@ -1,28 +1,9 @@
 'use strict';
 
+import { ExtendedMap } from './ExtendedMap.js';
+import { PromiseWaitAll } from '../classes/PromiseWaitAll.js';
+import { Request } from '../classes/Request.js';
 
-class ExtendedMap extends Map{
-	addValue(id, newValue) {
-		this.set(id, this.get(id) + newValue);
-	}
-
-	getBestIcon(){
-		// Map must be a Map of items like ["64x64",<url>]
-		let bestIconMinSize = 0;
-		let bestUrl = "";
-		this.forEach((value, index) => {
-			let sizes = index.split("x");
-			if(sizes.length === 2){
-				let minSize = Math.min(sizes[0],sizes[1]);
-				if(minSize > bestIconMinSize){
-					bestIconMinSize = minSize;
-					bestUrl = value;
-				}
-			}
-		});
-		return bestUrl;
-	}
-}
 
 
 function doNotifyWebsite(website){
@@ -129,7 +110,7 @@ class websiteDefaultData {
 
 
 let isRefreshingData = false;
-async function refreshWebsitesData(){
+async function refreshWebsitesData() {
 	if (isRefreshingData === true) {
 		console.warn('Already refreshing...');
 		return false;
@@ -171,7 +152,7 @@ async function refreshWebsitesData(){
 		}
 	});
 
-	if(getPreference('showAdvanced') && getPreference('showExperimented')){
+	if (getPreference('showAdvanced') && getPreference('showExperimented')) {
 		console.group();
 		console.info("Websites check end");
 		ZDK.consoleDir(data, "xhrRequests:");
@@ -206,7 +187,7 @@ async function refreshWebsitesData(){
 appGlobal["refreshWebsitesData"] = refreshWebsitesData;
 
 
-async function refreshWebsite(website){
+async function refreshWebsite(website) {
 	const xhrRequest = await Request({
 		url: websites.get(website).dataURL,
 		overrideMimeType: 'text/html; charset=utf-8',
@@ -237,11 +218,13 @@ async function refreshWebsite(website){
 
 let interval,
 	websites = new Map(),
-	websitesData = new Map();
+	websitesData = new Map()
+;
 appGlobal["websites"] = websites;
 appGlobal["websitesData"] = websitesData;
 (async function(){
-	await zDK.loadJS(document, ["platforms/deviantart.js"]);
+	const { deviantArt } = await import('../platforms/deviantart.js');
+	websites.set('deviantArt', deviantArt);
 
 	websites.forEach((websiteAPI, website) => {
 		websitesData.set(website, new websiteDefaultData());

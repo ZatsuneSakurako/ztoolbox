@@ -1,5 +1,12 @@
 'use strict';
 
+
+import {getPreference, savePreference} from "./options-api.js";
+window.getPreference = getPreference;
+window.savePreference = savePreference;
+
+
+
 appGlobal.notificationGlobalyDisabled = false;
 
 appGlobal.sendDataToMain = function(source, id, data){
@@ -37,6 +44,7 @@ appGlobal.sendDataToMain = function(source, id, data){
 	}
 };
 
+const i18ex = window.i18ex;
 let _ = browser.i18n.getMessage;
 
 /*
@@ -165,7 +173,7 @@ class ContextMenusController extends Map {
 	}
 }
 
-const contextMenusController = new ContextMenusController();
+const contextMenusController = window.contextMenusController = new ContextMenusController();
 
 contextMenusController.create(i18ex._("OpenWithoutPlaylist"), ["*.youtube.com/watch?*&list=*","*.youtube.com/watch?list=*"], function (info, tab) {
 	const removePlaylistFromUrl = url => {
@@ -205,7 +213,7 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
 	}
 });
 
-const chromeNotifications = new ChromeNotificationControler(),
+const chromeNotifications = new zDK.ChromeNotificationControler(),
 	notifButtons = {
 		"openUrl": {title: i18ex._("Open_in_browser"), iconUrl: "/data/images/ic_open_in_browser_black_24px.svg"},
 		"close": {title: i18ex._("Close"), iconUrl: "/data/images/ic_close_black_24px.svg"},
@@ -216,7 +224,7 @@ const chromeNotifications = new ChromeNotificationControler(),
 		"no": {title: i18ex._("No"), iconUrl: "/data/images/ic_cancel_black_24px.svg"}
 	}
 ;
-function doNotif(options, suffixConfirmIfNoButtons=false){
+window.doNotif = function doNotif(options, suffixConfirmIfNoButtons=false){
 	return new Promise((resolve, reject)=>{
 		if(typeof options !== "object" || options === null){
 			reject("Missing argument");

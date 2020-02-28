@@ -1,3 +1,7 @@
+const i18ex = window.i18ex,
+	consoleMsg = window.consoleMsg
+;
+
 class HourlyAlarm {
 	constructor() {
 		if(getPreference("hourlyAlarm")===true){

@@ -175,3 +175,9 @@ class ChromeNotificationControler{
 		return false;
 	}
 }
+
+
+
+export {
+	ChromeNotificationControler
+}

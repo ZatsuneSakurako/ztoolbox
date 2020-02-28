@@ -1,3 +1,7 @@
+import {PromiseWaitAll} from "./PromiseWaitAll.js";
+
+
+
 /*		---- get/save preference ----		*/
 function encodeString(string){
 	if(typeof string !== "string"){
@@ -990,4 +994,12 @@ ${err}`);
 			}
 		}
 	}
+}
+
+
+
+export {
+	CHROME_PREFERENCES_SYNC_ID,
+	CHROME_PREFERENCES_UPDATED_ID,
+	ChromePreferences
 }

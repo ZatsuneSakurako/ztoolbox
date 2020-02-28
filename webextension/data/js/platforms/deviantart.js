@@ -1,3 +1,7 @@
+import { ExtendedMap } from '../variousFeatures/ExtendedMap.js';
+
+
+
 let deviantArt = {
 	dataURL:"http://www.deviantart.com/notifications/",
 	getViewURL:
@@ -161,4 +165,9 @@ let deviantArt = {
 			return result;
 		}
 };
-websites.set("deviantArt", deviantArt);
+
+
+
+export {
+	deviantArt
+};

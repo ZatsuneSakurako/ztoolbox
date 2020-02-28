@@ -33,11 +33,22 @@ document.querySelector("#disableNotifications").dataset.translateTitle = (backgr
 
 window.onload = function () {
 	window.onload = null;
-	let jsFiles = ["lib/dom-delegate.min.js", "lib/perfect-scrollbar.min.js", "lib/opentip-native_modified.js"];
-	if(typeof browser==="undefined"||browser===null){
-		jsFiles.push("/lib/browser-polyfill.min.js");
+	let jsFiles = [
+		'lib/dom-delegate.min.js',
+		{ src: 'lib/perfect-scrollbar.min.js', asModule: false },
+		'lib/opentip-native_modified.js'
+	];
+	if(typeof browser === 'undefined' || browser === null) {
+		jsFiles.push({
+			src: '/lib/browser-polyfill.min.js',
+			asModule: false
+		});
 	}
-	jsFiles = jsFiles.concat(["options-api.js", "lib/lodash.custom.min.js", "panel/panel.js"]);
+	jsFiles = jsFiles.concat(['options-api.js', 'lib/lodash.custom.min.js', 'panel/panel.js']);
 
-	backgroundPage.zDK.loadJS(document, jsFiles);
+	import('../classes/loadJS.js')
+		.then(({loadJS}) => {
+			loadJS(document, jsFiles, backgroundPage.zDK.addonJsRoot);
+		})
+	;
 };

@@ -1,3 +1,6 @@
+# WIP
+* i : Start using native JavaScript modules. It include the use of [import](https://developer.mozilla.org//docs/Web/JavaScript/Reference/Statements/import) (static and dynamic) Minimum version Firefox 67 and Chrome 63
+
 # 0.12.0
 * \+ : Search image with IQDB from context menu
 * \- : Delete Twitch content script

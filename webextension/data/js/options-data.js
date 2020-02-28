@@ -199,3 +199,7 @@ const options = {
 		"prefLevel": "advanced"
 	}
 };
+
+export {
+	options
+};

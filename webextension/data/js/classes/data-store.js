@@ -550,3 +550,9 @@ class DataStore {
 		}, false);
 	}
 }
+
+
+
+export {
+	DataStore
+}

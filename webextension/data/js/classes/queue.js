@@ -94,3 +94,7 @@ class Queue {
 		})
 	}
 }
+
+export {
+	Queue
+}

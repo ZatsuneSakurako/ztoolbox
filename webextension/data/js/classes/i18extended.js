@@ -50,3 +50,9 @@ class i18extended{
 		}
 	}
 }
+
+
+
+export {
+	i18extended
+}

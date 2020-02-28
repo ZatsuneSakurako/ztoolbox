@@ -29,3 +29,9 @@ function PromiseWaitAll(promises){
 		throw "promises should be an Array or Map of Promise"
 	}
 }
+
+
+
+export {
+	PromiseWaitAll
+}

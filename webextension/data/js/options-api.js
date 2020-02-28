@@ -1,34 +1,36 @@
 'use strict';
 
+import { options } from './options-data.js';
+
 let chromeSettings,
 	i18ex
 ;
-if(browser.extension.getBackgroundPage() !== null){
+if (browser.extension.getBackgroundPage() !== null) {
 	const backgroundPage = browser.extension.getBackgroundPage();
 	if(backgroundPage.hasOwnProperty("chromeSettings")){
 		chromeSettings = backgroundPage.chromeSettings;
 	} else {
-		chromeSettings = backgroundPage.chromeSettings = new ChromePreferences(options);
+		chromeSettings = backgroundPage.chromeSettings = new zDK.ChromePreferences(options);
 	}
 
-	if(backgroundPage.hasOwnProperty("i18ex")){
+	if (backgroundPage.hasOwnProperty("i18ex")) {
 		i18ex = backgroundPage.i18ex;
 	} else {
-		i18ex = backgroundPage.i18ex = new i18extended(browser.i18n.getMessage("language"));
+		i18ex = backgroundPage.i18ex = new zDK.i18extended(browser.i18n.getMessage("language"));
 	}
 }
 
 /*		---- Nodes translation ----		*/
-function translateNodes(){
-	for(let node of document.querySelectorAll("[data-translate-id]")){
-		if(typeof node.tagName === "string"){
+function translateNodes() {
+	for (let node of document.querySelectorAll("[data-translate-id]")) {
+		if (typeof node.tagName === "string") {
 			node.textContent = i18ex._(node.dataset.translateId);
 			delete node.dataset.translateId;
 		}
 	}
 }
 
-if(typeof Opentip!=="undefined"){
+if (typeof Opentip !== "undefined") {
 	Opentip.styles.myDark = {
 		// Make it look like the alert style. If you omit this, it will default to "standard"
 		extends: "dark",
@@ -38,27 +40,27 @@ if(typeof Opentip!=="undefined"){
 	Opentip.defaultStyle = "myDark"; // The default is "standard"
 }
 
-function translateNodes_title(){
-	for(let node of document.querySelectorAll("[data-translate-title]")){
-		if(typeof node.tagName === "string"){
+function translateNodes_title() {
+	for (let node of document.querySelectorAll("[data-translate-title]")) {
+		if (typeof node.tagName === "string") {
 			const titleText =  i18ex._(node.dataset.translateTitle);
 
 			let error = false;
-			try{
+			try {
 				const Ot = Opentip;
-				if(node.dataset.tooltipPosition){
+				if (node.dataset.tooltipPosition) {
 					const myOpentip = new Ot(node, titleText, "", {
 						"tipJoint": node.dataset.tooltipPosition
 					})
 				} else {
 					const myOpentip = new Ot(node, titleText)
 				}
-			} catch (err){
+			} catch (err) {
 				console.warn(err);
 				error = true;
 			}
 
-			if(error===false){
+			if (error === false) {
 				delete node.dataset.translateTitle;
 				node.removeAttribute("title");
 			}
@@ -66,7 +68,7 @@ function translateNodes_title(){
 	}
 }
 
-function loadTranslations(){
+export function loadTranslations() {
 	i18ex.loadingPromise
 		.then(()=>{
 			let body = document.querySelector('body'),
@@ -98,17 +100,17 @@ function loadTranslations(){
 	;
 }
 
-function getPreference(prefId){
+export function getPreference(prefId) {
 	const pref = chromeSettings.get(prefId);
 	if(pref!==undefined){
 		return pref;
 	}
 }
-function savePreference(prefId, value){
+export function savePreference(prefId, value) {
 	chromeSettings.set(prefId, value);
 }
 
-function settingNode_onChange(event){
+function settingNode_onChange(event) {
 	const backgroundPage = browser.extension.getBackgroundPage(),
 		node = this,
 		settingName = (node.tagName.toLowerCase()==="input"&&typeof node.type==="string"&&node.type.toLowerCase()==="radio")? node.name : node.id;
@@ -117,15 +119,15 @@ function settingNode_onChange(event){
 		savePreference(settingName, backgroundPage.getValueFromNode(node));
 	}
 }
-function refreshSettings(event){
+function refreshSettings(event) {
 	const backgroundPage = browser.extension.getBackgroundPage();
 
 	let prefId = "";
 	let prefValue = "";
-	if(typeof event.key === "string"){
+	if (typeof event.key === "string") {
 		prefId = event.key;
 		prefValue = event.newValue;
-	} else if(typeof event.target === "object"){
+	} else if (typeof event.target === "object") {
 		prefId = event.target.id;
 		prefValue = getPreference(prefId);
 	}
@@ -133,23 +135,23 @@ function refreshSettings(event){
 	
 	let isPanelPage = location.pathname.indexOf("panel.html") !== -1;
 	
-	if(event.type !== "input" && !(isPanelPage && typeof chromeSettings.options.get(prefId).showPrefInPanel === "boolean" && chromeSettings.options.get(prefId).showPrefInPanel === false) && typeof chromeSettings.options.get(prefId).type === "string" && !(typeof chromeSettings.options.get(prefId).hidden === "boolean" && chromeSettings.options.get(prefId).hidden)){
-		if(prefNode === null){
+	if (event.type !== "input" && !(isPanelPage && typeof chromeSettings.options.get(prefId).showPrefInPanel === "boolean" && chromeSettings.options.get(prefId).showPrefInPanel === false) && typeof chromeSettings.options.get(prefId).type === "string" && !(typeof chromeSettings.options.get(prefId).hidden === "boolean" && chromeSettings.options.get(prefId).hidden)) {
+		if (prefNode === null) {
 			console.warn(`${prefId} node is null`);
 		} else {
-			switch(chromeSettings.options.get(prefId).type){
-				case "string":
-					if(typeof chromeSettings.options.get(prefId).stringList === "boolean" && chromeSettings.options.get(prefId).stringList === true){
+			switch (chromeSettings.options.get(prefId).type) {
+				case 'string':
+					if (typeof chromeSettings.options.get(prefId).stringList === 'boolean' && chromeSettings.options.get(prefId).stringList === true) {
 						prefNode.value = backgroundPage.getFilterListFromPreference(getPreference(prefId)).join("\n");
 					} else {
 						prefNode.value = prefValue;
 					}
 					break;
-				case "color":
-				case "menulist":
-					if(prefNode.tagName.toLowerCase()==="div"){
+				case 'color':
+				case 'menulist':
+					if (prefNode.tagName.toLowerCase()==="div") {
 						const toCheck = prefNode.querySelector(`[value="${prefValue}"]`);
-						if(toCheck){
+						if (toCheck) {
 							toCheck.checked = true;
 						} else {
 							console.warn(`Error trying to update "${prefId}"`);
@@ -158,42 +160,42 @@ function refreshSettings(event){
 						prefNode.value = prefValue;
 					}
 					break;
-				case "integer":
+				case 'integer':
 					prefNode.value = parseInt(prefValue);
 					break;
-				case "bool":
+				case 'bool':
 					prefNode.checked = backgroundPage.getBooleanFromVar(prefValue);
 					break;
-				case "control":
+				case 'control':
 					// Nothing to update, no value
 					break;
 			}
-			let body = document.querySelector("body");
-			if(prefId === "showAdvanced"){
-				if(getPreference("showAdvanced")){
-					body.classList.add("showAdvanced");
+			let body = document.querySelector('body');
+			if (prefId === "showAdvanced") {
+				if (getPreference('showAdvanced')) {
+					body.classList.add('showAdvanced');
 				} else {
-					body.classList.remove("showAdvanced");
+					body.classList.remove('showAdvanced');
 				}
 			}
-			if(prefId === "showExperimented"){
-				if(getPreference("showExperimented")){
+			if (prefId === 'showExperimented') {
+				if (getPreference("showExperimented")) {
 					body.classList.add("showExperimented");
 				} else {
 					body.classList.remove("showExperimented");
 				}
 			}
-			if(prefId === "panel_theme" || prefId === "background_color" && typeof theme_update === "function"){
+			if (prefId === "panel_theme" || prefId === "background_color" && typeof theme_update === "function") {
 				theme_update();
 			}
-			if(prefId === "hourlyAlarm"){
+			if (prefId === "hourlyAlarm") {
 				sendDataToMain("hourlyAlarm_update");
 			}
-			if(
+			if (
 				typeof applyPanelSize === "function"
 				&&
 				(prefId === "panel_height" || prefId === "panel_width")
-			){
+			) {
 				applyPanelSize();
 			}
 		}
@@ -203,52 +205,48 @@ function refreshSettings(event){
 /*		---- Save/Restaure preferences from sync ----		*/
 
 // Saves/Restaure options from/to browser.storage
-function saveOptionsInSync(event){
+function saveOptionsInSync(event) {
 	chromeSettings.saveInSync()
-		.then(()=>{
+		.then(() => {
 			// Update status to let user know options were saved.
 			let status = document.getElementById('status');
 			if(status !== null){
-				status.textContent = i18ex._("options_saved_sync");
+				status.textContent = i18ex._('options_saved_sync');
 
 				setTimeout(function() {
 					status.textContent = '';
 				}, 2500);
 			}
 		})
-		.catch(err=>{
-			if(err){
-				console.warn(err);
-			}
-		})
+		.catch(console.warn)
 	;
 }
-function restaureOptionsFromSync(event){
+function restaureOptionsFromSync(event) {
 	// Default values
 	let mergePreferences = event.shiftKey;
-	chromeSettings.restaureFromSync((typeof mergePreferences==="boolean")? mergePreferences : false);
+	chromeSettings.restaureFromSync((typeof mergePreferences === 'boolean')? mergePreferences : false);
 }
 
 /*		---- Node generation of settings ----		*/
-function loadPreferences(selector){
+export function loadPreferences(selector) {
 	chromeSettings.loadPreferencesNodes(document.querySelector(selector));
 	
 	browser.storage.onChanged.addListener((changes, area) => {
-		if(area === "local"){
-			for(let prefId in changes){
-				if(changes.hasOwnProperty(prefId)){
+		if (area === "local") {
+			for (let prefId in changes) {
+				if (changes.hasOwnProperty(prefId)) {
 					refreshSettings({"key": prefId, oldValue: changes[prefId].oldValue, newValue: changes[prefId].newValue});
 				}
 			}
 		}
 	});
 }
-function import_onClick(){
+function import_onClick() {
 	const getWebsite = /^(\w+)_import$/i,
 		website = getWebsite.exec(this.id)[1];
 	sendDataToMain("importStreams", website);
 }
-if(browser.extension.getBackgroundPage()!==null && typeof domDelegate!=="undefined") {
+if(browser.extension.getBackgroundPage() !== null && typeof domDelegate !== 'undefined') {
 	const delegate = (function () {
 		const Delegate = domDelegate.Delegate;
 		return new Delegate(document.body);
@@ -283,11 +281,11 @@ function prefNode_FileType_onChange(event) {
 }
 
 /*		---- Import/Export preferences from file ----		*/
-function exportPrefsToFile(){
+function exportPrefsToFile() {
 	let backgroundPage = browser.extension.getBackgroundPage();
 	backgroundPage.chromeSettings.exportPrefsToFile("ztoolbox", document);
 }
-async function importPrefsFromFile(event){
+async function importPrefsFromFile(event) {
 	const backgroundPage = browser.extension.getBackgroundPage();
 	let mergePreferences = (typeof event === "object" && typeof event.shiftKey === "boolean")? event.shiftKey : false;
 
@@ -301,8 +299,8 @@ async function importPrefsFromFile(event){
 		console.warn(e);
 	}
 
-	if(error===false){
-		if(typeof refreshStreamsFromPanel === "function"){
+	if (error === false) {
+		if (typeof refreshStreamsFromPanel === "function"){
 			refreshStreamsFromPanel();
 		} else {
 			sendDataToMain("refreshStreams","");

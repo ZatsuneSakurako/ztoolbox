@@ -99,3 +99,10 @@ class Version extends Array {
 		return version;
 	}
 }
+
+
+
+export {
+	VERSION_NUMBERS_REG,
+	Version
+}
