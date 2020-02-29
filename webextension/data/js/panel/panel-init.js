@@ -35,14 +35,11 @@ window.onload = function () {
 	window.onload = null;
 	let jsFiles = [
 		'lib/dom-delegate.min.js',
-		{ src: 'lib/perfect-scrollbar.min.js', asModule: false },
+		'lib/perfect-scrollbar.esm.js',
 		'lib/opentip-native_modified.js'
 	];
 	if(typeof browser === 'undefined' || browser === null) {
-		jsFiles.push({
-			src: '/lib/browser-polyfill.min.js',
-			asModule: false
-		});
+		jsFiles.push('/lib/browser-polyfill.js');
 	}
 	jsFiles = jsFiles.concat(['options-api.js', 'lib/lodash.custom.min.js', 'panel/panel.js']);
 

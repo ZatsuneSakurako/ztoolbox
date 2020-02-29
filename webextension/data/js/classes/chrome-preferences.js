@@ -28,7 +28,12 @@ function decodeString(string){
 	return string;
 }
 
-function getBooleanFromVar(string){
+/**
+ *
+ * @param {string} string
+ * @return {number|string|boolean}
+ */
+function getBooleanFromVar(string) {
 	switch(typeof string){
 		case "boolean":
 			return string;
@@ -65,10 +70,15 @@ function getFilterListFromPreference(string){
 	return list;
 }
 
+/**
+ *
+ * @param {HTMLInputElement} node
+ * @return {void|string|boolean|number}
+ */
 function getValueFromNode(node){
 	const tagName = node.tagName.toLowerCase();
-	if(tagName === "textarea"){
-		if(node.dataset.settingType==="json"){
+	if (tagName === "textarea") {
+		if (node.dataset.settingType==="json") {
 			let json;
 			try {
 				json = JSON.parse(node.value);
@@ -76,19 +86,19 @@ function getValueFromNode(node){
 				console.error(err);
 			}
 			return json;
-		} else if(node.dataset.stringTextarea === "true"){
+		} else if (node.dataset.stringTextarea === "true") {
 			return node.value.replace(/\n/g, "");
-		} else if(node.dataset.stringList === "true"){
+		} else if (node.dataset.stringList === "true") {
 			// Split as list, encode item, then make it back a string
 			return node.value.split("\n").map(encodeString).join(",");
 		} else {
 			return node.value;
 		}
-	} else if(node.type === "checkbox") {
+	} else if (node.type === "checkbox") {
 		return node.checked;
-	} else if(tagName === "input" && node.type === "number"){
+	} else if (tagName === "input" && node.type === "number") {
 		return parseInt(node.value);
-	} else if(typeof node.value === "string"){
+	} else if (typeof node.value === "string") {
 		return node.value;
 	} else {
 		console.error("Problem with node trying to get value");
@@ -101,9 +111,9 @@ const CHROME_PREFERENCES_UPDATED_ID = '_updated',
 
 class ChromePreferences extends Map{
 	constructor(options){
-		super(new Map());
+		super();
 
-		if(options===undefined){
+		if (options === undefined) {
 			throw "Missing argument"
 		}
 
@@ -547,6 +557,24 @@ ${err}`);
 
 			groupNode.appendChild(this.newPreferenceNode(groupNode, id));
 		});
+	}
+
+	/**
+	 *
+	 * @param {HTMLInputElement} node
+	 * @return {void|string|boolean|number}
+	 */
+	getValueFromNode(node) {
+		return getValueFromNode(node);
+	}
+
+	/**
+	 *
+	 * @param {string} string
+	 * @return {number|string|boolean}
+	 */
+	getBooleanFromVar(string) {
+		return getBooleanFromVar(string);
 	}
 
 	/**

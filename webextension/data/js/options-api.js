@@ -10,7 +10,7 @@ if (browser.extension.getBackgroundPage() !== null) {
 	if(backgroundPage.hasOwnProperty("chromeSettings")){
 		chromeSettings = backgroundPage.chromeSettings;
 	} else {
-		chromeSettings = backgroundPage.chromeSettings = new zDK.ChromePreferences(options);
+		chromeSettings = backgroundPage.chromeSettings = new backgroundPage.zDK.ChromePreferences(options);
 	}
 
 	if (backgroundPage.hasOwnProperty("i18ex")) {
@@ -111,12 +111,12 @@ export function savePreference(prefId, value) {
 }
 
 function settingNode_onChange(event) {
-	const backgroundPage = browser.extension.getBackgroundPage(),
-		node = this,
-		settingName = (node.tagName.toLowerCase()==="input"&&typeof node.type==="string"&&node.type.toLowerCase()==="radio")? node.name : node.id;
+	const node = this,
+		settingName = (node.tagName.toLowerCase()==="input"&&typeof node.type==="string"&&node.type.toLowerCase()==="radio")? node.name : node.id
+	;
 
-	if(node.validity.valid){
-		savePreference(settingName, backgroundPage.getValueFromNode(node));
+	if (node.validity.valid) {
+		savePreference(settingName, chromeSettings.getValueFromNode(node));
 	}
 }
 function refreshSettings(event) {
@@ -164,7 +164,7 @@ function refreshSettings(event) {
 					prefNode.value = parseInt(prefValue);
 					break;
 				case 'bool':
-					prefNode.checked = backgroundPage.getBooleanFromVar(prefValue);
+					prefNode.checked = chromeSettings.getBooleanFromVar(prefValue);
 					break;
 				case 'control':
 					// Nothing to update, no value

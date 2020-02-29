@@ -1,4 +1,6 @@
 import { loadTranslations } from '../options-api.js';
+import { default as PerfectScrollbar } from '../lib/perfect-scrollbar.esm.js';
+
 
 
 const backgroundPage = chrome.extension.getBackgroundPage();

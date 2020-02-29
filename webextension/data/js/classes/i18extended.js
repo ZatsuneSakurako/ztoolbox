@@ -1,3 +1,5 @@
+// import { default as i18next } from '../lib/i18next.js';
+
 class i18extended{
 	constructor(currentLanguage){
 		let loadPromise = ()=>{

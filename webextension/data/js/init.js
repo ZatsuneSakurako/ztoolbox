@@ -4,6 +4,20 @@ window.appGlobal = {};
 (async () => {
 	await Promise.all(
 		[
+			'browser-polyfill',
+			// 'i18next',
+			// 'i18nextXHRBackend',
+			// 'mustache',
+
+			// 'moment',
+			// 'moment-locale-fr',
+
+			// 'xml2jsobj'
+		]
+			.map(moduleName => import(`./lib/${moduleName}.js`))
+	);
+	await Promise.all(
+		[
 			'Request',
 			'loadJS',
 			'chrome-notification-controler',
