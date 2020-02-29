@@ -5,9 +5,9 @@ window.appGlobal = {};
 	await Promise.all(
 		[
 			'browser-polyfill',
-			// 'i18next',
-			// 'i18nextXHRBackend',
-			// 'mustache',
+			'i18next',
+			'i18nextXHRBackend',
+			'mustache',
 
 			// 'moment',
 			// 'moment-locale-fr',
@@ -31,7 +31,7 @@ window.appGlobal = {};
 			.map(moduleName => import(`./classes/${moduleName}.js`))
 	);
 	const { ZDK } = await import('./classes/ZDK.js');
-	const zDK = new ZDK("/data/js/");
+	const zDK = new ZDK('/data/js/');
 	const backgroundPage = browser.extension.getBackgroundPage();
 	if (backgroundPage !== null) {
 		backgroundPage.zDK = zDK;
@@ -60,7 +60,7 @@ window.appGlobal = {};
 	templatesSource.set('panelCheckedDataItem', '/data/js/panelCheckedDataItem.mst');
 	templatesSource.set('panelRssLinks', '/data/js/panelRssLinks.mst');
 
-	moment.locale(browser.i18n.getMessage("language"));
+	moment.locale(browser.i18n.getMessage('language'));
 
 
 
