@@ -42,6 +42,7 @@ let deviantArt = {
 			}
 			let iconUrl = icons.getBestIcon();
 
+			let result;
 			let nodes = dataDocument.querySelectorAll('.oh-menuctrl .oh-menu.iconset-messages a.mi');
 			if (nodes !== null && nodes.length > 0) {
 				result = new ExtendedMap();
