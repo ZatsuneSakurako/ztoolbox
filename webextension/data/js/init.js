@@ -17,6 +17,7 @@ window.appGlobal = {};
 	await Promise.all(
 		[
 			'responseDocument',
+			'Request',
 			'loadJS',
 			'chrome-notification-controler',
 			'chrome-preferences',

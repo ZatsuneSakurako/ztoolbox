@@ -1,5 +1,6 @@
 /**
  * Parse response body as HTML or XML document (proper Content-Type header must be available)
+ * Method using DOMParse which doesn't allow to pass a custom URL base
  * @return {Promise<Document|XMLDocument>}
  */
 Response.prototype.document = async function document() {

@@ -22,17 +22,16 @@ let deviantArt = {
 		},
 	/**
 	 *
-	 * @param {Response} response
-	 * @param {Document} dataDocument
+	 * @param xhrRequest
 	 * @return {Object | null}
 	 */
 	Request_documentParseToJSON:
-		function(response, dataDocument) {
-			if (typeof dataDocument !== "object" || dataDocument === null) {
+		function(xhrRequest){
+			let dataDocument = xhrRequest.response;
+
+			if(typeof dataDocument !== "object" || dataDocument===null){
 				return null;
 			}
-
-			let result = null;
 
 			let iconNodes = dataDocument.querySelectorAll('link[sizes][rel*=icon][href]');
 			let icons = new ExtendedMap();

@@ -2,6 +2,7 @@
 
 import { ExtendedMap } from './ExtendedMap.js';
 import { PromiseWaitAll } from '../classes/PromiseWaitAll.js';
+import { Request } from '../classes/Request.js';
 
 
 
@@ -184,23 +185,15 @@ appGlobal["refreshWebsitesData"] = refreshWebsitesData;
 
 
 async function refreshWebsite(website) {
-	let response, data = null;
-	try {
-		response = await fetch(websites.get(website).dataURL);
-	} catch (e) {
-		ZDK.console.error(e);
-	}
+	const xhrRequest = await Request({
+		url: websites.get(website).dataURL,
+		overrideMimeType: 'text/html; charset=utf-8',
+		contentType: 'document',
+		Request_documentParseToJSON: websites.get(website).Request_documentParseToJSON
+	}).get();
 
-	if (response.ok === true) {
-		try {
-			const document = await response.document();
-			data = websites.get(website).Request_documentParseToJSON(response, document)
-		} catch (e) {
-			ZDK.console.error(e);
-		}
-	}
-
-	if (data !== null) {
+	if(/*(/^2\d*$/.test(xhrRequest.status) == true || xhrRequest.statusText == "OK") && */ xhrRequest.json !== null){
+		let data = xhrRequest.map;
 		let websiteData = websitesData.get(website);
 
 		websiteData.count = data.get("count");
@@ -210,14 +203,13 @@ async function refreshWebsite(website) {
 		if(data.has("folders")){
 			websiteData.folders = data.get("folders");
 		}
-
-		return response;
+		return xhrRequest;
+	} else {
+		console.warn(`Error retrieving page for "${website}"`);
+		//let websiteData = websitesData.get(website);
+		//websiteData.logged  = false;
+		return xhrRequest;
 	}
-
-	ZDK.console.warn(`Error retrieving page for "${website}"`);
-	//let websiteData = websitesData.get(website);
-	//websiteData.logged  = false;
-	return response;
 }
 
 

@@ -2,8 +2,6 @@
 
 
 
-import {url} from "web-ext/src/cmd/docs";
-
 /**
  *
  * @param {Object} options
