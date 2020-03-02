@@ -1,7 +1,6 @@
 'use strict';
 
-//var backgroundPage = chrome.extension.getBackgroundPage();
-//var getPreference = backgroundPage.getPreference;
+import { getPreference } from './options-api.js'
 
 class color{
 	constructor(hexColorCode){
