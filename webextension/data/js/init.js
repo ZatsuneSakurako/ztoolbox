@@ -11,15 +11,12 @@ window.appGlobal = {};
 
 			// 'moment',
 			// 'moment-locale-fr',
-
-			// 'xml2jsobj'
 		]
 			.map(moduleName => import(`./lib/${moduleName}.js`))
 	);
 	await Promise.all(
 		[
 			'responseDocument',
-			'Request',
 			'loadJS',
 			'chrome-notification-controler',
 			'chrome-preferences',

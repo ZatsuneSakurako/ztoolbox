@@ -2,183 +2,99 @@
 
 
 
-class Params extends Map {
-	encode() {
-		const array = [];
-		this.forEach((value, key) => {
-			array.push((value || typeof value === 'boolean') ? `${encodeURI(key)}=${encodeURI(value)}` : `${encodeURI(key)}`);
-		});
-
-		return array.join('&');
-	}
-}
-
-const splitUri = (function () { // https://codereview.stackexchange.com/questions/9574/faster-and-cleaner-way-to-parse-parameters-from-url-in-javascript-jquery/9630#9630
-	const splitRegExp = new RegExp(
-		'^' +
-		'(?:' +
-		'([^:/?#.]+)' +                         // scheme - ignore special characters
-		// used by other URL parts such as :,
-		// ?, /, #, and .
-		':)?' +
-		'(?://' +
-		'(?:([^/?#]*)@)?' +                     // userInfo
-		'([\\w\\d\\-\\u0100-\\uffff.%]*)' +     // domain - restrict to letters,
-		// digits, dashes, dots, percent
-		// escapes, and unicode characters.
-		'(?::([0-9]+))?' +                      // port
-		')?' +
-		'([^?#]+)?' +                           // path
-		'(?:\\?([^#]*))?' +                     // query
-		'(?:#(.*))?' +                          // fragment
-		'$')
-	;
-
-	return function (uri) {
-		let split;
-		split = uri.match(splitRegExp);
-		return {
-			'scheme': split[1],
-			'user_info': split[2],
-			'domain': split[3],
-			'port': split[4],
-			'path': split[5],
-			'query_data': split[6],
-			'fragment': split[7]
-		}
-	};
-})();
-
+import {url} from "web-ext/src/cmd/docs";
 
 /**
  *
  * @param {Object} options
+ * @param {string} options.url
+ * @param {string[][]} [options.content]
+ * @param {'urlencodedToJSON'|function} [options.customJSONParse]
  * @returns {{get: get, post: post}}
  * @constructor
  */
-function Request(options){
-	if(typeof options.url !== "string" /*&& typeof options.onComplete !== "function"*/){
+function Request(options) {
+	if (typeof options.url !== "string" || options.hasOwnProperty('onComplete') || options.content instanceof Map || (options.hasOwnProperty('customJSONParse') && options.customJSONParse !== 'urlencodedToJSON')) {
 		ZDK.console.warn( "Error in options");
 	} else {
 		/**
 		 *
-		 * @param {String} method
+		 * @param {string} method
 		 * @returns {Promise<Object>}
 		 */
-		let core = function(method){
-			return new Promise(resolve=>{
+		let core = function(method) {
+			return new Promise(resolve => {
 				let xhr;
-				if(typeof options.anonymous === "boolean"){
+				if (typeof options.anonymous === 'boolean') {
 					xhr = new XMLHttpRequest({anonymous:options.anonymous});
 				} else {
 					xhr = new XMLHttpRequest();
 				}
 
-				let content = (Array.isArray(options.content) || options.content instanceof Map)? options.content : [];
-				if(method === 'GET'){
-					// Extract query data from url to put it with the other
-					const urlObj = splitUri(options.url);
-					if(typeof urlObj.query_data === "string" && urlObj.query_data !== ""){
-						let urlQuery = urlObj.query_data.split("&").map(value=>{
-							return value.split("=");
-						});
-						if(Array.isArray(urlQuery)){
-							if(Array.isArray(content)){
-								content = urlQuery.concat(content);
-							} else {
-								content = urlQuery;
-							}
-							options.url = options.url.replace("?"+urlObj.query_data, "");
-						}
-					}
+				const urlObj = new URL(options.url),
+					params = new URLSearchParams()
+				;
+
+				let content = Array.isArray(options.content)? options.content : [];
+				if (method === 'GET') {
+					// Add params to url in case of GET
+					content.forEach((value, name) => {
+						urlObj.searchParams.append(name, value);
+					});
+				} else {
+					// Otherwise store it for later
+					content.forEach((value, name) => {
+						params.append(name, value);
+					});
 				}
 
-				const params = new Params(content);
+				xhr.open(method, urlObj.toString(), true);
 
-				xhr.open(method, ((method === 'GET')? `${options.url}${(params.size > 0)? `?${params.encode()}` : ""}` : options.url), true);
-
-				if(typeof options.contentType === "string"){
+				if (typeof options.contentType === 'string') {
 					xhr.responseType = options.contentType;
 				}
-				if(typeof options.overrideMimeType === "string"){
+				if (typeof options.overrideMimeType === 'string') {
 					xhr.overrideMimeType(options.overrideMimeType);
 				}
 
-				xhr.timeout = getPreference("timeout_delay") * 1000;
+				xhr.timeout = getPreference('timeout_delay') * 1000;
 
-				if(options.hasOwnProperty("headers") === true && typeof options.headers === "object"){
-					for(let header in options.headers){
-						if(!options.headers.hasOwnProperty(header)){ // Make sure to not loop constructors
-							continue;
-						}
+				if (options.hasOwnProperty('headers') === true && typeof options.headers === 'object') {
+					for (let header in options.headers) {
+						if(!options.headers.hasOwnProperty(header)) continue;
+
 						let value = options.headers[header];
 						xhr.setRequestHeader(header, value);
 					}
 				}
 
-				xhr.addEventListener("loadend", function(){
+				xhr.addEventListener('loadend', function() {
 					let response = {
-						"url": xhr.responseURL,
-						"json": null,
-						"status": xhr.status,
-						"statusText": xhr.statusText,
-						"header": xhr.getAllResponseHeaders()
+						'url': xhr.responseURL,
+						'json': null,
+						'status': xhr.status,
+						'statusText': xhr.statusText,
+						'header': xhr.getAllResponseHeaders()
 					};
-					if(xhr.responseType === "" || xhr.responseType === "text"){
+					if (xhr.responseType === '' || xhr.responseType === 'text') {
 						response.text= xhr.responseText;
 					}
-					if(typeof xhr.response !== "undefined"){
+					if (typeof xhr.response !== 'undefined') {
 						response.response = xhr.response;
 					}
 
-					if(typeof options.customJSONParse === "string"){
-						switch(options.customJSONParse){
-							case "xmlToJSON":
-								if(typeof xhr.responseXML === "undefined" || xhr.responseXML === null){
-									response.json = null;
-								} else {
-									let xmlToStringParser = new XMLSerializer();
-									let xmlText = xmlToStringParser.serializeToString(xhr.responseXML);
+					if (typeof options.customJSONParse === 'string') {
+						let jsonDATA = {};
+						let splitedData = xhr.responseText.split("&");
 
-									try{
-										// Source: https://www.sitepoint.com/how-to-convert-xml-to-a-javascript-object/
-										let rawData = XML2jsobj(xhr.responseXML.documentElement);
-										let data = {};
-
-										/**		Flatten the object a bit		**/
-										if(rawData.hasOwnProperty("body")){
-											data = rawData.body;
-											if(rawData.hasOwnProperty("version")){
-												data.version = rawData.version;
-											}
-										} else {
-											data = rawData;
-										}
-										/**		End flatten the object a bit		**/
-
-										response.json = data;
-									}
-									catch(error){
-										response.json = null;
-									}
-								}
-								break;
-							case "urlencodedToJSON":
-								let jsonDATA = {};
-								let splitedData = xhr.responseText.split("&");
-
-								splitedData = splitedData.map((str)=>{
-									return str.split("=");
-								});
-								for(let item of splitedData){
-									jsonDATA[decodeURIComponent(item[0])] = decodeURIComponent(item[1]);
-								}
-								response.json = jsonDATA;
-								break;
-							default:
-								ZDK.console.warn( `[Request] Unknown custom JSON parse ${options.customJSONParse}`);
+						splitedData = splitedData.map((str) => {
+							return str.split('=');
+						});
+						for(let item of splitedData){
+							jsonDATA[decodeURIComponent(item[0])] = decodeURIComponent(item[1]);
 						}
-					} else if(typeof options.customJSONParse === "function"){
+						response.json = jsonDATA;
+					} else if (typeof options.customJSONParse === 'function') {
 						let data = null;
 						try {
 							data = options.customJSONParse(xhr);
@@ -187,9 +103,9 @@ function Request(options){
 						}
 
 						response.json = data;
-					} else if(xhr.responseType === "document" && typeof options.Request_documentParseToJSON === "function"){
+					} else if (xhr.responseType === 'document' && typeof options.Request_documentParseToJSON === 'function') {
 						let result = options.Request_documentParseToJSON(xhr);
-						if(result instanceof Map){
+						if (result instanceof Map) {
 							response.map = result;
 							response.json = ZDK.mapToObj(result);
 						} else {
@@ -200,17 +116,14 @@ function Request(options){
 						catch(error){response.json = null;}
 					}
 
-					if(typeof options.onComplete==="function"){
-						options.onComplete(response);
-					}
 					resolve(response);
 				});
 
 
-				if(method === 'GET'){
+				if (method === 'GET') {
 					xhr.send();
-				} else if(method === 'POST'){
-					xhr.send(params.encode());
+				} else if(method === 'POST') {
+					xhr.send(params.toString());
 				} else {
 					throw `Unknown method "${method}"`
 				}
@@ -232,7 +145,5 @@ function Request(options){
 
 
 export {
-	Params,
-	splitUri,
 	Request
 }

@@ -23,8 +23,6 @@
 			"/data/js/lib/moment.js",
 			"/data/js/lib/moment-locale-fr.js",
 
-			"/data/js/lib/xml2jsobj.js",
-
 			"/data/js/init.js"
 		]
 	},
