@@ -7,9 +7,7 @@
 				'name': 'ztoolbox_mutedPause',
 				'isMuted': muted
 			})
-				.catch(err => {
-					consoleMsg("error", err);
-				})
+				.catch(ZDK.console.error)
 			;
 		}
 	});
@@ -22,9 +20,7 @@
 				browser.tabs.update(sender.tab.id, {
 					'muted': false
 				})
-					.catch(err => {
-						consoleMsg("error", err);
-					})
+					.catch(ZDK.console.error)
 				;
 			}
 

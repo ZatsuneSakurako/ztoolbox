@@ -1,3 +1,5 @@
+'use strict';
+
 import { ChromeNotificationControler } from './chrome-notification-controler.js';
 import { ChromePreferences } from './chrome-preferences.js';
 import { i18extended } from './i18extended.js';
@@ -7,10 +9,12 @@ import { ZTimer } from './ztimer.js';
 import { Version } from './version.js';
 import { loadJS } from './loadJS.js';
 
+export const noop = () => {};
+
 
 
 class ZDK {
-	constructor(addonJsRoot){
+	constructor(addonJsRoot) {
 		this.addonJsRoot = addonJsRoot;
 
 
@@ -134,26 +138,28 @@ class ZDK {
 	};
 
 
-	static consoleMsg(level,str){
-		let msg = (str && typeof str.toString === "function")? str.toString() : str;
-		if(getPreference("showAdvanced") && getPreference("showExperimented")){
-			if(typeof console[level] === "function"){
-				console[level](str);
-			} else {
-				consoleMsg("log", msg);
-			}
+	/**
+	 * Console/Error catcher, avoid messages if not experimented user
+	 * @return {Console}
+	 */
+	static get console() {
+		if (this._console === undefined || this._console === null) {
+			this._console = new Proxy(window.console, {
+				get(target, p) {
+					if (p !== 'log' && typeof this.hasOwnProperty(target, p) === false) {
+						return this.get(target, 'log');
+					}
+
+					if (getPreference('showAdvanced') && getPreference('showExperimented')) {
+						return window.console[p];
+					} else {
+						return noop;
+					}
+				}
+			});
 		}
-	}
-	static consoleDir(obj,str){
-		if(getPreference("showAdvanced") && getPreference("showExperimented")){
-			if(typeof str === "string" || (typeof str !== "undefined" && typeof str.toString === "function")){
-				console.group((typeof str === "string")? str : str.toString());
-				console.dir(obj);
-				console.groupEnd();
-			} else {
-				console.dir(obj);
-			}
-		}
+
+		return this._console;
 	}
 
 	/**
@@ -301,37 +307,37 @@ class ZDK {
 		}
 	}
 
-	static async openTabIfNotExist(url){
-		consoleMsg("log", url);
+	static async openTabIfNotExist(url) {
+		this.console.log(url);
 
 		const tabs = await browser.tabs.query({});
 
-		let custom_url = url.toLowerCase().replace(/http(?:s)?:\/\/(?:www\.)?/i,"");
-		for(let tab of tabs){
-			if(tab.url.toLowerCase().indexOf(custom_url) !== -1){ // Mean the url was already opened in a tab
+		let custom_url = url.toLowerCase().replace(/http(?:s)?:\/\/(?:www\.)?/i,'');
+		for (let tab of tabs) {
+			if (tab.url.toLowerCase().indexOf(custom_url) !== -1) { // Mean the url was already opened in a tab
 				browser.tabs.highlight({tabs: tab.index}); // Show the already opened tab
 				return true; // Return true to stop the function as the tab is already opened
 			}
 		}
 
-		if (typeof browser.windows === "undefined") {
+		if (typeof browser.windows === 'undefined') {
 			const browserWindows = await browser.windows.getAll({
 				populate: false,
-				windowTypes: ["normal"]
+				windowTypes: ['normal']
 			});
 
 			// If the function is still running, it mean that the url isn't detected to be opened, so, we can open it
 			if(browserWindows.length===0){
 				await browser.windows.create({
-					"focused": true,
-					"type": "normal",
-					"url": url
+					'focused': true,
+					'type': 'normal',
+					'url': url
 				});
 			} else{
-				await browser.tabs.create({ "url": url });
+				await browser.tabs.create({ 'url': url });
 			}
 		} else {
-			await browser.tabs.create({ "url": url });
+			await browser.tabs.create({ 'url': url });
 		}
 
 		return false; // Return false because the url wasn't already in a tab
@@ -342,27 +348,27 @@ class ZDK {
 	 * @param action
 	 * @param selector
 	 * @param html
-	 * @param {HTMLDocument} doc
-	 * @returns {null | Array<HTMLElement>}
+	 * @param {HTMLDocument|Document} doc
+	 * @returns {null | HTMLElement[]}
 	 */
-	insertHtml(action, selector, html, doc=document){
-		if (typeof action !== "string" || action === "") {
-			throw "Wrong action";
+	insertHtml(action, selector, html, doc=document) {
+		if (typeof action !== 'string' || action === '') {
+			throw 'Wrong action';
 		}
 
-		const nodes = (typeof html==="object")? [html] : new DOMParser().parseFromString(html, 'text/html').body.childNodes,
-			target = (typeof selector==="object")? selector : doc.querySelector(selector),
+		const nodes = (typeof html === 'object')? [html] : new DOMParser().parseFromString(html, 'text/html').body.childNodes,
+			target = (typeof selector === 'object')? selector : doc.querySelector(selector),
 			output = []
 		;
-		if(target!==null){
-			for(let i in nodes){
-				if(nodes.hasOwnProperty(i)){
+		if (target!==null) {
+			for (let i in nodes) {
+				if (nodes.hasOwnProperty(i)) {
 					const node = nodes[i];
-					switch(action){
-						case "appendTo":
+					switch(action) {
+						case 'appendTo':
 							output[i] = target.appendChild(node);
 							break;
-						case "insertBefore":
+						case 'insertBefore':
 							output[i] = target.parentNode.insertBefore(node, target);
 							break;
 					}
@@ -376,29 +382,29 @@ class ZDK {
 	/**
 	 * @param selector
 	 * @param html
-	 * @param {HTMLDocument} doc
-	 * @returns {null | Array<HTMLElement>}
+	 * @param {HTMLDocument|Document} doc
+	 * @returns {null | HTMLElement[]}
 	 */
-	appendTo(selector, html, doc=document){
-		return this.insertHtml("appendTo",selector,html,doc);
+	appendTo(selector, html, doc=document) {
+		return this.insertHtml('appendTo', selector, html, doc);
 	}
 
 	/**
 	 *
 	 * @param selector
 	 * @param html
-	 * @param {HTMLDocument} doc
-	 * @returns {null | Array<HTMLElement>}
+	 * @param {HTMLDocument|Document} doc
+	 * @returns {null | HTMLElement[]}
 	 */
-	insertBefore(selector, html, doc=document){
-		return this.insertHtml("insertBefore",selector,html,doc);
+	insertBefore(selector, html, doc=document) {
+		return this.insertHtml('insertBefore', selector, html, doc);
 	}
 
 	/**
 	 *
 	 * @param {HTMLElement} node
 	 */
-	removeAllChildren(node){
+	removeAllChildren(node) {
 		// Taken from https://stackoverflow.com/questions/683366/remove-all-the-children-dom-elements-in-div
 		while (node.hasChildNodes()) {
 			node.removeChild(node.lastChild);
@@ -410,7 +416,7 @@ class ZDK {
 	 * @param node
 	 * @return {{top: number, left: number}}
 	 */
-	static getOffset(node){
+	static getOffset(node) {
 		let x = 0,
 			y = 0
 		;
@@ -480,14 +486,6 @@ class ZDK {
 	static validDateOrNull(date){
 		return ZDK.isValidDate(date)? date : null;
 	}
-}
-
-window.consoleMsg = ZDK.consoleMsg;
-
-if(typeof Promise.prototype.finally!=="function"){
-	Promise.prototype.finally = function(fn){
-		this.then(fn).catch(fn);
-	};
 }
 
 

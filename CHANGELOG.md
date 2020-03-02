@@ -1,5 +1,6 @@
 # WIP
 * i : Start using native JavaScript modules. It include the use of [import](https://developer.mozilla.org//docs/Web/JavaScript/Reference/Statements/import) (static and dynamic) Minimum version Firefox 67 and Chrome 63
+* i : deviantArt now use [fetch api](https://developer.mozilla.org/docs/Web/API/Fetch_API) (with an extension on [Response](https://developer.mozilla.org/docs/Web/API/Response) to easily parse body to get Document)
 
 # 0.12.0
 * \+ : Search image with IQDB from context menu

@@ -392,12 +392,12 @@ ${err}`);
 					;
 
 					switch(prefId){
-						case "stream_keys_list":
+						case 'stream_keys_list':
 							let prefData = null;
 							try {
 								prefData = JSON.parse(oldPref);
 							} catch (e) {
-								consoleMsg('error', e);
+								ZDK.console.error(e);
 							}
 
 							if(prefData===null){

@@ -22,14 +22,13 @@ let deviantArt = {
 		},
 	/**
 	 *
-	 * @param {XMLHttpRequest} xhrRequest
+	 * @param {Response} response
+	 * @param {Document} dataDocument
 	 * @return {Object | null}
 	 */
 	Request_documentParseToJSON:
-		function(xhrRequest){
-			let dataDocument = xhrRequest.response;
-
-			if(typeof dataDocument !== "object" || dataDocument===null){
+		function(response, dataDocument) {
+			if (typeof dataDocument !== "object" || dataDocument === null) {
 				return null;
 			}
 

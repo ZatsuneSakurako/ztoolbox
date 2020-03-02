@@ -1,3 +1,5 @@
+'use strict';
+
 class DropboxController {
 	/**
 	 * https://developer.mozilla.org/en-US/Add-ons/WebExtensions/API/identity/launchWebAuthFlow
@@ -68,8 +70,8 @@ class DropboxController {
 
 			return this.authToken;
 		} else {
-			if(error!==undefined){
-				consoleMsg('error', error);
+			if (error !== undefined) {
+				ZDK.console.error( error);
 			}
 
 			throw 'ErrorUnknown';
@@ -81,9 +83,9 @@ class DropboxController {
 	 * @return {null|Dropbox.Dropbox}
 	 */
 	getClient(){
-		if(this.client!==null){
+		if (this.client !== null) {
 			return this.client;
-		} else if(this.clientId!=='' && this.authToken!==''){
+		} else if (this.clientId !== '' && this.authToken !== '') {
 			return this.client = new Dropbox.Dropbox({
 				clientId: this.clientId,
 				accessToken: this.authToken
@@ -115,7 +117,7 @@ class DropboxController {
 			try{
 				data = JSON.parse(await zDK.loadBlob(metaData.fileBlob, 'text'));
 			} catch (e) {
-				consoleMsg('error', e);
+				ZDK.console.error( e);
 				throw 'InvalidJson';
 			}
 
@@ -126,7 +128,7 @@ class DropboxController {
 		} else {
 			if(error.status === this.API_ERROR_STATUS_FILE_NOT_FOUND){
 				throw 'NoFile';
-			} else if(error!==undefined){
+			} else if (error !== undefined) {
 				throw error;
 			}
 		}
@@ -154,7 +156,7 @@ class DropboxController {
 		} else {
 			if(error.status === this.API_ERROR_STATUS_FILE_NOT_FOUND){
 				throw 'NoFile';
-			} else if(error!==undefined){
+			} else if (error !== undefined) {
 				throw error;
 			}
 		}
@@ -185,17 +187,21 @@ class DropboxController {
 			error = e;
 		}
 
-		if(data !== null){
+		if (data !== null) {
 			return data;
 		} else {
 			/* user cancelled the flow */
 			if (error.status === this.HTTP_STATUS_CANCEL) {
-				consoleMsg('error', 'UserCancelled');
+				ZDK.console.error( 'UserCancelled');
 				return false;
 			} else {
-				consoleMsg('error', error);
+				ZDK.console.error( error);
 				return false;
 			}
 		}
 	}
+}
+
+export {
+	DropboxController
 }

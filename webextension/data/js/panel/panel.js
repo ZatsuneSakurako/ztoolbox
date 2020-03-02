@@ -3,10 +3,10 @@ import { default as PerfectScrollbar } from '../lib/perfect-scrollbar.esm.js';
 
 
 
-const backgroundPage = chrome.extension.getBackgroundPage();
-const appGlobal = backgroundPage.appGlobal;
-
-let {websites, websitesData, mustacheTemplates} = appGlobal;
+const backgroundPage = browser.extension.getBackgroundPage(),
+	{appGlobal, ZDK} = backgroundPage,
+	{websites, websitesData, mustacheTemplates} = appGlobal
+;
 
 let sendDataToMain = function (id, data) {
 	appGlobal.sendDataToMain("ZToolBox_Panel", id, data);
@@ -28,27 +28,31 @@ const insertBefore = function (sel, html, doc=document) {
 };
 
 
-liveEvent("click", "#disableNotifications", ()=>{
-	let disableNotificationsButton = document.querySelector("#disableNotifications");
-	appGlobal["notificationGlobalyDisabled"] = !appGlobal["notificationGlobalyDisabled"];
-	disableNotificationsButton.classList.toggle("off", backgroundPage.appGlobal["notificationGlobalyDisabled"]);
+liveEvent('click', '#disableNotifications', () => {
+	let disableNotificationsButton = document.querySelector('#disableNotifications');
+	appGlobal['notificationGlobalyDisabled'] = !appGlobal['notificationGlobalyDisabled'];
+	disableNotificationsButton.classList.toggle('off', backgroundPage.appGlobal['notificationGlobalyDisabled']);
 
-	if(disableNotificationsButton.dataset.opentipId){
-		document.querySelector(`#opentip-${disableNotificationsButton.dataset.opentipId} .ot-content`).textContent = i18ex._((backgroundPage.appGlobal["notificationGlobalyDisabled"])? "GloballyDisabledNotifications" : "GloballyDisableNotifications");
+	if (disableNotificationsButton.dataset.opentipId) {
+		document.querySelector(`#opentip-${disableNotificationsButton.dataset.opentipId} .ot-content`).textContent = backgroundPage.i18ex._((backgroundPage.appGlobal['notificationGlobalyDisabled'])? 'GloballyDisabledNotifications' : 'GloballyDisableNotifications');
 	}
 });
 
-liveEvent("click", "#refreshStreams", function(){
-	appGlobal.refreshWebsitesData();
+liveEvent('click', '#refreshStreams', function() {
+	appGlobal.refreshWebsitesData()
+		.catch(ZDK.console.error)
+	;
 });
 
-liveEvent("click", "#settings", function(){
-	browser.runtime.openOptionsPage();
+liveEvent('click', '#settings', function() {
+	browser.runtime.openOptionsPage()
+		.catch(ZDK.console.error)
+	;
 });
 
 
-function theme_update(){
-	let panelColorStylesheet = theme_cache_update(document.querySelector("#generated-color-stylesheet"));
+window.theme_update = function theme_update() {
+	let panelColorStylesheet = backgroundPage.backgroundTheme.theme_cache_update(document.querySelector("#generated-color-stylesheet"));
 
 	if(typeof panelColorStylesheet === "object" && panelColorStylesheet !== null){
 		console.info("Theme update");
@@ -60,7 +64,7 @@ function theme_update(){
 
 		document.querySelector("head").appendChild(panelColorStylesheet);
 	}
-}
+};
 
 function removeAllChildren(node){
 	// Taken from https://stackoverflow.com/questions/683366/remove-all-the-children-dom-elements-in-div
@@ -137,7 +141,7 @@ async function loadRss() {
 				const tab = tabs[0];
 
 				if (/^https?:\/\//.test(tab.url)) {
-					tabPort = chrome.tabs.connect(tab.id, {
+					tabPort = browser.tabs.connect(tab.id, {
 						'name': 'ztoolbox_rss-retrieve'
 					});
 
@@ -226,7 +230,7 @@ const onTabChange = _.debounce(() => {
 browser.windows.onFocusChanged.addListener(onTabChange);
 browser.tabs.onActivated.addListener(onTabChange);
 browser.runtime.onMessage.addListener(function (data, sender) {
-	if (sender.id === chrome.runtime.id && data.name && data.name === 'ztoolbox_rss-retrieve' && sender.tab && sender.tab.active === true) {
+	if (sender.id === browser.runtime.id && data.hasOwnProperty('name') && data.name === 'ztoolbox_rss-retrieve' && sender.tab && sender.tab.active === true) {
 		onTabChange();
 	}
 });
@@ -236,33 +240,46 @@ onTabChange();
 
 
 
-liveEvent("click", "#panelContent .websiteItem .folder[data-folder-url]", function (event, node) {
+liveEvent('click', '#panelContent .websiteItem .folder[data-folder-url]', function (event, node) {
 	event.stopPropagation();
-	backgroundPage.openTabIfNotExist(node.dataset.folderUrl);
+	backgroundPage.openTabIfNotExist(node.dataset.folderUrl)
+		.catch(ZDK.console.error)
+	;
 	return false;
 });
-liveEvent("click", "#panelContent .websiteItem", function (event, node) {
+liveEvent('click', '#panelContent .websiteItem', function (event, node) {
 	event.stopPropagation();
 
+	let href;
 	if (node.classList.contains('rssItem')) {
-		backgroundPage.openTabIfNotExist(node.dataset.href);
+		href = node.dataset.href;
 	} else {
 		let website = node.dataset.website,
 			websiteAPI = websites.get(website),
 			websiteData = websitesData.get(website)
 		;
-		backgroundPage.openTabIfNotExist(websiteAPI[(node.dataset.logged)? "getViewURL" : "getLoginURL"](websiteData));
+
+		href = websiteAPI[(node.dataset.logged)? "getViewURL" : "getLoginURL"](websiteData);
 	}
+
+	if (href === undefined) {
+		ZDK.console.warn('No links', node);
+		return false;
+	}
+
+	backgroundPage.openTabIfNotExist(href)
+		.catch(ZDK.console.error)
+	;
 
 	return false;
 });
-backgroundPage.panel__UpdateData = (data)=>{
+backgroundPage.panel__UpdateData = (data) => {
 	updatePanelData(data);
 };
 
 
 let psList = new Map();
-function load_scrollbar(id){
+function load_scrollbar(id) {
 	let scroll_node = document.querySelector(`#${id}`);
 
 	if(scroll_node === null) {
@@ -276,17 +293,17 @@ function load_scrollbar(id){
 	}));
 }
 
-function scrollbar_update(nodeId){
-	if(typeof nodeId === "string" && nodeId !== ""){
+function scrollbar_update(nodeId) {
+	if (typeof nodeId === 'string' && nodeId !== '') {
 		let scrollbar_node = document.querySelector(`#${nodeId}`);
-		if(scrollbar_node !== null && psList.has(nodeId)){
+		if (scrollbar_node !== null && psList.has(nodeId)) {
 			psList.get(nodeId).update();
 		}
 	}
 }
 
 
-function current_version(version){
+function current_version(version) {
 	let current_version_node = document.querySelector("#current_version");
 	//current_version_node.textContent = version;
 	current_version_node.dataset.currentVersion = version;
@@ -298,11 +315,12 @@ loadTranslations();
 
 sendDataToMain("panel_onload");
 
-load_scrollbar("panelContent");
+if (ZDK.isFirefox === true) {
+	load_scrollbar("panelContent");
 
-window.onresize = _.debounce(()=>{
-	scrollbar_update("panelContent");
-}, 100, {
-	maxWait: 200
-})
-;
+	window.onresize = _.debounce(() => {
+		scrollbar_update("panelContent");
+	}, 100, {
+		maxWait: 200
+	});
+}

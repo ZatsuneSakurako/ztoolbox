@@ -1,4 +1,6 @@
-class ChromeNotificationControler{
+'use strict';
+
+class ChromeNotificationControler {
 	constructor(){
 		this.chromeAPI_button_availability = true;
 		const chromeNotifications = this.chromeNotifications = new Map();
@@ -11,34 +13,34 @@ class ChromeNotificationControler{
 		if(browser.notifications.onButtonClicked){
 			browser.notifications.onButtonClicked.addListener((notificationId, buttonIndex)=>{
 				if(chromeNotifications.has(notificationId) && typeof chromeNotifications.get(notificationId).fn === "function"){
-					chromeNotifications.get(notificationId).fn("onButtonClicked", buttonIndex);
+					chromeNotifications.get(notificationId).fn('onButtonClicked', buttonIndex);
 				}
 			});
 		}
-		this.onShownSupported = browser.notifications.hasOwnProperty("onShown");
+		this.onShownSupported = browser.notifications.hasOwnProperty('onShown');
 		if(this.onShownSupported===true){
-			browser.notifications.onShown.addListener(notificationId=>{
-				consoleMsg("info", `Notification "${notificationId}" shown.`);
-				if(this.chromeNotifications.has(notificationId) && typeof this.chromeNotifications.get(notificationId).fnOnShown === "function"){
+			browser.notifications.onShown.addListener(notificationId => {
+				ZDK.console.info(`Notification "${notificationId}" shown.`);
+				if (this.chromeNotifications.has(notificationId) && typeof this.chromeNotifications.get(notificationId).fnOnShown === "function") {
 					this.chromeNotifications.get(notificationId).fnOnShown();
 				}
 			})
 		}
 		browser.notifications.onClosed.addListener((notificationId, byUser=false)=>{
-			if(byUser===true && this.chromeNotifications.has(notificationId)){
+			if (byUser === true && this.chromeNotifications.has(notificationId)) {
 				this.chromeNotifications.get(notificationId).isClosed = true;
 			}
 		});
 
-		this.notificationCleaner = setInterval(()=>{
+		this.notificationCleaner = setInterval(() => {
 			browser.notifications.getAll()
 				.then(activeNotifications=>{
 					this.chromeNotifications.forEach((notifTimer, notificationId)=>{
 						if(activeNotifications.hasOwnProperty(notificationId)===false){
-							if(typeof chromeNotifications.get(notificationId).fn === "function"){
-								chromeNotifications.get(notificationId).fn((chromeNotifications.get(notificationId).isClosed)? "closed" : "timeout");
+							if(typeof chromeNotifications.get(notificationId).fn === 'function'){
+								chromeNotifications.get(notificationId).fn((chromeNotifications.get(notificationId).isClosed)? 'closed' : 'timeout');
 							} else {
-								console.warn(`${notifId} has timed out but data problem.`);
+								ZDK.console.warn(`${notifId} has timed out but data problem.`);
 							}
 						}
 					});
@@ -60,9 +62,9 @@ class ChromeNotificationControler{
 		const sendNotification = (options)=>{
 			return new Promise((resolve, reject) => {
 				const onError = (error) => {
-					if(error && typeof error.message === "string" && (error.message === "Adding buttons to notifications is not supported." || error.message.indexOf("\"buttons\"") !== -1)){
+					if(error && typeof error.message === 'string' && (error.message === 'Adding buttons to notifications is not supported.' || error.message.indexOf("\"buttons\"") !== -1)){
 						this.chromeAPI_button_availability = false;
-						consoleMsg("log", "Buttons not supported, retrying notification without them.");
+						ZDK.console.log("Buttons not supported, retrying notification without them.");
 						if(options.buttons){
 							delete options.buttons;
 						}
@@ -86,27 +88,27 @@ class ChromeNotificationControler{
 			})
 		};
 		return new Promise((resolve, reject)=>{
-			if(typeof options !== "object" || options === null){
-				reject("Missing argument");
+			if (typeof options !== 'object' || options === null) {
+				reject('Missing argument');
 			}
-			if(!options.type || typeof options.type !== "string"){
-				options.type = "basic";
+			if (!options.type || typeof options.type !== 'string') {
+				options.type = 'basic';
 			}
-			if(!options.contextMessage || typeof options.contextMessage !== "string"){
+			if (!options.contextMessage || typeof options.contextMessage !== 'string') {
 				options.contextMessage = browser.runtime.getManifest().name;
 			}
-			if(!options.isClickable || typeof options.isClickable !== "boolean"){
+			if (!options.isClickable || typeof options.isClickable !== 'boolean') {
 				options.isClickable = true;
 			}
-			if(!this.chromeAPI_button_availability && options.buttons){
+			if (!this.chromeAPI_button_availability && options.buttons) {
 				delete options.buttons;
 			}
 
 			let sound = null;
 			sendNotification(options)
 				.then(notificationId => {
-					consoleMsg("info", `Notification "${notificationId}" created.`);
-					if(customOption!==null && typeof customOption.soundObject==="object" && customOption.soundObject!==null && typeof customOption.soundObject.data==="string"){
+					ZDK.console.info( `Notification "${notificationId}" created.`);
+					if (customOption!==null && typeof customOption.soundObject === 'object' && customOption.soundObject!==null && typeof customOption.soundObject.data === 'string') {
 						sound = new Audio(customOption.soundObject.data);
 						sound.volume = customOption.soundObjectVolume / 100;
 						if(this.onShownSupported===false){
@@ -125,31 +127,31 @@ class ChromeNotificationControler{
 							}
 
 							if (
-								triggeredType === "timeout"
+								triggeredType === 'timeout'
 								||
-								triggeredType === "closed"
+								triggeredType === 'closed'
 								||
 								(
-									(this.chromeAPI_button_availability === true && options.hasOwnProperty('buttons') === true && typeof buttonIndex !== "number")
+									(this.chromeAPI_button_availability === true && options.hasOwnProperty('buttons') === true && typeof buttonIndex !== 'number')
 									||
 									(this.chromeAPI_button_availability === false && buttonIndex !== null)
 								)
 							) {
 								reject({
-									"triggeredType": triggeredType,
-									"notificationId": notificationId,
-									"buttonIndex": buttonIndex
+									'triggeredType': triggeredType,
+									'notificationId': notificationId,
+									'buttonIndex': buttonIndex
 								});
 							} else {
 								// 0 is the first button, used as button of action
 								resolve({
-									"triggeredType": triggeredType,
-									"notificationId": notificationId,
-									"buttonIndex": buttonIndex
+									'triggeredType': triggeredType,
+									'notificationId': notificationId,
+									'buttonIndex': buttonIndex
 								});
 							}
 						},
-						"fnOnShown": () => {
+						'fnOnShown': () => {
 							if(sound!==null && this.onShownSupported===true){
 								sound.play();
 							}
@@ -166,8 +168,8 @@ class ChromeNotificationControler{
 			;
 		});
 	};
-	clear(notificationId=null){
-		if(notificationId!==null && this.chromeNotifications.has(notificationId)){
+	clear(notificationId=null) {
+		if (notificationId !== null && this.chromeNotifications.has(notificationId)) {
 			browser.notifications.clear(notificationId);
 			this.chromeNotifications.delete(notificationId);
 			return true;

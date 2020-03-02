@@ -2,6 +2,7 @@
 
 
 import {getPreference, savePreference} from "./options-api.js";
+const ZDK = window.ZDK;
 window.getPreference = getPreference;
 window.savePreference = savePreference;
 
@@ -16,16 +17,16 @@ appGlobal.sendDataToMain = function(source, id, data){
 		data
 	]);
 
-	if(source==="ZToolBox_Panel" && id==="panel_onload"){
-		if(typeof panel__UpdateData==="function"){
+	if (source === 'ZToolBox_Panel' && id === 'panel_onload') {
+		if (typeof panel__UpdateData === 'function') {
 			panel__UpdateData();
 		} else {
-			console.warn("panel__UpdateData not found");
+			ZDK.console.warn('panel__UpdateData not found');
 		}
-	} else if(source==="ZToolBox_Options" && id==="hourlyAlarm_update"){
+	} else if (source === "ZToolBox_Options" && id === "hourlyAlarm_update") {
 		HourlyAlarm.isEnabledHourlyAlarm()
 			.then(async function (isActivated) {
-				if(typeof isActivated==="boolean" && getPreference("hourlyAlarm")!==isActivated){
+				if (typeof isActivated==="boolean" && getPreference("hourlyAlarm") !== isActivated) {
 					if(getPreference("hourlyAlarm")===true){
 						await hourlyAlarm.enableHourlyAlarm();
 					} else {
@@ -34,10 +35,10 @@ appGlobal.sendDataToMain = function(source, id, data){
 				}
 			})
 			.catch(async function (err) {
-				consoleMsg("warn", err);
+				ZDK.console.error(err);
 				await hourlyAlarm.disableHourlyAlarm();
 
-				if(getPreference("hourlyAlarm")){
+				if (getPreference("hourlyAlarm")) {
 					await hourlyAlarm.enableHourlyAlarm();
 				}
 			})

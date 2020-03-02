@@ -18,6 +18,7 @@ window.appGlobal = {};
 	);
 	await Promise.all(
 		[
+			'responseDocument',
 			'Request',
 			'loadJS',
 			'chrome-notification-controler',
@@ -35,6 +36,10 @@ window.appGlobal = {};
 	const backgroundPage = browser.extension.getBackgroundPage();
 	if (backgroundPage !== null) {
 		backgroundPage.zDK = zDK;
+		/**
+		 * @global
+		 * @type {ZDK}
+		 */
 		backgroundPage.ZDK = ZDK;
 	}
 	window.openTabIfNotExist = ZDK.openTabIfNotExist;

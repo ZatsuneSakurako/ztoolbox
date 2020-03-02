@@ -1,4 +1,4 @@
-import {ZDK} from './ZDK.js';
+'use strict';
 
 
 
@@ -58,7 +58,7 @@ const splitUri = (function () { // https://codereview.stackexchange.com/question
  */
 function Request(options){
 	if(typeof options.url !== "string" /*&& typeof options.onComplete !== "function"*/){
-		consoleMsg("warn", "Error in options");
+		ZDK.console.warn( "Error in options");
 	} else {
 		/**
 		 *
@@ -176,14 +176,14 @@ function Request(options){
 								response.json = jsonDATA;
 								break;
 							default:
-								consoleMsg("warn", `[Request] Unknown custom JSON parse ${options.customJSONParse}`);
+								ZDK.console.warn( `[Request] Unknown custom JSON parse ${options.customJSONParse}`);
 						}
 					} else if(typeof options.customJSONParse === "function"){
 						let data = null;
 						try {
 							data = options.customJSONParse(xhr);
 						} catch (e) {
-							consoleMsg("error", e);
+							ZDK.console.error( e);
 						}
 
 						response.json = data;
