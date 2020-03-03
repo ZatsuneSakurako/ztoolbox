@@ -41,6 +41,21 @@ let deviantArt = {
 			}
 		}
 
+		const iconRegEx = /<link\s+[^>]*\s*rel=["']apple-touch-icon["']\s+sizes=["'](\d+x\d+)["']\s+href=["']([^"]+)["']\s*\/>/gm,
+			icons = new ExtendedMap()
+		;
+
+		if (iconRegEx.test(rawData)) {
+			const iconsHtml = Array.from(rawData.matchAll(iconRegEx));
+			for (let iconHtml of iconsHtml) {
+				icons.set(iconHtml[1], iconHtml[2]);
+			}
+		}
+
+
+
+
+
 		const reg = /window.__INITIAL_STATE__\s*=\s*JSON.parse\(["'](.*)["']\)/ig;
 
 		const rawInitialData = rawData.match(reg);
@@ -83,6 +98,7 @@ let deviantArt = {
 		result.set('loginId', data.user.username);
 		result.set('folders', new Map());
 
+		const iconUrl = icons.getBestIcon();
 		result.set("websiteIcon", iconUrl);
 
 
