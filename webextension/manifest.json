@@ -77,5 +77,5 @@
 		"page": "data/options.html",
 		"chrome_style": false
 	},
-	"minimum_chrome_version": "63.0"
+	"minimum_chrome_version": "73.0"
 }
