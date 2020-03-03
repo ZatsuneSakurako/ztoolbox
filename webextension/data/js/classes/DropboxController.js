@@ -1,12 +1,17 @@
 'use strict';
+import { ZDK } from './ZDK.js';
+
+
 
 class DropboxController {
 	/**
 	 * https://developer.mozilla.org/en-US/Add-ons/WebExtensions/API/identity/launchWebAuthFlow
 	 * http://dropbox.github.io/dropbox-sdk-js/tutorial-JavaScript%20SDK.html
+	 * @param {string} fileName
+	 * @param {string} clientId
+	 * @param {string} [authToken]
 	 */
-
-	constructor(fileName, clientId, authToken=''){
+	constructor(fileName, clientId, authToken='') {
 		this.client = null;
 
 		this.clientId = clientId;
@@ -25,7 +30,7 @@ class DropboxController {
 	static identityLaunchWebAuthFlow(details){
 		return new Promise((resolve, reject) => {
 			chrome.identity.launchWebAuthFlow(details, function (responseUrl) {
-				if(typeof responseUrl!=="string" && responseUrl===undefined){
+				if (typeof responseUrl !== 'string' && responseUrl === undefined) {
 					reject();
 				} else{
 					resolve(responseUrl);

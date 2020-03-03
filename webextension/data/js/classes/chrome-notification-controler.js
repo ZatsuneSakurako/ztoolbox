@@ -1,4 +1,7 @@
 'use strict';
+import { ZDK } from './ZDK.js';
+
+
 
 class ChromeNotificationControler {
 	constructor(){

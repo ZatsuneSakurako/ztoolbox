@@ -18,15 +18,15 @@
 	const detectRssFeeds = function() {
 		currentHref = `${window.location.href}`;
 
-		rssLinks = Array.from(document.querySelectorAll('link[rel="alternate"][type]'));
+		rssLinks = Array.from(document.querySelectorAll('link[rel="alternate"][type],a[rel="alternate"][type]'));
 
 		rssLinks = rssLinks
-			.filter(value => value.type.includes('rss') || value.type.includes('atom'))
-			.map(value => {
+			.filter(node => node.type.includes('rss') || node.type.includes('atom'))
+			.map(node => {
 				return {
-					'href': value.href,
-					'type': value.type.includes('rss')? 'rss' : 'atom',
-					'title': value.title
+					'href': node.href,
+					'type': node.type.includes('rss')? 'rss' : 'atom',
+					'title': node.tagName.toLowerCase() === 'a'? node.textContent : node.title
 				}
 			})
 		;
@@ -34,7 +34,7 @@
 		rssLinks = rssLinks.concat(
 			Array.from(document.body.querySelectorAll('[href*="/rss/"],[href*="/atom/"],[href*="/feeds/"][href$=".xml"]'))
 				.filter(function (node) {
-					return node.tagName !== 'link' || link.rel !== 'alternate'
+					return node.tagName.toLowerCase() !== 'link' || node.rel !== 'alternate'
 				})
 				.map(node => ({
 					'href': node.href,

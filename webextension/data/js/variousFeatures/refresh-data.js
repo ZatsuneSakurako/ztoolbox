@@ -3,6 +3,7 @@
 import { ExtendedMap } from './ExtendedMap.js';
 import { PromiseWaitAll } from '../classes/PromiseWaitAll.js';
 import { Request } from '../classes/Request.js';
+import { ZDK } from "../classes/ZDK.js";
 
 
 
@@ -185,30 +186,47 @@ appGlobal["refreshWebsitesData"] = refreshWebsitesData;
 
 
 async function refreshWebsite(website) {
-	const xhrRequest = await Request({
-		url: websites.get(website).dataURL,
-		overrideMimeType: 'text/html; charset=utf-8',
-		contentType: 'document',
-		Request_documentParseToJSON: websites.get(website).Request_documentParseToJSON
-	}).get();
+	let data = null, request = null;
+	if (typeof websites.get(website).getData === 'function') {
+		try {
+			const result = await websites.get(website).getData();
+			data = result.data;
+			request = result.response;
+		} catch (e) {
+			ZDK.console.error(e);
+		}
+	} else {
+		try {
+			request = await Request({
+				url: websites.get(website).dataURL,
+				overrideMimeType: 'text/html; charset=utf-8',
+				contentType: 'document',
+				Request_documentParseToJSON: websites.get(website).Request_documentParseToJSON
+			}).get();
 
-	if(/*(/^2\d*$/.test(xhrRequest.status) == true || xhrRequest.statusText == "OK") && */ xhrRequest.json !== null){
-		let data = xhrRequest.map;
+			data = request.map;
+		} catch (e) {
+			ZDK.console.error(e);
+		}
+	}
+
+
+	if (data !== null) {
 		let websiteData = websitesData.get(website);
 
 		websiteData.count = data.get("count");
 		websiteData.logged = data.get("logged");
 		websiteData.loginId = data.get("loginId");
 		websiteData.websiteIcon = data.get("websiteIcon");
-		if(data.has("folders")){
+		if (data.has("folders")) {
 			websiteData.folders = data.get("folders");
 		}
-		return xhrRequest;
+		return request;
 	} else {
-		console.warn(`Error retrieving page for "${website}"`);
+		ZDK.console.warn(`Error retrieving page for "${website}"`);
 		//let websiteData = websitesData.get(website);
 		//websiteData.logged  = false;
-		return xhrRequest;
+		return request;
 	}
 }
 
