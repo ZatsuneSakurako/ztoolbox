@@ -93,6 +93,7 @@ window.appGlobal = {};
 	;
 
 	let scriptsToLoad = [
+		'env.js',
 		'index.js',
 		'variousFeatures/refresh-data.js',
 		'variousFeatures/hourly-alarm.js',

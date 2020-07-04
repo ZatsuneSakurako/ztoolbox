@@ -1,10 +1,12 @@
 'use strict';
 
 
+import {default as env} from './env.js';
 import {getPreference, savePreference} from "./options-api.js";
 const ZDK = window.ZDK;
 window.getPreference = getPreference;
 window.savePreference = savePreference;
+window.env = env;
 
 
 
@@ -307,8 +309,8 @@ if (env === 'local') {
 		}
 
 		doNotif({
-			"title": 'Mise à jour disponible',
-			"message": `Une mise à jour de "${browser.runtime.getManifest().name}" est disponible, rafraîchir le dépôt local`
+			"title": 'Mise Ã  jour disponible',
+			"message": `Une mise Ã  jour de "${browser.runtime.getManifest().name}" est disponible, rafraÃ®chir le dÃ©pÃ´t local`
 		})
 			.catch(ZDK.console.error)
 		;
