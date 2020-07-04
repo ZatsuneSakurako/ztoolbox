@@ -1,6 +1,7 @@
 'use strict';
 
 import { ChromeNotificationControler } from './chrome-notification-controler.js';
+import * as chromeUpdateNotification from './chromeUpdateNotification.js';
 import { ChromePreferences } from './chrome-preferences.js';
 import { i18extended } from './i18extended.js';
 import { Queue } from './queue.js';
@@ -39,6 +40,10 @@ class ZDK {
 	 */
 	get ChromeNotificationControler() {
 		return ChromeNotificationControler;
+	}
+
+	get chromeUpdateNotification() {
+		return chromeUpdateNotification;
 	}
 
 	/**

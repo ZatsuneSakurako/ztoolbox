@@ -293,3 +293,24 @@ appGlobal["doNotif"] = doNotif;
 
 
 appGlobal["version"] = browser.runtime.getManifest().version;
+if (env === 'local') {
+	window.zDK.setInterval('checkUpdatesInterval', 10, 'm', async function checkUpdates() {
+		const lastCheck = moment(localStorage.getItem('checkUpdate'));
+		if (lastCheck.isValid() === true && moment.duration(moment().diff(lastCheck)).as('hours') < 6) {
+			return;
+		}
+
+		const hasUpdate = await window.zDK.chromeUpdateNotification.checkHasUpdate();
+		localStorage.setItem('checkUpdate', (new Date()).toISOString())
+		if (hasUpdate === false) {
+			return;
+		}
+
+		doNotif({
+			"title": 'Mise à jour disponible',
+			"message": `Une mise à jour de "${browser.runtime.getManifest().name}" est disponible, rafraîchir le dépôt local`
+		})
+			.catch(ZDK.console.error)
+		;
+	});
+}
