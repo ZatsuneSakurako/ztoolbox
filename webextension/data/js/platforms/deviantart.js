@@ -123,7 +123,7 @@ let deviantArt = {
 				}
 			}
 		} else {
-			console.log('@@streams', initialData['@@streams']);
+			console.debug('@@streams', initialData['@@streams']);
 			const streams = initialData['@@streams'];
 			for (let name in streams) {
 				if (streams.hasOwnProperty(name) === false) {

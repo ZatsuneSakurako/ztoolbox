@@ -12,12 +12,14 @@ window.env = env;
 
 appGlobal.notificationGlobalyDisabled = false;
 
-appGlobal.sendDataToMain = function(source, id, data){
-	console.dir([
-		source,
-		id,
-		data
-	]);
+// noinspection JSUnusedLocalSymbols
+/**
+ *
+ * @param source
+ * @param id
+ * @param data
+ */
+appGlobal.sendDataToMain = function sendDataToMain(source, id, data) {
 
 	if (source === 'ZToolBox_Panel' && id === 'panel_onload') {
 		if (typeof panel__UpdateData === 'function') {
@@ -200,13 +202,13 @@ contextMenusController.create(i18ex._("OpenWithoutPlaylist"), ["*.youtube.com/wa
 });
 
 chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
-	if(sender.hasOwnProperty("url")){
-		console.info(`Receiving message from: ${sender.url} (${sender.id})`);
+	if (sender.hasOwnProperty("url")) {
+		console.debug(`Receiving message from: ${sender.url} (${sender.id})`);
 	}
-	if(typeof message === "object" && message.hasOwnProperty("data")){
-		if(message.data.id==="getPreferences"){
+	if (typeof message === "object" && message.hasOwnProperty("data")) {
+		if (message.data.id==="getPreferences") {
 			let reply = {};
-			message.data.preferences.forEach(prefId=>{
+			message.data.preferences.forEach(prefId => {
 				reply[prefId] = getPreference(prefId);
 			});
 			sendResponse({

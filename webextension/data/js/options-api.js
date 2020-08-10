@@ -241,11 +241,7 @@ export function loadPreferences(selector) {
 		}
 	});
 }
-function import_onClick() {
-	const getWebsite = /^(\w+)_import$/i,
-		website = getWebsite.exec(this.id)[1];
-	sendDataToMain("importStreams", website);
-}
+
 if(browser.extension.getBackgroundPage() !== null && typeof domDelegate !== 'undefined') {
 	const delegate = (function () {
 		const Delegate = domDelegate.Delegate;
@@ -270,7 +266,6 @@ if(browser.extension.getBackgroundPage() !== null && typeof domDelegate !== 'und
 	liveEvent("change", "[data-setting-type='integer'],[data-setting-type='bool'],[data-setting-type='color'],input[data-setting-type='menulist'],[data-setting-type='menulist'] input[type='radio']", settingNode_onChange);
 	liveEvent("click", "#export_preferences", exportPrefsToFile);
 	liveEvent("click", "#import_preferences", importPrefsFromFile);
-	liveEvent("click", "[id$='_import']", import_onClick); // [id$='_import'] => Every id that end with _import
 	liveEvent("click", "button[data-setting-type='file']", prefNode_FileType_onChange);
 }
 

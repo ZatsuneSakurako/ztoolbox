@@ -119,18 +119,20 @@ async function refreshWebsitesData() {
 
 	isRefreshingData = true;
 
-	ZDK.console.info('Refreshing websites data...');
+	ZDK.console.debug('Refreshing websites data...');
 	let promises = new Map();
 
-	websites.forEach((websiteAPI, website) =>{
+	websites.forEach((websiteAPI, website) => {
 		promises.set(website, refreshWebsite(website));
 		promises.get(website)
-			.then(()=>{
-				if(appGlobal["notificationGlobalyDisabled"]===false){
+			.then(() => {
+				if (appGlobal["notificationGlobalyDisabled"] === false) {
 					doNotifyWebsite(website);
 				}
 			})
-			.catch((data) => {ZDK.console.log('refreshWebsitesData', data);});
+			.catch((data) => {
+				ZDK.console.log('refreshWebsitesData', data);
+			});
 	});
 
 	const data = await PromiseWaitAll(promises);
@@ -153,7 +155,7 @@ async function refreshWebsitesData() {
 		}
 	});
 
-	ZDK.console.group('Websites check end');
+	ZDK.console.groupCollapsed('Websites check end');
 	ZDK.console.log('fetchResponses:', data);
 	ZDK.console.log('Data:', websitesData);
 	ZDK.console.groupEnd();
