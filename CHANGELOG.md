@@ -2,6 +2,7 @@
 * i : Start using native JavaScript modules. It include the use of [import](https://developer.mozilla.org//docs/Web/JavaScript/Reference/Statements/import) (static and dynamic) Minimum version Firefox 67 and Chrome 63
 * i : Minimum Chrome version 73, because using [String.prototype.matchAll()](https://developer.mozilla.org/fr/docs/Web/JavaScript/Reference/Objets_globaux/String/matchAll)
 * i : deviantArt now use [fetch api](https://developer.mozilla.org/docs/Web/API/Fetch_API)
+* \+ : Amazon share link easier, into clipboard
 * Fix : RSS/Atom feed detection of links and titles
 
 # 0.12.0
