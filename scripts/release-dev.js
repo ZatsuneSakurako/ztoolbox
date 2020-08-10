@@ -159,7 +159,7 @@ async function init() {
 		}
 	});
 
-	await Promise.all(prodPromises);process.exit(1);
+	await Promise.all(prodPromises);
 
 
 
