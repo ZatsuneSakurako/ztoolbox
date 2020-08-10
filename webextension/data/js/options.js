@@ -1,13 +1,13 @@
 'use strict';
 
-var backgroundPage = browser.extension.getBackgroundPage();
-let options = backgroundPage.options;
+import { loadPreferences, loadTranslations } from './options-api.js';
 
-let _ = browser.i18n.getMessage;
 
-var theme_cache_update = backgroundPage.backgroundTheme.theme_cache_update;
+const backgroundPage = browser.extension.getBackgroundPage(),
+	theme_cache_update = backgroundPage.backgroundTheme.theme_cache_update
+;
 
-function theme_update(){
+window.theme_update = function theme_update(){
 	let panelColorStylesheet = theme_cache_update(document.querySelector("#generated-color-stylesheet"));
 	
 	if(typeof panelColorStylesheet === "object" && panelColorStylesheet !== null){
@@ -18,7 +18,7 @@ function theme_update(){
 		
 		document.querySelector("head").appendChild(panelColorStylesheet);
 	}
-}
+};
 theme_update();
 
 
@@ -28,7 +28,6 @@ function sendDataToMain(id, data){
 
 loadPreferences("section#preferences");
 
-let loadJS = browser.extension.getBackgroundPage().loadJS;
 function init(){
 	loadTranslations();
 }

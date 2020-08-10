@@ -1,5 +1,9 @@
 "use strict";
 
+import { Version } from './version.js';
+
+
+
 /**
  *
  * @return {Promise<string[]>}
@@ -55,8 +59,8 @@ async function checkHasUpdate() {
 		versions = await getVersions()
 	;
 
-	for (let version of versions) {
-		if (currentVersion.compareTo(new Version(version)) === 1) {
+	for (let remoteVersion of versions) {
+		if (new Version(remoteVersion).compareTo(currentVersion) === 1) {
 			return true;
 		}
 	}

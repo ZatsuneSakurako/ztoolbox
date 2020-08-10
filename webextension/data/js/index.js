@@ -1,24 +1,36 @@
 'use strict';
 
+
+import {default as env} from './env.js';
+import {getPreference, savePreference} from "./options-api.js";
+const ZDK = window.ZDK;
+window.getPreference = getPreference;
+window.savePreference = savePreference;
+window.env = env;
+
+
+
 appGlobal.notificationGlobalyDisabled = false;
 
-appGlobal.sendDataToMain = function(source, id, data){
-	console.dir([
-		source,
-		id,
-		data
-	]);
+// noinspection JSUnusedLocalSymbols
+/**
+ *
+ * @param source
+ * @param id
+ * @param data
+ */
+appGlobal.sendDataToMain = function sendDataToMain(source, id, data) {
 
-	if(source==="ZToolBox_Panel" && id==="panel_onload"){
-		if(typeof panel__UpdateData==="function"){
+	if (source === 'ZToolBox_Panel' && id === 'panel_onload') {
+		if (typeof panel__UpdateData === 'function') {
 			panel__UpdateData();
 		} else {
-			console.warn("panel__UpdateData not found");
+			ZDK.console.warn('panel__UpdateData not found');
 		}
-	} else if(source==="ZToolBox_Options" && id==="hourlyAlarm_update"){
+	} else if (source === "ZToolBox_Options" && id === "hourlyAlarm_update") {
 		HourlyAlarm.isEnabledHourlyAlarm()
 			.then(async function (isActivated) {
-				if(typeof isActivated==="boolean" && getPreference("hourlyAlarm")!==isActivated){
+				if (typeof isActivated==="boolean" && getPreference("hourlyAlarm") !== isActivated) {
 					if(getPreference("hourlyAlarm")===true){
 						await hourlyAlarm.enableHourlyAlarm();
 					} else {
@@ -27,16 +39,17 @@ appGlobal.sendDataToMain = function(source, id, data){
 				}
 			})
 			.catch(async function (err) {
-				consoleMsg("warn", err);
+				ZDK.console.error(err);
 				await hourlyAlarm.disableHourlyAlarm();
 
-				if(getPreference("hourlyAlarm")){
+				if (getPreference("hourlyAlarm")) {
 					await hourlyAlarm.enableHourlyAlarm();
 				}
 			})
 	}
 };
 
+const i18ex = window.i18ex;
 let _ = browser.i18n.getMessage;
 
 /*
@@ -165,7 +178,7 @@ class ContextMenusController extends Map {
 	}
 }
 
-const contextMenusController = new ContextMenusController();
+const contextMenusController = window.contextMenusController = new ContextMenusController();
 
 contextMenusController.create(i18ex._("OpenWithoutPlaylist"), ["*.youtube.com/watch?*&list=*","*.youtube.com/watch?list=*"], function (info, tab) {
 	const removePlaylistFromUrl = url => {
@@ -189,13 +202,13 @@ contextMenusController.create(i18ex._("OpenWithoutPlaylist"), ["*.youtube.com/wa
 });
 
 chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
-	if(sender.hasOwnProperty("url")){
-		console.info(`Receiving message from: ${sender.url} (${sender.id})`);
+	if (sender.hasOwnProperty("url")) {
+		console.debug(`Receiving message from: ${sender.url} (${sender.id})`);
 	}
-	if(typeof message === "object" && message.hasOwnProperty("data")){
-		if(message.data.id==="getPreferences"){
+	if (typeof message === "object" && message.hasOwnProperty("data")) {
+		if (message.data.id==="getPreferences") {
 			let reply = {};
-			message.data.preferences.forEach(prefId=>{
+			message.data.preferences.forEach(prefId => {
 				reply[prefId] = getPreference(prefId);
 			});
 			sendResponse({
@@ -205,7 +218,7 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
 	}
 });
 
-const chromeNotifications = new ChromeNotificationControler(),
+const chromeNotifications = new zDK.ChromeNotificationControler(),
 	notifButtons = {
 		"openUrl": {title: i18ex._("Open_in_browser"), iconUrl: "/data/images/ic_open_in_browser_black_24px.svg"},
 		"close": {title: i18ex._("Close"), iconUrl: "/data/images/ic_close_black_24px.svg"},
@@ -216,7 +229,7 @@ const chromeNotifications = new ChromeNotificationControler(),
 		"no": {title: i18ex._("No"), iconUrl: "/data/images/ic_cancel_black_24px.svg"}
 	}
 ;
-function doNotif(options, suffixConfirmIfNoButtons=false){
+window.doNotif = function doNotif(options, suffixConfirmIfNoButtons=false){
 	return new Promise((resolve, reject)=>{
 		if(typeof options !== "object" || options === null){
 			reject("Missing argument");
@@ -284,3 +297,24 @@ appGlobal["doNotif"] = doNotif;
 
 
 appGlobal["version"] = browser.runtime.getManifest().version;
+if (env === 'local') {
+	window.zDK.setInterval('checkUpdatesInterval', 10, 'm', async function checkUpdates() {
+		const lastCheck = moment(localStorage.getItem('checkUpdate'));
+		if (lastCheck.isValid() === true && moment.duration(moment().diff(lastCheck)).as('hours') < 6) {
+			return;
+		}
+
+		const hasUpdate = await window.zDK.chromeUpdateNotification.checkHasUpdate();
+		localStorage.setItem('checkUpdate', (new Date()).toISOString())
+		if (hasUpdate === false) {
+			return;
+		}
+
+		doNotif({
+			"title": 'Mise à jour disponible',
+			"message": `Une mise à jour de "${browser.runtime.getManifest().name}" est disponible, rafraîchir le dépôt local`
+		})
+			.catch(ZDK.console.error)
+		;
+	});
+}

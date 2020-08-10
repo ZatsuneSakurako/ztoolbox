@@ -263,3 +263,9 @@ class ZTimer {
 		}
 	}
 }
+
+
+
+export {
+	ZTimer
+}

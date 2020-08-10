@@ -1,28 +1,10 @@
 'use strict';
 
+import { ExtendedMap } from './ExtendedMap.js';
+import { PromiseWaitAll } from '../classes/PromiseWaitAll.js';
+import { Request } from '../classes/Request.js';
+import { ZDK } from "../classes/ZDK.js";
 
-class ExtendedMap extends Map{
-	addValue(id, newValue) {
-		this.set(id, this.get(id) + newValue);
-	}
-
-	getBestIcon(){
-		// Map must be a Map of items like ["64x64",<url>]
-		let bestIconMinSize = 0;
-		let bestUrl = "";
-		this.forEach((value, index) => {
-			let sizes = index.split("x");
-			if(sizes.length === 2){
-				let minSize = Math.min(sizes[0],sizes[1]);
-				if(minSize > bestIconMinSize){
-					bestIconMinSize = minSize;
-					bestUrl = value;
-				}
-			}
-		});
-		return bestUrl;
-	}
-}
 
 
 function doNotifyWebsite(website){
@@ -35,11 +17,11 @@ function doNotifyWebsite(website){
 		labelArray = [];
 
 	if (websiteData.logged) {
-		if (websiteData.hasOwnProperty("folders")) {
+		if (websiteData.hasOwnProperty('folders')) {
 			websiteData.folders.forEach((folderData, name) => {
 				let count = folderData.folderCount;
-				if(typeof count === "number" && !isNaN(count) && count > 0){
-					let suffix = "";
+				if (typeof count === "number" && !isNaN(count) && count > 0) {
+					let suffix = '';
 					if(websiteData.notificationState.count !== null && websiteData.count > websiteData.notificationState.count){
 						suffix=` (+${websiteData.count - websiteData.notificationState.count})`;
 					}
@@ -61,10 +43,10 @@ function doNotifyWebsite(website){
 			})
 				.then(() => {
 					ZDK.openTabIfNotExist(websiteAPI.getLoginURL(websiteData))
-						.catch(console.error)
+						.catch(ZDK.console.error)
 					;
 				})
-				.catch(console.error)
+				.catch(ZDK.console.error)
 			;
 		}
 		websiteData.notificationState.logged = websiteData.logged;
@@ -77,15 +59,15 @@ function doNotifyWebsite(website){
 			})
 				.then(() => {
 					ZDK.openTabIfNotExist(websiteAPI.getViewURL(websiteData))
-						.catch(console.error)
+						.catch(ZDK.console.error)
 					;
 				})
-				.catch(console.error)
+				.catch(ZDK.console.error)
 			;
 		}
 
 		if (getPreference('notify_vocal')) {
-			voiceReadMessage(i18ex._("language"), i18ex._('count_new_notif', {'count': websiteData.count}));
+			voiceReadMessage(i18ex._('language'), i18ex._('count_new_notif', {'count': websiteData.count}));
 		}
 
 	} else if (getPreference('notify_all_viewed') && (typeof websiteData.count === 'number' && websiteData.count === 0) && (typeof websiteData.notificationState.count === 'number' && websiteData.notificationState.count > 0)) {
@@ -96,10 +78,10 @@ function doNotifyWebsite(website){
 		})
 			.then(() => {
 				ZDK.openTabIfNotExist(websiteAPI.getViewURL(websiteData))
-					.catch(console.error)
+					.catch(ZDK.console.error)
 				;
 			})
-			.catch(console.warn)
+			.catch(ZDK.console.warn)
 		;
 	}
 
@@ -129,26 +111,28 @@ class websiteDefaultData {
 
 
 let isRefreshingData = false;
-async function refreshWebsitesData(){
+async function refreshWebsitesData() {
 	if (isRefreshingData === true) {
-		console.warn('Already refreshing...');
+		ZDK.console.warn('Already refreshing...');
 		return false;
 	}
 
 	isRefreshingData = true;
 
-	console.info('Refreshing websites data...');
+	ZDK.console.debug('Refreshing websites data...');
 	let promises = new Map();
 
-	websites.forEach((websiteAPI, website) =>{
+	websites.forEach((websiteAPI, website) => {
 		promises.set(website, refreshWebsite(website));
 		promises.get(website)
-			.then(()=>{
-				if(appGlobal["notificationGlobalyDisabled"]===false){
+			.then(() => {
+				if (appGlobal["notificationGlobalyDisabled"] === false) {
 					doNotifyWebsite(website);
 				}
 			})
-			.catch((data) => {ZDK.consoleDir(data,"refreshWebsitesData");});
+			.catch((data) => {
+				ZDK.console.log('refreshWebsitesData', data);
+			});
 	});
 
 	const data = await PromiseWaitAll(promises);
@@ -156,7 +140,7 @@ async function refreshWebsitesData(){
 	clearInterval(interval);
 	interval = setInterval(refreshWebsitesData, getPreference('check_delay') * 60000);
 
-	setTimeout(()=>{
+	setTimeout(() => {
 		isRefreshingData = false;
 	}, 5 * 1000);
 
@@ -171,17 +155,14 @@ async function refreshWebsitesData(){
 		}
 	});
 
-	if(getPreference('showAdvanced') && getPreference('showExperimented')){
-		console.group();
-		console.info("Websites check end");
-		ZDK.consoleDir(data, "xhrRequests:");
-		ZDK.consoleDir(ZDK.mapToObj(websitesData), "Data:");
-		console.groupEnd();
-	}
+	ZDK.console.groupCollapsed('Websites check end');
+	ZDK.console.log('fetchResponses:', data);
+	ZDK.console.log('Data:', websitesData);
+	ZDK.console.groupEnd();
 
 	// chrome.browserAction.setTitle({title: (count === null)? i18ex._("no_website_logged") : label});
 
-	if (typeof chrome.browserAction.setBadgeText === 'function') {
+	if (typeof browser.browserAction.setBadgeText === 'function') {
 		let displayedCount;
 		if (count === null) {
 			displayedCount = '';
@@ -193,12 +174,12 @@ async function refreshWebsitesData(){
 			displayedCount = count.toString();
 		}
 
-		chrome.browserAction.setBadgeText({text: displayedCount});
-		chrome.browserAction.setBadgeBackgroundColor({color: (count !== null && count > 0)? "#FF0000" : "#424242"});
+		browser.browserAction.setBadgeText({text: displayedCount});
+		browser.browserAction.setBadgeBackgroundColor({color: (count !== null && count > 0)? "#FF0000" : "#424242"});
 	}
 
-	if (typeof panel__UpdateData === 'function') {
-		panel__UpdateData();
+	if (typeof window.panel__UpdateData === 'function') {
+		window.panel__UpdateData();
 	}
 
 	return data;
@@ -206,42 +187,61 @@ async function refreshWebsitesData(){
 appGlobal["refreshWebsitesData"] = refreshWebsitesData;
 
 
-async function refreshWebsite(website){
-	const xhrRequest = await Request({
-		url: websites.get(website).dataURL,
-		overrideMimeType: 'text/html; charset=utf-8',
-		contentType: 'document',
-		Request_documentParseToJSON: websites.get(website).Request_documentParseToJSON
-	}).get();
+async function refreshWebsite(website) {
+	let data = null, request = null;
+	if (typeof websites.get(website).getData === 'function') {
+		try {
+			const result = await websites.get(website).getData();
+			data = result.data;
+			request = result.response;
+		} catch (e) {
+			ZDK.console.error(e);
+		}
+	} else {
+		try {
+			request = await Request({
+				url: websites.get(website).dataURL,
+				overrideMimeType: 'text/html; charset=utf-8',
+				contentType: 'document',
+				Request_documentParseToJSON: websites.get(website).Request_documentParseToJSON
+			}).get();
 
-	if(/*(/^2\d*$/.test(xhrRequest.status) == true || xhrRequest.statusText == "OK") && */ xhrRequest.json !== null){
-		let data = xhrRequest.map;
+			data = request.map;
+		} catch (e) {
+			ZDK.console.error(e);
+		}
+	}
+
+
+	if (data !== null) {
 		let websiteData = websitesData.get(website);
 
 		websiteData.count = data.get("count");
 		websiteData.logged = data.get("logged");
 		websiteData.loginId = data.get("loginId");
 		websiteData.websiteIcon = data.get("websiteIcon");
-		if(data.has("folders")){
+		if (data.has("folders")) {
 			websiteData.folders = data.get("folders");
 		}
-		return xhrRequest;
+		return request;
 	} else {
-		console.warn(`Error retrieving page for "${website}"`);
+		ZDK.console.warn(`Error retrieving page for "${website}"`);
 		//let websiteData = websitesData.get(website);
 		//websiteData.logged  = false;
-		return xhrRequest;
+		return request;
 	}
 }
 
 
 let interval,
 	websites = new Map(),
-	websitesData = new Map();
+	websitesData = new Map()
+;
 appGlobal["websites"] = websites;
 appGlobal["websitesData"] = websitesData;
 (async function(){
-	await zDK.loadJS(document, ["platforms/deviantart.js"]);
+	const { deviantArt } = await import('../platforms/deviantart.js');
+	websites.set('deviantArt', deviantArt);
 
 	websites.forEach((websiteAPI, website) => {
 		websitesData.set(website, new websiteDefaultData());

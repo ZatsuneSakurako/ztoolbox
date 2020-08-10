@@ -1,5 +1,21 @@
-class ZDK{
-	constructor(addonJsRoot){
+'use strict';
+
+import { ChromeNotificationControler } from './chrome-notification-controler.js';
+import * as chromeUpdateNotification from './chromeUpdateNotification.js';
+import { ChromePreferences } from './chrome-preferences.js';
+import { i18extended } from './i18extended.js';
+import { Queue } from './queue.js';
+import { DataStore } from './data-store.js';
+import { ZTimer } from './ztimer.js';
+import { Version } from './version.js';
+import { loadJS } from './loadJS.js';
+
+export const noop = () => {};
+
+
+
+class ZDK {
+	constructor(addonJsRoot) {
 		this.addonJsRoot = addonJsRoot;
 
 
@@ -14,70 +30,89 @@ class ZDK{
 			configurable: false,
 			writable: false
 		});
-
-
-
-		const _define = (name, classFn) => {
-			if(typeof classFn==="function"){
-				Object.defineProperty(this, name, {
-					value: classFn,
-					configurable: false,
-					writable: false
-				});
-			} else {
-				console.warn(`"${name}" not found.`)
-			}
-		};
-
-		_define('ChromeNotificationControler', ChromeNotificationControler);
-		_define('ChromePreferences', ChromePreferences);
-		_define('i18extended', i18extended);
-		_define('Queue', Queue);
-		_define('DataStore', DataStore);
-		_define('ZTimer', ZTimer);
-		if(typeof ZTimer==="function"){
-			_define('setTimeout', ZTimer.setTimeout);
-			_define('setInterval', ZTimer.setInterval);
-		}
-		_define('Version', Version);
 	}
 
 
-	async loadJS(callerDocument, list, prefix){
-		if(prefix===undefined){
-			prefix=this.addonJsRoot;
-		}
-		const isJSLoaded = (callerDocument, src)=>{
-			for(let script of callerDocument.scripts){
-				if(typeof script.src === "string" && script.src.indexOf(src) !== -1){
-					console.log(`"${src}" is already loaded`);
-					return true;
-				}
-			}
-			return false;
-		};
-		const insertJSNode = function(item){
-			return new Promise((resolve, reject)=>{
-				let newJS = callerDocument.createElement("script");
-				newJS.src = chrome.extension.getURL(prefix + item);
-				newJS.onload = ()=>{
-					newJS.onload = null;
-					resolve(true);
-				};
-				newJS.onerror = reject;
-				callerDocument.querySelector("body").appendChild(newJS);
-			});
-		};
+	/**
+	 *
+	 * @return {ChromeNotificationControler}
+	 * @constructor
+	 */
+	get ChromeNotificationControler() {
+		return ChromeNotificationControler;
+	}
 
-		if(Array.isArray(list) && list.hasOwnProperty(length) === true && list.length > 0) {
-			for(let item of list){
-				if(isJSLoaded(callerDocument, item)===false){
-					await insertJSNode(item);
-				}
-			}
-		} else {
-			return "EmptyList";
+	get chromeUpdateNotification() {
+		return chromeUpdateNotification;
+	}
+
+	/**
+	 *
+	 * @return {ChromePreferences}
+	 * @constructor
+	 */
+	get ChromePreferences() {
+		return ChromePreferences;
+	}
+
+	/**
+	 *
+	 * @return {i18extended}
+	 */
+	get i18extended() {
+		return i18extended;
+	}
+
+	/**
+	 *
+	 * @return {Queue}
+	 * @constructor
+	 */
+	get Queue() {
+		return Queue;
+	}
+
+	/**
+	 *
+	 * @return {DataStore}
+	 * @constructor
+	 */
+	get DataStore() {
+		return DataStore;
+	}
+
+	/**
+	 *
+	 * @return {ZTimer}
+	 * @constructor
+	 */
+	get ZTimer() {
+		return ZTimer;
+	}
+
+	get setTimeout() {
+		return this.ZTimer.setTimeout;
+	}
+
+	get setInterval() {
+		return this.ZTimer.setInterval;
+	}
+
+	/**
+	 *
+	 * @return {Version}
+	 * @constructor
+	 */
+	get Version() {
+		return Version;
+	}
+
+
+	loadJS(callerDocument, list, prefix) {
+		if (prefix === undefined) {
+			prefix = this.addonJsRoot;
 		}
+		return loadJS(callerDocument, list, prefix);
 	}
 
 
@@ -108,26 +143,28 @@ class ZDK{
 	};
 
 
-	static consoleMsg(level,str){
-		let msg = (str && typeof str.toString === "function")? str.toString() : str;
-		if(getPreference("showAdvanced") && getPreference("showExperimented")){
-			if(typeof console[level] === "function"){
-				console[level](str);
-			} else {
-				consoleMsg("log", msg);
-			}
+	/**
+	 * Console/Error catcher, avoid messages if not experimented user
+	 * @return {Console}
+	 */
+	static get console() {
+		if (this._console === undefined || this._console === null) {
+			this._console = new Proxy(window.console, {
+				get(target, p) {
+					if (p !== 'log' && typeof this.hasOwnProperty(target, p) === false) {
+						return this.get(target, 'log');
+					}
+
+					if (getPreference('showAdvanced') && getPreference('showExperimented')) {
+						return window.console[p];
+					} else {
+						return noop;
+					}
+				}
+			});
 		}
-	}
-	static consoleDir(obj,str){
-		if(getPreference("showAdvanced") && getPreference("showExperimented")){
-			if(typeof str === "string" || (typeof str !== "undefined" && typeof str.toString === "function")){
-				console.group((typeof str === "string")? str : str.toString());
-				console.dir(obj);
-				console.groupEnd();
-			} else {
-				console.dir(obj);
-			}
-		}
+
+		return this._console;
 	}
 
 	/**
@@ -275,37 +312,37 @@ class ZDK{
 		}
 	}
 
-	static async openTabIfNotExist(url){
-		consoleMsg("log", url);
+	static async openTabIfNotExist(url) {
+		this.console.log(url);
 
 		const tabs = await browser.tabs.query({});
 
-		let custom_url = url.toLowerCase().replace(/http(?:s)?:\/\/(?:www\.)?/i,"");
-		for(let tab of tabs){
-			if(tab.url.toLowerCase().indexOf(custom_url) !== -1){ // Mean the url was already opened in a tab
+		let custom_url = url.toLowerCase().replace(/http(?:s)?:\/\/(?:www\.)?/i,'');
+		for (let tab of tabs) {
+			if (tab.url.toLowerCase().indexOf(custom_url) !== -1) { // Mean the url was already opened in a tab
 				browser.tabs.highlight({tabs: tab.index}); // Show the already opened tab
 				return true; // Return true to stop the function as the tab is already opened
 			}
 		}
 
-		if (typeof browser.windows === "undefined") {
+		if (typeof browser.windows === 'undefined') {
 			const browserWindows = await browser.windows.getAll({
 				populate: false,
-				windowTypes: ["normal"]
+				windowTypes: ['normal']
 			});
 
 			// If the function is still running, it mean that the url isn't detected to be opened, so, we can open it
 			if(browserWindows.length===0){
 				await browser.windows.create({
-					"focused": true,
-					"type": "normal",
-					"url": url
+					'focused': true,
+					'type': 'normal',
+					'url': url
 				});
 			} else{
-				await browser.tabs.create({ "url": url });
+				await browser.tabs.create({ 'url': url });
 			}
 		} else {
-			await browser.tabs.create({ "url": url });
+			await browser.tabs.create({ 'url': url });
 		}
 
 		return false; // Return false because the url wasn't already in a tab
@@ -316,27 +353,27 @@ class ZDK{
 	 * @param action
 	 * @param selector
 	 * @param html
-	 * @param {HTMLDocument} doc
-	 * @returns {null | Array<HTMLElement>}
+	 * @param {HTMLDocument|Document} doc
+	 * @returns {null | HTMLElement[]}
 	 */
-	insertHtml(action, selector, html, doc=document){
-		if(typeof action!=="string"||action===""){
-			throw "Wrong action";
+	insertHtml(action, selector, html, doc=document) {
+		if (typeof action !== 'string' || action === '') {
+			throw 'Wrong action';
 		}
 
-		const nodes = (typeof html==="object")? [html] : new DOMParser().parseFromString(html, 'text/html').body.childNodes,
-			target = (typeof selector==="object")? selector : doc.querySelector(selector),
+		const nodes = (typeof html === 'object')? [html] : new DOMParser().parseFromString(html, 'text/html').body.childNodes,
+			target = (typeof selector === 'object')? selector : doc.querySelector(selector),
 			output = []
 		;
-		if(target!==null){
-			for(let i in nodes){
-				if(nodes.hasOwnProperty(i)){
+		if (target!==null) {
+			for (let i in nodes) {
+				if (nodes.hasOwnProperty(i)) {
 					const node = nodes[i];
-					switch(action){
-						case "appendTo":
+					switch(action) {
+						case 'appendTo':
 							output[i] = target.appendChild(node);
 							break;
-						case "insertBefore":
+						case 'insertBefore':
 							output[i] = target.parentNode.insertBefore(node, target);
 							break;
 					}
@@ -350,29 +387,29 @@ class ZDK{
 	/**
 	 * @param selector
 	 * @param html
-	 * @param {HTMLDocument} doc
-	 * @returns {null | Array<HTMLElement>}
+	 * @param {HTMLDocument|Document} doc
+	 * @returns {null | HTMLElement[]}
 	 */
-	appendTo(selector, html, doc=document){
-		return this.insertHtml("appendTo",selector,html,doc);
+	appendTo(selector, html, doc=document) {
+		return this.insertHtml('appendTo', selector, html, doc);
 	}
 
 	/**
 	 *
 	 * @param selector
 	 * @param html
-	 * @param {HTMLDocument} doc
-	 * @returns {null | Array<HTMLElement>}
+	 * @param {HTMLDocument|Document} doc
+	 * @returns {null | HTMLElement[]}
 	 */
-	insertBefore(selector, html, doc=document){
-		return this.insertHtml("insertBefore",selector,html,doc);
+	insertBefore(selector, html, doc=document) {
+		return this.insertHtml('insertBefore', selector, html, doc);
 	}
 
 	/**
 	 *
 	 * @param {HTMLElement} node
 	 */
-	removeAllChildren(node){
+	removeAllChildren(node) {
 		// Taken from https://stackoverflow.com/questions/683366/remove-all-the-children-dom-elements-in-div
 		while (node.hasChildNodes()) {
 			node.removeChild(node.lastChild);
@@ -384,7 +421,7 @@ class ZDK{
 	 * @param node
 	 * @return {{top: number, left: number}}
 	 */
-	static getOffset(node){
+	static getOffset(node) {
 		let x = 0,
 			y = 0
 		;
@@ -456,235 +493,8 @@ class ZDK{
 	}
 }
 
-var consoleMsg = ZDK.consoleMsg;
-
-if(typeof Promise.prototype.finally!=="function"){
-	Promise.prototype.finally = function(fn){
-		this.then(fn).catch(fn);
-	};
-}
-
-const splitUri = (function() { // https://codereview.stackexchange.com/questions/9574/faster-and-cleaner-way-to-parse-parameters-from-url-in-javascript-jquery/9630#9630
-	const splitRegExp = new RegExp(
-		'^' +
-		'(?:' +
-		'([^:/?#.]+)' +                         // scheme - ignore special characters
-		// used by other URL parts such as :,
-		// ?, /, #, and .
-		':)?' +
-		'(?://' +
-		'(?:([^/?#]*)@)?' +                     // userInfo
-		'([\\w\\d\\-\\u0100-\\uffff.%]*)' +     // domain - restrict to letters,
-		// digits, dashes, dots, percent
-		// escapes, and unicode characters.
-		'(?::([0-9]+))?' +                      // port
-		')?' +
-		'([^?#]+)?' +                           // path
-		'(?:\\?([^#]*))?' +                     // query
-		'(?:#(.*))?' +                          // fragment
-		'$')
-	;
-
-	return function (uri) {
-		let split;
-		split = uri.match(splitRegExp);
-		return {
-			'scheme':split[1],
-			'user_info':split[2],
-			'domain':split[3],
-			'port':split[4],
-			'path':split[5],
-			'query_data': split[6],
-			'fragment':split[7]
-		}
-	};
-})();
-class Params extends Map {
-	encode() {
-		const array = [];
-		this.forEach((value, key) => {
-			array.push((value || typeof value === 'boolean')? `${encodeURI(key)}=${encodeURI(value)}` : `${encodeURI(key)}`);
-		});
-
-		return array.join('&');
-	}
-}
-
-/**
- *
- * @param {Object} options
- * @returns {{get: get, post: post}}
- * @constructor
- */
-function Request(options){
-	if(typeof options.url !== "string" /*&& typeof options.onComplete !== "function"*/){
-		consoleMsg("warn", "Error in options");
-	} else {
-		/**
-		 *
-		 * @param {String} method
-		 * @returns {Promise<Object>}
-		 */
-		let core = function(method){
-			return new Promise(resolve=>{
-				let xhr;
-				if(typeof options.anonymous === "boolean"){
-					xhr = new XMLHttpRequest({anonymous:options.anonymous});
-				} else {
-					xhr = new XMLHttpRequest();
-				}
-
-				let content = (Array.isArray(options.content) || options.content instanceof Map)? options.content : [];
-				if(method === 'GET'){
-					// Extract query data from url to put it with the other
-					const urlObj = splitUri(options.url);
-					if(typeof urlObj.query_data === "string" && urlObj.query_data !== ""){
-						let urlQuery = urlObj.query_data.split("&").map(value=>{
-							return value.split("=");
-						});
-						if(Array.isArray(urlQuery)){
-							if(Array.isArray(content)){
-								content = urlQuery.concat(content);
-							} else {
-								content = urlQuery;
-							}
-							options.url = options.url.replace("?"+urlObj.query_data, "");
-						}
-					}
-				}
-
-				const params = new Params(content);
-
-				xhr.open(method, ((method === 'GET')? `${options.url}${(params.size > 0)? `?${params.encode()}` : ""}` : options.url), true);
-
-				if(typeof options.contentType === "string"){
-					xhr.responseType = options.contentType;
-				}
-				if(typeof options.overrideMimeType === "string"){
-					xhr.overrideMimeType(options.overrideMimeType);
-				}
-
-				xhr.timeout = getPreference("timeout_delay") * 1000;
-
-				if(options.hasOwnProperty("headers") === true && typeof options.headers === "object"){
-					for(let header in options.headers){
-						if(!options.headers.hasOwnProperty(header)){ // Make sure to not loop constructors
-							continue;
-						}
-						let value = options.headers[header];
-						xhr.setRequestHeader(header, value);
-					}
-				}
-
-				xhr.addEventListener("loadend", function(){
-					let response = {
-						"url": xhr.responseURL,
-						"json": null,
-						"status": xhr.status,
-						"statusText": xhr.statusText,
-						"header": xhr.getAllResponseHeaders()
-					};
-					if(xhr.responseType === "" || xhr.responseType === "text"){
-						response.text= xhr.responseText;
-					}
-					if(typeof xhr.response !== "undefined"){
-						response.response = xhr.response;
-					}
-
-					if(typeof options.customJSONParse === "string"){
-						switch(options.customJSONParse){
-							case "xmlToJSON":
-								if(typeof xhr.responseXML === "undefined" || xhr.responseXML === null){
-									response.json = null;
-								} else {
-									let xmlToStringParser = new XMLSerializer();
-									let xmlText = xmlToStringParser.serializeToString(xhr.responseXML);
-
-									try{
-										// Source: https://www.sitepoint.com/how-to-convert-xml-to-a-javascript-object/
-										let rawData = XML2jsobj(xhr.responseXML.documentElement);
-										let data = {};
-
-										/**		Flatten the object a bit		**/
-										if(rawData.hasOwnProperty("body")){
-											data = rawData.body;
-											if(rawData.hasOwnProperty("version")){
-												data.version = rawData.version;
-											}
-										} else {
-											data = rawData;
-										}
-										/**		End flatten the object a bit		**/
-
-										response.json = data;
-									}
-									catch(error){
-										response.json = null;
-									}
-								}
-								break;
-							case "urlencodedToJSON":
-								let jsonDATA = {};
-								let splitedData = xhr.responseText.split("&");
-
-								splitedData = splitedData.map((str)=>{
-									return str.split("=");
-								});
-								for(let item of splitedData){
-									jsonDATA[decodeURIComponent(item[0])] = decodeURIComponent(item[1]);
-								}
-								response.json = jsonDATA;
-								break;
-							default:
-								consoleMsg("warn", `[Request] Unknown custom JSON parse ${options.customJSONParse}`);
-						}
-					} else if(typeof options.customJSONParse === "function"){
-						let data = null;
-						try {
-							data = options.customJSONParse(xhr);
-						} catch (e) {
-							consoleMsg("error", e);
-						}
-
-						response.json = data;
-					} else if(xhr.responseType === "document" && typeof options.Request_documentParseToJSON === "function"){
-						let result = options.Request_documentParseToJSON(xhr);
-						if(result instanceof Map){
-							response.map = result;
-							response.json = ZDK.mapToObj(result);
-						} else {
-							response.json = result;
-						}
-					} else {
-						try{response.json = JSON.parse(xhr.responseText);}
-						catch(error){response.json = null;}
-					}
-
-					if(typeof options.onComplete==="function"){
-						options.onComplete(response);
-					}
-					resolve(response);
-				});
 
 
-				if(method === 'GET'){
-					xhr.send();
-				} else if(method === 'POST'){
-					xhr.send(params.encode());
-				} else {
-					throw `Unknown method "${method}"`
-				}
-			});
-		};
-
-
-		return {
-			'get' : function() {
-				return core('GET');
-			},
-			'post' : function() {
-				return core('POST');
-			}
-		};
-	}
+export {
+	ZDK
 }

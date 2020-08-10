@@ -1,15 +1,19 @@
+'use strict';
+
+
+
 class Queue {
-	constructor(limit=4){
+	constructor(limit=4) {
 		this.queue = new Map();
 		this.limit = limit;
 	}
 	
-	enqueue(callback, id, ...args){
+	enqueue(callback, id, ...args) {
 		this.queue.set(id, {callback, args});
 		return this;
 	}
 	
-	run(itemOnBegin=()=>{}, itemOnEnd=()=>{}){
+	run(itemOnBegin=()=>{}, itemOnEnd=()=>{}) {
 		return new Promise((resolve, reject) => {
 			let result = new Map();
 			let currentlyExecuting = 0;
@@ -93,4 +97,8 @@ class Queue {
 			}
 		})
 	}
+}
+
+export {
+	Queue
 }

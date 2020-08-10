@@ -72,15 +72,15 @@ async function init() {
 		process.exit(1);
 	} else {
 		echo("Copying mustache...");
-		await _cp("./node_modules/mustache/mustache.min.js", jsLib);
+		await _cp("./node_modules/mustache/mustache.js", jsLib);
 
 		echo("Copying perfect-scrollbar...");
 		await _cp("./node_modules/perfect-scrollbar/css/perfect-scrollbar.css", cssLib);
-		await _cp("./node_modules/perfect-scrollbar/dist/perfect-scrollbar.min.js", jsLib);
+		await _cp("./node_modules/perfect-scrollbar/dist/perfect-scrollbar.esm.js", jsLib);
 
 		echo("Copying webextension-polyfill...");
-		await _cp("./node_modules/webextension-polyfill/dist/browser-polyfill.min.js", jsLib);
-		await _cp("./node_modules/webextension-polyfill/dist/browser-polyfill.min.js.map", jsLib);
+		await _cp("./node_modules/webextension-polyfill/dist/browser-polyfill.js", jsLib);
+		await _cp("./node_modules/webextension-polyfill/dist/browser-polyfill.js.map", jsLib);
 
 		echo("Copying/Building Lodash Debounce - Custom Build..."); // https://lodash.com/custom-builds
 		let stdout = null;

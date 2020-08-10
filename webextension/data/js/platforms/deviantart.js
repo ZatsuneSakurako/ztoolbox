@@ -1,24 +1,155 @@
+import { ExtendedMap } from '../variousFeatures/ExtendedMap.js';
+import { ZDK } from '../classes/ZDK.js';
+
+
+
 let deviantArt = {
 	dataURL:"http://www.deviantart.com/notifications/",
-	getViewURL:
-		function(websiteState){
-			if(websiteState.count > 0){
-				return "http://www.deviantart.com/notifications/";
-			} else if(websiteState.logged !== null && websiteState.logged && websiteState.loginId !== ""){
-				return `http://www.deviantart.com/${websiteState.loginId}`;
-			} else if(websiteState.logged !== null && websiteState.logged === false){
-				return "http://www.deviantart.com/notifications/"; // dA will redirect it to https://www.deviantart.com/users/login?ref=*
-			} else {
-				return "http://www.deviantart.com/";
-			}
-		},
-	getLoginURL:
-		function(websiteState){
+	getViewURL: function(websiteState) {
+		if (websiteState.count > 0) {
+			return "http://www.deviantart.com/notifications/";
+		} else if (websiteState.logged !== null && websiteState.logged && websiteState.loginId !== "") {
+			return `http://www.deviantart.com/${websiteState.loginId}`;
+		} else if (websiteState.logged !== null && websiteState.logged === false) {
 			return "http://www.deviantart.com/notifications/"; // dA will redirect it to https://www.deviantart.com/users/login?ref=*
-		},
+		} else {
+			return "http://www.deviantart.com/";
+		}
+	},
+	getLoginURL: function(websiteState) {
+		return "http://www.deviantart.com/notifications/"; // dA will redirect it to https://www.deviantart.com/users/login?ref=*
+	},
+
 	/**
 	 *
-	 * @param {XMLHttpRequest} xhrRequest
+	 * @param rawHtml
+	 * @return {Promise<{response: Response, data: null|ExtendedMap}>}
+	 */
+	getData: async function (rawHtml=null) {
+		const output = {
+			data: null
+		};
+
+		let rawData = rawHtml;
+		if (rawHtml === null) {
+			try {
+				output.response = await fetch(this.dataURL);
+				rawData = await output.response.text();
+			} catch (e) {
+				ZDK.console.error(e);
+				return output
+			}
+		}
+
+		const iconRegEx = /<link\s+[^>]*\s*rel=["']apple-touch-icon["']\s+sizes=["'](\d+x\d+)["']\s+href=["']([^"]+)["']\s*\/>/gm,
+			icons = new ExtendedMap()
+		;
+
+		if (iconRegEx.test(rawData)) {
+			const iconsHtml = Array.from(rawData.matchAll(iconRegEx));
+			for (let iconHtml of iconsHtml) {
+				icons.set(iconHtml[1], iconHtml[2]);
+			}
+		}
+
+
+
+
+
+		const reg = /window.__INITIAL_STATE__\s*=\s*JSON.parse\(["'](.*)["']\)/ig;
+
+		const rawInitialData = rawData.match(reg);
+		let result;
+
+		if (Array.isArray(rawInitialData) === false || rawInitialData.length <= 0) {
+			return output;
+		}
+
+		let initialData = reg.exec(rawInitialData[0]);
+		if (Array.isArray(initialData) === false || initialData.length !== 2) {
+			return output;
+		}
+
+		try {
+			/*
+			 * Double JSON.parse
+			 * 1st to unescape \" ....
+			 * 2nd to get the object
+			 */
+			initialData = JSON.parse(JSON.parse(`"${initialData[1]}"`));
+		} catch (e) {
+			ZDK.console.error(e);
+			return output;
+		}
+
+		if (initialData.hasOwnProperty('@@publicSession') === false) {
+			return output;
+		}
+
+		const data = initialData['@@publicSession'];
+		if (data.hasOwnProperty('isLoggedIn') === false || data.hasOwnProperty('user') === false || data.hasOwnProperty('counts') === false) {
+			ZDK.console.error('Missing data in @@publicSession');
+			return output;
+		}
+
+		result = new ExtendedMap();
+		result.set('count', 0);
+		result.set('logged', data.isLoggedIn);
+		result.set('loginId', data.user.username);
+		result.set('folders', new Map());
+
+		const iconUrl = icons.getBestIcon();
+		result.set("websiteIcon", iconUrl);
+
+
+
+		if (initialData.hasOwnProperty('@@streams') === false) {
+			for (let folderName in data.counts) {
+				if (data.counts.hasOwnProperty(folderName)) {
+					const folderCount = data.counts[folderName];
+					if (Number.isNaN(folderCount)) {
+						continue;
+					}
+
+					if (['points', 'cart'].includes(folderName)) {
+						continue;
+					}
+
+					result.addValue('count', folderCount);
+					result.get('folders').set(folderName, {
+						'folderCount': folderCount,
+						'folderName': folderName
+					});
+				}
+			}
+		} else {
+			console.debug('@@streams', initialData['@@streams']);
+			const streams = initialData['@@streams'];
+			for (let name in streams) {
+				if (streams.hasOwnProperty(name) === false) {
+					continue;
+				}
+
+				const item = streams[name],
+					folderCount = item.items.length,
+					folderName = item.streamParams.notificationType
+				;
+
+				result.addValue('count', folderCount);
+				result.get('folders').set(folderName, {
+					'folderCount': folderCount,
+					'folderName': folderName
+				});
+			}
+		}
+
+		output.data = result;
+		return output;
+	},
+
+	/**
+	 *
+	 * @param xhrRequest
 	 * @return {Object | null}
 	 */
 	Request_documentParseToJSON:
@@ -29,8 +160,6 @@ let deviantArt = {
 				return null;
 			}
 
-			let result = null;
-
 			let iconNodes = dataDocument.querySelectorAll('link[sizes][rel*=icon][href]');
 			let icons = new ExtendedMap();
 			for (let iconNode of iconNodes) {
@@ -40,6 +169,7 @@ let deviantArt = {
 			}
 			let iconUrl = icons.getBestIcon();
 
+			let result;
 			let nodes = dataDocument.querySelectorAll('.oh-menuctrl .oh-menu.iconset-messages a.mi');
 			if (nodes !== null && nodes.length > 0) {
 				result = new ExtendedMap();
@@ -74,91 +204,15 @@ let deviantArt = {
 					}
 				}
 			} else {
-				const reg = /window.__INITIAL_STATE__\s*=\s*JSON.parse\(["'](.*)["']\)/ig;
-				const rawInitialData = dataDocument.documentElement.outerHTML.match(reg);
-				if (Array.isArray(rawInitialData) === false || rawInitialData.length <= 0) {
-					return null;
-				}
-
-				let initialData = reg.exec(rawInitialData[0]);
-				if (Array.isArray(initialData) === false || initialData.length !== 2) {
-					return null;
-				}
-
-				try {
-					/*
-					 * Double JSON.parse
-					 * 1st to unescape \" ....
-					 * 2nd to get the object
-					 */
-					initialData = JSON.parse(JSON.parse(`"${initialData[1]}"`));
-				} catch (e) {
-					console.error(e);
-					return null;
-				}
-
-				if (initialData.hasOwnProperty('@@publicSession') === false) {
-					return null;
-				}
-
-				const data = initialData['@@publicSession'];
-				if (data.hasOwnProperty('isLoggedIn') === false || data.hasOwnProperty('user') === false || data.hasOwnProperty('counts') === false) {
-					console.error('Missing data in @@publicSession');
-					return null;
-				}
-
-				result = new ExtendedMap();
-				result.set('count', 0);
-				result.set('logged', data.isLoggedIn);
-				result.set('loginId', data.user.username);
-				result.set('folders', new Map());
-
-				result.set("websiteIcon", iconUrl);
-
-
-
-				if (initialData.hasOwnProperty('@@streams') === false) {
-					for (let folderName in data.counts) {
-						if (data.counts.hasOwnProperty(folderName)) {
-							const folderCount = data.counts[folderName];
-							if (Number.isNaN(folderCount)) {
-								continue;
-							}
-
-							if (['points', 'cart'].includes(folderName)) {
-								continue;
-							}
-
-							result.addValue('count', folderCount);
-							result.get('folders').set(folderName, {
-								'folderCount': folderCount,
-								'folderName': folderName
-							});
-						}
-					}
-				} else {
-					console.log('@@streams', initialData['@@streams']);
-					const streams = initialData['@@streams'];
-					for (let name in streams) {
-						if (streams.hasOwnProperty(name) === false) {
-							continue;
-						}
-
-						const item = streams[name],
-							folderCount = item.items.length,
-							folderName = item.streamParams.notificationType
-						;
-
-						result.addValue('count', folderCount);
-						result.get('folders').set(folderName, {
-							'folderCount': folderCount,
-							'folderName': folderName
-						});
-					}
-				}
+				return this.getData(dataDocument.documentElement.outerHTML)
 			}
 
 			return result;
 		}
 };
-websites.set("deviantArt", deviantArt);
+
+
+
+export {
+	deviantArt
+};

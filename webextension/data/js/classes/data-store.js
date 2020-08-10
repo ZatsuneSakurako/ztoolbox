@@ -1,3 +1,8 @@
+'use strict';
+import { ZDK } from './ZDK.js';
+
+
+
 class DataStore {
 	/**
 	 *
@@ -8,11 +13,11 @@ class DataStore {
 		this.window = win;
 
 		this.types = {
-			"object": 0,
-			"boolean": 1,
-			"number": 2,
-			"string": 3,
-			"map": 4
+			'object': 0,
+			'boolean': 1,
+			'number': 2,
+			'string': 3,
+			'map': 4
 		};
 
 		this.compressions = new Map();
@@ -20,14 +25,14 @@ class DataStore {
 
 
 
-		this.DATA_STORE_VERSION = "11.3";
+		this.DATA_STORE_VERSION = '11.3';
 
-		if(!this.has("_", "DataStore_version") || this.get("_", "DataStore_version")!==this.DATA_STORE_VERSION){
-			consoleMsg("warn", "New version of DataStore, clearing old data.");
+		if(!this.has('_', 'DataStore_version') || this.get('_', 'DataStore_version') !== this.DATA_STORE_VERSION) {
+			ZDK.console.warn('New version of DataStore, clearing old data.');
 			this.storage.clear();
 		}
 
-		this.set("_", "DataStore_version", "11.3");
+		this.set('_', 'DataStore_version', '11.3');
 	}
 
 	/**
@@ -549,4 +554,10 @@ class DataStore {
 			}
 		}, false);
 	}
+}
+
+
+
+export {
+	DataStore
 }

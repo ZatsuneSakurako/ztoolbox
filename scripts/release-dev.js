@@ -11,7 +11,33 @@ const
 
 	{fsReadFile} = require("./common/file-operations"),
 	echo = console.log,
-	{error, warning, info, success} = require("./common/custom-console")
+	{error, warning, info, success} = require("./common/custom-console"),
+
+	klawSync = require('klaw-sync'),
+
+	yargs = require('yargs')
+		.usage('Usage: $0 [options]')
+
+		.option('p', {
+			"alias": ['prod','production'],
+			"description": 'Do stable release',
+			"type": "boolean"
+		})
+		.fail(function (msg, err, yargs) {
+			if (msg==="yargs error") {
+				console.error(yargs.help());
+			}
+
+			/*if(err){// preserve stack
+				throw err;
+			}*/
+
+			process.exit(1)
+		})
+
+		.help('h')
+		.alias('h', 'help')
+		.argv
 ;
 require('dotenv').config();
 
@@ -89,7 +115,53 @@ async function init() {
 	await errorHandler(fs.mkdir(tmpPath));
 
 	echo("Copying into tmp folder");
-	await errorHandler(exec("cd " + pwd + " && cp -rt tmp ./webextension/data ./webextension/_locales ./webextension/icon*.png ./webextension/init.js ./webextension/LICENSE ./webextension/manifest.json"));
+	await errorHandler(exec("cd " + pwd + " && cp -rt tmp ./webextension/data ./webextension/_locales ./webextension/icon*.png ./webextension/LICENSE ./webextension/manifest.json"));
+
+
+
+	echo('Handling **/*.prod.* and **/*.dev.* files...');
+
+	const devFilePathRegex = /\.dev(\..+)$/,
+		prodFilePathRegex = /\.prod(\..+)$/
+	;
+
+	const devFiles = klawSync(tmpPath, {
+		nodir: true,
+		filter: item => {
+			return item.stats.isDirectory() || devFilePathRegex.test(item.path)
+		}
+	});
+	const prodFiles = klawSync(tmpPath, {
+		nodir: true,
+		filter: item => {
+			return item.stats.isDirectory() || prodFilePathRegex.test(item.path)
+		}
+	});
+
+	const devPromises = devFiles.map(fileObj => {
+		if (yargs.prod === true) {
+			return fs.remove(fileObj.path);
+		} else {
+			return fs.move(fileObj.path, fileObj.path.replace(devFilePathRegex, '$1'), {
+				overwrite: true
+			});
+		}
+	});
+	await Promise.all(devPromises);
+
+	const prodPromises = prodFiles.map(fileObj => {
+		if (yargs.prod === false) {
+			return fs.remove(fileObj.path);
+		} else {
+			return fs.move(fileObj.path, fileObj.path.replace(prodFilePathRegex, '$1'), {
+				overwrite: true
+			});
+		}
+	});
+
+	await Promise.all(prodPromises);
+
+
 
 	const ignoredFiles = [];
 
