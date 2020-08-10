@@ -36,6 +36,13 @@ const options = {
 		"value": false,
 		"group": "featurePreference"
 	},
+	"amazonShareLink": {
+		"title": "Add button to share easily amazon articles",
+		"description": "Will add button if checked",
+		"type": "bool",
+		"value": true,
+		"group": "featurePreference"
+	},
 	"hourlyAlarm": {
 		"title": "Hourly alarm",
 		"description": "Display a notification per hour when checked",

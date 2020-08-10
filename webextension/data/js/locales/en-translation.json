@@ -56,6 +56,9 @@
 	"launchpadAddLink_title": "Add link to go Launchpad PPA page from an index page",
 	"launchpadAddLink_description": "Will add link if checked",
 
+	"amazonShareLink_title": "Add button to share easily Amazon articles",
+	"amazonShareLink_description": "Will add button if checked",
+
 	"hourlyAlarm_title": "Hourly notification",
 	"hourlyAlarm_description": "Display a notification per hour when checked",
 
