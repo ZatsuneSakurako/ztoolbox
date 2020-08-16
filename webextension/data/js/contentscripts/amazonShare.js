@@ -32,7 +32,7 @@
 			const permission = await Notification.requestPermission();
 			// If the user accepts, let's create a notification
 			if (permission === 'granted') {
-				notifyMe.call(this, arguments);
+				notifyMe.apply(this, arguments);
 			}
 		}
 	}
@@ -50,9 +50,8 @@
 		if (data.preferences.hasOwnProperty('amazonShareLink') && data.preferences.amazonShareLink === true) {
 			const linkRegex = /https:\/\/www\.amazon\.fr\/[^ ]+/gm,
 				$swfMailTo = document.querySelector('#swfMailTo'),
-				$productTitle = document.querySelector('#productTitle'),
-				// $selectedImg = document.querySelector('#main-image-container li.selected img'),
-				$priceInsideBuybox = document.querySelector('#price_inside_buybox')
+				$productTitle = document.querySelector('#productTitle')
+				// $selectedImg = document.querySelector('#main-image-container li.selected img')
 			;
 
 			const newLink = document.createElement('button');
@@ -60,7 +59,20 @@
 			newLink.textContent = '🔗';
 			newLink.style.margin = '0 0.4em';
 			newLink.addEventListener('click', function () {
-				const result = copyToClipboard(`${$productTitle.textContent.trim()} (${$priceInsideBuybox.textContent.trim()})
+				let priceTxt = 'Aucun prix';
+				const priceSelectors = [
+					'#price_inside_buybox',
+					'#buyBoxAccordion > .a-accordion-active h5'
+				];
+				for (let sel of priceSelectors) {
+					const $priceNode = document.querySelector(sel);
+					if ($priceNode !== null) {
+						priceTxt = $priceNode.innerText.trim().replace(/\n+/gi, ' ');
+						break;
+					}
+				}
+
+				const result = copyToClipboard(`${$productTitle.innerText.trim()} (${priceTxt})
 ${new URL($swfMailTo.href).searchParams.get('body').match(linkRegex)[0]}`);
 
 				/* Alert the copied text */
