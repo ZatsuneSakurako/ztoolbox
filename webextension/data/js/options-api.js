@@ -304,7 +304,7 @@ async function importPrefsFromFile(event) {
 	}
 
 	if (getPreference('unTrackUrlParams') === true) {
-		await window._webRequestPermissions(event)
+		await window.webRequestPermissions(event)
 	}
 }
 window.importPrefsFromFile = importPrefsFromFile;

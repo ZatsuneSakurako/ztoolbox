@@ -42,16 +42,15 @@ if (typeof browser.storage.sync === 'object') {
 	 *
 	 * @param {Event} [event]
 	 * @return {Promise<void>}
-	 * @private
 	 */
-	window._webRequestPermissions = async function _webRequestPermissions(event) {
+	window.webRequestPermissions = async function _webRequestPermissions(event) {
 		const permissions = {
 			permissions: ["webRequest", "webRequestBlocking"],
 			origins: ["http://*/*", "https://*/*"]
 		};
 
 		if (await browser.permissions.contains(permissions) === true) {
-			return true;
+			return;
 		}
 
 		if (!!event) {
@@ -76,7 +75,7 @@ if (typeof browser.storage.sync === 'object') {
 		.addEventListener('click', function (event) {
 			if (this.checked === false) return;
 
-			_webRequestPermissions(event)
+			webRequestPermissions(event)
 				.catch(console.error)
 			;
 		})
