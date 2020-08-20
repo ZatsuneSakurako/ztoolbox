@@ -112,3 +112,7 @@ label.flex_input_text {
 .pref_container {
 	padding-left: 10px;
 }
+[data-setting-type="string"][data-string-list="true"] {
+	max-height: 8em;
+	height: 8em;
+}

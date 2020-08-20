@@ -265,7 +265,7 @@ if(browser.extension.getBackgroundPage() !== null && typeof domDelegate !== 'und
 	liveEvent("input", "[data-setting-type='string']", settingNode_onChange);
 	liveEvent("change", "[data-setting-type='integer'],[data-setting-type='bool'],[data-setting-type='color'],input[data-setting-type='menulist'],[data-setting-type='menulist'] input[type='radio']", settingNode_onChange);
 	liveEvent("click", "#export_preferences", exportPrefsToFile);
-	liveEvent("click", "#import_preferences", importPrefsFromFile);
+	// moved to options.js liveEvent("click", "#import_preferences", importPrefsFromFile);
 	liveEvent("click", "button[data-setting-type='file']", prefNode_FileType_onChange);
 }
 
@@ -301,6 +301,10 @@ async function importPrefsFromFile(event) {
 		} else {
 			sendDataToMain("refreshStreams", "");
 		}
+	}
+
+	if (getPreference('unTrackUrlParams') === true) {
+		await window._webRequestPermissions(event)
 	}
 }
 window.importPrefsFromFile = importPrefsFromFile;

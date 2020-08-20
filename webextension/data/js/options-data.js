@@ -43,6 +43,21 @@ const options = {
 		"value": true,
 		"group": "featurePreference"
 	},
+	"unTrackUrlParams": {
+		"title": "Remove tracking params from urls",
+		"description": "Enabled if checked",
+		"type": "bool",
+		"value": false,
+		"group": "featurePreference"
+	},
+	"unTrackUrlParamsExclude": {
+		"title": "Excluded domain from tracking url redirections",
+		"description": "One domain per line",
+		"type": "string",
+		"value": "mail.google.co,gmail.co,hotmail.co,mail.yahoo.co,outlook.live.co,mail.rediff.co",
+		"stringList": true,
+		"group": "featurePreference"
+	},
 	"hourlyAlarm": {
 		"title": "Hourly alarm",
 		"description": "Display a notification per hour when checked",

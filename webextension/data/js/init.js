@@ -8,6 +8,7 @@ window.appGlobal = {};
 			'i18next',
 			'i18nextXHRBackend',
 			'mustache',
+			'lodash.custom.min',
 
 			// 'moment',
 			// 'moment-locale-fr',
@@ -99,6 +100,7 @@ window.appGlobal = {};
 		'variousFeatures/hourly-alarm.js',
 		'variousFeatures/muted-pause.js',
 		'variousFeatures/iqdb.js',
+		'variousFeatures/untrackMe.js',
 	];
 
 	if (typeof browser.windows !== "undefined") {

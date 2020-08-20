@@ -59,6 +59,12 @@
 	"amazonShareLink_title": "Add button to share, into clipboard, easily Amazon articles",
 	"amazonShareLink_description": "Will add button if checked (refresh opened pages)",
 
+	"unTrackUrlParams_title": "Remove tracking params from urls",
+	"unTrackUrlParams_description": "Enabled if checked",
+
+	"unTrackUrlParamsExclude_title": "Excluded domain from tracking url redirections",
+	"unTrackUrlParamsExclude_description": "One domain per line",
+
 	"hourlyAlarm_title": "Hourly notification",
 	"hourlyAlarm_description": "Display a notification per hour when checked",
 

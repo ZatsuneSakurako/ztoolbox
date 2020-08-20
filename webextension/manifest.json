@@ -78,7 +78,9 @@
 		"https://*/*"
 	],
 	"optional_permissions": [
-		"clipboardWrite"
+		"clipboardWrite",
+		"webRequest",
+		"webRequestBlocking"
 	],
 	"options_ui": {
 		"page": "data/options.html",
