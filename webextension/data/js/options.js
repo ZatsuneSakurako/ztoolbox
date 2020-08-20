@@ -1,6 +1,6 @@
 'use strict';
 
-import { loadPreferences, loadTranslations } from './options-api.js';
+import { loadPreferences, loadTranslations, savePreference } from './options-api.js';
 
 
 const backgroundPage = browser.extension.getBackgroundPage(),
@@ -22,25 +22,30 @@ window.theme_update = function theme_update(){
 theme_update();
 
 
-function sendDataToMain(id, data){
+async function sendDataToMain(id, data) {
+	const backgroundPage = await browser.extension.getBackgroundPage();
 	backgroundPage.appGlobal.sendDataToMain("ZToolBox_Options", id,  data);
 }
+window.sendDataToMain = sendDataToMain;
 
-loadPreferences("section#preferences");
+loadPreferences('section#preferences');
 
 function init(){
 	loadTranslations();
 }
 document.addEventListener('DOMContentLoaded',		init);
 
-if(typeof browser.storage.sync === "object"){
+if (typeof browser.storage.sync === 'object') {
 	document.querySelector("#syncContainer").classList.remove("hide");
 	
 	let restaure_sync_button = document.querySelector("#restaure_sync");
-	restaure_sync_button.addEventListener("click", function(event){restaureOptionsFromSync(event);});
-	
+	restaure_sync_button.addEventListener("click", async function (event) {
+		await restaureOptionsFromSync(event);
+	});	
 	let save_sync_button = document.querySelector("#save_sync");
-	save_sync_button.addEventListener("click", function(event){saveOptionsInSync(event);});
+	save_sync_button.addEventListener("click", function (event) {
+		saveOptionsInSync(event);
+	});
 }
 
 

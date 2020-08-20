@@ -7,7 +7,7 @@ let chromeSettings,
 ;
 if (browser.extension.getBackgroundPage() !== null) {
 	const backgroundPage = browser.extension.getBackgroundPage();
-	if(backgroundPage.hasOwnProperty("chromeSettings")){
+	if (backgroundPage.hasOwnProperty("chromeSettings")) {
 		chromeSettings = backgroundPage.chromeSettings;
 	} else {
 		chromeSettings = backgroundPage.chromeSettings = new backgroundPage.zDK.ChromePreferences(options);
@@ -224,7 +224,7 @@ function saveOptionsInSync(event) {
 function restaureOptionsFromSync(event) {
 	// Default values
 	let mergePreferences = event.shiftKey;
-	chromeSettings.restaureFromSync((typeof mergePreferences === 'boolean')? mergePreferences : false);
+	return chromeSettings.restaureFromSync((typeof mergePreferences === 'boolean')? mergePreferences : false);
 }
 
 /*		---- Node generation of settings ----		*/
@@ -280,6 +280,7 @@ function exportPrefsToFile() {
 	let backgroundPage = browser.extension.getBackgroundPage();
 	backgroundPage.chromeSettings.exportPrefsToFile("ztoolbox", document);
 }
+
 async function importPrefsFromFile(event) {
 	const backgroundPage = browser.extension.getBackgroundPage();
 	let mergePreferences = (typeof event === "object" && typeof event.shiftKey === "boolean")? event.shiftKey : false;
@@ -289,16 +290,17 @@ async function importPrefsFromFile(event) {
 	let error = false;
 	try {
 		await backgroundPage.chromeSettings.importPrefsFromFile("ztoolbox", mergePreferences, document);
-	} catch (e){
-		error=true;
+	} catch (e) {
+		error = true;
 		console.warn(e);
 	}
 
 	if (error === false) {
-		if (typeof refreshStreamsFromPanel === "function"){
+		if (typeof refreshStreamsFromPanel === "function") {
 			refreshStreamsFromPanel();
 		} else {
-			sendDataToMain("refreshStreams","");
+			sendDataToMain("refreshStreams", "");
 		}
 	}
 }
+window.importPrefsFromFile = importPrefsFromFile;

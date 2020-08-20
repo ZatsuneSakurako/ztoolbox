@@ -68,15 +68,14 @@
 	"default_locale": "en",
 	"offline_enabled": false,
 	"permissions": [
-		"tabs",
-		"activeTab",
+		"alarms",
 		"contextMenus",
 		"notifications",
 		"storage",
-		"unlimitedStorage",
+		"tabs",
+		"activeTab",
 		"http://*/*",
-		"https://*/*",
-		"alarms"
+		"https://*/*"
 	],
 	"optional_permissions": [
 		"clipboardWrite"

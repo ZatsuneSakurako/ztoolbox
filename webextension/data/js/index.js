@@ -15,9 +15,9 @@ appGlobal.notificationGlobalyDisabled = false;
 // noinspection JSUnusedLocalSymbols
 /**
  *
- * @param source
- * @param id
- * @param data
+ * @param {string} source
+ * @param {string} id
+ * @param {*} data
  */
 appGlobal.sendDataToMain = function sendDataToMain(source, id, data) {
 
@@ -30,8 +30,8 @@ appGlobal.sendDataToMain = function sendDataToMain(source, id, data) {
 	} else if (source === "ZToolBox_Options" && id === "hourlyAlarm_update") {
 		HourlyAlarm.isEnabledHourlyAlarm()
 			.then(async function (isActivated) {
-				if (typeof isActivated==="boolean" && getPreference("hourlyAlarm") !== isActivated) {
-					if(getPreference("hourlyAlarm")===true){
+				if (typeof isActivated === "boolean" && getPreference("hourlyAlarm") !== isActivated) {
+					if (getPreference("hourlyAlarm") === true) {
 						await hourlyAlarm.enableHourlyAlarm();
 					} else {
 						await hourlyAlarm.disableHourlyAlarm();

@@ -70,6 +70,7 @@ function getFilterListFromPreference(string){
 	}
 	return list;
 }
+window.getFilterListFromPreference = getFilterListFromPreference;
 
 /**
  *
