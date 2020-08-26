@@ -1,4 +1,3 @@
-import { ExtendedMap } from '../variousFeatures/ExtendedMap.js';
 import { ZDK } from '../classes/ZDK.js';
 
 
@@ -23,7 +22,7 @@ let deviantArt = {
 	/**
 	 *
 	 * @param rawHtml
-	 * @return {Promise<{response: Response, data: null|ExtendedMap}>}
+	 * @return {Promise<{response: Response, data: null|Map}>}
 	 */
 	getData: async function (rawHtml=null) {
 		const output = {
@@ -41,14 +40,19 @@ let deviantArt = {
 			}
 		}
 
-		const iconRegEx = /<link\s+[^>]*\s*rel=["']apple-touch-icon["']\s+sizes=["'](\d+x\d+)["']\s+href=["']([^"]+)["']\s*\/>/gm,
-			icons = new ExtendedMap()
-		;
+		const iconRegEx = /<link\s+[^>]*\s*rel=["']apple-touch-icon["']\s+sizes=["'](\d+x\d+)["']\s+href=["']([^"]+)["']\s*\/>/gm;
 
+		let iconUrl = null,
+			iconSize = 0
+		;
 		if (iconRegEx.test(rawData)) {
 			const iconsHtml = Array.from(rawData.matchAll(iconRegEx));
 			for (let iconHtml of iconsHtml) {
-				icons.set(iconHtml[1], iconHtml[2]);
+				const sizes = iconHtml[1].split('x').map(Number.parseInt);
+				if (iconUrl === null || sizes[0] > iconSize[0]) {
+					iconUrl = iconHtml[2];
+					iconSize = sizes;
+				}
 			}
 		}
 
@@ -92,13 +96,13 @@ let deviantArt = {
 			return output;
 		}
 
-		result = new ExtendedMap();
+		result = new Map();
 		result.set('count', 0);
+		let count = 0;
 		result.set('logged', data.isLoggedIn);
 		result.set('loginId', data.user.username);
 		result.set('folders', new Map());
 
-		const iconUrl = icons.getBestIcon();
 		result.set("websiteIcon", iconUrl);
 
 
@@ -115,7 +119,7 @@ let deviantArt = {
 						continue;
 					}
 
-					result.addValue('count', folderCount);
+					count += folderCount;
 					result.get('folders').set(folderName, {
 						'folderCount': folderCount,
 						'folderName': folderName
@@ -135,7 +139,7 @@ let deviantArt = {
 					folderName = item.streamParams.notificationType
 				;
 
-				result.addValue('count', folderCount);
+				count += folderCount;
 				result.get('folders').set(folderName, {
 					'folderCount': folderCount,
 					'folderName': folderName
@@ -143,72 +147,10 @@ let deviantArt = {
 			}
 		}
 
+		result.set('count', count);
 		output.data = result;
 		return output;
-	},
-
-	/**
-	 *
-	 * @param xhrRequest
-	 * @return {Object | null}
-	 */
-	Request_documentParseToJSON:
-		function(xhrRequest){
-			let dataDocument = xhrRequest.response;
-
-			if(typeof dataDocument !== "object" || dataDocument===null){
-				return null;
-			}
-
-			let iconNodes = dataDocument.querySelectorAll('link[sizes][rel*=icon][href]');
-			let icons = new ExtendedMap();
-			for (let iconNode of iconNodes) {
-				if (iconNode.getAttribute('sizes') !== null) {
-					icons.set(iconNode.getAttribute('sizes'), iconNode.href);
-				}
-			}
-			let iconUrl = icons.getBestIcon();
-
-			let result;
-			let nodes = dataDocument.querySelectorAll('.oh-menuctrl .oh-menu.iconset-messages a.mi');
-			if (nodes !== null && nodes.length > 0) {
-				result = new ExtendedMap();
-
-				result.set('count', 0);
-				result.set('logged', false);
-				result.set('loginId', '');
-				result.set('folders', new Map());
-				
-				let dA_userId_node = dataDocument.querySelector('#oh-menu-deviant .username');
-				if(dA_userId_node !== null){
-					result.set('logged', true);
-					result.set('loginId', dA_userId_node.textContent);
-				}
-
-				for (let node of nodes) {
-					if (typeof node.tagName === 'string' && node.hasChildNodes() && node.children.length > 0) { // children exclude text and comment nodes
-						let idNode = node.querySelector('.oh-darker');
-						if (idNode === null || node.outerHTML.indexOf('All notifications') !== -1) {continue}
-						let folderName = idNode.textContent;
-						
-						let countReg = /<span[^<]*>\s*(\d+)\s*<\/span>/;
-						let folderCount = 0;
-						if (countReg.test(node.outerHTML) === true) {
-							folderCount = parseInt(countReg.exec(node.outerHTML)[1]);
-							result.addValue('count', folderCount);
-							//console.log(`${folderId} (${folderName}): ${folderCount}`);
-							if (typeof folderCount && !isNaN(folderCount)) {
-								result.get('folders').set(folderName, {'folderCount': folderCount, 'folderName': folderName, 'folderUrl': (typeof node.href === 'string')? node.href : ""});
-							}
-						}
-					}
-				}
-			} else {
-				return this.getData(dataDocument.documentElement.outerHTML)
-			}
-
-			return result;
-		}
+	}
 };
 
 

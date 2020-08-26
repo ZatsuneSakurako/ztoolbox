@@ -1,6 +1,5 @@
 'use strict';
 
-import { ExtendedMap } from './ExtendedMap.js';
 import { PromiseWaitAll } from '../classes/PromiseWaitAll.js';
 import { Request } from '../classes/Request.js';
 import { ZDK } from "../classes/ZDK.js";
@@ -101,7 +100,7 @@ class websiteDefaultData {
 				logged: undefined
 			},
 			count: 0,
-			folders: new ExtendedMap(),
+			folders: new Map(),
 			websiteIcon: '',
 			logged: null,
 			loginId: ''
