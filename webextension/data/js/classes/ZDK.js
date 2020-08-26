@@ -108,13 +108,6 @@ class ZDK {
 	}
 
 
-	loadJS(callerDocument, list, prefix) {
-		if (prefix === undefined) {
-			prefix = this.addonJsRoot;
-		}
-		return loadJS(callerDocument, list, prefix);
-	}
-
 
 	/**
 	 * Inspired on Underscore's memoize

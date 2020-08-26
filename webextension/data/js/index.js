@@ -2,7 +2,8 @@
 
 
 import {default as env} from './env.js';
-import {getPreference, savePreference} from "./options-api.js";
+import {getPreference, savePreference} from './options-api.js';
+
 const ZDK = window.ZDK;
 window.getPreference = getPreference;
 window.savePreference = savePreference;

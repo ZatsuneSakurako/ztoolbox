@@ -19,6 +19,7 @@ if (browser.extension.getBackgroundPage() !== null) {
 		i18ex = backgroundPage.i18ex = new zDK.i18extended(browser.i18n.getMessage("language"));
 	}
 }
+export { chromeSettings };
 
 /*		---- Nodes translation ----		*/
 function translateNodes() {
