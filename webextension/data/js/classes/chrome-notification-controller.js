@@ -3,7 +3,7 @@ import { ZDK } from './ZDK.js';
 
 
 
-class ChromeNotificationControler {
+class ChromeNotificationController {
 	constructor(){
 		this.chromeAPI_button_availability = true;
 		const chromeNotifications = this.chromeNotifications = new Map();
@@ -184,5 +184,5 @@ class ChromeNotificationControler {
 
 
 export {
-	ChromeNotificationControler
+	ChromeNotificationController
 }

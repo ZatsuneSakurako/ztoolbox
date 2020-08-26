@@ -20,7 +20,7 @@ window.appGlobal = {};
 			'responseDocument',
 			'Request',
 			'loadJS',
-			'chrome-notification-controler',
+			'chrome-notification-controller',
 			'chrome-preferences',
 			'i18extended',
 			'queue',

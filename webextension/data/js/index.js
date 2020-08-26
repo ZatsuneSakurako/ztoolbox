@@ -218,7 +218,7 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
 	}
 });
 
-const chromeNotifications = new zDK.ChromeNotificationControler(),
+const chromeNotifications = new zDK.ChromeNotificationController(),
 	notifButtons = {
 		"openUrl": {title: i18ex._("Open_in_browser"), iconUrl: "/data/images/ic_open_in_browser_black_24px.svg"},
 		"close": {title: i18ex._("Close"), iconUrl: "/data/images/ic_close_black_24px.svg"},
