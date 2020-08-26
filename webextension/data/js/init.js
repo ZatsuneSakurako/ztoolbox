@@ -105,11 +105,25 @@ window.appGlobal = {};
 		'index.js'
 	];
 
-	scriptsToLoad.push(...Array.from(
-		directoryObject.get(ADDON_JS_ROOT).get('variousFeatures').values()
-	)
-		.map(f => `variousFeatures/${f.name}`)
-	);
+	if (typeof chrome.runtime.getPackageDirectoryEntry === 'function') {
+		const { Directory } = await import('./Directory.js');
+		const directoryObject = window.directoryObject = await Directory.getPackageDir();
+		await directoryObject.recursivelyGetEntries();
+
+		scriptsToLoad.push(...Array.from(
+			directoryObject.get(ADDON_JS_ROOT).get('variousFeatures').values()
+			)
+				.map(f => `variousFeatures/${f.name}`)
+		);
+	} else {
+		scriptsToLoad.push(...[
+			'variousFeatures/refresh-data.js',
+			'variousFeatures/hourly-alarm.js',
+			'variousFeatures/muted-pause.js',
+			'variousFeatures/iqdb.js',
+			'variousFeatures/untrackMe.js',
+		])
+	}
 
 	await loadJS(document, scriptsToLoad);
 })();
