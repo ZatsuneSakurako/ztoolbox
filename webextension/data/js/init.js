@@ -96,16 +96,13 @@ window.appGlobal = {};
 
 
 
-	const { Directory } = await import('./Directory.js');
-	const directoryObject = window.directoryObject = await Directory.getPackageDir();
-	await directoryObject.recursivelyGetEntries();
-
+	const {default:env} = await import('./env.js');
 	let scriptsToLoad = [
 		'env.js',
 		'index.js'
 	];
 
-	if (typeof chrome.runtime.getPackageDirectoryEntry === 'function') {
+	if (env === 'local' && typeof chrome.runtime.getPackageDirectoryEntry === 'function') {
 		const { Directory } = await import('./Directory.js');
 		const directoryObject = window.directoryObject = await Directory.getPackageDir();
 		await directoryObject.recursivelyGetEntries();
