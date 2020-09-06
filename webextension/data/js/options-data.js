@@ -58,6 +58,14 @@ const options = {
 		"stringList": true,
 		"group": "featurePreference"
 	},
+	"youtubeSubscriptions": {
+		"title": "Youtube categories",
+		"description": "JSON data {\"category\": [\"user/someId\"]}",
+		"type": "json",
+		"value": "{}",
+		"stringList": true,
+		"group": "featurePreference"
+	},
 	"hourlyAlarm": {
 		"title": "Hourly alarm",
 		"description": "Display a notification per hour when checked",

@@ -116,3 +116,7 @@ label.flex_input_text {
 	max-height: 8em;
 	height: 8em;
 }
+#youtubeSubscriptions {
+	min-height: 256px;
+	min-width: 512px;
+}

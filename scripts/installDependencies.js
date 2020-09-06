@@ -85,7 +85,7 @@ async function init() {
 		echo("Copying/Building Lodash Debounce - Custom Build..."); // https://lodash.com/custom-builds
 		let stdout = null;
 		try {
-			stdout = await exec(`cd ${jsLib} && lodash exports=global include=debounce --production --source-map`);
+			stdout = await exec(`cd ${jsLib} && lodash exports=global include=debounce,difference --production --source-map`);
 		} catch(err){
 			if(err){
 				error(err);
