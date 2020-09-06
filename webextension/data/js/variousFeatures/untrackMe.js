@@ -1,6 +1,10 @@
 import {getPreference, savePreference} from "../options-api.js";
 
 const keepProtecting = true,
+	/**
+	 *
+	 * @type {string[]}
+	 */
 	trackingParamNames = [
 		'utm_source',
 		'utm_campaign',
@@ -20,6 +24,13 @@ const keepProtecting = true,
 		'gclid',
 		'__source',
 		'__twitter',
+	],
+	/**
+	 *
+	 * @type {RegExp[]}
+	 */
+	trackingRegExList = [
+		/https?:\/\/click\.justwatch\.com\/a\?r=([^&]+)/i
 	]
 ;
 
@@ -64,8 +75,8 @@ function onBeforeRequest(details) {
 	}
 
 
-	const urlObj = new URL(details.url),
-		hostnameLowerCase = urlObj.hostname.toLowerCase(),
+	let urlObj = new URL(details.url);
+	const hostnameLowerCase = urlObj.hostname.toLowerCase(),
 		hasDomainExcluded = cachedExcludedDomains()
 			.find(domain => hostnameLowerCase.includes(domain))
 	;
@@ -82,9 +93,17 @@ function onBeforeRequest(details) {
 		urlObj.searchParams.delete(trackingParamName);
 	}
 
+	if (hasTracking === false) {
+		for (let trackingRegEx of trackingRegExList) {
+			if (trackingRegEx.test(details.url) === false) continue;
+
+			hasTracking = true;
+			urlObj = decodeURIComponent(trackingRegEx.exec(details.url)[1]);
+		}
+	}
 
 	if (hasTracking === true) {
-		console.log('Tracking detected: ', details.url);
+		console.debug('Tracking detected: ', details.url, '\nRedirected to :', urlObj.toString());
 		return {redirectUrl: urlObj.toString()};
 	}
 	return {};
