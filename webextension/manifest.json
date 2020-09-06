@@ -58,6 +58,7 @@
 		},
 		{
 			"matches": [
+				"https://www.amazon.fr/gp/product/*",
 				"https://www.amazon.fr/dp/*",
 				"https://www.amazon.fr/*/dp/*"
 			],
