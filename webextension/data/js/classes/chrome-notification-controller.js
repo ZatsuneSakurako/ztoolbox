@@ -67,7 +67,7 @@ class ChromeNotificationController {
 				const onError = (error) => {
 					if(error && typeof error.message === 'string' && (error.message === 'Adding buttons to notifications is not supported.' || error.message.indexOf("\"buttons\"") !== -1)){
 						this.chromeAPI_button_availability = false;
-						ZDK.console.log("Buttons not supported, retrying notification without them.");
+						ZDK.console.debug("Buttons not supported, retrying notification without them.");
 						if(options.buttons){
 							delete options.buttons;
 						}
@@ -110,7 +110,7 @@ class ChromeNotificationController {
 			let sound = null;
 			sendNotification(options)
 				.then(notificationId => {
-					ZDK.console.info( `Notification "${notificationId}" created.`);
+					ZDK.console.debug( `Notification "${notificationId}" created.`);
 					if (customOption!==null && typeof customOption.soundObject === 'object' && customOption.soundObject!==null && typeof customOption.soundObject.data === 'string') {
 						sound = new Audio(customOption.soundObject.data);
 						sound.volume = customOption.soundObjectVolume / 100;

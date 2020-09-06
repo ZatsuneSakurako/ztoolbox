@@ -177,11 +177,11 @@ class ChromePreferences extends Map{
 			writable: false
 		});
 
-		let loadPromise = async ()=>{
+		let loadPromise = async () => {
 			let currentLocalStorage = null, err = "";
-			try{
+			try {
 				currentLocalStorage = await browser.storage.local.get(null)
-			} catch(err){
+			} catch (err) {
 				Object.defineProperty(this, "loadingState", {
 					value: "failed",
 					configurable: true,
@@ -189,13 +189,13 @@ class ChromePreferences extends Map{
 				});
 			}
 
-			if(this.loadingState==="failed"){
+			if (this.loadingState === "failed") {
 				throw err;
 			} else {
-				if(currentLocalStorage!==null){
-					for(let prefId in currentLocalStorage){
-						if(currentLocalStorage.hasOwnProperty(prefId)){ // Make sure to not loop constructors
-							if(this.defaultSettings.has(prefId)){
+				if (currentLocalStorage !== null) {
+					for (let prefId in currentLocalStorage) {
+						if (currentLocalStorage.hasOwnProperty(prefId)) { // Make sure to not loop constructors
+							if (this.defaultSettings.has(prefId)) {
 								super.set(prefId, currentLocalStorage[prefId]);
 							} else {
 								super.set(prefId, currentLocalStorage[prefId]);
@@ -203,13 +203,6 @@ class ChromePreferences extends Map{
 							}
 						}
 					}
-
-					// Load default settings for the missing settings without saving them in the storage
-					this.defaultSettings.forEach((pref, prefId)=>{
-						if(!this.has(prefId)){
-							super.set(prefId, pref);
-						}
-					});
 				}
 
 				Object.defineProperty(this, "loadingState", {
@@ -336,8 +329,12 @@ ${err}`);
 			}
 		} else if(typeof this.defaultSettings.get(prefId) !== "undefined"){
 			console.warn(`Preference ${prefId} not found, using default`);
-			this.set(prefId, this.defaultSettings.get(prefId));
-			return this.defaultSettings.get(prefId);
+			let val = this.defaultSettings.get(prefId);
+			if (this.options.get(prefId).type === 'json') {
+				val = JSON.parse(val);
+			}
+			this.set(prefId, val);
+			return val;
 		} else {
 			//console.warn(`Preference ${prefId} not found, no default`);
 		}

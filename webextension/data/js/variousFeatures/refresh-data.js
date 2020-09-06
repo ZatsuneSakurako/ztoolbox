@@ -154,10 +154,12 @@ async function refreshWebsitesData() {
 		}
 	});
 
-	ZDK.console.groupCollapsed('Websites check end');
-	ZDK.console.log('fetchResponses:', data);
-	ZDK.console.log('Data:', websitesData);
-	ZDK.console.groupEnd();
+	if (getPreference('showExperimented') === true) {
+		ZDK.console.groupCollapsed('Websites check end');
+		ZDK.console.log('fetchResponses:', data);
+		ZDK.console.log('Data:', websitesData);
+		ZDK.console.groupEnd();
+	}
 
 	// chrome.browserAction.setTitle({title: (count === null)? i18ex._("no_website_logged") : label});
 
