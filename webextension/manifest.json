@@ -42,7 +42,7 @@
 			"js": ["/data/js/contentscripts/launchpad-addlink.js"]
 		},
 		{
-			"matches": ["*://*/*"],
+			"matches": ["<all_urls>"],
 			"js": ["/data/js/contentscripts/rss-retrieve.js"],
 			"run_at": "document_idle"
 		},
@@ -82,6 +82,7 @@
 		"storage",
 		"tabs",
 		"activeTab",
+		"<all_urls>",
 		"http://*/*",
 		"https://*/*"
 	],

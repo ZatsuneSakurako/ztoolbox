@@ -140,18 +140,31 @@ async function loadRss() {
 			if (tabs.length > 0) {
 				const tab = tabs[0];
 
-				if (/^https?:\/\//.test(tab.url)) {
-					tabPort = browser.tabs.connect(tab.id, {
+				if (/^(chrome|chrome-extension|vivaldi)?:\/\//.test(tab.url)) {
+					reject('InvalidPage');
+				}
+
+				tabPort = browser.tabs.connect(tab.id, {
 						'name': 'ztoolbox_rss-retrieve'
 					});
 
-					tabPort.onMessage.addListener(rssLinks => {
-						console.dir(rssLinks);
-						resolve(rssLinks);
-					});
-				} else {
-					reject('InvalidPage')
-				}
+				tabPort.onDisconnect.addListener((p) => {
+					if (/^https?:\/\//.test(tab.url)) {
+						const lastError = browser.runtime.lastError;
+						if (!!lastError && typeof lastError === 'object' && !!lastError.message && lastError.message.indexOf("Could not establish connection") !== -1) {
+							reject('InvalidPage');
+						}
+					}
+
+					if (p.error) {
+						console.log(`Disconnected due to an error: ${p.error.message}`);
+					}
+				});
+
+				tabPort.onMessage.addListener(rssLinks => {
+					console.dir(rssLinks);
+					resolve(rssLinks);
+				});
 			} else {
 				reject('NoActiveTab');
 			}
