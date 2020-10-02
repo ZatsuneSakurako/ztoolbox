@@ -142,11 +142,12 @@ async function loadRss() {
 
 				if (/^(chrome|chrome-extension|vivaldi)?:\/\//.test(tab.url)) {
 					reject('InvalidPage');
+					return;
 				}
 
 				tabPort = browser.tabs.connect(tab.id, {
-						'name': 'ztoolbox_rss-retrieve'
-					});
+					'name': 'ztoolbox_rss-retrieve'
+				});
 
 				tabPort.onDisconnect.addListener((p) => {
 					if (/^https?:\/\//.test(tab.url)) {
