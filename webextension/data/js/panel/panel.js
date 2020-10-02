@@ -140,17 +140,12 @@ async function loadRss() {
 			if (tabs.length > 0) {
 				const tab = tabs[0];
 
-				if (/^(chrome|chrome-extension|vivaldi)?:\/\//.test(tab.url)) {
-					reject('InvalidPage');
-					return;
-				}
-
 				tabPort = browser.tabs.connect(tab.id, {
 					'name': 'ztoolbox_rss-retrieve'
 				});
 
 				tabPort.onDisconnect.addListener((p) => {
-					if (/^https?:\/\//.test(tab.url)) {
+					if (!/^https?:\/\//.test(tab.url)) {
 						const lastError = browser.runtime.lastError;
 						if (!!lastError && typeof lastError === 'object' && !!lastError.message && lastError.message.indexOf("Could not establish connection") !== -1) {
 							reject('InvalidPage');
