@@ -65,6 +65,9 @@
 	"unTrackUrlParamsExclude_title": "Excluded domain from tracking url redirections",
 	"unTrackUrlParamsExclude_description": "One domain per line",
 
+	"twitchPoints_title": "Twitch auto clic points",
+	"twitchPoints_description": "Enabled if checked",
+
 	"hourlyAlarm_title": "Hourly notification",
 	"hourlyAlarm_description": "Display a notification per hour when checked",
 

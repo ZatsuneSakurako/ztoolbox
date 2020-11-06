@@ -67,6 +67,13 @@
 		},
 		{
 			"matches": [
+				"https://www.twitch.tv/*"
+			],
+			"js": ["/data/js/contentscripts/twitch-points.js"],
+			"run_at": "document_start"
+		},
+		{
+			"matches": [
 				"https://*.youtube.com/*"
 			],
 			"js": ["/data/js/lib/lodash.custom.min.js","/data/js/contentscripts/youtubeSubscriptions.js"],

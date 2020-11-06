@@ -66,6 +66,13 @@ const options = {
 		"stringList": true,
 		"group": "featurePreference"
 	},
+	"twitchPoints": {
+		"title": "Twitch auto clic points",
+		"description": "Enabled if checked",
+		"type": "bool",
+		"value": false,
+		"group": "featurePreference"
+	},
 	"hourlyAlarm": {
 		"title": "Hourly alarm",
 		"description": "Display a notification per hour when checked",
