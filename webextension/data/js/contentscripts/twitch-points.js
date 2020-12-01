@@ -3,12 +3,20 @@
 
 	/**
 	 *
+	 * @type {number|null}
+	 */
+	let timer = null;
+	/**
+	 *
 	 * @param {HTMLButtonElement} node
 	 */
 	const autCk = function autCk(node) {
 		const timeout = 5000 + Math.round(Math.random() * 5000);
-		console.debug(`[Z-Toolbox] Twitch Points - autCk (${timeout/1000}s)`, node);
-		setTimeout(() => {
+		if (timer) {
+			clearTimeout(timer);
+		}
+		timer = setTimeout(() => {
+			console.debug(`[Z-Toolbox] Twitch Points - autCk (${timeout/1000}s)`, node);
 			try {
 				node.click();
 			} catch (e) {
