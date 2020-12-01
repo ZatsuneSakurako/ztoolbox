@@ -2,35 +2,37 @@
 window.appGlobal = {};
 
 (async () => {
-	await Promise.all(
-		[
-			'browser-polyfill',
-			'i18next',
-			'i18nextXHRBackend',
-			'mustache',
+	const ADDON_JS_ROOT = window.ADDON_JS_ROOT = '/data/js';
+	const { setBaseDir, loadJS } = await import('./classes/loadJS.js');
+	setBaseDir(ADDON_JS_ROOT);
 
-			// 'moment',
-			// 'moment-locale-fr',
-		]
-			.map(moduleName => import(`./lib/${moduleName}.js`))
-	);
-	await Promise.all(
-		[
-			'responseDocument',
-			'Request',
-			'loadJS',
-			'chrome-notification-controler',
-			'chrome-preferences',
-			'i18extended',
-			'queue',
-			'data-store',
-			'ztimer',
-			'version'
-		]
-			.map(moduleName => import(`./classes/${moduleName}.js`))
-	);
-	const { ZDK } = await import('./classes/ZDK.js');
-	const zDK = new ZDK('/data/js/');
+	await loadJS(document, [
+		'lib/browser-polyfill.js',
+		'lib/i18next.js',
+		'lib/i18nextXHRBackend.js',
+		'lib/mustache.js',
+		'lib/lodash.custom.min.js',
+
+		// 'lib/moment.js',
+		// 'lib/moment-locale-fr.js',
+	]);
+
+	const classesModules = await loadJS(document, [
+		'classes/responseDocument.js',
+		'classes/Request.js',
+		'classes/loadJS.js',
+		'classes/chrome-notification-controller.js',
+		'classes/chrome-preferences.js',
+		'classes/i18extended.js',
+		'classes/queue.js',
+		'classes/data-store.js',
+		'classes/ztimer.js',
+		'classes/version.js',
+		'classes/ZDK.js'
+	]);
+
+	const { ZDK } = classesModules.find(m => !!m.ZDK);
+	const zDK = new ZDK(ADDON_JS_ROOT);
 	const backgroundPage = browser.extension.getBackgroundPage();
 	if (backgroundPage !== null) {
 		backgroundPage.zDK = zDK;
@@ -44,7 +46,7 @@ window.appGlobal = {};
 
 
 
-	await zDK.loadJS(document, [
+	const [, { chromeSettings }] = await loadJS(document, [
 		'options-data.js',
 		'options-api.js'
 	]);
@@ -52,7 +54,7 @@ window.appGlobal = {};
 	const {PromiseWaitAll} = await import('./classes/PromiseWaitAll.js');
 	await PromiseWaitAll([chromeSettings.loadingPromise, i18ex.loadingPromise]);
 
-	await zDK.loadJS(document, [
+	await loadJS(document, [
 		 'voiceAPI.js'
 	]);
 
@@ -88,22 +90,37 @@ window.appGlobal = {};
 		.then(async (loadMap)=>{
 			appGlobal.mustacheTemplates = loadMap;
 			await chromeSettings.loadingPromise;
-			await zDK.loadJS(document, ["backgroundTheme.js"]);
+			await loadJS(document, ["backgroundTheme.js"]);
 		})
 	;
 
+
+
+	const {default:env} = await import('./env.js');
 	let scriptsToLoad = [
 		'env.js',
-		'index.js',
-		'variousFeatures/refresh-data.js',
-		'variousFeatures/hourly-alarm.js',
-		'variousFeatures/muted-pause.js',
-		'variousFeatures/iqdb.js',
+		'index.js'
 	];
 
-	if (typeof browser.windows !== "undefined") {
-		scriptsToLoad.push("variousFeatures/windowsContextMenu.js");
+	if (env === 'local' && typeof chrome.runtime.getPackageDirectoryEntry === 'function') {
+		const { Directory } = await import('./Directory.js');
+		const directoryObject = window.directoryObject = await Directory.getPackageDir();
+		await directoryObject.recursivelyGetEntries();
+
+		scriptsToLoad.push(...Array.from(
+			directoryObject.get(ADDON_JS_ROOT).get('variousFeatures').values()
+			)
+				.map(f => `variousFeatures/${f.name}`)
+		);
+	} else {
+		scriptsToLoad.push(...[
+			'variousFeatures/refresh-data.js',
+			'variousFeatures/hourly-alarm.js',
+			'variousFeatures/muted-pause.js',
+			'variousFeatures/iqdb.js',
+			'variousFeatures/untrackMe.js',
+		])
 	}
 
-	await zDK.loadJS(document, scriptsToLoad);
+	await loadJS(document, scriptsToLoad);
 })();

@@ -43,6 +43,36 @@ const options = {
 		"value": true,
 		"group": "featurePreference"
 	},
+	"unTrackUrlParams": {
+		"title": "Remove tracking params from urls",
+		"description": "Enabled if checked",
+		"type": "bool",
+		"value": false,
+		"group": "featurePreference"
+	},
+	"unTrackUrlParamsExclude": {
+		"title": "Excluded domain from tracking url redirections",
+		"description": "One domain per line",
+		"type": "string",
+		"value": "mail.google.co,gmail.co,hotmail.co,mail.yahoo.co,outlook.live.co,mail.rediff.co",
+		"stringList": true,
+		"group": "featurePreference"
+	},
+	"youtubeSubscriptions": {
+		"title": "Youtube categories",
+		"description": "JSON data {\"category\": [\"user/someId\"]}",
+		"type": "json",
+		"value": "{}",
+		"stringList": true,
+		"group": "featurePreference"
+	},
+	"twitchPoints": {
+		"title": "Twitch auto clic points",
+		"description": "Enabled if checked",
+		"type": "bool",
+		"value": false,
+		"group": "featurePreference"
+	},
 	"hourlyAlarm": {
 		"title": "Hourly alarm",
 		"description": "Display a notification per hour when checked",

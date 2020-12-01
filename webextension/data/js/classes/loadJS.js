@@ -1,28 +1,55 @@
-async function loadJS(callerDocument, list, prefix) {
-	const isJSLoaded = (callerDocument, src) => {
-		for(let script of callerDocument.scripts) {
-			if (typeof script.src === "string" && script.src.indexOf(src) !== -1) {
-				console.log(`"${src}" is already loaded`);
-				return true;
-			}
-		}
-		return false;
-	};
-	const insertJSNode = function(item) {
-		return new Promise((resolve, reject) => {
-			let newJS = callerDocument.createElement("script");
-			newJS.src = chrome.extension.getURL(prefix + item);
-			newJS.onload = () => {
-				newJS.onload = null;
-				resolve(true);
-			};
-			newJS.onerror = reject;
-			callerDocument.querySelector("body").appendChild(newJS);
-		});
-	};
+let baseDir = '/data/js';
 
-	if(Array.isArray(list) && list.hasOwnProperty(length) === true && list.length > 0) {
-		for (let item of list) {
+/**
+ *
+ * @param {string} newBaseDir
+ */
+export function setBaseDir(newBaseDir) {
+	baseDir = newBaseDir;
+}
+
+function isJSLoaded(callerDocument, src) {
+	for (let script of callerDocument.scripts) {
+		if (typeof script.src === "string" && script.src.indexOf(src) !== -1) {
+			console.log(`"${src}" is already loaded`);
+			return true;
+		}
+	}
+	return false;
+}
+
+function insertJSNode(callerDocument, prefix, item) {
+	return new Promise((resolve, reject) => {
+		let newJS = callerDocument.createElement("script");
+		newJS.src = chrome.extension.getURL(prefix + item);
+		newJS.onload = () => {
+			newJS.onload = null;
+			resolve(true);
+		};
+		newJS.onerror = reject;
+		callerDocument.querySelector("body").appendChild(newJS);
+	});
+}
+
+/**
+ *
+ * @param callerDocument
+ * @param { {src: string, asModule: boolean=true}[] } list
+ * @param {string} [prefix]
+ * @return {Promise<string>}
+ */
+export async function loadJS(callerDocument, list, prefix) {
+	if (prefix === undefined) {
+		prefix = baseDir;
+	}
+
+	prefix = prefix.replace(/\/$/,'') + '/';
+
+	const results = [];
+	if(Array.isArray(list) && list.length > 0) {
+		for (let i = 0; i < list.length; i++) {
+			const item = list[i];
+
 			let src = item, asModule = true;
 			if (typeof item === 'object') {
 				src = item.src;
@@ -32,21 +59,16 @@ async function loadJS(callerDocument, list, prefix) {
 				}
 			}
 
-			if(isJSLoaded(callerDocument, src) === false) {
+			if (isJSLoaded(callerDocument, src) === false) {
 				if (asModule === true) {
-					await import(chrome.extension.getURL(prefix + src));
+					results[i] = await import(chrome.extension.getURL(prefix + src));
 				} else {
-					await insertJSNode(src);
+					results[i] = await insertJSNode(callerDocument, prefix, src);
 				}
 			}
 		}
+		return results;
 	} else {
 		return "EmptyList";
 	}
-}
-
-
-
-export {
-	loadJS
 }

@@ -2,7 +2,8 @@
 
 
 import {default as env} from './env.js';
-import {getPreference, savePreference} from "./options-api.js";
+import {getPreference, savePreference} from './options-api.js';
+
 const ZDK = window.ZDK;
 window.getPreference = getPreference;
 window.savePreference = savePreference;
@@ -15,9 +16,9 @@ appGlobal.notificationGlobalyDisabled = false;
 // noinspection JSUnusedLocalSymbols
 /**
  *
- * @param source
- * @param id
- * @param data
+ * @param {string} source
+ * @param {string} id
+ * @param {*} data
  */
 appGlobal.sendDataToMain = function sendDataToMain(source, id, data) {
 
@@ -30,8 +31,8 @@ appGlobal.sendDataToMain = function sendDataToMain(source, id, data) {
 	} else if (source === "ZToolBox_Options" && id === "hourlyAlarm_update") {
 		HourlyAlarm.isEnabledHourlyAlarm()
 			.then(async function (isActivated) {
-				if (typeof isActivated==="boolean" && getPreference("hourlyAlarm") !== isActivated) {
-					if(getPreference("hourlyAlarm")===true){
+				if (typeof isActivated === "boolean" && getPreference("hourlyAlarm") !== isActivated) {
+					if (getPreference("hourlyAlarm") === true) {
 						await hourlyAlarm.enableHourlyAlarm();
 					} else {
 						await hourlyAlarm.disableHourlyAlarm();
@@ -218,7 +219,7 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
 	}
 });
 
-const chromeNotifications = new zDK.ChromeNotificationControler(),
+const chromeNotifications = new zDK.ChromeNotificationController(),
 	notifButtons = {
 		"openUrl": {title: i18ex._("Open_in_browser"), iconUrl: "/data/images/ic_open_in_browser_black_24px.svg"},
 		"close": {title: i18ex._("Close"), iconUrl: "/data/images/ic_close_black_24px.svg"},

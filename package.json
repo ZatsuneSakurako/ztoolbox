@@ -1,6 +1,6 @@
 {
 	"name": "ztoolbox",
-	"version": "0.13.0",
+	"version": "0.14.0",
 	"private": true,
 	"description": "Web Extension to test various things.",
 	"dependencies": {
@@ -13,8 +13,10 @@
 		"webextension-polyfill": "^0.6.0"
 	},
 	"devDependencies": {
+		"@types/chrome": "^0.0.122",
 		"@types/fs-extra": "^8.1.0",
 		"@types/klaw-sync": "^6.0.0",
+		"@types/lodash": "^4.14.159",
 		"chalk": "^3.0.0",
 		"chrome-webstore-upload": "^0.2.2",
 		"dotenv": "^8.2.0",

@@ -11,7 +11,7 @@
 	"short_name": "ZToolBoxDev",
 	"description": "__MSG_extShortDesc__",
 	"author": "Zatsune No Mokou",
-	"version": "0.13.0",
+	"version": "0.14.0",
 	"icons": {
 		"16": "/icon_16.png",
 		"48": "/icon_48.png",
@@ -42,7 +42,7 @@
 			"js": ["/data/js/contentscripts/launchpad-addlink.js"]
 		},
 		{
-			"matches": ["*://*/*"],
+			"matches": ["<all_urls>"],
 			"js": ["/data/js/contentscripts/rss-retrieve.js"],
 			"run_at": "document_idle"
 		},
@@ -58,28 +58,45 @@
 		},
 		{
 			"matches": [
+				"https://www.amazon.fr/gp/product/*",
 				"https://www.amazon.fr/dp/*",
 				"https://www.amazon.fr/*/dp/*"
 			],
 			"js": ["/data/js/contentscripts/amazonShare.js"],
+			"run_at": "document_idle"
+		},
+		{
+			"matches": [
+				"https://www.twitch.tv/*"
+			],
+			"js": ["/data/js/contentscripts/twitch-points.js"],
+			"run_at": "document_start"
+		},
+		{
+			"matches": [
+				"https://*.youtube.com/*"
+			],
+			"js": ["/data/js/lib/lodash.custom.min.js","/data/js/contentscripts/youtubeSubscriptions.js"],
 			"run_at": "document_idle"
 		}
 	],
 	"default_locale": "en",
 	"offline_enabled": false,
 	"permissions": [
-		"tabs",
-		"activeTab",
+		"alarms",
 		"contextMenus",
 		"notifications",
 		"storage",
-		"unlimitedStorage",
+		"tabs",
+		"activeTab",
+		"<all_urls>",
 		"http://*/*",
-		"https://*/*",
-		"alarms"
+		"https://*/*"
 	],
 	"optional_permissions": [
-		"clipboardWrite"
+		"clipboardWrite",
+		"webRequest",
+		"webRequestBlocking"
 	],
 	"options_ui": {
 		"page": "data/options.html",

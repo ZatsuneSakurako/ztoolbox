@@ -7,7 +7,7 @@ let chromeSettings,
 ;
 if (browser.extension.getBackgroundPage() !== null) {
 	const backgroundPage = browser.extension.getBackgroundPage();
-	if(backgroundPage.hasOwnProperty("chromeSettings")){
+	if (backgroundPage.hasOwnProperty("chromeSettings")) {
 		chromeSettings = backgroundPage.chromeSettings;
 	} else {
 		chromeSettings = backgroundPage.chromeSettings = new backgroundPage.zDK.ChromePreferences(options);
@@ -19,6 +19,7 @@ if (browser.extension.getBackgroundPage() !== null) {
 		i18ex = backgroundPage.i18ex = new zDK.i18extended(browser.i18n.getMessage("language"));
 	}
 }
+export { chromeSettings };
 
 /*		---- Nodes translation ----		*/
 function translateNodes() {
@@ -224,7 +225,7 @@ function saveOptionsInSync(event) {
 function restaureOptionsFromSync(event) {
 	// Default values
 	let mergePreferences = event.shiftKey;
-	chromeSettings.restaureFromSync((typeof mergePreferences === 'boolean')? mergePreferences : false);
+	return chromeSettings.restaureFromSync((typeof mergePreferences === 'boolean')? mergePreferences : false);
 }
 
 /*		---- Node generation of settings ----		*/
@@ -262,10 +263,10 @@ if(browser.extension.getBackgroundPage() !== null && typeof domDelegate !== 'und
 		}
 		return false;
 	});
-	liveEvent("input", "[data-setting-type='string']", settingNode_onChange);
+	liveEvent("input", "[data-setting-type='string'],[data-setting-type='json']", settingNode_onChange);
 	liveEvent("change", "[data-setting-type='integer'],[data-setting-type='bool'],[data-setting-type='color'],input[data-setting-type='menulist'],[data-setting-type='menulist'] input[type='radio']", settingNode_onChange);
 	liveEvent("click", "#export_preferences", exportPrefsToFile);
-	liveEvent("click", "#import_preferences", importPrefsFromFile);
+	// moved to options.js liveEvent("click", "#import_preferences", importPrefsFromFile);
 	liveEvent("click", "button[data-setting-type='file']", prefNode_FileType_onChange);
 }
 
@@ -280,6 +281,7 @@ function exportPrefsToFile() {
 	let backgroundPage = browser.extension.getBackgroundPage();
 	backgroundPage.chromeSettings.exportPrefsToFile("ztoolbox", document);
 }
+
 async function importPrefsFromFile(event) {
 	const backgroundPage = browser.extension.getBackgroundPage();
 	let mergePreferences = (typeof event === "object" && typeof event.shiftKey === "boolean")? event.shiftKey : false;
@@ -289,16 +291,21 @@ async function importPrefsFromFile(event) {
 	let error = false;
 	try {
 		await backgroundPage.chromeSettings.importPrefsFromFile("ztoolbox", mergePreferences, document);
-	} catch (e){
-		error=true;
+	} catch (e) {
+		error = true;
 		console.warn(e);
 	}
 
 	if (error === false) {
-		if (typeof refreshStreamsFromPanel === "function"){
+		if (typeof refreshStreamsFromPanel === "function") {
 			refreshStreamsFromPanel();
 		} else {
-			sendDataToMain("refreshStreams","");
+			sendDataToMain("refreshStreams", "");
 		}
 	}
+
+	if (getPreference('unTrackUrlParams') === true) {
+		await window.webRequestPermissions(event)
+	}
 }
+window.importPrefsFromFile = importPrefsFromFile;

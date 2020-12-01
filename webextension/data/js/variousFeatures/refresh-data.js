@@ -1,6 +1,5 @@
 'use strict';
 
-import { ExtendedMap } from './ExtendedMap.js';
 import { PromiseWaitAll } from '../classes/PromiseWaitAll.js';
 import { Request } from '../classes/Request.js';
 import { ZDK } from "../classes/ZDK.js";
@@ -101,7 +100,7 @@ class websiteDefaultData {
 				logged: undefined
 			},
 			count: 0,
-			folders: new ExtendedMap(),
+			folders: new Map(),
 			websiteIcon: '',
 			logged: null,
 			loginId: ''
@@ -155,10 +154,12 @@ async function refreshWebsitesData() {
 		}
 	});
 
-	ZDK.console.groupCollapsed('Websites check end');
-	ZDK.console.log('fetchResponses:', data);
-	ZDK.console.log('Data:', websitesData);
-	ZDK.console.groupEnd();
+	if (getPreference('showExperimented') === true) {
+		ZDK.console.groupCollapsed('Websites check end');
+		ZDK.console.log('fetchResponses:', data);
+		ZDK.console.log('Data:', websitesData);
+		ZDK.console.groupEnd();
+	}
 
 	// chrome.browserAction.setTitle({title: (count === null)? i18ex._("no_website_logged") : label});
 

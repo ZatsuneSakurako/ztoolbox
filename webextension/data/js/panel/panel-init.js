@@ -44,7 +44,7 @@ window.onload = function () {
 
 	import('../classes/loadJS.js')
 		.then(({loadJS}) => {
-			loadJS(document, jsFiles, backgroundPage.zDK.addonJsRoot);
+			loadJS(document, jsFiles);
 		})
 	;
 };

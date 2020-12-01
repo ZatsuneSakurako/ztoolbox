@@ -1,6 +1,6 @@
 'use strict';
 
-import { ChromeNotificationControler } from './chrome-notification-controler.js';
+import { ChromeNotificationController } from './chrome-notification-controller.js';
 import * as chromeUpdateNotification from './chromeUpdateNotification.js';
 import { ChromePreferences } from './chrome-preferences.js';
 import { i18extended } from './i18extended.js';
@@ -35,11 +35,11 @@ class ZDK {
 
 	/**
 	 *
-	 * @return {ChromeNotificationControler}
+	 * @return {ChromeNotificationController}
 	 * @constructor
 	 */
-	get ChromeNotificationControler() {
-		return ChromeNotificationControler;
+	get ChromeNotificationController() {
+		return ChromeNotificationController;
 	}
 
 	get chromeUpdateNotification() {
@@ -107,13 +107,6 @@ class ZDK {
 		return Version;
 	}
 
-
-	loadJS(callerDocument, list, prefix) {
-		if (prefix === undefined) {
-			prefix = this.addonJsRoot;
-		}
-		return loadJS(callerDocument, list, prefix);
-	}
 
 
 	/**

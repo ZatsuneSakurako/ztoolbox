@@ -75,4 +75,4 @@ class HourlyAlarm {
 	}
 }
 
-const hourlyAlarm = new HourlyAlarm();
+window.hourlyAlarm = new HourlyAlarm();
