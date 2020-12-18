@@ -1,9 +1,10 @@
-# WIP
-* fix : Amazon share - notification after accepted permission
-* fix : Amazon share - better price detection
+# 0.14.1
+* \Fix : Twitch points selector
 
 # 0.14.0
 * \+ : Twitch points
+* fix : Amazon share - notification after accepted permission
+* fix : Amazon share - better price detection
 
 # 0.13.0
 * i : Start using native JavaScript modules. It includes the use of [import](https://developer.mozilla.org//docs/Web/JavaScript/Reference/Statements/import) (static and dynamic) Minimum version Firefox 67 and Chrome 63

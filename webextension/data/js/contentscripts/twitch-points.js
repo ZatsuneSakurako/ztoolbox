@@ -1,5 +1,5 @@
 (function () {
-	const selector = `.community-points-summary[data-test-selector="community-points-summary"] > div:not(:first-child) button.tw-interactive`;
+	const selector = `.community-points-summary[data-test-selector="community-points-summary"] > div:not(:first-child) button.tw-button--success`;
 
 	/**
 	 *
