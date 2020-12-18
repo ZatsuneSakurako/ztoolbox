@@ -19,12 +19,8 @@
 		"128": "/icon_128.png"
 	},
 	"background": {
-		"scripts": [
-			"/data/js/lib/moment.js",
-			"/data/js/lib/moment-locale-fr.js",
-
-			"/data/js/init.js"
-		]
+		"persistent": false,
+		"page": "/data/init.html"
 	},
 	"browser_action": {
 		"browser_style": false,

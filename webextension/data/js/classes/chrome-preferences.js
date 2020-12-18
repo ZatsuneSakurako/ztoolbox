@@ -156,13 +156,13 @@ class ChromePreferences extends Map{
 
 		let defaultSettings = new Map();
 		let defaultSettingsSync = new Map();
-		for(let id in options){
-			if(options.hasOwnProperty(id)){
+		for (let id in options) {
+			if (options.hasOwnProperty(id)) {
 				let option = options[id];
-				if(typeof option.value !== "undefined"){
+				if (typeof option.value !== "undefined") {
 					defaultSettings.set(id, option.value);
 
-					if(!(typeof option.sync === "boolean" && option.sync === false)){
+					if (!(typeof option.sync === "boolean" && option.sync === false)) {
 						defaultSettingsSync.set(id, option.value);
 					}
 				}

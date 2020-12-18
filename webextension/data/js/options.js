@@ -1,6 +1,6 @@
 'use strict';
 
-import { loadPreferences, loadTranslations, savePreference } from './options-api.js';
+import { loadPreferences, loadTranslations, savePreference, loadingPromise } from './options-api.js';
 
 
 const backgroundPage = browser.extension.getBackgroundPage(),
@@ -28,56 +28,23 @@ async function sendDataToMain(id, data) {
 }
 window.sendDataToMain = sendDataToMain;
 
-loadPreferences('section#preferences');
 
 function init(){
-	loadTranslations();
+	loadingPromise.then(() => {
+		loadPreferences('section#preferences');
+		loadTranslations();
+	});
 }
-document.addEventListener('DOMContentLoaded',		init);
+document.addEventListener('DOMContentLoaded', init);
+
 
 if (typeof browser.storage.sync === 'object') {
 	document.querySelector("#syncContainer").classList.remove("hide");
 
-	/**
-	 *
-	 * @param {Event} [event]
-	 * @return {Promise<void>}
-	 */
-	window.webRequestPermissions = async function _webRequestPermissions(event) {
-		const permissions = {
-			permissions: ["webRequest", "webRequestBlocking"],
-			origins: ["http://*/*", "https://*/*"]
-		};
-
-		if (await browser.permissions.contains(permissions) === true) {
-			return;
-		}
-
-		if (!!event) {
-			try {
-				console.debug(
-					await browser.permissions.request({
-						permissions: ["webRequest", "webRequestBlocking"],
-						origins: ["http://*/*", "https://*/*"]
-					})
-				)
-			} catch (e) {
-				console.error(e);
-			}
-		}
-
-		savePreference('unTrackUrlParams', await browser.permissions.contains(permissions));
-
-		const backgroundPage = await browser.extension.getBackgroundPage();
-		return await backgroundPage.webRequestPermissionsListen.call(this, ...arguments);
-	}
 	document.querySelector('input#unTrackUrlParams')
-		.addEventListener('click', function (event) {
+		.addEventListener('click', function () {
 			if (this.checked === false) return;
-
-			webRequestPermissions(event)
-				.catch(console.error)
-			;
+			browser.runtime.reload();
 		})
 	;
 	document.querySelector('#import_preferences').addEventListener('click', window.importPrefsFromFile);

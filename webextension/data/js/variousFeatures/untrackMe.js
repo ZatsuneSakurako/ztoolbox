@@ -1,4 +1,4 @@
-import {getPreference, savePreference} from "../options-api.js";
+import {getPreference} from "../options-api.js";
 
 const keepProtecting = true,
 	/**
@@ -70,6 +70,10 @@ window.cachedExcludedDomains = cachedExcludedDomains
 
 
 function onBeforeRequest(details) {
+	if (typeof window.getPreference !== 'function') {
+		console.error('[untrackMe] preferences aren\'t loaded yet');
+		return {};
+	}
 	if (keepProtecting === false || getPreference('unTrackUrlParams') === false) {
 		return {};
 	}
@@ -111,20 +115,9 @@ function onBeforeRequest(details) {
 
 
 
-let listenDone = false;
-function listen() {
-	if (browser.webRequest === undefined) {
-		console.debug('browser.webRequest is undefined');
-		return;
-	}
-
-	// See request before browser navigation to it to block the tracking parts
-	browser.webRequest.onBeforeRequest.addListener(
-		onBeforeRequest,
-		{urls: ["<all_urls>"]},
-		["blocking"]
-	);
-	listenDone = true;
-}
-listen();
-window.webRequestPermissionsListen = listen;
+// See request before browser navigation to it to block the tracking parts
+browser.webRequest.onBeforeRequest.addListener(
+	onBeforeRequest,
+	{urls: ["<all_urls>"]},
+	["blocking"]
+);

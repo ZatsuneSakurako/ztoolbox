@@ -71,6 +71,9 @@ header button {
 	margin-left: 5px;
 	font-weight: 700;
 }
+header button[disabled] {
+	opacity: 0.5;
+}
 header button:last-of-type {
 	margin-right: 5px;
 }
