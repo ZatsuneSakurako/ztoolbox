@@ -1,4 +1,3 @@
-import {PromiseWaitAll} from "./classes/PromiseWaitAll.js";
 import {init} from "./backgroundTheme.js";
 
 const templatesSource = window.templatesSource = new Map();
@@ -10,19 +9,36 @@ moment.locale(browser.i18n.getMessage('language'));
 
 
 async function loadMustacheTemplates(map) {
-	let templatePromises = new Map(),
+	let templatePromises = [],
 		templateMap = new Map();
 
-	map.forEach((url, id) => {
-		templatePromises.set(id, fetch(browser.extension.getURL(url)))
-	});
+	for (const [id, url] of map) {
+		templatePromises.push(new Promise((resolve, reject) => {
+			fetch(browser.extension.getURL(url))
+				.then(response => {
+					resolve({id: id, response: response})
+				})
+				.catch(reason => {
+					reject({id: id, response: reason})
+				})
+			;
+		}));
+	}
 
-	const templatesData = await PromiseWaitAll(templatePromises);
-	for (let templateId in templatesData) {
-		if(templatesData.hasOwnProperty(templateId)){
-			templateMap.set(templateId, await templatesData[templateId].text());
-			Mustache.parse(templateMap.get(templateId)); // Pre-parsing/Caching Template, optional, speeds up future uses
+	const templatesData = await Promise.allSettled(templatePromises);
+	console.dir(templatesData)
+	for (let settledData of templatesData) {
+		if (settledData.status === 'rejected') {
+			console.error(settledData.reason);
+			continue;
 		}
+
+		const data = settledData.value,
+			templateId = data.id
+		;
+		const template = await data.response.text();
+		templateMap.set(templateId, await template);
+		Mustache.parse(template);
 	}
 	return templateMap;
 }

@@ -174,7 +174,8 @@ async function loadRss() {
 				});
 
 				tabPort.onMessage.addListener(rssLinks => {
-					console.dir(rssLinks);
+					const title = backgroundPage.zDK.customTitleForConsole('RSS');
+					console.log(title[0], title[1], JSON.stringify(rssLinks));
 					resolve(rssLinks);
 				});
 			} else {

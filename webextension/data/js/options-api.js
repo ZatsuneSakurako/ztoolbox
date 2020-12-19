@@ -15,7 +15,6 @@ if (location.pathname.endsWith('init.html')) {
 		browser.runtime.getBackgroundPage().then(backgroundPage => {
 			if (backgroundPage === null) return;
 
-			console.dir(chromeSettings)
 			chromeSettings = backgroundPage.chromeSettings;
 			i18ex = backgroundPage.i18ex;
 
@@ -329,17 +328,16 @@ async function exportPrefsToFile() {
 }
 
 async function importPrefsFromFile(event) {
-	const backgroundPage = await browser.runtime.getBackgroundPage();
 	let mergePreferences = (typeof event === "object" && typeof event.shiftKey === "boolean")? event.shiftKey : false;
 
 	console.warn("Merge: " + mergePreferences);
 
 	let error = false;
 	try {
-		await backgroundPage.chromeSettings.importPrefsFromFile("ztoolbox", mergePreferences, document);
+		await chromeSettings.importPrefsFromFile("ztoolbox", mergePreferences, document);
 	} catch (e) {
 		error = true;
-		console.warn(e);
+		console.error(e);
 	}
 
 	if (error === false) {

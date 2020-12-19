@@ -41,26 +41,43 @@ document.addEventListener('DOMContentLoaded', init);
 if (typeof browser.storage.sync === 'object') {
 	document.querySelector("#syncContainer").classList.remove("hide");
 
-	document.querySelector('input#unTrackUrlParams')
-		.addEventListener('click', function () {
-			if (this.checked === false) return;
-			browser.runtime.reload();
-		})
-	;
-	document.querySelector('#import_preferences').addEventListener('click', window.importPrefsFromFile);
+	document.addEventListener('click', function (e) {
+		const input = e.target.closest('input#unTrackUrlParams');
+		if (!input) return;
 
-	let restaure_sync_button = document.querySelector("#restaure_sync");
-	restaure_sync_button.addEventListener("click", async function (event) {
-		await restaureOptionsFromSync(event);
+		if (input.checked === false) return;
+		browser.runtime.reload();
+	});
+	document.addEventListener('click', function (e) {
+		const input = e.target.closest('#import_preferences');
+		if (!input) return;
 
-		if (getPreference('unTrackUrlParams') === true) {
-			await _webRequestPermissions(event)
-		}
+		if (input.checked === false) return;
+		window.importPrefsFromFile.call(input, [e, input]);
 	});
 
-	let save_sync_button = document.querySelector("#save_sync");
-	save_sync_button.addEventListener("click", function (event) {
-		saveOptionsInSync(event);
+	document.addEventListener('click', function (e) {
+		const input = e.target.closest('#restaure_sync');
+		if (!input) return;
+
+		restaureOptionsFromSync(e)
+			.finally(() => {
+				if (getPreference('unTrackUrlParams') === true) {
+					_webRequestPermissions(e)
+						.catch(console.error)
+					;
+				}
+			})
+		;
+	});
+
+	document.addEventListener('click', function (e) {
+		const input = e.target.closest('#save_sync');
+		if (!input) return;
+
+		saveOptionsInSync(e)
+			.catch(console.error)
+		;
 	});
 }
 
