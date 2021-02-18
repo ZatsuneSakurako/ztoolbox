@@ -1,4 +1,4 @@
-# WIP
+# 0.15.0
 * \+ : Copy text link / copy tab title
 * i : Various fix / cleanup
 
