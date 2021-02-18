@@ -17,19 +17,6 @@ export const noop = () => {};
 class ZDK {
 	constructor(addonJsRoot) {
 		this.addonJsRoot = addonJsRoot;
-
-
-
-		// https://stackoverflow.com/questions/9847580/how-to-detect-safari-chrome-ie-firefox-and-opera-browser/9851769#9851769
-
-		const userAgent = (navigator && navigator.userAgent) || '';
-
-		// Firefox 1.0+
-		Object.defineProperty(this, "isFirefox", {
-			value: typeof InstallTrigger !== 'undefined' || /(?:firefox|fxios)\/(\d+)/i.test(userAgent),
-			configurable: false,
-			writable: false
-		});
 	}
 
 

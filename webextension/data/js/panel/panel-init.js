@@ -12,6 +12,14 @@ const applyPanelSize = () => {
 	document.documentElement.style.setProperty('--opentip-maxwidth', `${((panelWidth/2<300)? (panelWidth/2) : panelWidth)}px`);
 };
 
+import('../browserDetect.js')
+	.then(module => {
+		document.documentElement.classList.toggle('isFirefox', module.isFirefox);
+		document.documentElement.classList.toggle('isChrome', module.isChrome);
+	})
+	.catch(console.error)
+;
+
 chrome.runtime.getBackgroundPage(_backgroundPage => {
 	backgroundPage = _backgroundPage;
 

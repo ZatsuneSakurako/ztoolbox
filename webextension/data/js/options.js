@@ -26,6 +26,14 @@ async function sendDataToMain(id, data) {
 window.sendDataToMain = sendDataToMain;
 
 
+import('./browserDetect.js')
+	.then(module => {
+		const $html = document.documentElement;
+		$html.classList.toggle('isFirefox', module.isFirefox);
+		$html.classList.toggle('isChrome', module.isChrome);
+	})
+;
+
 function init(){
 	browser.runtime.getBackgroundPage()
 		.then(backgroundPage => {

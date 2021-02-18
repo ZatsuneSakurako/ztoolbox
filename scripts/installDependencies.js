@@ -74,10 +74,6 @@ async function init() {
 		echo("Copying mustache...");
 		await _cp("./node_modules/mustache/mustache.js", jsLib);
 
-		echo("Copying perfect-scrollbar...");
-		await _cp("./node_modules/perfect-scrollbar/css/perfect-scrollbar.css", cssLib);
-		await _cp("./node_modules/perfect-scrollbar/dist/perfect-scrollbar.esm.js", jsLib);
-
 		echo("Copying webextension-polyfill...");
 		await _cp("./node_modules/webextension-polyfill/dist/browser-polyfill.js", jsLib);
 		await _cp("./node_modules/webextension-polyfill/dist/browser-polyfill.js.map", jsLib);
