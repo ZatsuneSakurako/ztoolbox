@@ -1,5 +1,6 @@
 import { loadTranslations } from '../options-api.js';
 import { default as PerfectScrollbar } from '../lib/perfect-scrollbar.esm.js';
+import {copyToClipboard} from '../copyToClipboard.js';
 
 
 
@@ -56,6 +57,29 @@ document.addEventListener('click', e => {
 
 			updatePanelData();
 		})
+	;
+});
+
+document.addEventListener('click', e => {
+	const elm = e.target.closest('#copyTabTitle');
+	if (!elm) return;
+
+	browser.tabs.query({
+		active: true,
+		currentWindow: true
+	})
+		.then(tabs => {
+			const [tab] = tabs;
+			let clipboardResult = false;
+			if (tab && tab.title) {
+				clipboardResult = copyToClipboard(tab.title);
+			}
+
+			backgroundPage.doNotif({
+				"message": (clipboardResult) ? backgroundPage.i18ex._("copied_title_text") : backgroundPage.i18ex._("error_copying_to_clipboard")
+			});
+		})
+		.catch(console.error)
 	;
 });
 
