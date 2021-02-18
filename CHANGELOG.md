@@ -1,3 +1,7 @@
+# WIP
+* \+ : Copy text link / copy tab title
+* i : Various fix / cleanup
+
 # 0.14.1
 * \Fix : Twitch points selector
 
