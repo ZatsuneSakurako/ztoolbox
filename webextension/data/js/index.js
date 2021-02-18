@@ -228,17 +228,16 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
 	}
 });
 
-const chromeNotifications = new zDK.ChromeNotificationController(),
-	notifButtons = {
-		"openUrl": {title: i18ex._("Open_in_browser"), iconUrl: "/data/images/ic_open_in_browser_black_24px.svg"},
-		"close": {title: i18ex._("Close"), iconUrl: "/data/images/ic_close_black_24px.svg"},
-		"addItem": {title: i18ex._("Add"), iconUrl: "/data/images/ic_add_circle_black_24px.svg"},
-		"deleteItem": {title: i18ex._("Delete"), iconUrl: "/data/images/ic_delete_black_24px.svg"},
-		"cancel": {title: i18ex._("Cancel"), iconUrl: "/data/images/ic_cancel_black_24px.svg"},
-		"yes": {title: i18ex._("Yes"), iconUrl: "/data/images/ic_add_circle_black_24px.svg"},
-		"no": {title: i18ex._("No"), iconUrl: "/data/images/ic_cancel_black_24px.svg"}
-	}
-;
+/**
+ * @type {ChromeNotificationController}
+ */
+const chromeNotifications = new zDK.ChromeNotificationController();
+/**
+ *
+ * @param {NotificationOptions} options
+ * @param suffixConfirmIfNoButtons
+ * @return {Promise<ChromeNotificationControllerObject>}
+ */
 window.doNotif = function doNotif(options, suffixConfirmIfNoButtons=false){
 	return new Promise((resolve, reject) => {
 		if (typeof options !== "object" || options === null) {

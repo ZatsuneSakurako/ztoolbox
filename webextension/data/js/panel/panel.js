@@ -45,14 +45,16 @@ document.addEventListener('click', e => {
 		.catch(ZDK.console.error)
 		.finally(() => {
 			if (Date.now() - triggered > 2500) {
-				elm.dataset.translateTitle="Refresh";
+				elm.dataset.translateTitle = "Refresh";
 				elm.disabled = false;
 			} else {
 				setTimeout(() => {
-					elm.dataset.translateTitle="Refresh";
+					elm.dataset.translateTitle = "Refresh";
 					elm.disabled = false;
 				}, 3000);
 			}
+
+			updatePanelData();
 		})
 	;
 });

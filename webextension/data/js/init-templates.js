@@ -26,7 +26,6 @@ async function loadMustacheTemplates(map) {
 	}
 
 	const templatesData = await Promise.allSettled(templatePromises);
-	console.dir(templatesData)
 	for (let settledData of templatesData) {
 		if (settledData.status === 'rejected') {
 			console.error(settledData.reason);

@@ -72,6 +72,7 @@ function doNotifyWebsite(website) {
 
 	} else if (getPreference('notify_all_viewed') && (typeof websiteData.count === 'number' && websiteData.count === 0) && (typeof websiteData.notificationState.count === 'number' && websiteData.notificationState.count > 0)) {
 		doNotif({
+			"id": "refreshData-"+website,
 			"title": i18ex._('website_notif', {'website': website}),
 			"message": i18ex._('all_viewed'),
 			"iconUrl": websiteData.websiteIcon

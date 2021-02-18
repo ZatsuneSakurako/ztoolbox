@@ -53,13 +53,19 @@ class ChromeNotificationController {
 	}
 
 	/**
+	 * @typedef {object} ChromeNotificationControllerObject
+	 * @property {string} triggeredType
+	 * @property {string} notificationId
+	 * @property {number} buttonIndex
+	 */
+	/**
 	 *
 	 * @param options Options from chrome.notifications.NotificationOptions
-	 * @param {Object=null} customOption
+	 * @param {null|(NotificationOptions & {id:string})} [customOption]
 	 * @param {Object} customOption.soundObject
 	 * @param {String} customOption.soundObject.data
 	 * @param {Number} customOption.soundObjectVolume
-	 * @return {Promise<Object>}
+	 * @return {Promise<ChromeNotificationControllerObject>}
 	 */
 	send(options=null, customOption=null){
 		const sendNotification = (options)=>{
@@ -81,10 +87,17 @@ class ChromeNotificationController {
 					}
 				};
 				try{
-					browser.notifications.create(options)
-						.then(resolve)
-						.catch(onError)
-					;
+					if (!!options.id) {
+						browser.notifications.create(options.id, options)
+							.then(resolve)
+							.catch(onError)
+						;
+					} else {
+						browser.notifications.create(options)
+							.then(resolve)
+							.catch(onError)
+						;
+					}
 				} catch(err) {
 					onError(err);
 				}

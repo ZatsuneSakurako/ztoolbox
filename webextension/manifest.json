@@ -74,6 +74,11 @@
 			],
 			"js": ["/data/js/lib/lodash.custom.min.js","/data/js/contentscripts/youtubeSubscriptions.js"],
 			"run_at": "document_idle"
+		},
+		{
+			"js": [ "data/js/contentscripts/copyTextLink.js" ],
+			"matches": [ "<all_urls>" ],
+			"run_at": "document_idle"
 		}
 	],
 	"default_locale": "en",

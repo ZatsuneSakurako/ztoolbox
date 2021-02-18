@@ -3,9 +3,7 @@
 import { loadPreferences, loadTranslations, savePreference, loadingPromise } from './options-api.js';
 
 
-const backgroundPage = browser.extension.getBackgroundPage(),
-	theme_cache_update = backgroundPage.backgroundTheme.theme_cache_update
-;
+let theme_cache_update;
 
 window.theme_update = function theme_update(){
 	let panelColorStylesheet = theme_cache_update(document.querySelector("#generated-color-stylesheet"));
@@ -19,7 +17,6 @@ window.theme_update = function theme_update(){
 		document.querySelector("head").appendChild(panelColorStylesheet);
 	}
 };
-theme_update();
 
 
 async function sendDataToMain(id, data) {
@@ -30,13 +27,51 @@ window.sendDataToMain = sendDataToMain;
 
 
 function init(){
-	loadingPromise.then(() => {
-		loadPreferences('section#preferences');
-		loadTranslations();
-	});
+	browser.runtime.getBackgroundPage()
+		.then(backgroundPage => {
+			window.backgroundPage = backgroundPage;
+			theme_cache_update = backgroundPage.backgroundTheme.theme_cache_update;
+
+			theme_update();
+
+			loadingPromise.then(() => {
+				loadPreferences('section#preferences');
+				loadTranslations();
+			});
+		})
+	;
 }
 document.addEventListener('DOMContentLoaded', init);
 
+
+/**
+ *
+ * @param e
+ * @return {Promise<boolean>}
+ */
+async function webRequestPermissions(e) {
+	const permissionsOpts = {
+		origins: [
+			'<all_urls>'
+		],
+		permissions: [
+			"webRequest",
+			"webRequestBlocking"
+		]
+	};
+
+	let result = await browser.permissions.contains(permissionsOpts);
+	if (result) {
+		return result;
+	}
+
+	result = await browser.permissions.request(permissionsOpts);
+	if (!result) {
+		const input = document.querySelector('input#unTrackUrlParams');
+		input.checked = false;
+	}
+	return result;
+}
 
 if (typeof browser.storage.sync === 'object') {
 	document.querySelector("#syncContainer").classList.remove("hide");
@@ -46,7 +81,13 @@ if (typeof browser.storage.sync === 'object') {
 		if (!input) return;
 
 		if (input.checked === false) return;
-		browser.runtime.reload();
+
+		webRequestPermissions(e)
+			.then(() => {
+				browser.runtime.reload();
+			})
+			.catch(console.error)
+		;
 	});
 	document.addEventListener('click', function (e) {
 		const input = e.target.closest('#import_preferences');
@@ -63,7 +104,7 @@ if (typeof browser.storage.sync === 'object') {
 		restaureOptionsFromSync(e)
 			.finally(() => {
 				if (getPreference('unTrackUrlParams') === true) {
-					_webRequestPermissions(e)
+					webRequestPermissions(e)
 						.catch(console.error)
 					;
 				}
