@@ -128,6 +128,12 @@
 
 
 
+	"copy_link_text": "Copy text of link",
+	"copied_link_text": "Text of link copied",
+	"error_copying_to_clipboard": "Error when copying into clipboad",
+
+
+
 	"SearchOnIqdb": "Search on IQDB",
 
 

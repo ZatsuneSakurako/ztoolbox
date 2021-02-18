@@ -128,6 +128,12 @@
 
 
 
+	"copy_link_text": "Copier le texte du lien",
+	"copied_link_text": "Texte du lien copié",
+	"error_copying_to_clipboard": "Erreur lors de la copie dans le presse-papier",
+
+
+
 	"SearchOnIqdb": "Rechercher sur IQDB",
 
 
