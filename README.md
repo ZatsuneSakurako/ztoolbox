@@ -6,7 +6,6 @@ Web Extension to test various things.
 The icon of the web extension is made from https://pixabay.com/photo-1674891/ (in [CC0 Public Domain](https://pixabay.com/fr/service/terms/#usage)).
 
 Sources:
-- perfect-scrollbar, from https://github.com/noraesae/perfect-scrollbar (License MIT).
 - Debounce (from Lodash), from https://github.com/lodash/lodash (License MIT).
 - i18next and i18next-xhr-backend are from https://github.com/i18next/i18next and https://github.com/i18next/i18next-xhr-backend (License MIT).
 - mustache.js (or Mustache), from https://github.com/janl/mustache.js (License MIT).
