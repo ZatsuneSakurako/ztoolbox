@@ -1,3 +1,7 @@
+# WIP
+* i : Update dependencies
+* \- : Remove perfect-scrollbar, now using native scrollbars
+
 # 0.15.0
 * \+ : Copy text link / copy tab title
 * i : Various fix / cleanup

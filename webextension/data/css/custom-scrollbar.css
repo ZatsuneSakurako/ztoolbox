@@ -1,0 +1,20 @@
+.isFirefox:root {
+	--webkitScrollbar: rgba(170,170,170,0.5);
+	--webkitScrollbarHidden: transparent;
+
+	/*noinspection CssUnknownProperty*/
+	scrollbar-color: var(rgba(170,170,170,0.5), --webkitScrollbar) transparent !important;
+	/*noinspection CssUnknownProperty*/
+	scrollbar-width: thin !important;
+}
+
+.isChrome:root ::-webkit-scrollbar {
+	background: transparent;
+	width: 6px;
+}
+
+.isChrome:root ::-webkit-scrollbar-thumb {
+	background-color: var(--webkitScrollbar, rgba(170,170,170,0.5));
+	border-radius: 6px;
+	transition: background-color .2s linear;
+}

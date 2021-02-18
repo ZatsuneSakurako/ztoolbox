@@ -4,7 +4,7 @@ const
 	path = require("path"),
 	pwd = path.join(__dirname, ".."),
 
-	webExt = require('web-ext').default,
+	webExt = require('web-ext'),
 	chromeWebStoreUpload = require('chrome-webstore-upload'),
 
 	{ exec:_exec } = require('child_process'),

@@ -102,10 +102,11 @@ header button:last-of-type {
 	cursor: pointer;
 }
 #panelContent {
-	overflow: hidden;
-	position: relative;
 	height: 100%;
+	overflow-x: hidden;
+	overflow-y: auto;
 	padding: 0 10px 3px 4px;
+	position: relative;
 }
 
 #panelContent,

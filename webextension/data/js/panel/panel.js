@@ -1,5 +1,4 @@
 import { loadTranslations } from '../options-api.js';
-import { default as PerfectScrollbar } from '../lib/perfect-scrollbar.esm.js';
 import {copyToClipboard} from '../copyToClipboard.js';
 
 
@@ -152,8 +151,6 @@ function updatePanelData() {
 		websiteDataList_Node.appendChild(websiteNode);
 		websiteNode.outerHTML = backgroundPage.Mustache.render(mustacheTemplates.get("panelCheckedDataItem"), websiteRenderData);
 	});
-
-	scrollbar_update("websiteDataList");
 }
 
 
@@ -336,30 +333,6 @@ backgroundPage.panel__UpdateData = (data) => {
 };
 
 
-let psList = new Map();
-function load_scrollbar(id) {
-	let scroll_node = document.querySelector(`#${id}`);
-
-	if(scroll_node === null) {
-		console.warn(`[Live notifier] Unkown scrollbar id (${id})`);
-		return null;
-	}
-
-	psList.set(id, new PerfectScrollbar(scroll_node, {
-		// theme: "slimScrollbar",
-		suppressScrollX: true
-	}));
-}
-
-function scrollbar_update(nodeId) {
-	if (typeof nodeId === 'string' && nodeId !== '') {
-		let scrollbar_node = document.querySelector(`#${nodeId}`);
-		if (scrollbar_node !== null && psList.has(nodeId)) {
-			psList.get(nodeId).update();
-		}
-	}
-}
-
 
 function current_version(version) {
 	let current_version_node = document.querySelector("#current_version");
@@ -377,13 +350,3 @@ current_version(appGlobal["version"]);
 loadTranslations();
 
 sendDataToMain("panel_onload");
-
-if (ZDK.isFirefox === true) {
-	load_scrollbar("panelContent");
-
-	window.onresize = _.debounce(() => {
-		scrollbar_update("panelContent");
-	}, 100, {
-		maxWait: 200
-	});
-}
