@@ -1,4 +1,3 @@
-import {PromiseWaitAll} from "./PromiseWaitAll.js";
 import { ZDK } from './ZDK.js';
 
 
@@ -156,13 +155,13 @@ class ChromePreferences extends Map{
 
 		let defaultSettings = new Map();
 		let defaultSettingsSync = new Map();
-		for(let id in options){
-			if(options.hasOwnProperty(id)){
+		for (let id in options) {
+			if (options.hasOwnProperty(id)) {
 				let option = options[id];
-				if(typeof option.value !== "undefined"){
+				if (typeof option.value !== "undefined") {
 					defaultSettings.set(id, option.value);
 
-					if(!(typeof option.sync === "boolean" && option.sync === false)){
+					if (!(typeof option.sync === "boolean" && option.sync === false)) {
 						defaultSettingsSync.set(id, option.value);
 					}
 				}
@@ -848,27 +847,27 @@ ${err}`);
 	 */
 	importDataFormFiles(doc=document, opts=null){
 		return new Promise((resolve, reject) => {
-			if(opts===null && typeof opts!=="object"){
+			if (opts === null && typeof opts !== "object") {
 				reject("Wrong argument");
 				return;
 			}
-			if(!opts.hasOwnProperty("readType")){
+			if (!opts.hasOwnProperty("readType")) {
 				opts.readType = null
 			}
-			if(!opts.hasOwnProperty("fileMaxSize")){
+			if (!opts.hasOwnProperty("fileMaxSize")) {
 				opts.fileMaxSize = null
 			}
-			if(!opts.hasOwnProperty("fileTypes")){
+			if (!opts.hasOwnProperty("fileTypes")) {
 				opts.fileTypes = null
 			}
-			if(!opts.hasOwnProperty("inputAccept")){
+			if (!opts.hasOwnProperty("inputAccept")) {
 				opts.inputAccept = null
 			}
 
 			let node = doc.createElement("input");
 			node.type = "file";
 			node.className = "hide";
-			if(opts.inputAccept!==null){
+			if (opts.inputAccept !== null) {
 				node.accept = opts.inputAccept;
 			}
 
@@ -887,7 +886,7 @@ ${err}`);
 								"error": "WrongFileType"
 							});
 						} else {
-							if(opts.readType!==null){
+							if (opts.readType !== null) {
 								promiseList.push(zDK.loadBlob(file, opts.readType));
 							} else {
 								promiseList.push(zDK.loadBlob(file));
@@ -895,23 +894,21 @@ ${err}`);
 						}
 					}
 
-					let dataObj = await PromiseWaitAll(promiseList),
+					let dataObj = await Promise.allSettled(promiseList),
 						outputData= []
 					;
 
-					for(let index in dataObj){
-						if(dataObj.hasOwnProperty(index)){
-							if(typeof dataObj[index]==="string"){
-								outputData[index] = {
-									"name": node.files[index].name,
-									"data": dataObj[index]
-								};
-							} else {
-								outputData[index] = {
-									"name": node.files[index].name,
-									"error": (typeof dataObj[index]==="object" && dataObj[index].hasOwnProperty("error"))? dataObj[index].error : dataObj[index]
-								};
-							}
+					for (let [index, settleData] of dataObj.entries()) {
+						if (settleData.status === 'fulfilled' && typeof settleData.value === "string") {
+							outputData[index] = {
+								"name": node.files[index].name,
+								"data": settleData.value
+							};
+						} else {
+							outputData[index] = {
+								"name": node.files[index].name,
+								"error": (typeof settleData.reason === "object" && settleData.reason.hasOwnProperty("error")) ? settleData.reason.error : settleData.reason
+							};
 						}
 					}
 
@@ -996,7 +993,7 @@ ${err}`);
 	async importPrefsFromFile(appName, mergePreferences, doc=document){
 		let files = await this.importDataFormFiles(doc, {
 			"readType": "text"
-		});
+		});console.dir(files)
 
 		if(files.length === 0 || files.length > 1){
 			throw `[Input error] ${node.files.length} file(s) loaded`;

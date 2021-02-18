@@ -35,6 +35,10 @@ a {
 	color: rgba(50, 159, 255, 0.8);
 }
 
+footer [data-has-update="true"] {
+	color: lightpink;
+}
+
 input:invalid {
 	background-color: lightpink;
 	color: red;

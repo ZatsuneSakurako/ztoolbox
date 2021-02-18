@@ -21,7 +21,6 @@ appGlobal.notificationGlobalyDisabled = false;
  * @param {*} data
  */
 appGlobal.sendDataToMain = function sendDataToMain(source, id, data) {
-
 	if (source === 'ZToolBox_Panel' && id === 'panel_onload') {
 		if (typeof panel__UpdateData === 'function') {
 			panel__UpdateData();
@@ -51,12 +50,10 @@ appGlobal.sendDataToMain = function sendDataToMain(source, id, data) {
 };
 
 const i18ex = window.i18ex;
-let _ = browser.i18n.getMessage;
 
 /*
  * https://developer.mozilla.org/en-US/Add-ons/WebExtensions/API/menus/create
  */
-browser.contextMenus.removeAll();
 class ContextMenusController extends Map {
 	constructor(){
 		super();
@@ -114,9 +111,9 @@ class ContextMenusController extends Map {
 		if (srcContexts.length > 0) {
 			const contextMenuOpts = Object.assign({
 				'enabled': true,
-				'onclick': onClick,
 				'targetUrlPatterns': targetUrlPatterns_processed,
-				'title': title
+				'title': title,
+				"id": Math.random().toString().substr(2)
 			}, opts);
 			contextMenuOpts.contexts = srcContexts;
 
@@ -141,8 +138,8 @@ class ContextMenusController extends Map {
 			const contextMenuOpts = Object.assign({
 				"documentUrlPatterns": targetUrlPatterns_processed,
 				"enabled": true,
-				"onclick": onClick,
-				"title": title
+				"title": title,
+				"id": Math.random().toString().substr(2)
 			}, opts);
 			contextMenuOpts.contexts = documentContexts;
 
@@ -180,26 +177,38 @@ class ContextMenusController extends Map {
 }
 
 const contextMenusController = window.contextMenusController = new ContextMenusController();
-
-contextMenusController.create(i18ex._("OpenWithoutPlaylist"), ["*.youtube.com/watch?*&list=*","*.youtube.com/watch?list=*"], function (info, tab) {
-	const removePlaylistFromUrl = url => {
-		const urlObj = new URL(url); // https://developer.mozilla.org/en-US/docs/Web/API/URL - https://developer.mozilla.org/en-US/docs/Web/API/URLSearchParams
-		urlObj.searchParams.delete("list");
-		urlObj.searchParams.delete("index");
-		return urlObj.toString();
-	};
-
-	if (info.hasOwnProperty("linkUrl")) {
-		browser.tabs.create({ "url": removePlaylistFromUrl(info.linkUrl) })
-			.catch(console.error)
-		;
-	} else {
-		browser.tabs.update(tab.id, {
-			"url": removePlaylistFromUrl(tab.url)
-		})
-			.catch(console.error)
-		;
+chrome.contextMenus.onClicked.addListener(function (info, tab) {
+	for (let [menuId, data] of contextMenusController) {
+		if (info.menuItemId === menuId) {
+			try {
+				data.onClick(info, tab);
+			} catch (e) {
+				console.error(e);
+			}
+		}
 	}
+});
+window.baseRequiredPromise.then(() => {
+	contextMenusController.create(i18ex._("OpenWithoutPlaylist"), ["*.youtube.com/watch?*&list=*","*.youtube.com/watch?list=*"], function (info, tab) {
+		const removePlaylistFromUrl = url => {
+			const urlObj = new URL(url); // https://developer.mozilla.org/en-US/docs/Web/API/URL - https://developer.mozilla.org/en-US/docs/Web/API/URLSearchParams
+			urlObj.searchParams.delete("list");
+			urlObj.searchParams.delete("index");
+			return urlObj.toString();
+		};
+
+		if (info.hasOwnProperty("linkUrl")) {
+			browser.tabs.create({ "url": removePlaylistFromUrl(info.linkUrl) })
+				.catch(console.error)
+			;
+		} else {
+			browser.tabs.update(tab.id, {
+				"url": removePlaylistFromUrl(tab.url)
+			})
+				.catch(console.error)
+			;
+		}
+	});
 });
 
 chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
@@ -219,42 +228,41 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
 	}
 });
 
-const chromeNotifications = new zDK.ChromeNotificationController(),
-	notifButtons = {
-		"openUrl": {title: i18ex._("Open_in_browser"), iconUrl: "/data/images/ic_open_in_browser_black_24px.svg"},
-		"close": {title: i18ex._("Close"), iconUrl: "/data/images/ic_close_black_24px.svg"},
-		"addItem": {title: i18ex._("Add"), iconUrl: "/data/images/ic_add_circle_black_24px.svg"},
-		"deleteItem": {title: i18ex._("Delete"), iconUrl: "/data/images/ic_delete_black_24px.svg"},
-		"cancel": {title: i18ex._("Cancel"), iconUrl: "/data/images/ic_cancel_black_24px.svg"},
-		"yes": {title: i18ex._("Yes"), iconUrl: "/data/images/ic_add_circle_black_24px.svg"},
-		"no": {title: i18ex._("No"), iconUrl: "/data/images/ic_cancel_black_24px.svg"}
-	}
-;
+/**
+ * @type {ChromeNotificationController}
+ */
+const chromeNotifications = new zDK.ChromeNotificationController();
+/**
+ *
+ * @param {NotificationOptions} options
+ * @param suffixConfirmIfNoButtons
+ * @return {Promise<ChromeNotificationControllerObject>}
+ */
 window.doNotif = function doNotif(options, suffixConfirmIfNoButtons=false){
-	return new Promise((resolve, reject)=>{
-		if(typeof options !== "object" || options === null){
+	return new Promise((resolve, reject) => {
+		if (typeof options !== "object" || options === null) {
 			reject("Missing argument");
 			return null;
 		}
-		if(!options.title || typeof options.title !== "string" || options.title === ""){
+		if (!options.title || typeof options.title !== "string" || options.title === "") {
 			options.title = browser.runtime.getManifest().name;
 		}
-		if(!options.iconUrl || typeof options.iconUrl !== "string" || options.iconUrl === ""){
+		if (!options.iconUrl || typeof options.iconUrl !== "string" || options.iconUrl === "") {
 			const manifestIcons = browser.runtime.getManifest().icons;
 			let iconSize;
-			if(manifestIcons.hasOwnProperty("128")){
+			if (manifestIcons.hasOwnProperty("128")) {
 				iconSize = "128";
-			} else if(manifestIcons.hasOwnProperty("96")){
+			} else if (manifestIcons.hasOwnProperty("96")) {
 				iconSize = "96";
-			} else if(manifestIcons.hasOwnProperty("64")){
+			} else if (manifestIcons.hasOwnProperty("64")) {
 				iconSize = "64";
-			} else if(manifestIcons.hasOwnProperty("48")){
+			} else if (manifestIcons.hasOwnProperty("48")) {
 				iconSize = "48";
-			} else if(manifestIcons.hasOwnProperty("32")){
+			} else if (manifestIcons.hasOwnProperty("32")) {
 				iconSize = "32";
 			}
 
-			if(iconSize!==undefined){
+			if (iconSize !== undefined) {
 				options.iconUrl = manifestIcons[iconSize];
 			}
 		}
@@ -298,24 +306,69 @@ appGlobal["doNotif"] = doNotif;
 
 
 appGlobal["version"] = browser.runtime.getManifest().version;
-if (env === 'local') {
-	window.zDK.setInterval('checkUpdatesInterval', 10, 'm', async function checkUpdates() {
-		const lastCheck = moment(localStorage.getItem('checkUpdate'));
-		if (lastCheck.isValid() === true && moment.duration(moment().diff(lastCheck)).as('hours') < 6) {
-			return;
-		}
+const CHECK_UPDATES_INTERVAL_NAME = 'checkUpdatesInterval',
+	CHECK_UPDATES_INTERVAL_DELAY = 10
+;
+window.baseRequiredPromise.then(async function() {
+	if (env !== 'local') {
+		// Ignore when not in "local" env
 
-		const hasUpdate = await window.zDK.chromeUpdateNotification.checkHasUpdate();
-		localStorage.setItem('checkUpdate', (new Date()).toISOString())
-		if (hasUpdate === false) {
-			return;
-		}
-
-		doNotif({
-			"title": 'Mise à jour disponible',
-			"message": `Une mise à jour de "${browser.runtime.getManifest().name}" est disponible, rafraîchir le dépôt local`
-		})
-			.catch(ZDK.console.error)
+		await browser.alarms.clear(CHECK_UPDATES_INTERVAL_NAME)
+			.catch(console.error)
 		;
-	});
+		return;
+	}
+
+	let existingAlarm = null;
+	try {
+		existingAlarm = await browser.alarms.get(CHECK_UPDATES_INTERVAL_NAME);
+	} catch (e) {
+		console.error(e);
+	}
+
+	if (!existingAlarm || existingAlarm.periodInMinutes !== CHECK_UPDATES_INTERVAL_DELAY) {
+		console.dir(existingAlarm)
+		await browser.alarms.clear(CHECK_UPDATES_INTERVAL_NAME)
+			.catch(console.error)
+		;
+		browser.alarms.create(CHECK_UPDATES_INTERVAL_NAME, {
+			'periodInMinutes': CHECK_UPDATES_INTERVAL_DELAY
+		});
+	}
+});
+
+async function onCheckUpdatesInterval() {
+	if (env !== 'local') {
+		// Ignore when not in "local" env
+		return;
+	}
+
+	const lastCheck = moment(localStorage.getItem('checkUpdate'));
+	if (lastCheck.isValid() === true && moment.duration(moment().diff(lastCheck)).as('hours') < 6) {
+		return;
+	}
+
+	const hasUpdate = await window.zDK.chromeUpdateNotification.checkHasUpdate();
+	localStorage.setItem('checkUpdate_state', !!hasUpdate? '1' : '');
+	localStorage.setItem('checkUpdate', (new Date()).toISOString());
+	if (hasUpdate === false) {
+		return;
+	}
+
+	doNotif({
+		"title": i18ex._('updateSimple'),
+		"message": i18ex._('updateDetail', {
+			name: browser.runtime.getManifest().name
+		})
+	})
+		.catch(ZDK.console.error)
+	;
 }
+
+browser.alarms.onAlarm.addListener(function (alarm) {
+	if (alarm.name === CHECK_UPDATES_INTERVAL_NAME) {
+		onCheckUpdatesInterval()
+			.catch(console.error)
+		;
+	}
+});

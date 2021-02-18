@@ -21,7 +21,11 @@ async function launchSearch(tab, imgUrl) {
 	}
 }
 
-contextMenusController.createImage(i18ex._('SearchOnIqdb'), ['*/*'], async function (info) {
+window.baseRequiredPromise.then(async function() {
+	contextMenusController.createImage(i18ex._('SearchOnIqdb'), ['*/*'], onIqdbMenuClick);
+})
+
+async function onIqdbMenuClick(info) {
 	let createdTab;
 
 
@@ -59,4 +63,4 @@ contextMenusController.createImage(i18ex._('SearchOnIqdb'), ['*/*'], async funct
 		console.error(e);
 		unloadEvent();
 	}
-});
+};

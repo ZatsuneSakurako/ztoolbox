@@ -1,12 +1,13 @@
 'use strict';
 
-import { PromiseWaitAll } from '../classes/PromiseWaitAll.js';
 import { Request } from '../classes/Request.js';
 import { ZDK } from "../classes/ZDK.js";
 
+const ALARM_NAME = 'REFRESH_DATA';
 
 
-function doNotifyWebsite(website){
+
+function doNotifyWebsite(website) {
 	let websiteAPI = websites.get(website),
 		websiteData = websitesData.get(website),
 		foldersList = ''
@@ -71,6 +72,7 @@ function doNotifyWebsite(website){
 
 	} else if (getPreference('notify_all_viewed') && (typeof websiteData.count === 'number' && websiteData.count === 0) && (typeof websiteData.notificationState.count === 'number' && websiteData.notificationState.count > 0)) {
 		doNotif({
+			"id": "refreshData-"+website,
 			"title": i18ex._('website_notif', {'website': website}),
 			"message": i18ex._('all_viewed'),
 			"iconUrl": websiteData.websiteIcon
@@ -134,14 +136,29 @@ async function refreshWebsitesData() {
 			});
 	});
 
-	const data = await PromiseWaitAll(promises);
+	const data = await Promise.allSettled(promises);
 
-	clearInterval(interval);
-	interval = setInterval(refreshWebsitesData, getPreference('check_delay') * 60000);
+	let oldAlarm = null;
+	try {
+		oldAlarm = await browser.alarms.get(ALARM_NAME);
+	} catch (e) {
+		console.error(e);
+	}
 
-	setTimeout(() => {
-		isRefreshingData = false;
-	}, 5 * 1000);
+	if (!oldAlarm || oldAlarm.periodInMinutes !== getPreference('check_delay')) {
+		try {
+			await browser.alarms.clear(ALARM_NAME)
+		} catch (e) {
+			console.error(e);
+		}
+
+		await browser.alarms.create(
+			ALARM_NAME,
+			{
+				delayInMinutes: getPreference('check_delay')
+			}
+		);
+	}
 
 
 	let count = null;
@@ -160,8 +177,6 @@ async function refreshWebsitesData() {
 		ZDK.console.log('Data:', websitesData);
 		ZDK.console.groupEnd();
 	}
-
-	// chrome.browserAction.setTitle({title: (count === null)? i18ex._("no_website_logged") : label});
 
 	if (typeof browser.browserAction.setBadgeText === 'function') {
 		let displayedCount;
@@ -182,10 +197,18 @@ async function refreshWebsitesData() {
 	if (typeof window.panel__UpdateData === 'function') {
 		window.panel__UpdateData();
 	}
-
+	isRefreshingData = false;
 	return data;
 }
 appGlobal["refreshWebsitesData"] = refreshWebsitesData;
+
+browser.alarms.onAlarm.addListener(function (alarm) {
+	if (alarm.name === ALARM_NAME) {
+		refreshWebsitesData()
+			.catch(console.error)
+		;
+	}
+});
 
 
 async function refreshWebsite(website) {
@@ -234,14 +257,13 @@ async function refreshWebsite(website) {
 }
 
 
-let interval,
-	websites = new Map(),
+let websites = new Map(),
 	websitesData = new Map()
 ;
 appGlobal["websites"] = websites;
 appGlobal["websitesData"] = websitesData;
-(async function(){
-	const { deviantArt } = await import('../platforms/deviantart.js');
+window.baseRequiredPromise.then(async function () {
+	const {deviantArt} = await import('../platforms/deviantart.js');
 	websites.set('deviantArt', deviantArt);
 
 	websites.forEach((websiteAPI, website) => {
@@ -249,4 +271,4 @@ appGlobal["websitesData"] = websitesData;
 	});
 
 	refreshWebsitesData();
-})();
+});

@@ -1,11 +1,9 @@
 'use strict';
 
-import { loadPreferences, loadTranslations, savePreference } from './options-api.js';
+import { loadPreferences, loadTranslations, savePreference, loadingPromise } from './options-api.js';
 
 
-const backgroundPage = browser.extension.getBackgroundPage(),
-	theme_cache_update = backgroundPage.backgroundTheme.theme_cache_update
-;
+let theme_cache_update;
 
 window.theme_update = function theme_update(){
 	let panelColorStylesheet = theme_cache_update(document.querySelector("#generated-color-stylesheet"));
@@ -19,7 +17,6 @@ window.theme_update = function theme_update(){
 		document.querySelector("head").appendChild(panelColorStylesheet);
 	}
 };
-theme_update();
 
 
 async function sendDataToMain(id, data) {
@@ -28,72 +25,100 @@ async function sendDataToMain(id, data) {
 }
 window.sendDataToMain = sendDataToMain;
 
-loadPreferences('section#preferences');
 
 function init(){
-	loadTranslations();
+	browser.runtime.getBackgroundPage()
+		.then(backgroundPage => {
+			window.backgroundPage = backgroundPage;
+			theme_cache_update = backgroundPage.backgroundTheme.theme_cache_update;
+
+			theme_update();
+
+			loadingPromise.then(() => {
+				loadPreferences('section#preferences');
+				loadTranslations();
+			});
+		})
+	;
 }
-document.addEventListener('DOMContentLoaded',		init);
+document.addEventListener('DOMContentLoaded', init);
+
+
+/**
+ *
+ * @param e
+ * @return {Promise<boolean>}
+ */
+async function webRequestPermissions(e) {
+	const permissionsOpts = {
+		origins: [
+			'<all_urls>'
+		],
+		permissions: [
+			"webRequest",
+			"webRequestBlocking"
+		]
+	};
+
+	let result = await browser.permissions.contains(permissionsOpts);
+	if (result) {
+		return result;
+	}
+
+	result = await browser.permissions.request(permissionsOpts);
+	if (!result) {
+		const input = document.querySelector('input#unTrackUrlParams');
+		input.checked = false;
+	}
+	return result;
+}
 
 if (typeof browser.storage.sync === 'object') {
 	document.querySelector("#syncContainer").classList.remove("hide");
 
-	/**
-	 *
-	 * @param {Event} [event]
-	 * @return {Promise<void>}
-	 */
-	window.webRequestPermissions = async function _webRequestPermissions(event) {
-		const permissions = {
-			permissions: ["webRequest", "webRequestBlocking"],
-			origins: ["http://*/*", "https://*/*"]
-		};
+	document.addEventListener('click', function (e) {
+		const input = e.target.closest('input#unTrackUrlParams');
+		if (!input) return;
 
-		if (await browser.permissions.contains(permissions) === true) {
-			return;
-		}
+		if (input.checked === false) return;
 
-		if (!!event) {
-			try {
-				console.debug(
-					await browser.permissions.request({
-						permissions: ["webRequest", "webRequestBlocking"],
-						origins: ["http://*/*", "https://*/*"]
-					})
-				)
-			} catch (e) {
-				console.error(e);
-			}
-		}
+		webRequestPermissions(e)
+			.then(() => {
+				browser.runtime.reload();
+			})
+			.catch(console.error)
+		;
+	});
+	document.addEventListener('click', function (e) {
+		const input = e.target.closest('#import_preferences');
+		if (!input) return;
 
-		savePreference('unTrackUrlParams', await browser.permissions.contains(permissions));
-
-		const backgroundPage = await browser.extension.getBackgroundPage();
-		return await backgroundPage.webRequestPermissionsListen.call(this, ...arguments);
-	}
-	document.querySelector('input#unTrackUrlParams')
-		.addEventListener('click', function (event) {
-			if (this.checked === false) return;
-
-			webRequestPermissions(event)
-				.catch(console.error)
-			;
-		})
-	;
-	document.querySelector('#import_preferences').addEventListener('click', window.importPrefsFromFile);
-
-	let restaure_sync_button = document.querySelector("#restaure_sync");
-	restaure_sync_button.addEventListener("click", async function (event) {
-		await restaureOptionsFromSync(event);
-
-		if (getPreference('unTrackUrlParams') === true) {
-			await _webRequestPermissions(event)
-		}
+		if (input.checked === false) return;
+		window.importPrefsFromFile.call(input, [e, input]);
 	});
 
-	let save_sync_button = document.querySelector("#save_sync");
-	save_sync_button.addEventListener("click", function (event) {
-		saveOptionsInSync(event);
+	document.addEventListener('click', function (e) {
+		const input = e.target.closest('#restaure_sync');
+		if (!input) return;
+
+		restaureOptionsFromSync(e)
+			.finally(() => {
+				if (getPreference('unTrackUrlParams') === true) {
+					webRequestPermissions(e)
+						.catch(console.error)
+					;
+				}
+			})
+		;
+	});
+
+	document.addEventListener('click', function (e) {
+		const input = e.target.closest('#save_sync');
+		if (!input) return;
+
+		saveOptionsInSync(e)
+			.catch(console.error)
+		;
 	});
 }
 

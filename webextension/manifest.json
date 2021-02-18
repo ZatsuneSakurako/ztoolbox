@@ -3,7 +3,7 @@
 		"gecko": {
 			"id": "ztoolbox_dev@zatsunenomokou.eu",
 			"update_url": "https://gitlab.com/ZatsuneNoMokou/ztoolbox/raw/master/dist/z_toolbox_dev.update.json",
-			"strict_min_version": "67.0"
+			"strict_min_version": "78.0"
 		}
 	},
 	"manifest_version": 2,
@@ -11,7 +11,7 @@
 	"short_name": "ZToolBoxDev",
 	"description": "__MSG_extShortDesc__",
 	"author": "Zatsune No Mokou",
-	"version": "0.14.1",
+	"version": "0.15.0",
 	"icons": {
 		"16": "/icon_16.png",
 		"48": "/icon_48.png",
@@ -19,12 +19,8 @@
 		"128": "/icon_128.png"
 	},
 	"background": {
-		"scripts": [
-			"/data/js/lib/moment.js",
-			"/data/js/lib/moment-locale-fr.js",
-
-			"/data/js/init.js"
-		]
+		"persistent": false,
+		"page": "/data/init.html"
 	},
 	"browser_action": {
 		"browser_style": false,
@@ -78,6 +74,11 @@
 			],
 			"js": ["/data/js/lib/lodash.custom.min.js","/data/js/contentscripts/youtubeSubscriptions.js"],
 			"run_at": "document_idle"
+		},
+		{
+			"js": [ "data/js/contentscripts/copyTextLink.js" ],
+			"matches": [ "<all_urls>" ],
+			"run_at": "document_idle"
 		}
 	],
 	"default_locale": "en",
@@ -102,5 +103,5 @@
 		"page": "data/options.html",
 		"chrome_style": false
 	},
-	"minimum_chrome_version": "73.0"
+	"minimum_chrome_version": "85.0"
 }

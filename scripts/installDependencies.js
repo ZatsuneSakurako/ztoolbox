@@ -113,21 +113,6 @@ async function init() {
 		rm -R tmp
 		*/
 
-		echo("Downloading/Copying dom-delegate...");
-		stdout = null;
-		try {
-			stdout = await exec(`curl -L -# -o ${path.join(jsLib, "./" + "/dom-delegate.min.js")} http://wzrd.in/standalone/dom-delegate@latest`);
-		} catch(err){
-			if(err){
-				error(err);
-				process.exit(1);
-			}
-		}
-
-		if(stdout!==null){
-			info(stdout);
-		}
-
 		echo("Copying Moment.js...");
 		await _cp("./node_modules/moment/moment.js", jsLib);
 		await _cp("./node_modules/moment/locale/fr.js", path.join(jsLib, "./moment-locale-fr.js"));

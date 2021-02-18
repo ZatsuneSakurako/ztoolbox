@@ -161,6 +161,16 @@ class ZDK {
 	}
 
 	/**
+	 *
+	 * @param {string} title
+	 * @return title
+	 */
+	customTitleForConsole(title) {
+		return [`%c${title}`, 'background: #4676d7;border-radius:5px;padding:5px;margin:2px 5px 2px 0px']
+
+	}
+
+	/**
 	 * Turns a Map into a JSON object
 	 * @param {Map}  myMap
 	 * @returns {Object}
@@ -185,11 +195,11 @@ class ZDK {
 	 * @returns {String} String of strMaxLength length or less
 	 */
 	static stringEllipse(str, strMaxLength) {
-		if(typeof str!=="string" || typeof strMaxLength!=="number"){
+		if (typeof str !== "string" || typeof strMaxLength !== "number") {
 			throw "Argument type problem";
 		}
-		if(str.length>strMaxLength){
-			return `${str.substring(0, strMaxLength-3)}...`
+		if (str.length > strMaxLength) {
+			return `${str.substring(0, strMaxLength - 3)}...`
 		} else {
 			return str;
 		}

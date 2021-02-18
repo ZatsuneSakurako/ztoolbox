@@ -2,24 +2,27 @@
 
 import { options } from './options-data.js';
 
-let chromeSettings,
-	i18ex
+// noinspection ES6ConvertVarToLetConst
+let chromeSettings = null,
+	i18ex = null,
+	loadingPromise = null
 ;
-if (browser.extension.getBackgroundPage() !== null) {
-	const backgroundPage = browser.extension.getBackgroundPage();
-	if (backgroundPage.hasOwnProperty("chromeSettings")) {
-		chromeSettings = backgroundPage.chromeSettings;
-	} else {
-		chromeSettings = backgroundPage.chromeSettings = new backgroundPage.zDK.ChromePreferences(options);
-	}
+if (location.pathname.endsWith('init.html')) {
+	chromeSettings = window.chromeSettings = new window.zDK.ChromePreferences(options);
+	i18ex = window.i18ex = new zDK.i18extended(browser.i18n.getMessage("language"));
+} else {
+	loadingPromise = new Promise(resolve => {
+		browser.runtime.getBackgroundPage().then(backgroundPage => {
+			if (backgroundPage === null) return;
 
-	if (backgroundPage.hasOwnProperty("i18ex")) {
-		i18ex = backgroundPage.i18ex;
-	} else {
-		i18ex = backgroundPage.i18ex = new zDK.i18extended(browser.i18n.getMessage("language"));
-	}
+			chromeSettings = backgroundPage.chromeSettings;
+			i18ex = backgroundPage.i18ex;
+
+			resolve(backgroundPage);
+		});
+	})
 }
-export { chromeSettings };
+export { chromeSettings, i18ex, loadingPromise };
 
 /*		---- Nodes translation ----		*/
 function translateNodes() {
@@ -41,27 +44,43 @@ if (typeof Opentip !== "undefined") {
 	Opentip.defaultStyle = "myDark"; // The default is "standard"
 }
 
+/**
+ *
+ * @type {Map<string, Opentip>}
+ */
+const openTipObjets =  new Map();
 function translateNodes_title() {
 	for (let node of document.querySelectorAll("[data-translate-title]")) {
 		if (typeof node.tagName === "string") {
 			const titleText =  i18ex._(node.dataset.translateTitle);
 
+			let myOpentip = !!node.id? openTipObjets.get(node.id) : undefined;
 			let error = false;
-			try {
-				const Ot = Opentip;
-				if (node.dataset.tooltipPosition) {
-					const myOpentip = new Ot(node, titleText, "", {
-						"tipJoint": node.dataset.tooltipPosition
-					})
+			if (!!myOpentip) {
+				myOpentip.setContent(titleText);
+				if (titleText.length === 0) {
+					myOpentip.deactivate();
 				} else {
-					const myOpentip = new Ot(node, titleText)
+					myOpentip.activate();
 				}
-			} catch (err) {
-				console.warn(err);
-				error = true;
+			} else if (titleText.length > 0) {
+				try {
+					const Ot = Opentip;
+					if (node.dataset.tooltipPosition) {
+						myOpentip = new Ot(node, titleText, "", {
+							"tipJoint": node.dataset.tooltipPosition
+						})
+					} else {
+						myOpentip = new Ot(node, titleText)
+					}
+				} catch (err) {
+					console.warn(err);
+					error = true;
+				}
 			}
 
 			if (error === false) {
+				!!node.id && openTipObjets.set(node.id, myOpentip);
 				delete node.dataset.translateTitle;
 				node.removeAttribute("title");
 			}
@@ -75,16 +94,25 @@ export function loadTranslations() {
 			let body = document.querySelector('body'),
 				observer = new MutationObserver(function(mutations) {
 					mutations.forEach(function(mutation) {
-						if(mutation.type === "childList"){
+						if (mutation.type === "childList") {
 							translateNodes(document);
 							translateNodes_title(document);
+						} else if (mutation.type === "attributes") {
+							switch (mutation.attributeName) {
+								case 'data-translate-id':
+									translateNodes();
+									break;
+								case 'data-translate-title':
+									translateNodes_title();
+									break;
+							}
 						}
 					});
 				});
 
 			// configuration of the observer:
 			const config = {
-				attributes: false,
+				attributes: true,
 				childList: true,
 				subtree: true
 			};
@@ -103,7 +131,7 @@ export function loadTranslations() {
 
 export function getPreference(prefId) {
 	const pref = chromeSettings.get(prefId);
-	if(pref!==undefined){
+	if (pref !== undefined) {
 		return pref;
 	}
 }
@@ -111,7 +139,7 @@ export function savePreference(prefId, value) {
 	chromeSettings.set(prefId, value);
 }
 
-function settingNode_onChange(event) {
+function settingNode_onChange() {
 	const node = this,
 		settingName = (node.tagName.toLowerCase()==="input"&&typeof node.type==="string"&&node.type.toLowerCase()==="radio")? node.name : node.id
 	;
@@ -120,8 +148,8 @@ function settingNode_onChange(event) {
 		savePreference(settingName, chromeSettings.getValueFromNode(node));
 	}
 }
-function refreshSettings(event) {
-	const backgroundPage = browser.extension.getBackgroundPage();
+async function refreshSettings(event) {
+	const backgroundPage = await browser.runtime.getBackgroundPage();
 
 	let prefId = "";
 	let prefValue = "";
@@ -243,18 +271,16 @@ export function loadPreferences(selector) {
 	});
 }
 
-if(browser.extension.getBackgroundPage() !== null && typeof domDelegate !== 'undefined') {
-	const delegate = (function () {
-		const Delegate = domDelegate.Delegate;
-		return new Delegate(document.body);
-	})();
-	const liveEvent = function (type, selector, handler) {
-		delegate.on(type, selector, handler);
-	};
+browser.runtime.getBackgroundPage().then(backgroundPage => {
+	if (backgroundPage === null) {
+		return;
+	}
 
-	liveEvent("click", "[data-input-number-control]", function (e){
-		const label = this,
-			input = label.control,
+	document.addEventListener('click', function (e) {
+		const label = e.target.closest('[data-input-number-control]');
+		if (!label) return;
+
+		const input = label.control,
 			action = label.dataset.inputNumberControl
 		;
 		if (action === "moins" || action === "plus") {
@@ -263,37 +289,55 @@ if(browser.extension.getBackgroundPage() !== null && typeof domDelegate !== 'und
 		}
 		return false;
 	});
-	liveEvent("input", "[data-setting-type='string'],[data-setting-type='json']", settingNode_onChange);
-	liveEvent("change", "[data-setting-type='integer'],[data-setting-type='bool'],[data-setting-type='color'],input[data-setting-type='menulist'],[data-setting-type='menulist'] input[type='radio']", settingNode_onChange);
-	liveEvent("click", "#export_preferences", exportPrefsToFile);
-	// moved to options.js liveEvent("click", "#import_preferences", importPrefsFromFile);
-	liveEvent("click", "button[data-setting-type='file']", prefNode_FileType_onChange);
-}
+	document.addEventListener('input', function (e) {
+		const input = e.target.closest("[data-setting-type='string'],[data-setting-type='json']");
+		if (!input) return;
+
+		settingNode_onChange.apply(input, [e, input])
+	});
+	document.addEventListener('change', function (e) {
+		const input = e.target.closest("[data-setting-type='integer'],[data-setting-type='bool'],[data-setting-type='color'],input[data-setting-type='menulist'],[data-setting-type='menulist'] input[type='radio']");
+		if (!input) return;
+
+		settingNode_onChange.apply(input, [e, input])
+	});
+	document.addEventListener('click', function (e) {
+		const input = e.target.closest("#export_preferences");
+		if (!input) return;
+
+		exportPrefsToFile.apply(input, [e, input])
+	});
+	document.addEventListener('click', function (e) {
+		const input = e.target.closest("button[data-setting-type='file']");
+		if (!input) return;
+
+		prefNode_FileType_onChange.apply(input, [e, input])
+	});
+});
 
 /*				---- Import data from ----				*/
-function prefNode_FileType_onChange(event) {
-	let backgroundPage = browser.extension.getBackgroundPage();
+async function prefNode_FileType_onChange(event) {
+	let backgroundPage = await browser.runtime.getBackgroundPage();
 	backgroundPage.chromeSettings.prefNode_FileType_onChange(event);
 }
 
 /*		---- Import/Export preferences from file ----		*/
-function exportPrefsToFile() {
-	let backgroundPage = browser.extension.getBackgroundPage();
+async function exportPrefsToFile() {
+	let backgroundPage = await browser.runtime.getBackgroundPage();
 	backgroundPage.chromeSettings.exportPrefsToFile("ztoolbox", document);
 }
 
 async function importPrefsFromFile(event) {
-	const backgroundPage = browser.extension.getBackgroundPage();
 	let mergePreferences = (typeof event === "object" && typeof event.shiftKey === "boolean")? event.shiftKey : false;
 
 	console.warn("Merge: " + mergePreferences);
 
 	let error = false;
 	try {
-		await backgroundPage.chromeSettings.importPrefsFromFile("ztoolbox", mergePreferences, document);
+		await chromeSettings.importPrefsFromFile("ztoolbox", mergePreferences, document);
 	} catch (e) {
 		error = true;
-		console.warn(e);
+		console.error(e);
 	}
 
 	if (error === false) {

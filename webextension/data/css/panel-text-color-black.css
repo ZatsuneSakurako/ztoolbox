@@ -43,6 +43,10 @@ textarea {
 	color: rgba(21, 21, 21, 0.8);
 }
 
+footer [data-has-update="true"] {
+	color: lightpink;
+}
+
 input:invalid {
 	background-color: lightpink;
 	color: red;

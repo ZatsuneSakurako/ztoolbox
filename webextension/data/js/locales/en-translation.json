@@ -78,9 +78,6 @@
 	"hourlyAlarm_sound_volume_title": "Sound volume for the hourly notification",
 	"hourlyAlarm_sound_volume_description": "In percent",
 
-	"muted_pause_enabled_title": "Play/Pause on mute tab button",
-	"muted_pause_enabled_description": "Enabled when checked",
-
 	"panel_height_title": "Panel's height",
 	"panel_height_description": "Size in pixels",
 
@@ -131,6 +128,14 @@
 
 
 
+	"copy_link_text": "Copy text of link",
+	"copied_link_text": "Text of link copied",
+	"copied_title_text": "Title copied",
+	"error_copying_to_clipboard": "Error when copying into clipboad",
+	"copyTabTitle": "Copy the current tab title",
+
+
+
 	"SearchOnIqdb": "Search on IQDB",
 
 
@@ -162,5 +167,8 @@
 	"WrongFileType": "Wrong file type",
 	"timeIsNow": "It is now {{currentTime}}",
 	"displayTimeFormat": "hh:mmA",
-	"spokenTimeFormat": "hA"
+	"spokenTimeFormat": "hA",
+
+	"updateSimple": "Update available",
+	"updateDetail": "An update of {{name}} is available, update the local repository"
 }

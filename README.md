@@ -13,7 +13,6 @@ Sources:
 - XML2jsobj, from https://www.sitepoint.com/how-to-convert-xml-to-a-javascript-object/
 - Opentip from https://github.com/enyo/opentip (License MIT)
   - Version in Z-Toolbox is a modified one because it is the same modified version as Live Notifier (prevent conflicts because of some data-attributes)
-- ftdomdelegate, from https://github.com/ftlabs/ftdomdelegate (License MIT)
 - Moment.js, from http://momentjs.com/ (License MIT)
 - The RSS icon is from https://pixabay.com/photo-2440955/ (in [CC0 Public Domain](https://pixabay.com/fr/service/terms/#usage))
 
