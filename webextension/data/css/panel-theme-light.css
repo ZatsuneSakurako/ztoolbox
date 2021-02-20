@@ -10,11 +10,13 @@ footer {
 }
 
 header button,
+header [role="button"],
 button,
 input[type="number"],
 select,
 .panel-item,
-.websiteItem {
+.websiteItem,
+body > section .buttonItem {
 	background-color: var(--bgLight2, hsl(0, 0%, 81%)); /*#424242;*/
 }
 

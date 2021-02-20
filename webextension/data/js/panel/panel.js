@@ -21,6 +21,16 @@ const insertBefore = function (sel, html, doc=document) {
 
 
 document.addEventListener('click', e => {
+	const elm = e.target.closest('[role="button"]');
+	if (!elm) return;
+
+	if (elm.classList.contains('disabled')) {
+		e.preventDefault();
+		e.stopImmediatePropagation();
+	}
+});
+
+document.addEventListener('click', e => {
 	const elm = e.target.closest('#disableNotifications');
 	if (!elm) return;
 
