@@ -1,9 +1,9 @@
 import {init} from "./backgroundTheme.js";
 
 const templatesSource = window.templatesSource = new Map();
-templatesSource.set('backgroundTheme', '/data/js/backgroundTheme.mst');
-templatesSource.set('panelCheckedDataItem', '/data/js/panelCheckedDataItem.mst');
-templatesSource.set('panelRssLinks', '/data/js/panelRssLinks.mst');
+templatesSource.set('backgroundTheme', '/data/template/backgroundTheme.mst');
+templatesSource.set('panelCheckedDataItem', '/data/template/panel/checkedDataItem.mst');
+templatesSource.set('panelRssLinks', '/data/template/panel/rssLinks.mst');
 
 moment.locale(browser.i18n.getMessage('language'));
 
