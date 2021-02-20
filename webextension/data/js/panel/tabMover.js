@@ -10,14 +10,10 @@ async function update() {
 	 * @type {Window}
 	 */
 	const backgroundPage = await browser.runtime.getBackgroundPage();
-
 	const tabMoverTemplate = backgroundPage.appGlobal.mustacheTemplates.get('tabMover');
 	if (!tabMoverTemplate) {
+		console.warn('tabMover template missing');
 		return false;
-	}
-
-	while (tabMover.hasChildNodes()) {
-		tabMover.removeChild(tabMover.lastChild);
 	}
 
 
@@ -47,6 +43,9 @@ async function update() {
 	;
 
 	const i18ex = backgroundPage.i18ex;
+	while (tabMover.hasChildNodes()) {
+		tabMover.removeChild(tabMover.lastChild);
+	}
 	for (const win of browserWindows) {
 		backgroundPage.zDK.appendTo(
 			tabMover,
@@ -74,10 +73,16 @@ document.addEventListener('click', e => {
 		active: true
 	})
 		.then(async ([activeTab]) => {
+			if (!activeTab) {
+				console.warn('no active tab found');
+				return;
+			}
+
 			const winId = parseInt(elm.dataset.windowId);
-			console.dir(activeTab)
-
-
+			if (!winId || isNaN(winId)) {
+				console.warn('no valid window target');
+				return;
+			}
 			await browser.tabs.move(activeTab.id, {
 				"windowId": winId,
 				"index": -1
