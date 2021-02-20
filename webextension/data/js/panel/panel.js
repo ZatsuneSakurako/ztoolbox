@@ -67,11 +67,11 @@ document.addEventListener('click', e => {
 		active: true,
 		currentWindow: true
 	})
-		.then(tabs => {
+		.then(async tabs => {
 			const [tab] = tabs;
 			let clipboardResult = false;
 			if (tab && tab.title) {
-				clipboardResult = copyToClipboard(tab.title);
+				clipboardResult = await copyToClipboard(tab.title);
 			}
 
 			backgroundPage.doNotif({

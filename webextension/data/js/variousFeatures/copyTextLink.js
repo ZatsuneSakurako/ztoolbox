@@ -20,7 +20,7 @@ chrome.contextMenus.onClicked.addListener(function (info, tab) {
 		id: "copyLinkText",
 		data: ""
 	}, async function (responseData) {
-		let clipboardResult = (typeof responseData === 'object' && responseData !== null) && copyToClipboard(responseData.string);
+		let clipboardResult = (typeof responseData === 'object' && responseData !== null) && await copyToClipboard(responseData.string);
 
 		if (!clipboardResult || (await env) !== 'prod') {
 			window.doNotif({
