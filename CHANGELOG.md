@@ -1,5 +1,7 @@
 # WIP
 * i : Update dependencies
+* i : Move tab mover from context menu to panel
+* i : Panel css refactor / fixes
 * \- : Remove perfect-scrollbar, now using native scrollbars
 
 # 0.15.0

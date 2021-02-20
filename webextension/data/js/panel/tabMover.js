@@ -95,6 +95,8 @@ document.addEventListener('click', e => {
 			})
 				.catch(console.error)
 			;
+
+			window.close()
 		})
 		.catch(console.error)
 	;
