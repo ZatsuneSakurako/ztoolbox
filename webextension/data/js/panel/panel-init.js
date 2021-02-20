@@ -49,7 +49,7 @@ window.onload = function () {
 	if(typeof browser === 'undefined' || browser === null) {
 		jsFiles.push('/lib/browser-polyfill.js');
 	}
-	jsFiles = jsFiles.concat(['options-api.js', 'lib/lodash.custom.min.js', 'copyToClipboard.js', 'panel/tabMover.js', 'panel/panel.js']);
+	jsFiles = jsFiles.concat(['options-api.js', 'lib/lodash.custom.min.js', 'copyToClipboard.js', 'panel/tabMover.js', 'panel/pwa.js', 'panel/panel.js']);
 
 	import('../classes/loadJS.js')
 		.then(({loadJS}) => {

@@ -198,6 +198,10 @@ section .buttonItem .title,
 	display: none;
 }
 
+.isFirefox #pwa {
+	display: none;
+}
+
 
 
 #current_version::before {

@@ -79,6 +79,11 @@
 			"js": [ "data/js/contentscripts/copyTextLink.js" ],
 			"matches": [ "<all_urls>" ],
 			"run_at": "document_idle"
+		},
+		{
+			"js": [ "data/js/contentscripts/pwa.js" ],
+			"matches": [ "<all_urls>" ],
+			"run_at": "document_start"
 		}
 	],
 	"default_locale": "en",
