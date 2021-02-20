@@ -160,6 +160,7 @@
 	"no_other_window": "No other window",
 	"move_tab_of_window": "Move tab of window",
 	"open_link_to_window": "Open link to another window",
+	"windowId": "Window {{windowId}}",
 	"window_windowId": "Window {{windowId}} \"{{window}}\"",
 
 
