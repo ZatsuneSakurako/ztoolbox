@@ -103,6 +103,8 @@ header [role="button"]:last-child {
 	cursor: pointer;
 }
 body > section {
+	display: flex;
+	flex-direction: column;
 	height: 100%;
 	overflow-x: hidden;
 	overflow-y: auto;
@@ -115,11 +117,8 @@ input[type="radio"][name="sections"] {
 	position: absolute;
 }
 
-input[type="radio"][name="sections"] + section {
+input[type="radio"][name="sections"]:not(:checked) + section {
 	display: none;
-}
-input[type="radio"][name="sections"]:checked + section {
-	display: block;
 }
 
 body > section,
@@ -129,7 +128,7 @@ footer * {
 }
 
 
-body > section .buttonItem,
+section .buttonItem,
 #panelContent .websiteItem {
 	background-repeat: no-repeat;
 	background-position: 3px center;
@@ -144,25 +143,25 @@ body > section .buttonItem,
 	text-align: left;
 }
 
-body > section .buttonItem .icon {
+section .buttonItem .icon {
 	font-size: 32px;
 	left: 3px;
 	position: absolute;
 	top: 50%;
 	transform: translateY(-50%);
 }
-body > section .buttonItem .icon .material-icons {
+section .buttonItem .icon .material-icons {
 	font-size: inherit;
 }
 
 #panelContent .websiteItem .websiteTitle::before {
 	content: attr(data-website);
 }
-body > section .buttonItem .title[data-count]::after,
+section .buttonItem .title[data-count]::after,
 #panelContent .websiteItem[data-Logged="true"] .websiteTitle::after {
 	content: " (" attr(data-count) ")";
 }
-body > section .buttonItem .title,
+section .buttonItem .title,
 #panelContent .websiteItem .websiteTitle {
 	font-size: 1.1em;
 	font-weight: 700;
