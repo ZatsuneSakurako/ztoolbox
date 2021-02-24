@@ -19,15 +19,31 @@ chrome.contextMenus.onClicked.addListener(function (info, tab) {
 	chrome.tabs.sendMessage(tab.id, {
 		id: "copyLinkText",
 		data: ""
-	}, async function (responseData) {
-		let clipboardResult = (typeof responseData === 'object' && responseData !== null) && await copyToClipboard(responseData.string);
-
-		if (!clipboardResult || (await env) !== 'prod') {
-			window.doNotif({
-				"message": (clipboardResult) ? i18ex._("copied_link_text") : i18ex._("error_copying_to_clipboard")
-			})
-		}
-
-		console[(clipboardResult) ? "debug" : "warn"](`Copy to clipboad ${(clipboardResult) ? "success" : "error"} (${responseData?.string})`);
 	});
+});
+
+async function onCopyLinkTextReply(responseData) {
+	const clipboardResult = responseData.result;
+	if (!clipboardResult || env !== 'prod') {
+		window.doNotif({
+			"message": (clipboardResult) ? i18ex._("copied_link_text") : i18ex._("error_copying_to_clipboard")
+		})
+	}
+
+	console[(clipboardResult) ? "debug" : "warn"](`Copy to clipboad ${(clipboardResult) ? "success" : "error"}`, responseData);
+}
+
+chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
+	if (sender.id !== chrome.runtime.id) {
+		console.error(sender.id)
+		return;
+	}
+
+	if (typeof message === "object" && message.hasOwnProperty("data")) {
+		if (message.data.id === "copyLinkText_reply") {
+			onCopyLinkTextReply(message.data.data)
+				.catch(console.error)
+			;
+		}
+	}
 });
