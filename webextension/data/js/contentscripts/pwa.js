@@ -6,10 +6,20 @@
 
 
 
+	/**
+	 *
+	 * @type {browser.runtime.Port|null}
+	 */
+	let eventPort = null;
 	let event = null;
 	window.addEventListener("beforeinstallprompt", function(e) {
 		// log the platforms provided as options in an install prompt
 		event = e;
+		if (!!eventPort) {
+			eventPort.postMessage(!!event);
+			eventPort.disconnect();
+			eventPort = null;
+		}
 	});
 
 
@@ -29,7 +39,28 @@
 	}
 
 	const onConnect = async function (port) {
-		if (port.sender.id !== chrome.runtime.id || port.name !== 'ztoolbox_trigger-pwa') {
+		if (port.sender.id !== chrome.runtime.id) {
+			return;
+		}
+
+		if (port.name === 'ztoolbox_detect-pwa') {
+			port.postMessage(!!event);
+
+			if (!!eventPort) {
+				eventPort.disconnect();
+				eventPort = null;
+			}
+
+			if (!!event) {
+				port.disconnect();
+			} else {
+				eventPort = port;
+			}
+
+			return;
+		}
+
+		if (port.name !== 'ztoolbox_trigger-pwa') {
 			return;
 		}
 
