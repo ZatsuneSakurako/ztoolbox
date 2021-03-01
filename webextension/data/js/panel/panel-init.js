@@ -45,15 +45,21 @@ chrome.runtime.getBackgroundPage(_backgroundPage => {
 
 window.onload = function () {
 	window.onload = null;
-	let jsFiles = [];
+	let jsFiles = [
+		'../options-api.js',
+		'../lib/lodash.custom.min.js',
+		'../copyToClipboard.js',
+		'../panel/tabMover.js',
+		'../panel/pwa.js',
+		'../panel/panel.js'
+	];
 	if(typeof browser === 'undefined' || browser === null) {
-		jsFiles.push('/lib/browser-polyfill.js');
+		jsFiles.unshift('../lib/browser-polyfill.js');
 	}
-	jsFiles = jsFiles.concat(['options-api.js', 'lib/lodash.custom.min.js', 'copyToClipboard.js', 'panel/tabMover.js', 'panel/pwa.js', 'panel/panel.js']);
 
-	import('../classes/loadJS.js')
-		.then(({loadJS}) => {
-			loadJS(document, jsFiles);
-		})
-	;
+	(async () => {
+		for (let src of jsFiles) {
+			await import(src);
+		}
+	})();
 };
