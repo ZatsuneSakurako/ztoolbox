@@ -45,6 +45,25 @@ chrome.runtime.getBackgroundPage(_backgroundPage => {
 
 window.onload = function () {
 	window.onload = null;
+
+
+	const currentCat = window.localStorage.getItem('panel-current-cat');
+	if (currentCat !== null) {
+		/**
+		 *
+		 * @type {HTMLInputElement}
+		 */
+		const input = document.querySelector(`input#${currentCat}`);
+		input.checked = true;
+	}
+	document.addEventListener('change', function (e) {
+		const node = e.target.closest('input[type="radio"][name="sections"]');
+		if (!node) return;
+
+		window.localStorage.setItem('panel-current-cat', node.id);
+	});
+
+
 	let jsFiles = [
 		'../options-api.js',
 		'../lib/lodash.custom.min.js',
