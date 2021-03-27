@@ -63,20 +63,22 @@ window.onload = function () {
 		window.localStorage.setItem('panel-current-cat', node.id);
 	});
 
-
-	let jsFiles = [
-		'../options-api.js',
-		'../lib/lodash.custom.min.js',
-		'../copyToClipboard.js',
-		'../panel/tabMover.js',
-		'../panel/pwa.js',
-		'../panel/panel.js'
-	];
-	if(typeof browser === 'undefined' || browser === null) {
-		jsFiles.unshift('../lib/browser-polyfill.js');
-	}
-
 	(async () => {
+		if(typeof browser === 'undefined' || browser === null) {
+			import('../lib/browser-polyfill.js');
+		}
+
+
+		let jsFiles = [
+			'../options-api.js',
+			'../lib/lodash.custom.min.js',
+			'../copyToClipboard.js',
+			'../panel/tabMover.js',
+			'../panel/pwa.js',
+			'../panel/panel.js'
+		];
+
+
 		for (let src of jsFiles) {
 			await import(src);
 		}

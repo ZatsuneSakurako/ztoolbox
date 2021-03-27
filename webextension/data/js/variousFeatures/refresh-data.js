@@ -13,24 +13,19 @@ function doNotifyWebsite(website) {
 		foldersList = ''
 	;
 
-	let notificationList = [],
-		labelArray = [];
-
-	if (websiteData.logged) {
-		if (websiteData.hasOwnProperty('folders')) {
-			websiteData.folders.forEach((folderData, name) => {
-				let count = folderData.folderCount;
-				if (typeof count === "number" && !isNaN(count) && count > 0) {
-					let suffix = '';
-					if(websiteData.notificationState.count !== null && websiteData.count > websiteData.notificationState.count){
-						suffix=` (+${websiteData.count - websiteData.notificationState.count})`;
-					}
-					labelArray.push(`${name}: ${count}${suffix}`);
-					notificationList.push({"title": `${(typeof folderData.folderName === 'string')? folderData.folderName : name}: `, 'message': count.toString()});
+	const labelArray = [];
+	if (websiteData.logged && websiteData.hasOwnProperty('folders')) {
+		for (let [name, folderData] of websiteData.folders) {
+			let count = folderData.folderCount;
+			if (typeof count === "number" && !isNaN(count) && count > 0) {
+				let suffix = '';
+				if (websiteData.notificationState.count !== null && websiteData.count > websiteData.notificationState.count) {
+					suffix = ` (+${websiteData.count - websiteData.notificationState.count})`;
 				}
-			});
-			foldersList += labelArray.join("\n");
+				labelArray.push(`${name}: ${count}${suffix}`);
+			}
 		}
+		foldersList += labelArray.join("\n");
 	}
 
 	if (!websiteData.logged) {
