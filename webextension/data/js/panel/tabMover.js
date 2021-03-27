@@ -46,16 +46,28 @@ async function update() {
 	while (tabMover.hasChildNodes()) {
 		tabMover.removeChild(tabMover.lastChild);
 	}
-	for (const win of browserWindows) {
+	if (browserWindows.length) {
+		for (const win of browserWindows) {
+			backgroundPage.zDK.appendTo(
+				tabMover,
+				backgroundPage.Mustache.render(tabMoverTemplate, {
+					'title': i18ex._("windowId", {
+						"windowId": win.id
+					}),
+					'windowId': win.id,
+					'tabName': win.currentTabTitle ?? '',
+					'tabsCount': win.tabs.length
+				}),
+				document
+			);
+		}
+	} else {
 		backgroundPage.zDK.appendTo(
 			tabMover,
 			backgroundPage.Mustache.render(tabMoverTemplate, {
-				'title': i18ex._("windowId", {
-					"windowId": win.id
-				}),
-				'windowId': win.id,
-				'tabName': win.currentTabTitle ?? '',
-				'tabsCount': win.tabs.length
+				'title': i18ex._("newWindow"),
+				'windowId': '',
+				'tabName': ''
 			}),
 			document
 		);
@@ -80,15 +92,19 @@ document.addEventListener('click', e => {
 
 			const winId = parseInt(elm.dataset.windowId);
 			if (!winId || isNaN(winId)) {
-				console.warn('no valid window target');
-				return;
+				await browser.windows.create({
+					"tabId": activeTab.id
+				})
+					.catch(console.error)
+				;
+			} else {
+				await browser.tabs.move(activeTab.id, {
+					"windowId": winId,
+					"index": -1
+				})
+					.catch(console.error)
+				;
 			}
-			await browser.tabs.move(activeTab.id, {
-				"windowId": winId,
-				"index": -1
-			})
-				.catch(console.error)
-			;
 
 			await browser.tabs.update(activeTab.id, {
 				"active": activeTab.active

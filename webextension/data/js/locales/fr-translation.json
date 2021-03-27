@@ -161,6 +161,7 @@
 	"move_tab_of_window": "Déplacer l'onglet de fenêtre",
 	"open_link_to_window": "Ouvrir le lien dans une autre fenêtre",
 	"windowId": "Fenêtre {{windowId}}",
+	"newWindow": "Nouvelle fenêtre",
 	"window_windowId": "Fenêtre {{windowId}} \"{{window}}\"",
 
 

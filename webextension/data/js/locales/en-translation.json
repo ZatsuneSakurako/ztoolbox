@@ -161,6 +161,7 @@
 	"move_tab_of_window": "Move tab of window",
 	"open_link_to_window": "Open link to another window",
 	"windowId": "Window {{windowId}}",
+	"newWindow": "New window",
 	"window_windowId": "Window {{windowId}} \"{{window}}\"",
 
 
