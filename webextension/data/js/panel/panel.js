@@ -85,6 +85,7 @@ document.addEventListener('click', e => {
 			}
 
 			backgroundPage.doNotif({
+				'id': 'copied_title_text',
 				"message": (clipboardResult) ? backgroundPage.i18ex._("copied_title_text") : backgroundPage.i18ex._("error_copying_to_clipboard")
 			});
 		})

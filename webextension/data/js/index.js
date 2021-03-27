@@ -356,6 +356,7 @@ async function onCheckUpdatesInterval() {
 	}
 
 	doNotif({
+		'id': 'updateNotification',
 		"title": i18ex._('updateSimple'),
 		"message": i18ex._('updateDetail', {
 			name: browser.runtime.getManifest().name

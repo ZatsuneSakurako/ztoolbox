@@ -26,6 +26,7 @@ async function onCopyLinkTextReply(responseData) {
 	const clipboardResult = responseData.result;
 	if (!clipboardResult || env !== 'prod') {
 		window.doNotif({
+			'id': 'copy_link_result',
 			"message": (clipboardResult) ? i18ex._("copied_link_text") : i18ex._("error_copying_to_clipboard")
 		})
 	}

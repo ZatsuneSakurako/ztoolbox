@@ -37,6 +37,7 @@ function doNotifyWebsite(website) {
 		const oldLoggedState = websiteData.notificationState.logged;
 		if (oldLoggedState === true || oldLoggedState === undefined) {
 			doNotif({
+				"id": "refreshData-"+website,
 				'title': i18ex._('website_notif', {'website': website}),
 				'message': i18ex._('website_not_logged', {'website': website}),
 				'iconUrl': websiteData.websiteIcon
@@ -53,6 +54,7 @@ function doNotifyWebsite(website) {
 	} else if (typeof websiteData.count === 'number' && !isNaN(websiteData.count) && (websiteData.notificationState.count === null || websiteData.count > websiteData.notificationState.count)) {
 		if (getPreference('notify_checkedData')) {
 			doNotif({
+				"id": "refreshData-"+website,
 				"title": i18ex._('website_notif', {'website': website}),
 				"message": i18ex._('count_new_notif', {'count': websiteData.count}) + "\n" + foldersList,
 				"iconUrl": websiteData.websiteIcon

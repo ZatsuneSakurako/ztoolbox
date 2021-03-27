@@ -54,6 +54,7 @@ async function onPwaClick() {
 	}
 
 	backgroundPage.doNotif({
+		'id': 'pwa_notification',
 		"message": `PWA : ${resultStr}`
 	});
 }
