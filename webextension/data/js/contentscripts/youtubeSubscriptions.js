@@ -202,6 +202,7 @@ padding: 0.2rem;`;
 		maxWait: 1000
 	});
 
+	let timer = null;
 	const loadCategories = function loadCategories() {
 		const $videos =
 			Array.from($subRoot.querySelectorAll('#items > ytd-grid-video-renderer:not(.ztl-cat)'))
@@ -226,7 +227,13 @@ padding: 0.2rem;`;
 				})
 		;
 
-		console.dir($videos)
+		if (timer !== null) {
+			clearTimeout(timer);
+		}
+		timer = setTimeout(() => {
+			console.dir($videos);
+			timer = null;
+		}, 1000);
 	}
 
 	chrome.runtime.sendMessage({
