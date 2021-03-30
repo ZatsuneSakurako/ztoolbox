@@ -88,7 +88,9 @@ class ChromeNotificationController {
 				};
 				try{
 					if (!!options.id) {
-						browser.notifications.create(options.id, options)
+						const id = options.id;
+						delete options.id;
+						browser.notifications.create(id, options)
 							.then(resolve)
 							.catch(onError)
 						;
