@@ -73,6 +73,7 @@ window.onload = function () {
 			'../options-api.js',
 			'../lib/lodash.custom.min.js',
 			'../copyToClipboard.js',
+			'../panel/browserTabUtils.js',
 			'../panel/tabMover.js',
 			'../panel/pwa.js',
 			'../panel/panel.js'

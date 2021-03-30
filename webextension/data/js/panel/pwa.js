@@ -1,42 +1,4 @@
-
-/**
- * @param {string} name
- */
-async function triggerOnCurrentTab(name) {
-	const win = await browser.windows.getCurrent({
-		'populate': true,
-		'windowTypes': ['normal']
-	});
-	const [activeTab] = win.tabs.filter(tab => {
-		return tab.hasOwnProperty('active') && tab.active === true;
-	});
-
-	if (!activeTab) {
-		return;
-	}
-
-	const tabPort = browser.tabs.connect(activeTab.id, {
-		'name': name
-	});
-	const promise = new Promise((resolve, reject) => {
-		tabPort.onMessage.addListener(result => {
-			try {
-				resolve(JSON.parse(result));
-				return;
-			} catch (e) {
-				console.dir(e)
-			}
-			resolve(result);
-		});
-
-		tabPort.onDisconnect.addListener(reject);
-	});
-
-	return {
-		tabPort,
-		result: await promise
-	};
-}
+import {triggerOnCurrentTab, onTabChange} from './browserTabUtils.js';
 
 async function onPwaClick() {
 	const backgroundPage = await browser.runtime.getBackgroundPage(),
@@ -103,7 +65,7 @@ async function updatePwaButton() {
 	};
 }
 
-const onTabChange = _.debounce(() => {
+const _onTabChange = _.debounce(() => {
 	updatePwaButton()
 		.catch(err => {
 			console.error(err);
@@ -112,6 +74,4 @@ const onTabChange = _.debounce(() => {
 }, 100, {
 	maxWait: 200
 });
-browser.windows.onFocusChanged.addListener(onTabChange);
-browser.tabs.onActivated.addListener(onTabChange);
-onTabChange();
+onTabChange(_onTabChange);
