@@ -76,6 +76,7 @@ window.onload = function () {
 			'../panel/browserTabUtils.js',
 			'../panel/tabMover.js',
 			'../panel/pwa.js',
+			'../panel/service-worker.js',
 			'../panel/panel.js'
 		];
 

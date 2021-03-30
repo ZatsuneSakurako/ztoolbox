@@ -78,6 +78,9 @@
 	"hourlyAlarm_sound_volume_title": "Volume son pour les notification par heure",
 	"hourlyAlarm_sound_volume_description": "En pourcentage",
 
+	"serviceWorkerWhitelist_title": "Liste blanche du service worker",
+	"serviceWorkerWhitelist_description": "JSON object",
+
 	"panel_height_title": "Hauteur du panel",
 	"panel_height_description": "Taille en pixels",
 

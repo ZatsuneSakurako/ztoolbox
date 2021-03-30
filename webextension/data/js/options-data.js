@@ -105,6 +105,14 @@ const options = {
 		"prefLevel": "basic",
 		"group": "featurePreference"
 	},
+	"serviceWorkerWhitelist": {
+		"title": "Service worker whitelist",
+		"description": "JSON data {\"domain.com\": \"whitelist\"}",
+		"type": "json",
+		"value": "{\"*\": \"whitelist\"}",
+		"stringList": true,
+		"group": "featurePreference"
+	},
 	/*			Notifications			*/
 	"notify_checkedData": {
 		"title": "Show a notification for deviantArt",
