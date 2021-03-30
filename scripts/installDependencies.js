@@ -99,28 +99,6 @@ async function init() {
 		echo("Copying i18next-xhr-backend...");
 		await _cp("./node_modules/i18next-xhr-backend/i18nextXHRBackend.js", jsLib);
 
-		echo('Copying content-scrips-register-polyfill');
-		stdout = null;
-		try {
-			stdout = await exec(`curl -L --silent -o ${path.join(jsLib, "./" + "/content-scripts-register-polyfill.min.js")} https://bundle.run/content-scripts-register-polyfill@2.1.0`);
-		} catch(err){
-			if(err){
-				error(err);
-				process.exit(1);
-			}
-		}
-		if (stdout !== null) {
-			if (stdout.hasOwnProperty('stderr') || stdout.hasOwnProperty('stdout')) {
-				if (stdout.stderr) {
-					info(stdout.stderr);
-				} else if (stdout.stdout) {
-					info(stdout.stdout);
-				}
-			} else {
-				info(stdout);
-			}
-		}
-
 		/*
 		echo("Downloading Tooltip...");
 		curl -L -# -o master.zip https://github.com/matthias-schuetz/Tooltip/archive/master.zip
