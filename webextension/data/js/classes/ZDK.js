@@ -296,6 +296,11 @@ class ZDK {
 		}
 	}
 
+	/**
+	 *
+	 * @param {string} url
+	 * @return {Promise<boolean>}
+	 */
 	static async openTabIfNotExist(url) {
 		this.console.log(url);
 
