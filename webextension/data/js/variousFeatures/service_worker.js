@@ -4,10 +4,11 @@
  */
 function enableFeature() {
 	const whitelist = getPreference('serviceWorkerWhitelist');
-	if (typeof whitelist !== 'object' || whitelist === null || whitelist['*'] === 'whitelist') {
+	if (typeof whitelist !== 'object' || whitelist === null) {
 		return false;
 	}
-	return [...Object.keys(whitelist)].length > 0;
+	const nbKeys = [...Object.keys(whitelist)].length;
+	return nbKeys > 0 && !(nbKeys === 1 && whitelist['*'] === 'whitelist');
 }
 
 async function updateRegistration() {
