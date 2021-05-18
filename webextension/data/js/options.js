@@ -1,12 +1,12 @@
 'use strict';
 
-import { loadPreferences, loadTranslations, savePreference, loadingPromise } from './options-api.js';
+import {loadPreferences, loadTranslations, savePreference, loadingPromise} from './options-api.js';
+import {theme_cache_update} from "./backgroundTheme.js";
 
 
-let theme_cache_update;
 
-window.theme_update = function theme_update(){
-	let panelColorStylesheet = theme_cache_update(document.querySelector("#generated-color-stylesheet"));
+window.theme_update = async function theme_update(){
+	let panelColorStylesheet = await theme_cache_update(document.querySelector("#generated-color-stylesheet"));
 	
 	if(typeof panelColorStylesheet === "object" && panelColorStylesheet !== null){
 		console.info("Theme update");
@@ -38,7 +38,7 @@ function init(){
 	browser.runtime.getBackgroundPage()
 		.then(backgroundPage => {
 			window.backgroundPage = backgroundPage;
-			theme_cache_update = backgroundPage.backgroundTheme.theme_cache_update;
+			window.appGlobal = backgroundPage.appGlobal;
 
 			theme_update();
 

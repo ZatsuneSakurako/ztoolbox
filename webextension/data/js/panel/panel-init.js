@@ -20,27 +20,35 @@ import('../browserDetect.js')
 	.catch(console.error)
 ;
 
-chrome.runtime.getBackgroundPage(_backgroundPage => {
-	backgroundPage = _backgroundPage;
+async function baseInit() {
+	if (typeof browser === 'undefined' || browser === null) {
+		await import('../lib/browser-polyfill.js');
+	}
+	await import('../options-api.js');
 
-	backgroundPage.baseRequiredPromise.then(() => {
-		applyPanelSize();
+	backgroundPage = await window.browser.runtime.getBackgroundPage();
+	window.appGlobal = backgroundPage.appGlobal;
+	await backgroundPage.baseRequiredPromise;
+}
+const baseInitPromise = baseInit();
+baseInitPromise.then(async () => {
+	applyPanelSize();
 
-		window.optionColorStylesheet = backgroundPage.backgroundTheme.theme_cache_update(document.querySelector('#generated-color-stylesheet'));
-		if (typeof optionColorStylesheet === 'object' && optionColorStylesheet !== null) {
-			console.info("Theme update");
+	const {theme_cache_update} = await import('../backgroundTheme.js');
+	window.optionColorStylesheet = await theme_cache_update(document.querySelector('#generated-color-stylesheet'));
+	if (typeof optionColorStylesheet === 'object' && optionColorStylesheet !== null) {
+		console.info("Theme update");
 
-			let currentThemeNode = document.querySelector('#generated-color-stylesheet');
-			currentThemeNode.parentNode.removeChild(currentThemeNode);
+		let currentThemeNode = document.querySelector('#generated-color-stylesheet');
+		currentThemeNode.parentNode.removeChild(currentThemeNode);
 
-			document.querySelector('body').dataset.theme = optionColorStylesheet.dataset.theme;
+		document.querySelector('body').dataset.theme = optionColorStylesheet.dataset.theme;
 
-			document.querySelector('head').appendChild(optionColorStylesheet);
-		}
+		document.querySelector('head').appendChild(optionColorStylesheet);
+	}
 
-		document.querySelector('#disableNotifications').classList.toggle('off', backgroundPage.appGlobal['notificationGlobalyDisabled']);
-		document.querySelector('#disableNotifications').dataset.translateTitle = (backgroundPage.appGlobal['notificationGlobalyDisabled'])? 'GloballyDisabledNotifications' : 'GloballyDisableNotifications';
-	});
+	document.querySelector('#disableNotifications').classList.toggle('off', backgroundPage.appGlobal['notificationGlobalyDisabled']);
+	document.querySelector('#disableNotifications').dataset.translateTitle = (backgroundPage.appGlobal['notificationGlobalyDisabled'])? 'GloballyDisabledNotifications' : 'GloballyDisableNotifications';
 });
 
 window.onload = function () {
@@ -64,13 +72,9 @@ window.onload = function () {
 	});
 
 	(async () => {
-		if(typeof browser === 'undefined' || browser === null) {
-			import('../lib/browser-polyfill.js');
-		}
-
+		await baseInitPromise;
 
 		let jsFiles = [
-			'../options-api.js',
 			'../lib/lodash.custom.min.js',
 			'../copyToClipboard.js',
 			'../panel/browserTabUtils.js',

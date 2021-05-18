@@ -1,5 +1,3 @@
-import {init} from "./backgroundTheme.js";
-
 const templatesSource = window.templatesSource = new Map();
 templatesSource.set('backgroundTheme', '/data/template/backgroundTheme.mst');
 templatesSource.set('panelCheckedDataItem', '/data/template/panel/checkedDataItem.mst');
@@ -47,6 +45,5 @@ loadMustacheTemplates(templatesSource)
 	.then(async (loadMap)=>{
 		appGlobal.mustacheTemplates = loadMap;
 		await chromeSettings.loadingPromise;
-		init();
 	})
 ;
