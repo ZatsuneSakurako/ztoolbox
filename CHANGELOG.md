@@ -6,6 +6,7 @@
 * \+ : Add identification to notification to let a new notification "overwrite" the previous same type
 * \+ : Move background theme cache to localStorage, instead of keeping it in the background page
 * \- : Remove perfect-scrollbar, now using native scrollbars
+* \- : Remove setting to store Twitch client id 
 
 # 0.15.0
 * \+ : Copy text link / copy tab title
