@@ -7,6 +7,31 @@ document.addEventListener('contextmenu', function(event) {
 	linkText = event.target.innerText;
 });
 
+async function copyToClipboard(string) {
+	try {
+		await navigator.clipboard.writeText(string);
+		return true;
+	} catch (e) {
+		console.error(e);
+		return false;
+	}
+}
+
+/**
+ *
+ * @param {string} id
+ * @param {object} data
+ */
+function sendToMain(id, data) {
+	chrome.runtime.sendMessage(chrome.runtime.id, {
+		data: {
+			id,
+			data
+		}
+	}, function () {
+		console.log('[CopyTextLink]', arguments);
+	});
+}
 
 
 chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
@@ -31,11 +56,15 @@ chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
 
 
 	if (messageData.id === "copyLinkText") {
-		try {
-			sendResponse({string: linkText});
-		} catch (err) {
-			console.error(err);
-		}
+		copyToClipboard(linkText)
+			.then(result => {
+				sendToMain('copyLinkText_reply', {result, string: linkText});
+			})
+			.catch(err => {
+				console.error(err);
+				sendToMain('copyLinkText_reply', {result: false, string: linkText});
+			})
+		;
 	}
 });
 

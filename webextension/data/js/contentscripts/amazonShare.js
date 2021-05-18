@@ -1,24 +1,12 @@
 (async function amazonShare_init(document) {
-	function copyToClipboard(string) {
-		if (document.querySelector('#copy_form') !== null) {
-			let node = document.querySelector('#copy_form');
-			node.parentNode.removeChild(node);
+	async function copyToClipboard(string) {
+		try {
+			await navigator.clipboard.writeText(string);
+			return true;
+		} catch (e) {
+			console.error(e);
+			return false;
 		}
-
-		let copy_form = document.createElement('textarea');
-		copy_form.id = 'copy_form';
-		copy_form.textContent = string;
-		//copy_form.class = "hide";
-		copy_form.setAttribute('style', 'height: 0 !important; width: 0 !important; border: none !important; z-index: -9999999;');
-		document.querySelector('body').appendChild(copy_form);
-
-		//copy_form.focus();
-		copy_form.select();
-
-		let clipboard_success = document.execCommand('Copy');
-		copy_form.parentNode.removeChild(copy_form);
-
-		return clipboard_success;
 	}
 
 	async function notifyMe(msg) {
@@ -62,7 +50,7 @@
 		newLink.classList.add('a-link-normal', 'email');
 		newLink.textContent = '🔗';
 		newLink.style.margin = '0 0.4em';
-		newLink.addEventListener('click', function () {
+		newLink.addEventListener('click', async function () {
 			let priceTxt = 'Aucun prix';
 			const priceSelectors = [
 				'#price_inside_buybox',
@@ -76,7 +64,7 @@
 				}
 			}
 
-			const result = copyToClipboard(`${$productTitle.innerText.trim()} (${priceTxt})
+			const result = await copyToClipboard(`${$productTitle.innerText.trim()} (${priceTxt})
 ${new URL($swfMailTo.href).searchParams.get('body').match(linkRegex)[0]}`);
 
 			/* Alert the copied text */

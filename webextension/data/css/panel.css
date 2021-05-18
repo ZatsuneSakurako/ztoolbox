@@ -27,24 +27,22 @@ figure img {
 	object-fit: contain;
 }
 
-button {
+[role="button"] {
+	box-sizing: border-box;
+	align-items: center;
+	cursor: pointer;
+	display: flex;
+	justify-content: center;
+	text-align: center;
+}
+
+button,
+[role="button"] {
 	padding: 0 8px;
 	border: 0 none;
 	border-radius: 1px;
 	margin-left: 5px;
 	font-weight: 700;
-}
-.ps__rail_x,
-.ps__rail-y {
-	background-color: transparent !important;
-}
-.ps__thumb-x {
-	border-radius: 6px !important;
-	height: 6px !important;
-}
-.ps__thumb-y {
-	border-radius: 6px !important;
-	width: 6px !important;
 }
 
 #tooltip {
@@ -59,7 +57,8 @@ header {
 	padding: 5px 2px;
 	min-height: 36px;
 }
-header button {
+header button,
+header [role="button"] {
 	flex: 1;
 	height: 36px;
 	/*min-width: 64px;*/
@@ -71,10 +70,12 @@ header button {
 	margin-left: 5px;
 	font-weight: 700;
 }
-header button[disabled] {
+header button[disabled],
+header [role="button"].disabled {
 	opacity: 0.5;
 }
-header button:last-of-type {
+header button:last-child,
+header [role="button"]:last-child {
 	margin-right: 5px;
 }
 #disableNotifications::before {
@@ -101,7 +102,9 @@ header button:last-of-type {
 .cursor {
 	cursor: pointer;
 }
-#panelContent {
+body > section {
+	display: flex;
+	flex-direction: column;
 	height: 100%;
 	overflow-x: hidden;
 	overflow-y: auto;
@@ -109,13 +112,23 @@ header button:last-of-type {
 	position: relative;
 }
 
-#panelContent,
+input[type="radio"][name="sections"] {
+	left: -999999999px;
+	position: absolute;
+}
+
+input[type="radio"][name="sections"]:not(:checked) + section {
+	display: none;
+}
+
+body > section,
 footer,
 footer * {
 	font-size: 12px;
 }
 
 
+section .buttonItem,
 #panelContent .websiteItem {
 	background-repeat: no-repeat;
 	background-position: 3px center;
@@ -126,13 +139,29 @@ footer * {
 	margin: 7px 0;
 	min-height: 37px;
 	padding: 7px 14px 7px 42px;
+	position: relative;
+	text-align: left;
 }
+
+section .buttonItem .icon {
+	font-size: 32px;
+	left: 3px;
+	position: absolute;
+	top: 50%;
+	transform: translateY(-50%);
+}
+section .buttonItem .icon .material-icons {
+	font-size: inherit;
+}
+
 #panelContent .websiteItem .websiteTitle::before {
 	content: attr(data-website);
 }
+section .buttonItem .title[data-count]::after,
 #panelContent .websiteItem[data-Logged="true"] .websiteTitle::after {
 	content: " (" attr(data-count) ")";
 }
+section .buttonItem .title,
 #panelContent .websiteItem .websiteTitle {
 	font-size: 1.1em;
 	font-weight: 700;
@@ -169,21 +198,11 @@ footer * {
 	display: none;
 }
 
-
-#stream_right_container {
-	display: flex;
-	flex-direction: column;
-	align-items: flex-end;
-}
-.stream_control {
+.isFirefox #pwa {
 	display: none;
-	visibility: hidden;
-	font-weight: normal;
 }
-.item-stream.onlineItem .stream_control .ignoreStreamButton,
-.item-stream.onlineItem .stream_control .deleteStreamButton {
-	display: block;
-}
+
+
 
 #current_version::before {
 	content: " (v" attr(data-current-version) ")";

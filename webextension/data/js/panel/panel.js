@@ -8,17 +8,23 @@ const backgroundPage = browser.extension.getBackgroundPage(),
 	{websites, websitesData, mustacheTemplates} = appGlobal
 ;
 
-let sendDataToMain = function (id, data) {
+const sendDataToMain = function (id, data) {
 	appGlobal.sendDataToMain("ZToolBox_Panel", id, data);
 };
 
 const appendTo = function (sel, html, doc=document) {
 	return backgroundPage.zDK.appendTo(sel, html, doc);
 };
-const insertBefore = function (sel, html, doc=document) {
-	return backgroundPage.zDK.insertBefore(sel, html, doc);
-};
 
+document.addEventListener('click', e => {
+	const elm = e.target.closest('[role="button"]');
+	if (!elm) return;
+
+	if (elm.classList.contains('disabled')) {
+		e.preventDefault();
+		e.stopImmediatePropagation();
+	}
+});
 
 document.addEventListener('click', e => {
 	const elm = e.target.closest('#disableNotifications');
@@ -67,14 +73,15 @@ document.addEventListener('click', e => {
 		active: true,
 		currentWindow: true
 	})
-		.then(tabs => {
+		.then(async tabs => {
 			const [tab] = tabs;
 			let clipboardResult = false;
 			if (tab && tab.title) {
-				clipboardResult = copyToClipboard(tab.title);
+				clipboardResult = await copyToClipboard(tab.title);
 			}
 
 			backgroundPage.doNotif({
+				'id': 'copied_title_text',
 				"message": (clipboardResult) ? backgroundPage.i18ex._("copied_title_text") : backgroundPage.i18ex._("error_copying_to_clipboard")
 			});
 		})

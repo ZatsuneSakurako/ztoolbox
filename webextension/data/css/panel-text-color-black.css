@@ -1,6 +1,7 @@
 /*			---- Primary text / Icons ----			*/
 body,
 header button,
+header [role="button"],
 button,
 input[type='number'],
 input[type='checkbox'],

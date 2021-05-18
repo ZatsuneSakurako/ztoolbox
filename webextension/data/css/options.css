@@ -30,25 +30,14 @@ input[type='range'] {
 }
 
 
-button {
+button,
+[role="button"] {
 	padding: 0 8px;
 	border: 0 none;
 	border-radius: 1px;
 	margin: 2px 5px 2px 0;
 	font-weight: 700;
 	height: 25px;
-}
-.ps__rail_x,
-.ps__rail-y {
-	background-color: transparent !important;
-}
-.ps__thumb-x {
-	border-radius: 6px !important;
-	height: 6px !important;
-}
-.ps__thumb-y {
-	border-radius: 6px !important;
-	width: 6px !important;
 }
 
 .pref_group,

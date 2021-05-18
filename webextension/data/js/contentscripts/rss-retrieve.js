@@ -57,14 +57,14 @@
 
 
 	const onConnect = function (port) {
-		if (port.sender.id === chrome.runtime.id && port.name === 'ztoolbox_rss-retrieve') {
-			if (rssLinks === undefined || currentHref !== window.location.href) {
-				detectRssFeeds();
-			}
-
-			port.postMessage(rssLinks);
+		if (port.sender.id !== chrome.runtime.id || port.name !== 'ztoolbox_rss-retrieve') {
+			return;
 		}
 
+		if (rssLinks === undefined || currentHref !== window.location.href) {
+			detectRssFeeds();
+		}
+		port.postMessage(rssLinks);
 		port.disconnect();
 	};
 	let timeout;

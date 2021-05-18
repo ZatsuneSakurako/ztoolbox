@@ -8,18 +8,12 @@ import { Queue } from './queue.js';
 import { DataStore } from './data-store.js';
 import { ZTimer } from './ztimer.js';
 import { Version } from './version.js';
-import { loadJS } from './loadJS.js';
 
 export const noop = () => {};
 
 
 
 class ZDK {
-	constructor(addonJsRoot) {
-		this.addonJsRoot = addonJsRoot;
-	}
-
-
 	/**
 	 *
 	 * @return {ChromeNotificationController}
@@ -302,6 +296,11 @@ class ZDK {
 		}
 	}
 
+	/**
+	 *
+	 * @param {string} url
+	 * @return {Promise<boolean>}
+	 */
 	static async openTabIfNotExist(url) {
 		this.console.log(url);
 

@@ -13,30 +13,26 @@ function doNotifyWebsite(website) {
 		foldersList = ''
 	;
 
-	let notificationList = [],
-		labelArray = [];
-
-	if (websiteData.logged) {
-		if (websiteData.hasOwnProperty('folders')) {
-			websiteData.folders.forEach((folderData, name) => {
-				let count = folderData.folderCount;
-				if (typeof count === "number" && !isNaN(count) && count > 0) {
-					let suffix = '';
-					if(websiteData.notificationState.count !== null && websiteData.count > websiteData.notificationState.count){
-						suffix=` (+${websiteData.count - websiteData.notificationState.count})`;
-					}
-					labelArray.push(`${name}: ${count}${suffix}`);
-					notificationList.push({"title": `${(typeof folderData.folderName === 'string')? folderData.folderName : name}: `, 'message': count.toString()});
+	const labelArray = [];
+	if (websiteData.logged && websiteData.hasOwnProperty('folders')) {
+		for (let [name, folderData] of websiteData.folders) {
+			let count = folderData.folderCount;
+			if (typeof count === "number" && !isNaN(count) && count > 0) {
+				let suffix = '';
+				if (websiteData.notificationState.count !== null && websiteData.count > websiteData.notificationState.count) {
+					suffix = ` (+${websiteData.count - websiteData.notificationState.count})`;
 				}
-			});
-			foldersList += labelArray.join("\n");
+				labelArray.push(`${name}: ${count}${suffix}`);
+			}
 		}
+		foldersList += labelArray.join("\n");
 	}
 
 	if (!websiteData.logged) {
 		const oldLoggedState = websiteData.notificationState.logged;
 		if (oldLoggedState === true || oldLoggedState === undefined) {
 			doNotif({
+				"id": "refreshData-"+website,
 				'title': i18ex._('website_notif', {'website': website}),
 				'message': i18ex._('website_not_logged', {'website': website}),
 				'iconUrl': websiteData.websiteIcon
@@ -53,6 +49,7 @@ function doNotifyWebsite(website) {
 	} else if (typeof websiteData.count === 'number' && !isNaN(websiteData.count) && (websiteData.notificationState.count === null || websiteData.count > websiteData.notificationState.count)) {
 		if (getPreference('notify_checkedData')) {
 			doNotif({
+				"id": "refreshData-"+website,
 				"title": i18ex._('website_notif', {'website': website}),
 				"message": i18ex._('count_new_notif', {'count': websiteData.count}) + "\n" + foldersList,
 				"iconUrl": websiteData.websiteIcon

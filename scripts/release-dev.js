@@ -188,22 +188,6 @@ async function init() {
 		shouldExitProgram: false,
 	}));
 
-	if (!!process.env.FIREFOX_API_KEY && !!process.env.FIREFOX_API_SECRET) {
-		await errorHandler(webExt.cmd.sign({
-			sourceDir: path.resolve(pwd, './tmp'),
-			artifactsDir: '.',
-			ignoreFiles: ignoredFiles,
-			apiKey: process.env.FIREFOX_API_KEY,
-			apiSecret: process.env.FIREFOX_API_SECRET,
-			channel: 'unlisted',
-			timeout: 30000
-		}, {
-			build: false,
-			signAddon: true,
-			shouldExitProgram: false,
-		}));
-	}
-
 	if (!!process.env.CHROME_EXTENSION_ID && !!process.env.CHROME_CLIENT_ID && !!process.env.CHROME_CLIENT_SECRET && !!process.env.CHROME_REFRESH_TOKEN) {
 		const webStore = chromeWebStoreUpload({
 			extensionId: process.env.CHROME_EXTENSION_ID,
@@ -218,6 +202,34 @@ async function init() {
 		 */
 		const response = await errorHandler(webStore.uploadExisting(fileTarget/*, token*/));
 		await errorHandler(await webStore.publish('trustedTesters'/*, token*/))
+	}
+
+	if (!!process.env.FIREFOX_API_KEY && !!process.env.FIREFOX_API_SECRET) {
+		info('Firefox signing...');
+		/**
+		 *
+		 * @type { {success: boolean, id: string, downloadedFiles: string[]} }
+		 */
+		const firefoxSignResult = await errorHandler(webExt.cmd.sign({
+			sourceDir: path.resolve(pwd, './tmp'),
+			artifactsDir: '.',
+			ignoreFiles: ignoredFiles,
+			apiKey: process.env.FIREFOX_API_KEY,
+			apiSecret: process.env.FIREFOX_API_SECRET,
+			channel: 'unlisted',
+			timeout: 10 * 60000 // 5min
+		}, {
+			shouldExitProgram: false,
+		}));
+
+		if (!!firefoxSignResult && typeof firefoxSignResult === 'object' && Array.isArray(firefoxSignResult.downloadedFiles) && firefoxSignResult.downloadedFiles.length === 1) {
+			success('Firefox signing done !');
+			fs.moveSync(firefoxSignResult[0], __dirname + '/../dist/z_toolbox_dev.xpi', {
+				overwrite: true
+			});
+		} else {
+			error('Firefox signing : Error with result typing');
+		}
 	}
 
 	await errorHandler(fs.remove(tmpPath));

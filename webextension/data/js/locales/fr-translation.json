@@ -50,9 +50,6 @@
 	"timeout_delay_title": "Délai de timeout des requêtes",
 	"timeout_delay_description": "Délai de timeout des requêtes, en secondes (entre 10 et 30)",
 
-	"twitchClientId_title": "Id client de l'API Twitch",
-	"twitchClientId_description": "API Twitch pour plus d'informations",
-
 	"launchpadAddLink_title": "Ajoute un lien pour aller sur la page du PPA de Launchpad depuis une page d'index",
 	"launchpadAddLink_description": "Ajoutera le lien si coché",
 
@@ -77,6 +74,9 @@
 
 	"hourlyAlarm_sound_volume_title": "Volume son pour les notification par heure",
 	"hourlyAlarm_sound_volume_description": "En pourcentage",
+
+	"serviceWorkerWhitelist_title": "Liste blanche du service worker",
+	"serviceWorkerWhitelist_description": "JSON object",
 
 	"panel_height_title": "Hauteur du panel",
 	"panel_height_description": "Taille en pixels",
@@ -160,6 +160,8 @@
 	"no_other_window": "Aucune autre fenêtre",
 	"move_tab_of_window": "Déplacer l'onglet de fenêtre",
 	"open_link_to_window": "Ouvrir le lien dans une autre fenêtre",
+	"windowId": "Fenêtre {{windowId}}",
+	"newWindow": "Nouvelle fenêtre",
 	"window_windowId": "Fenêtre {{windowId}} \"{{window}}\"",
 
 
