@@ -8,17 +8,13 @@ const backgroundPage = browser.extension.getBackgroundPage(),
 	{websites, websitesData, mustacheTemplates} = appGlobal
 ;
 
-let sendDataToMain = function (id, data) {
+const sendDataToMain = function (id, data) {
 	appGlobal.sendDataToMain("ZToolBox_Panel", id, data);
 };
 
 const appendTo = function (sel, html, doc=document) {
 	return backgroundPage.zDK.appendTo(sel, html, doc);
 };
-const insertBefore = function (sel, html, doc=document) {
-	return backgroundPage.zDK.insertBefore(sel, html, doc);
-};
-
 
 document.addEventListener('click', e => {
 	const elm = e.target.closest('[role="button"]');
