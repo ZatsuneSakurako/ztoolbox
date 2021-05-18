@@ -4,6 +4,7 @@
 * i : Panel css refactor / fixes
 * \+ : WIP PWA button
 * \+ : Add identification to notification to let a new notification "overwrite" the previous same type
+* \+ : Move background theme cache to localStorage, instead of keeping it in the background page
 * \- : Remove perfect-scrollbar, now using native scrollbars
 
 # 0.15.0
