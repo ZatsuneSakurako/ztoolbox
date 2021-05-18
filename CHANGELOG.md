@@ -1,13 +1,15 @@
 # WIP
-* i : Update dependencies
 * i : Move tab mover from context menu to panel
 * i : Panel css refactor / fixes
 * \+ : PWA install button
 * \+ : WIP service worker blocker
 * \+ : Add identification to notification to let a new notification "overwrite" the previous same type
 * \+ : Move background theme cache to localStorage, instead of keeping it in the background page
-* \- : Remove perfect-scrollbar, now using native scrollbars
 * \- : Remove setting to store Twitch client id 
+
+# 0.16.0
+* i : Update dependencies
+* \- : Remove perfect-scrollbar, now using native scrollbars
 
 # 0.15.0
 * \+ : Copy text link / copy tab title
