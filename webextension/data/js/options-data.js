@@ -22,13 +22,6 @@ const options = {
 		"prefLevel": "experimented"
 	},
 	/*			Features Prefs			*/
-	"twitchClientId": {
-		"title": "Twitch API's client id",
-		"description": "Twitch API for more information",
-		"type": "string",
-		"value": "",
-		"group": "featurePreference"
-	},
 	"launchpadAddLink": {
 		"title": "Add link to go back to PPA page from index page",
 		"description": "Will link if checked",
