@@ -205,6 +205,7 @@ async function init() {
 	}
 
 	if (!!process.env.FIREFOX_API_KEY && !!process.env.FIREFOX_API_SECRET) {
+		info('Firefox signing...');
 		/**
 		 *
 		 * @type { {success: boolean, id: string, downloadedFiles: string[]} }
@@ -216,16 +217,16 @@ async function init() {
 			apiKey: process.env.FIREFOX_API_KEY,
 			apiSecret: process.env.FIREFOX_API_SECRET,
 			channel: 'unlisted',
-			timeout: 30000
+			timeout: 10 * 60000 // 5min
 		}, {
-			signAddon: true,
 			shouldExitProgram: false,
 		}));
 
 		if (!!firefoxSignResult && typeof firefoxSignResult === 'object' && Array.isArray(firefoxSignResult.downloadedFiles) && firefoxSignResult.downloadedFiles.length === 1) {
+			success('Firefox signing done !');
 			fs.moveSync(firefoxSignResult[0], __dirname + '/../dist/z_toolbox_dev.xpi', {
 				overwrite: true
-			})
+			});
 		} else {
 			error('Firefox signing : Error with result typing');
 		}
