@@ -1,4 +1,4 @@
-# WIP
+# 0.17.1
 * Fix : Fix background theme cache
 
 # 0.17.0
