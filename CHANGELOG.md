@@ -1,3 +1,6 @@
+# WIP
+* Fix : Fix background theme cache
+
 # 0.17.0
 * i : Move tab mover from context menu to panel
 * i : Panel css refactor / fixes
