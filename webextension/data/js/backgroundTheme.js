@@ -67,8 +67,7 @@ export async function theme_cache_update(colorStylesheetNode) {
 	if (!!_cache) {
 		if (_cache.version !== browser.runtime.getManifest().version) {
 			_cache = null;
-		}
-		if (env === 'local' && new Date().toLocaleDateString() !== new Date(_cache._createdAt).toLocaleDateString()) {
+		} else if (env === 'local' && new Date().toLocaleDateString() !== new Date(_cache._createdAt).toLocaleDateString()) {
 			_cache = null;
 		}
 	}
