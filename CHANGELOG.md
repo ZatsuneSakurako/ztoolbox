@@ -1,3 +1,6 @@
+# WIP
+* fix : Twitch points selector
+
 # 0.17.1
 * Fix : Fix background theme cache
 
