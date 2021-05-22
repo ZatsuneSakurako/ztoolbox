@@ -222,13 +222,38 @@ async function init() {
 			shouldExitProgram: false,
 		}));
 
-		if (!!firefoxSignResult && typeof firefoxSignResult === 'object' && Array.isArray(firefoxSignResult.downloadedFiles) && firefoxSignResult.downloadedFiles.length === 1) {
+		/**
+		 *
+		 * @type {string|null}
+		 */
+		let signedXpi = null;
+		if (!!firefoxSignResult && typeof firefoxSignResult === 'object') {
 			success('Firefox signing done !');
-			fs.moveSync(firefoxSignResult[0], __dirname + '/../dist/z_toolbox_dev.xpi', {
+			if (Array.isArray(firefoxSignResult.downloadedFiles) && firefoxSignResult.downloadedFiles.length === 1) {
+				signedXpi = firefoxSignResult[0] ?? null;
+			}
+		}
+
+		if (!signedXpi) {
+			// Exemple file name : z_toolbox_dev-0.17.1-an+fx.xpi
+			const xpiFiles = fs.readdirSync(__dirname+'/..', {
+					encoding: "utf8",
+					withFileTypes: true
+				})
+					.filter(file => /^z[_-]toolbox[_-]dev-.*?\.xpi$/.test(file.name))
+					.map(file => path.normalize(file.name))
+			;
+			if (xpiFiles.length === 1) {
+				signedXpi = xpiFiles[0];
+			}
+		}
+
+		if (!signedXpi || !fs.existsSync(signedXpi)) {
+			error('Firefox signing : Could not find the signed file');
+		} else {
+			fs.moveSync(signedXpi, __dirname + '/../dist/z_toolbox_dev.xpi', {
 				overwrite: true
 			});
-		} else {
-			error('Firefox signing : Error with result typing');
 		}
 	}
 

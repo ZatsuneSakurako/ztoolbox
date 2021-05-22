@@ -1,5 +1,8 @@
+# 0.17.2
+* fix : Twitch points selector
+
 # 0.17.1
-* Fix : Fix background theme cache
+* fix : Fix background theme cache
 
 # 0.17.0
 * i : Move tab mover from context menu to panel
@@ -19,7 +22,7 @@
 * i : Various fix / cleanup
 
 # 0.14.1
-* \Fix : Twitch points selector
+* fix : Twitch points selector
 
 # 0.14.0
 * \+ : Twitch points
