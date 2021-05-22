@@ -241,6 +241,7 @@ async function init() {
 					withFileTypes: true
 				})
 					.filter(file => /^z[_-]toolbox[_-]dev-.*?\.xpi$/.test(file.name))
+					.map(file => path.normalize(file.name))
 			;
 			if (xpiFiles.length === 1) {
 				signedXpi = xpiFiles[0];

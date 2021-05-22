@@ -1,4 +1,4 @@
-# WIP
+# 0.17.2
 * fix : Twitch points selector
 
 # 0.17.1
