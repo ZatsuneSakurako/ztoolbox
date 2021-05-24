@@ -86,13 +86,15 @@
 
 			let currentUrl = location.href;
 			setInterval(() => {
-				if (location.href !== currentUrl) {
-					currentUrl = location.href;
-					try {
-						init();
-					} catch (e) {
-						console.error(e);
-					}
+				if (location.href === currentUrl) {
+					return;
+				}
+
+				currentUrl = location.href;
+				try {
+					init();
+				} catch (e) {
+					console.error(e);
 				}
 			}, 5000);
 		});
