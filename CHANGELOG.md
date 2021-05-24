@@ -1,3 +1,7 @@
+# 0.17.3
+* fix : Twitch points - url change detection
+* fix : Twitch points - error when no chat
+
 # 0.17.2
 * fix : Twitch points selector
 

@@ -39,13 +39,23 @@
 		return false;
 	}
 
+	/**
+	 * @type {MutationObserver|null}
+	 */
+	let currentObserver = null;
 	const init = function init() {
-		const container = document.querySelector('.chat-room__content .chat-input');
-		if (!container) {
-			console.debug('[Z-Toolbox] Twitch Points - No chat room detected');
+		if (!!currentObserver) {
+			currentObserver.disconnect();
+			currentObserver = null;
 		}
 
-		const observer = new MutationObserver(function(mutations) {
+		const container = document.querySelector('.chat-room__content .chat-input');
+		if (!container) {
+			console.debug('[Z-Toolbox] Twitch Points', 'No chat room detected');
+			return;
+		}
+
+		currentObserver = new MutationObserver(function(mutations) {
 			for (let mutation of mutations) {
 				const childNode = container.querySelector(':scope ' + selector);
 				if (childNode !== null && chkNode(childNode) === true) {
@@ -55,7 +65,7 @@
 		});
 
 		console.debug('[Z-Toolbox] Twitch Points', 'Observing...');
-		observer.observe(container, { attributes: false, characterData: false, childList: true, subtree: true });
+		currentObserver.observe(container, { attributes: false, characterData: false, childList: true, subtree: true });
 	}
 
 
@@ -73,6 +83,18 @@
 			}
 
 			init();
+
+			let currentUrl = location.href;
+			setInterval(() => {
+				if (location.href !== currentUrl) {
+					currentUrl = location.href;
+					try {
+						init();
+					} catch (e) {
+						console.error(e);
+					}
+				}
+			}, 5000);
 		});
 	});
 })();
