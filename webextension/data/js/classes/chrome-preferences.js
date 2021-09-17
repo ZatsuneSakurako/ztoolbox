@@ -395,7 +395,7 @@ ${err}`);
 							try {
 								prefData = JSON.parse(oldPref);
 							} catch (e) {
-								ZDK.console.error(e);
+								console.error(e);
 							}
 
 							if(prefData===null){

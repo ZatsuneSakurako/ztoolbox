@@ -347,9 +347,5 @@ async function importPrefsFromFile(event) {
 			sendDataToMain("refreshStreams", "");
 		}
 	}
-
-	if (getPreference('unTrackUrlParams') === true) {
-		await window.webRequestPermissions(event)
-	}
 }
 window.importPrefsFromFile = importPrefsFromFile;

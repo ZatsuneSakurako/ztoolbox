@@ -35,7 +35,7 @@ let deviantArt = {
 				output.response = await fetch(this.dataURL);
 				rawData = await output.response.text();
 			} catch (e) {
-				ZDK.console.error(e);
+				console.error(e);
 				return output
 			}
 		}
@@ -82,7 +82,7 @@ let deviantArt = {
 			 */
 			initialData = JSON.parse(JSON.parse(`"${initialData[1]}"`));
 		} catch (e) {
-			ZDK.console.error(e);
+			console.error(e);
 			return output;
 		}
 
@@ -92,7 +92,7 @@ let deviantArt = {
 
 		const data = initialData['@@publicSession'];
 		if (data.hasOwnProperty('isLoggedIn') === false || data.hasOwnProperty('user') === false || data.hasOwnProperty('counts') === false) {
-			ZDK.console.error('Missing data in @@publicSession');
+			console.error('Missing data in @@publicSession');
 			return output;
 		}
 

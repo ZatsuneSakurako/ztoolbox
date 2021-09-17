@@ -50,23 +50,11 @@
 	"check_delay_title": "deviantArt verification delay",
 	"check_delay_description": "Delay between verifications, in minute",
 
-	"timeout_delay_title": "Timeout delay of requests",
-	"timeout_delay_description": "Timeout delay of requests, in sec (between 10 and 30)",
-
 	"launchpadAddLink_title": "Add link to go Launchpad PPA page from an index page",
 	"launchpadAddLink_description": "Will add link if checked",
 
 	"amazonShareLink_title": "Add button to share, into clipboard, easily Amazon articles",
 	"amazonShareLink_description": "Will add button if checked (refresh opened pages)",
-
-	"unTrackUrlParams_title": "Remove tracking params from urls",
-	"unTrackUrlParams_description": "Enabled if checked",
-
-	"unTrackUrlParamsExclude_title": "Excluded domain from tracking url redirections",
-	"unTrackUrlParamsExclude_description": "One domain per line",
-
-	"twitchPoints_title": "Twitch auto clic points",
-	"twitchPoints_description": "Enabled if checked",
 
 	"hourlyAlarm_title": "Hourly notification",
 	"hourlyAlarm_description": "Display a notification per hour when checked",

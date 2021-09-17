@@ -185,18 +185,6 @@ section .buttonItem .title,
 #panelContent .websiteItem[data-Logged="true"] .websiteData .folder::after {
 	content: attr(data-folder-title)": "attr(data-folder-count);
 }
-.websiteItem.rssItem {
-	background-image: url("/data/images/rss-2440955.svg");
-}
-#panelContent .websiteItem.rssItem .websiteData {
-	padding-left: 0;
-}
-#panelContent .websiteItem.rssItem.rssItem--successs .websiteData {
-	text-transform: capitalize;
-}
-#panelContent .websiteItem.rssItem.rssItem--hideData .websiteData {
-	display: none;
-}
 
 section > iframe {
 	height: 100%;

@@ -38,7 +38,7 @@ class HourlyAlarm {
 	}
 
 	async enableHourlyAlarm(){
-		ZDK.console.info("Enabling hourly alarm...");
+		console.info("Enabling hourly alarm...");
 
 		let haveAlreadyAlarm;
 
@@ -52,9 +52,9 @@ class HourlyAlarm {
 			await browser.alarms.clear(HOURLY_ALARM_NAME);
 
 			if (await HourlyAlarm.isEnabledHourlyAlarm() === false) {
-				ZDK.console.info('Cleaned old hourly alarm');
+				console.info('Cleaned old hourly alarm');
 			} else {
-				ZDK.console.warn('Problem cleaning old hourly alarm!');
+				console.warn('Problem cleaning old hourly alarm!');
 			}
 		}
 
@@ -75,7 +75,7 @@ class HourlyAlarm {
 	}
 
 	async disableHourlyAlarm() {
-		ZDK.console.info('Disabling hourly alarm...');
+		console.info('Disabling hourly alarm...');
 		return await browser.alarms.clear('hourlyAlarm');
 	}
 }

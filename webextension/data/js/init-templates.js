@@ -1,7 +1,6 @@
 const templatesSource = window.templatesSource = new Map();
 templatesSource.set('backgroundTheme', '/data/template/backgroundTheme.mst');
 templatesSource.set('panelCheckedDataItem', '/data/template/panel/checkedDataItem.mst');
-templatesSource.set('panelRssLinks', '/data/template/panel/rssLinks.mst');
 templatesSource.set('tabMover', '/data/template/panel/tabMover.mst');
 
 moment.locale(browser.i18n.getMessage('language'));

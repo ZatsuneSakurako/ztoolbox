@@ -38,16 +38,6 @@
 			"js": ["/data/js/contentscripts/launchpad-addlink.js"]
 		},
 		{
-			"matches": ["<all_urls>"],
-			"js": ["/data/js/contentscripts/rss-retrieve.js"],
-			"run_at": "document_idle"
-		},
-		{
-			"matches": ["*://*/*"],
-			"js": ["/data/js/contentscripts/muted-pause.js"],
-			"run_at": "document_start"
-		},
-		{
 			"matches": ["https://iqdb.org/"],
 			"js": ["/data/js/contentscripts/iqdb_search.js"],
 			"run_at": "document_start"
@@ -59,20 +49,6 @@
 				"https://www.amazon.fr/*/dp/*"
 			],
 			"js": ["/data/js/contentscripts/amazonShare.js"],
-			"run_at": "document_idle"
-		},
-		{
-			"matches": [
-				"https://www.twitch.tv/*"
-			],
-			"js": ["/data/js/contentscripts/twitch-points.js"],
-			"run_at": "document_start"
-		},
-		{
-			"matches": [
-				"https://*.youtube.com/*"
-			],
-			"js": ["/data/js/lib/lodash.custom.min.js","/data/js/contentscripts/youtubeSubscriptions.js"],
 			"run_at": "document_idle"
 		},
 		{

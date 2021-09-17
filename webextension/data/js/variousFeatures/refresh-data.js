@@ -1,6 +1,5 @@
 'use strict';
 
-import { Request } from '../classes/Request.js';
 import { ZDK } from "../classes/ZDK.js";
 
 const ALARM_NAME = 'REFRESH_DATA';
@@ -39,10 +38,10 @@ function doNotifyWebsite(website) {
 			})
 				.then(() => {
 					ZDK.openTabIfNotExist(websiteAPI.getLoginURL(websiteData))
-						.catch(ZDK.console.error)
+						.catch(console.error)
 					;
 				})
-				.catch(ZDK.console.error)
+				.catch(console.error)
 			;
 		}
 		websiteData.notificationState.logged = websiteData.logged;
@@ -56,10 +55,10 @@ function doNotifyWebsite(website) {
 			})
 				.then(() => {
 					ZDK.openTabIfNotExist(websiteAPI.getViewURL(websiteData))
-						.catch(ZDK.console.error)
+						.catch(console.error)
 					;
 				})
-				.catch(ZDK.console.error)
+				.catch(console.error)
 			;
 		}
 
@@ -76,10 +75,10 @@ function doNotifyWebsite(website) {
 		})
 			.then(() => {
 				ZDK.openTabIfNotExist(websiteAPI.getViewURL(websiteData))
-					.catch(ZDK.console.error)
+					.catch(console.error)
 				;
 			})
-			.catch(ZDK.console.warn)
+			.catch(console.warn)
 		;
 	}
 
@@ -111,13 +110,13 @@ class websiteDefaultData {
 let isRefreshingData = false;
 async function refreshWebsitesData() {
 	if (isRefreshingData === true) {
-		ZDK.console.warn('Already refreshing...');
+		console.warn('Already refreshing...');
 		return false;
 	}
 
 	isRefreshingData = true;
 
-	ZDK.console.debug('Refreshing websites data...');
+	console.debug('Refreshing websites data...');
 	let promises = new Map();
 
 	websites.forEach((websiteAPI, website) => {
@@ -129,7 +128,7 @@ async function refreshWebsitesData() {
 				}
 			})
 			.catch((data) => {
-				ZDK.console.log('refreshWebsitesData', data);
+				console.log('refreshWebsitesData', data);
 			});
 	});
 
@@ -170,10 +169,10 @@ async function refreshWebsitesData() {
 	});
 
 	if (getPreference('showExperimented') === true) {
-		ZDK.console.groupCollapsed('Websites check end');
-		ZDK.console.log('fetchResponses:', data);
-		ZDK.console.log('Data:', websitesData);
-		ZDK.console.groupEnd();
+		console.groupCollapsed('Websites check end');
+		console.log('fetchResponses:', data);
+		console.log('Data:', websitesData);
+		console.groupEnd();
 	}
 
 	if (typeof browser.browserAction.setBadgeText === 'function') {
@@ -221,7 +220,7 @@ async function refreshWebsite(website) {
 		data = result.data;
 		request = result.response;
 	} catch (e) {
-		ZDK.console.error(e);
+		console.error(e);
 	}
 	console.log(website, data)
 
@@ -238,7 +237,7 @@ async function refreshWebsite(website) {
 		}
 		return request;
 	} else {
-		ZDK.console.warn(`Error retrieving page for "${website}"`);
+		console.warn(`Error retrieving page for "${website}"`);
 		//let websiteData = websitesData.get(website);
 		//websiteData.logged  = false;
 		return request;

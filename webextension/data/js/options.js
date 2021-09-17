@@ -52,51 +52,10 @@ function init(){
 document.addEventListener('DOMContentLoaded', init);
 
 
-/**
- *
- * @param e
- * @return {Promise<boolean>}
- */
-async function webRequestPermissions(e) {
-	const permissionsOpts = {
-		origins: [
-			'<all_urls>'
-		],
-		permissions: [
-			"webRequest",
-			"webRequestBlocking"
-		]
-	};
-
-	let result = await browser.permissions.contains(permissionsOpts);
-	if (result) {
-		return result;
-	}
-
-	result = await browser.permissions.request(permissionsOpts);
-	if (!result) {
-		const input = document.querySelector('input#unTrackUrlParams');
-		input.checked = false;
-	}
-	return result;
-}
 
 if (typeof browser.storage.sync === 'object') {
 	document.querySelector("#syncContainer").classList.remove("hide");
 
-	document.addEventListener('click', function (e) {
-		const input = e.target.closest('input#unTrackUrlParams');
-		if (!input) return;
-
-		if (input.checked === false) return;
-
-		webRequestPermissions(e)
-			.then(() => {
-				browser.runtime.reload();
-			})
-			.catch(console.error)
-		;
-	});
 	document.addEventListener('click', function (e) {
 		const input = e.target.closest('#import_preferences');
 		if (!input) return;
@@ -109,15 +68,7 @@ if (typeof browser.storage.sync === 'object') {
 		const input = e.target.closest('#restaure_sync');
 		if (!input) return;
 
-		restaureOptionsFromSync(e)
-			.finally(() => {
-				if (getPreference('unTrackUrlParams') === true) {
-					webRequestPermissions(e)
-						.catch(console.error)
-					;
-				}
-			})
-		;
+		restaureOptionsFromSync(e);
 	});
 
 	document.addEventListener('click', function (e) {

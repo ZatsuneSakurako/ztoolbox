@@ -3,6 +3,7 @@
 
 import {default as env} from './env.js';
 import {getPreference, savePreference} from './options-api.js';
+import {ChromeNotificationController, ChromeUpdateNotification} from './classes/ZDK.js';
 
 const ZDK = window.ZDK;
 window.getPreference = getPreference;
@@ -25,7 +26,7 @@ appGlobal.sendDataToMain = function sendDataToMain(source, id, data) {
 		if (typeof panel__UpdateData === 'function') {
 			panel__UpdateData();
 		} else {
-			ZDK.console.warn('panel__UpdateData not found');
+			console.warn('panel__UpdateData not found');
 		}
 	} else if (source === "ZToolBox_Options" && id === "hourlyAlarm_update") {
 		HourlyAlarm.isEnabledHourlyAlarm()
@@ -39,7 +40,7 @@ appGlobal.sendDataToMain = function sendDataToMain(source, id, data) {
 				}
 			})
 			.catch(async function (err) {
-				ZDK.console.error(err);
+				console.error(err);
 				await hourlyAlarm.disableHourlyAlarm();
 
 				if (getPreference("hourlyAlarm")) {
@@ -231,7 +232,7 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
 /**
  * @type {ChromeNotificationController}
  */
-const chromeNotifications = new zDK.ChromeNotificationController();
+const chromeNotifications = new ChromeNotificationController();
 /**
  *
  * @param {NotificationOptions} options
@@ -348,7 +349,7 @@ async function onCheckUpdatesInterval() {
 		return;
 	}
 
-	const hasUpdate = await window.zDK.chromeUpdateNotification.checkHasUpdate();
+	const hasUpdate = await ChromeUpdateNotification.checkHasUpdate();
 	localStorage.setItem('checkUpdate_state', !!hasUpdate? '1' : '');
 	localStorage.setItem('checkUpdate', (new Date()).toISOString());
 	if (hasUpdate === false) {
@@ -362,7 +363,7 @@ async function onCheckUpdatesInterval() {
 			name: browser.runtime.getManifest().name
 		})
 	})
-		.catch(ZDK.console.error)
+		.catch(console.error)
 	;
 }
 

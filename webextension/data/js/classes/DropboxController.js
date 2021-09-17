@@ -76,7 +76,7 @@ class DropboxController {
 			return this.authToken;
 		} else {
 			if (error !== undefined) {
-				ZDK.console.error( error);
+				console.error( error);
 			}
 
 			throw 'ErrorUnknown';
@@ -122,7 +122,7 @@ class DropboxController {
 			try{
 				data = JSON.parse(await zDK.loadBlob(metaData.fileBlob, 'text'));
 			} catch (e) {
-				ZDK.console.error( e);
+				console.error( e);
 				throw 'InvalidJson';
 			}
 
@@ -197,10 +197,10 @@ class DropboxController {
 		} else {
 			/* user cancelled the flow */
 			if (error.status === this.HTTP_STATUS_CANCEL) {
-				ZDK.console.error( 'UserCancelled');
+				console.error( 'UserCancelled');
 				return false;
 			} else {
-				ZDK.console.error( error);
+				console.error( error);
 				return false;
 			}
 		}

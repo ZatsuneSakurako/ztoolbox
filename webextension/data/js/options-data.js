@@ -9,18 +9,6 @@ const options = {
 		"minValue": 1,
 		"prefLevel": "advanced"
 	},
-	"timeout_delay": {
-		"title": "Streams timeout delay",
-		"description": "Timeout delay of requests, in sec (between 10 and 30)",
-		"type": "integer",
-		"value": 30,
-		"minValue": 10,
-		"maxValue": 30,
-		"rangeInput": true,
-		"rangeOutputUnit": "s",
-		"group": "checking",
-		"prefLevel": "experimented"
-	},
 	/*			Features Prefs			*/
 	"launchpadAddLink": {
 		"title": "Add link to go back to PPA page from index page",
@@ -34,36 +22,6 @@ const options = {
 		"description": "Will add button if checked",
 		"type": "bool",
 		"value": true,
-		"group": "featurePreference"
-	},
-	"unTrackUrlParams": {
-		"title": "Remove tracking params from urls",
-		"description": "Enabled if checked",
-		"type": "bool",
-		"value": false,
-		"group": "featurePreference"
-	},
-	"unTrackUrlParamsExclude": {
-		"title": "Excluded domain from tracking url redirections",
-		"description": "One domain per line",
-		"type": "string",
-		"value": "mail.google.co,gmail.co,hotmail.co,mail.yahoo.co,outlook.live.co,mail.rediff.co",
-		"stringList": true,
-		"group": "featurePreference"
-	},
-	"youtubeSubscriptions": {
-		"title": "Youtube categories",
-		"description": "JSON data {\"category\": [\"user/someId\"]}",
-		"type": "json",
-		"value": "{}",
-		"stringList": true,
-		"group": "featurePreference"
-	},
-	"twitchPoints": {
-		"title": "Twitch auto clic points",
-		"description": "Enabled if checked",
-		"type": "bool",
-		"value": false,
 		"group": "featurePreference"
 	},
 	"hourlyAlarm": {

@@ -12,10 +12,6 @@ const sendDataToMain = function (id, data) {
 	appGlobal.sendDataToMain("ZToolBox_Panel", id, data);
 };
 
-const appendTo = function (sel, html, doc=document) {
-	return backgroundPage.zDK.appendTo(sel, html, doc);
-};
-
 document.addEventListener('click', e => {
 	const elm = e.target.closest('[role="button"]');
 	if (!elm) return;
@@ -48,7 +44,7 @@ document.addEventListener('click', e => {
 	const triggered = Date.now();
 
 	appGlobal.refreshWebsitesData()
-		.catch(ZDK.console.error)
+		.catch(console.error)
 		.finally(() => {
 			if (Date.now() - triggered > 2500) {
 				elm.dataset.translateTitle = "Refresh";
@@ -94,7 +90,7 @@ document.addEventListener('click', e => {
 	if (!elm) return;
 
 	browser.runtime.openOptionsPage()
-		.catch(ZDK.console.error)
+		.catch(console.error)
 	;
 });
 
@@ -164,145 +160,13 @@ function updatePanelData() {
 
 
 
-let tabPort = null;
-async function loadRss() {
-	return new Promise(async (resolve, reject) => {
-		const win = await browser.windows.getCurrent({
-			'populate': true,
-			'windowTypes': ['normal']
-		});
-		if (tabPort !== null) {
-			tabPort.disconnect();
-			tabPort = null;
-		}
-
-
-
-		if (win !== undefined) {
-			const tabs = win.tabs.filter(tab => {
-				return tab.hasOwnProperty('active') && tab.active === true;
-			});
-
-			if (tabs.length > 0) {
-				const tab = tabs[0];
-
-				tabPort = browser.tabs.connect(tab.id, {
-					'name': 'ztoolbox_rss-retrieve'
-				});
-
-				tabPort.onDisconnect.addListener((p) => {
-					if (!/^https?:\/\//.test(tab.url)) {
-						const lastError = browser.runtime.lastError;
-						if (!!lastError && typeof lastError === 'object' && !!lastError.message && lastError.message.indexOf("Could not establish connection") !== -1) {
-							reject('InvalidPage');
-						}
-					}
-
-					if (p.error) {
-						console.log(`Disconnected due to an error: ${p.error.message}`);
-					}
-				});
-
-				tabPort.onMessage.addListener(rssLinks => {
-					const title = backgroundPage.zDK.customTitleForConsole('RSS');
-					console.log(title[0], title[1], JSON.stringify(rssLinks));
-					resolve(rssLinks);
-				});
-			} else {
-				reject('NoActiveTab');
-			}
-		} else {
-			reject('NoCurrentWindow');
-		}
-	});
-}
-
-async function updateDisplayedRss() {
-	const websiteDataList_Node = document.querySelector("#panelContent #rssItem");
-	removeAllChildren(websiteDataList_Node);
-
-	let tmpNodes = null;
-	let loadDelay = setTimeout(() => {
-		tmpNodes = appendTo(websiteDataList_Node, backgroundPage.Mustache.render(mustacheTemplates.get("panelRssLinks"), {
-			'rssLinks': [],
-			'error': 'loading',
-			'errorInfo': 'reloadTabs'
-		}));
-
-		loadDelay = setTimeout(() => {
-			tmpNodes[0].classList.remove('rssItem--hideData');
-		}, 1500);
-	}, 500);
-
-
-
-	let rssLinks, error, renderData;
-
-	try {
-		rssLinks = await loadRss();
-	} catch (e) {
-		console.error(e);
-		error = e;
-	}
-
-	if (typeof rssLinks !== 'undefined' && Array.isArray(rssLinks)) {
-		renderData = {
-			'rssLinks': rssLinks,
-			'error': ''
-		};
-	} else {
-		let errorMsg = 'rssSomeError';
-
-		if (error !== undefined && error === 'InvalidPage') {
-			errorMsg = 'rssForbidenPage';
-		}
-
-		renderData = {
-			'rssLinks': [],
-			'error': errorMsg
-		};
-	}
-
-
-
-	clearTimeout(loadDelay);
-	if (tmpNodes !== null) {
-		tmpNodes.forEach(node => {
-			node.remove()
-		});
-	}
-	appendTo(websiteDataList_Node, backgroundPage.Mustache.render(mustacheTemplates.get("panelRssLinks"), renderData));
-}
-
-const onTabChange = _.debounce(() => {
-	updateDisplayedRss()
-		.catch(err => {
-			console.error(err);
-		})
-	;
-}, 100, {
-	maxWait: 200
-});
-browser.windows.onFocusChanged.addListener(onTabChange);
-browser.tabs.onActivated.addListener(onTabChange);
-browser.runtime.onMessage.addListener(function (data, sender) {
-	if (sender.id === browser.runtime.id && data.hasOwnProperty('name') && data.name === 'ztoolbox_rss-retrieve' && sender.tab && sender.tab.active === true) {
-		onTabChange();
-	}
-});
-onTabChange();
-
-
-
-
-
 document.addEventListener('click', e => {
 	const node = e.target.closest('#panelContent .websiteItem .folder[data-folder-url]');
 	if (!node) return;
 
 	e.stopPropagation();
 	backgroundPage.openTabIfNotExist(node.dataset.folderUrl)
-		.catch(ZDK.console.error)
+		.catch(console.error)
 	;
 	return false;
 });
@@ -312,25 +176,21 @@ document.addEventListener('click', e => {
 	if (!node) return;
 
 	e.stopPropagation();
-	let href;
-	if (node.classList.contains('rssItem')) {
-		href = node.dataset.href;
-	} else {
-		let website = node.dataset.website,
-			websiteAPI = websites.get(website),
-			websiteData = websitesData.get(website)
-		;
 
-		href = websiteAPI[(node.dataset.logged)? "getViewURL" : "getLoginURL"](websiteData);
-	}
+	let website = node.dataset.website,
+		websiteAPI = websites.get(website),
+		websiteData = websitesData.get(website),
+
+		href = websiteAPI[(node.dataset.logged) ? "getViewURL" : "getLoginURL"](websiteData)
+	;
 
 	if (href === undefined) {
-		ZDK.console.warn('No links', node);
+		console.warn('No links', node);
 		return false;
 	}
 
 	backgroundPage.openTabIfNotExist(href)
-		.catch(ZDK.console.error)
+		.catch(console.error)
 	;
 
 	return false;

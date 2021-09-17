@@ -43,7 +43,7 @@ let freshRss = {
 				output.response = await fetch(this.dataURL);
 				rawData = await output.response.text();
 			} catch (e) {
-				ZDK.console.error(e);
+				console.error(e);
 				return outut;
 			}
 		}

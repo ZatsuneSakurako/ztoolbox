@@ -1,3 +1,8 @@
+# WIP
+* \+ : Fresh RSS
+* \- : Clean unused ZDK features
+* \- : Delete features muted-pause, RSS links, Twitch points, untrackMe
+
 # 0.17.3
 * fix : Twitch points - url change detection
 * fix : Twitch points - error when no chat

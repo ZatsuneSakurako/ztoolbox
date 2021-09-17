@@ -28,7 +28,7 @@ class DataStore {
 		this.DATA_STORE_VERSION = '11.3';
 
 		if(!this.has('_', 'DataStore_version') || this.get('_', 'DataStore_version') !== this.DATA_STORE_VERSION) {
-			ZDK.console.warn('New version of DataStore, clearing old data.');
+			console.warn('New version of DataStore, clearing old data.');
 			this.storage.clear();
 		}
 
