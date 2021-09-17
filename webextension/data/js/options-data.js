@@ -107,6 +107,14 @@ const options = {
 		"group": "featurePreference"
 	},
 	/*			Notifications			*/
+	"freshRss_baseUrl": {
+		"title": "Base url of your FreshRss instance",
+		"description": "Data refresh with url provided",
+		"type": "string",
+		"value": '',
+		"group": "notifications",
+		"prefLevel": "basic"
+	},
 	"notify_checkedData": {
 		"title": "Show a notification for deviantArt",
 		"description": "Notification when checked",

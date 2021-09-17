@@ -14,6 +14,7 @@ Sources:
   - Version in Z-Toolbox is a modified one because it is the same modified version as Live Notifier (prevent conflicts because of some data-attributes)
 - Moment.js, from http://momentjs.com/ (License MIT)
 - The RSS icon is from https://pixabay.com/photo-2440955/ (in [CC0 Public Domain](https://pixabay.com/fr/service/terms/#usage))
+- The FreshRSS icon is from https://github.com/FreshRSS/FreshRSS (License AGPL-3.0) with the background change to remove the white background
 
 
 The "Material Icons" (version 2.11 and later) font is part of Google material design, in Apache 2.0 license (open source), is available [here](https://google.github.io/material-design-icons/).

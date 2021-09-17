@@ -29,6 +29,9 @@
 	"whitelist_title": "Liste blanche",
 
 
+	"freshRss_baseUrl_title": "URL de votre instance FreshRss (devrait finir par un /i/)",
+	"freshRss_baseUrl_description": "Rafraîchissement de donnée quand URL fournie",
+
 	"notify_checkedData_title": "Affiche une notification pour deviantArt",
 	"notify_checkedData_description": "Notification quand cochée",
 

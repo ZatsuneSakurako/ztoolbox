@@ -164,7 +164,8 @@ async function refreshWebsitesData() {
 			if (count === null) {
 				count = 0;
 			}
-			count += websiteData.count;
+			const _nb = parseInt(websiteData.count);
+			count += isNaN(_nb) ? 0 : _nb;
 		}
 	});
 
@@ -210,28 +211,19 @@ browser.alarms.onAlarm.addListener(function (alarm) {
 
 async function refreshWebsite(website) {
 	let data = null, request = null;
-	if (typeof websites.get(website).getData === 'function') {
-		try {
-			const result = await websites.get(website).getData();
-			data = result.data;
-			request = result.response;
-		} catch (e) {
-			ZDK.console.error(e);
-		}
-	} else {
-		try {
-			request = await Request({
-				url: websites.get(website).dataURL,
-				overrideMimeType: 'text/html; charset=utf-8',
-				contentType: 'document',
-				Request_documentParseToJSON: websites.get(website).Request_documentParseToJSON
-			}).get();
 
-			data = request.map;
-		} catch (e) {
-			ZDK.console.error(e);
-		}
+	if (typeof websites.get(website).getData !== 'function') {
+		throw new Error('Expected getData to be a funtion');
 	}
+
+	try {
+		const result = await websites.get(website).getData();
+		data = result.data;
+		request = result.response;
+	} catch (e) {
+		ZDK.console.error(e);
+	}
+	console.log(website, data)
 
 
 	if (data !== null) {
@@ -261,7 +253,9 @@ appGlobal["websites"] = websites;
 appGlobal["websitesData"] = websitesData;
 window.baseRequiredPromise.then(async function () {
 	const {deviantArt} = await import('../platforms/deviantart.js');
+	const {freshRss} = await import('../platforms/freshrss.js');
 	websites.set('deviantArt', deviantArt);
+	websites.set('freshRss', freshRss);
 
 	websites.forEach((websiteAPI, website) => {
 		websitesData.set(website, new websiteDefaultData());

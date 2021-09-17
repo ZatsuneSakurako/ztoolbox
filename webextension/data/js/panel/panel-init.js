@@ -81,6 +81,7 @@ window.onload = function () {
 			'../panel/tabMover.js',
 			'../panel/pwa.js',
 			'../panel/service-worker.js',
+			'../panel/freshrss.js',
 			'../panel/panel.js'
 		];
 
