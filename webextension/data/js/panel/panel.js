@@ -14,7 +14,7 @@ const sendDataToMain = function (id, data=null) {
 	})
 };
 
-let notificationGloballyDisabled, websites, websitesData;
+let notificationGloballyDisabled, websitesData;
 chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
 	if (sender.hasOwnProperty("url")) {
 		console.debug(`Receiving message from: ${sender.url} (${sender.id})`);
@@ -25,7 +25,6 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
 	} else if (typeof message === "object" && message.hasOwnProperty("data")) {
 		if (message.id === 'mainToPanel_panelData') {
 			notificationGloballyDisabled = message.data.notificationGloballyDisabled;
-			websites = new Map(message.data.websites);
 			websitesData = new Map(
 				message.data.websitesData
 					.map(data => {
@@ -223,19 +222,12 @@ document.addEventListener('click', e => {
 
 	e.stopPropagation();
 
-	let website = node.dataset.website,
-		websiteAPI = websites.get(website),
-		websiteData = websitesData.get(website),
-
-		href = websiteAPI[(node.dataset.logged) ? "getViewURL" : "getLoginURL"](websiteData)
-	;
-
-	if (href === undefined) {
-		console.warn('No links', node);
-		return false;
-	}
-
-	ZDK.openTabIfNotExist(href)
+	browser.runtime.sendMessage({
+		id: 'refreshData-openWebsite',
+		data: {
+			website: node.dataset.website
+		}
+	})
 		.catch(console.error)
 	;
 

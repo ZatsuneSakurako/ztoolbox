@@ -200,10 +200,14 @@ async function refreshSettings(event) {
 				}
 			}
 			if (prefId === "panel_theme" || prefId === "background_color" && typeof theme_update === "function") {
-				theme_update();
+				theme_update()
+					.catch(console.error)
+				;
 			}
 			if (prefId === "hourlyAlarm") {
-				sendDataToMain("hourlyAlarm_update");
+				sendDataToMain("hourlyAlarm_update")
+					.catch(console.error)
+				;
 			}
 			if (
 				typeof applyPanelSize === "function"
@@ -244,12 +248,14 @@ function restaureOptionsFromSync(event) {
 /*		---- Node generation of settings ----		*/
 export function loadPreferences(selector) {
 	chromeSettings.loadPreferencesNodes(document.querySelector(selector));
-	
+
 	browser.storage.onChanged.addListener((changes, area) => {
 		if (area === "local") {
 			for (let prefId in changes) {
 				if (changes.hasOwnProperty(prefId)) {
-					refreshSettings({"key": prefId, oldValue: changes[prefId].oldValue, newValue: changes[prefId].newValue});
+					refreshSettings({"key": prefId, oldValue: changes[prefId].oldValue, newValue: changes[prefId].newValue})
+						.catch(console.error)
+					;
 				}
 			}
 		}
@@ -298,12 +304,12 @@ if (location.href.endsWith('/options.html')) {
 
 /*				---- Import data from ----				*/
 async function prefNode_FileType_onChange(event) {
-	chromeSettings.prefNode_FileType_onChange(event);
+	await chromeSettings.prefNode_FileType_onChange(event);
 }
 
 /*		---- Import/Export preferences from file ----		*/
 async function exportPrefsToFile() {
-	chromeSettings.exportPrefsToFile("ztoolbox", document);
+	await chromeSettings.exportPrefsToFile("ztoolbox", document);
 }
 
 async function importPrefsFromFile(event) {

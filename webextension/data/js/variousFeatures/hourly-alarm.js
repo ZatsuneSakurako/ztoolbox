@@ -1,5 +1,5 @@
 'use strict';
-const i18ex = window.i18ex;
+import {i18ex} from '../options-api.js'
 
 const HOURLY_ALARM_NAME = 'hourlyAlarm';
 export class HourlyAlarm {
@@ -21,7 +21,7 @@ export class HourlyAlarm {
 			currentTime: moment().format(i18ex._('displayTimeFormat'))
 		});
 
-		if (!!localStorage.getItem('notificationGloballyDisabled')) {
+		if (!localStorage.getItem('notificationGloballyDisabled')) {
 			doNotif({
 				"id": "hourly-alarm",
 				'message': msg,

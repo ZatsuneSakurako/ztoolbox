@@ -173,24 +173,6 @@ window.baseRequiredPromise.then(() => {
 	});
 });
 
-async function sendDataToPanel() {
-	await window.baseRequiredPromise;
-	return await browser.runtime.sendMessage({
-		id: 'mainToPanel_panelData',
-		data: {
-			notificationGloballyDisabled: !!localStorage.getItem('notificationGloballyDisabled'),
-			websites: [...appGlobal["websites"].entries()],
-			websitesData: [...appGlobal["websitesData"].entries()]
-				.map(data => {
-					if (data[1] && data[1].folders) {
-						data[1].folders = [...data[1].folders];
-					}
-					return data;
-				})
-		}
-	});
-}
-
 chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
 	if (sender.hasOwnProperty("url")) {
 		console.debug(`Receiving message from: ${sender.url} (${sender.id})`);
@@ -199,28 +181,7 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
 	if (chrome.runtime.id !== sender.id) {
 		console.error('Message received from unknown sender id');
 	} else if (typeof message === "object" && message.hasOwnProperty("data")) {
-		const isFromPanel = sender.url.endsWith('/panel.html');
-
 		switch (message.id) {
-			case 'panel_onload':
-				if (isFromPanel) {
-					sendDataToPanel()
-						.catch(console.error)
-					;
-				}
-				break;
-			case 'btn_notificationGloballyDisabled':
-				const oldState = localStorage.getItem('notificationGloballyDisabled') !== null;
-				if (oldState) {
-					localStorage.removeItem('notificationGloballyDisabled');
-				} else {
-					localStorage.setItem('notificationGloballyDisabled', '1');
-				}
-
-				sendDataToPanel()
-					.catch(console.error)
-				;
-				break;
 			case "getPreferences":
 				let reply = {};
 				message.data.preferences.forEach(prefId => {

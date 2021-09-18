@@ -1,10 +1,12 @@
 'use strict';
 
-import {loadPreferences, loadTranslations, savePreference, loadingPromise} from './options-api.js';
+import {loadPreferences, loadTranslations, savePreference, loadingPromise, getPreference} from './options-api.js';
 import {theme_cache_update} from "./backgroundTheme.js";
 
 
 
+window.getPreference = getPreference;
+window.savePreference = savePreference;
 window.theme_update = async function theme_update(){
 	let panelColorStylesheet = await theme_cache_update(document.querySelector("#generated-color-stylesheet"));
 	
@@ -39,10 +41,9 @@ import('./browserDetect.js')
 ;
 
 function init(){
-	theme_update();
-
 	loadingPromise.then(() => {
 		loadPreferences('section#preferences');
+		theme_update();
 		loadTranslations();
 	});
 }
@@ -77,12 +78,3 @@ if (typeof browser.storage.sync === 'object') {
 		;
 	});
 }
-
-
-/*const ps = new PerfectScrollbar("#contentContainer", {
-	includePadding: true,
-	suppressScrollX: true
-});
-window.onresize = function(){
-	ps.update();
-};*/

@@ -188,6 +188,16 @@ class ChromePreferences extends Map {
 				});
 			}
 
+			browser.storage.onChanged.addListener((changes, area) => {
+				if (area === "local") {
+					for (let prefId in changes) {
+						if (changes.hasOwnProperty(prefId)) {
+							super.set(prefId, changes[prefId].newValue);
+						}
+					}
+				}
+			});
+
 			if (this.loadingState === "failed") {
 				throw err;
 			} else {

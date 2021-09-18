@@ -124,7 +124,7 @@ export async function refreshWebsitesData() {
 		promises.set(website, refreshWebsite(website));
 		promises.get(website)
 			.then(() => {
-				if (!!localStorage.getItem('notificationGloballyDisabled')) {
+				if (!localStorage.getItem('notificationGloballyDisabled')) {
 					doNotifyWebsite(website);
 				}
 			})
@@ -199,6 +199,23 @@ export async function refreshWebsitesData() {
 	return data;
 }
 
+async function sendDataToPanel() {
+	await window.baseRequiredPromise;
+	return await browser.runtime.sendMessage({
+		id: 'mainToPanel_panelData',
+		data: {
+			notificationGloballyDisabled: !!localStorage.getItem('notificationGloballyDisabled'),
+			websitesData: [...websitesData.entries()]
+				.map(data => {
+					if (data[1] && data[1].folders) {
+						data[1].folders = [...data[1].folders];
+					}
+					return data;
+				})
+		}
+	});
+}
+
 chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
 	if (sender.hasOwnProperty("url")) {
 		console.debug(`Receiving message from: ${sender.url} (${sender.id})`);
@@ -207,12 +224,49 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
 	if (chrome.runtime.id !== sender.id) {
 		console.error('Message received from unknown sender id');
 	} else if (typeof message === "object" && message.hasOwnProperty("data")) {
-		if (message.id === 'refreshWebsitesData') {
-			refreshWebsitesData()
-				.then(sendResponse)
-				.catch(sendResponse)
-			;
-			return true;
+		const isFromPanel = sender.url.endsWith('/panel.html');
+
+		switch (message.id) {
+			case 'panel_onload':
+				if (isFromPanel) {
+					sendDataToPanel()
+						.catch(console.error)
+					;
+				}
+				break;
+			case 'btn_notificationGloballyDisabled':
+				const oldState = localStorage.getItem('notificationGloballyDisabled') !== null;
+				if (oldState) {
+					localStorage.removeItem('notificationGloballyDisabled');
+				} else {
+					localStorage.setItem('notificationGloballyDisabled', '1');
+				}
+
+				sendDataToPanel()
+					.catch(console.error)
+				;
+				break;
+			case 'refreshWebsitesData':
+				refreshWebsitesData()
+					.then(sendResponse)
+					.catch(sendResponse)
+				;
+				return true;
+			case 'refreshData-openWebsite':
+				let website = message.data.website,
+					websiteAPI = websites.get(website),
+					websiteData = websitesData.get(website),
+
+					href = websiteAPI[(websiteData.logged) ? "getViewURL" : "getLoginURL"](websiteData)
+				;
+
+				websiteData.logged
+				if (href !== undefined) {
+					ZDK.openTabIfNotExist(href)
+						.catch(console.error)
+					;
+				}
+				break;
 		}
 	}
 });
@@ -266,8 +320,6 @@ async function refreshWebsite(website) {
 let websites = new Map(),
 	websitesData = new Map()
 ;
-appGlobal["websites"] = websites;
-appGlobal["websitesData"] = websitesData;
 window.baseRequiredPromise.then(async function () {
 	const {deviantArt} = await import('../platforms/deviantart.js');
 	const {freshRss} = await import('../platforms/freshrss.js');
