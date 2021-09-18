@@ -1,9 +1,8 @@
+import {ZDK} from '../classes/ZDK.js';
 import {triggerOnCurrentTab, onTabChange} from './browserTabUtils.js';
 
 async function onPwaClick() {
-	const backgroundPage = await browser.runtime.getBackgroundPage(),
-		{result} = await triggerOnCurrentTab('ztoolbox_trigger-pwa').catch(console.error)
-	;
+	const {result} = await triggerOnCurrentTab('ztoolbox_trigger-pwa').catch(console.error);
 	console.dir(result);
 
 	let resultStr = result;
@@ -15,10 +14,17 @@ async function onPwaClick() {
 		}
 	}
 
-	backgroundPage.doNotif({
-		'id': 'pwa_notification',
-		"message": `PWA : ${resultStr}`
-	});
+	browser.runtime.sendMessage({
+		id: "doNotif",
+		data: {
+			options: {
+				'id': 'pwa_notification',
+				"message": `PWA : ${resultStr}`
+			}
+		}
+	})
+		.catch(console.error)
+	;
 }
 
 document.addEventListener('click', e => {
@@ -44,11 +50,10 @@ async function updatePwaButton() {
 	}
 
 	const button = document.querySelector('button#pwa');
-	const backgroundPage = await browser.runtime.getBackgroundPage();
 	const triggerResult = await triggerOnCurrentTab('ztoolbox_detect-pwa')
 		.catch(console.error)
 	;
-	const title = backgroundPage.zDK.customTitleForConsole('PWA');
+	const title = ZDK.customTitleForConsole('PWA');
 	if (!triggerResult) {
 		console.log(title[0], title[1], JSON.stringify(triggerResult));
 		button.classList.toggle('hide', true);

@@ -11,7 +11,6 @@ async function updateServiceWorker() {
 		currTabPort = null;
 	}
 
-	const backgroundPage = await browser.runtime.getBackgroundPage();
 	const triggerResult = await triggerOnCurrentTab('ztoolbox_service-worker')
 		.catch(console.error)
 	;

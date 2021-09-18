@@ -2,55 +2,16 @@
 
 
 import {default as env} from './env.js';
-import {getPreference, savePreference} from './options-api.js';
-import {ChromeNotificationController, ChromeUpdateNotification} from './classes/ZDK.js';
+import {getPreference, i18ex, savePreference} from './options-api.js';
+import {ChromeNotificationController} from './classes/chrome-notification-controller.js';
+import {ChromeUpdateNotification} from './classes/chromeUpdateNotification.js';
+import {HourlyAlarm} from "./variousFeatures/hourly-alarm.js";
 
-const ZDK = window.ZDK;
 window.getPreference = getPreference;
 window.savePreference = savePreference;
 window.env = env;
 
 
-
-appGlobal.notificationGlobalyDisabled = false;
-
-// noinspection JSUnusedLocalSymbols
-/**
- *
- * @param {string} source
- * @param {string} id
- * @param {*} data
- */
-appGlobal.sendDataToMain = function sendDataToMain(source, id, data) {
-	if (source === 'ZToolBox_Panel' && id === 'panel_onload') {
-		if (typeof panel__UpdateData === 'function') {
-			panel__UpdateData();
-		} else {
-			console.warn('panel__UpdateData not found');
-		}
-	} else if (source === "ZToolBox_Options" && id === "hourlyAlarm_update") {
-		HourlyAlarm.isEnabledHourlyAlarm()
-			.then(async function (isActivated) {
-				if (typeof isActivated === "boolean" && getPreference("hourlyAlarm") !== isActivated) {
-					if (getPreference("hourlyAlarm") === true) {
-						await hourlyAlarm.enableHourlyAlarm();
-					} else {
-						await hourlyAlarm.disableHourlyAlarm();
-					}
-				}
-			})
-			.catch(async function (err) {
-				console.error(err);
-				await hourlyAlarm.disableHourlyAlarm();
-
-				if (getPreference("hourlyAlarm")) {
-					await hourlyAlarm.enableHourlyAlarm();
-				}
-			})
-	}
-};
-
-const i18ex = window.i18ex;
 
 /*
  * https://developer.mozilla.org/en-US/Add-ons/WebExtensions/API/menus/create
@@ -212,19 +173,94 @@ window.baseRequiredPromise.then(() => {
 	});
 });
 
+async function sendDataToPanel() {
+	await window.baseRequiredPromise;
+	return await browser.runtime.sendMessage({
+		id: 'mainToPanel_panelData',
+		data: {
+			notificationGloballyDisabled: !!localStorage.getItem('notificationGloballyDisabled'),
+			websites: [...appGlobal["websites"].entries()],
+			websitesData: [...appGlobal["websitesData"].entries()]
+				.map(data => {
+					if (data[1] && data[1].folders) {
+						data[1].folders = [...data[1].folders];
+					}
+					return data;
+				})
+		}
+	});
+}
+
 chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
 	if (sender.hasOwnProperty("url")) {
 		console.debug(`Receiving message from: ${sender.url} (${sender.id})`);
 	}
-	if (typeof message === "object" && message.hasOwnProperty("data")) {
-		if (message.data.id==="getPreferences") {
-			let reply = {};
-			message.data.preferences.forEach(prefId => {
-				reply[prefId] = getPreference(prefId);
-			});
-			sendResponse({
-				"preferences": reply
-			})
+
+	if (chrome.runtime.id !== sender.id) {
+		console.error('Message received from unknown sender id');
+	} else if (typeof message === "object" && message.hasOwnProperty("data")) {
+		const isFromPanel = sender.url.endsWith('/panel.html');
+
+		switch (message.id) {
+			case 'panel_onload':
+				if (isFromPanel) {
+					sendDataToPanel()
+						.catch(console.error)
+					;
+				}
+				break;
+			case 'btn_notificationGloballyDisabled':
+				const oldState = localStorage.getItem('notificationGloballyDisabled') !== null;
+				if (oldState) {
+					localStorage.removeItem('notificationGloballyDisabled');
+				} else {
+					localStorage.setItem('notificationGloballyDisabled', '1');
+				}
+
+				sendDataToPanel()
+					.catch(console.error)
+				;
+				break;
+			case "getPreferences":
+				let reply = {};
+				message.data.preferences.forEach(prefId => {
+					reply[prefId] = getPreference(prefId);
+				});
+				sendResponse({
+					"preferences": reply
+				})
+				break;
+			case 'doNotif':
+				const options = message.data.options;
+				const suffixConfirmIfNoButtons = message.data.suffixConfirmIfNoButtons;
+
+				doNotif(options, suffixConfirmIfNoButtons)
+					.then(sendResponse)
+					.catch(sendResponse)
+				;
+
+				return true;
+			case 'hourlyAlarm_update':
+				HourlyAlarm.isEnabledHourlyAlarm()
+					.then(async function (isActivated) {
+						if (typeof isActivated === "boolean" && getPreference("hourlyAlarm") !== isActivated) {
+							if (getPreference("hourlyAlarm") === true) {
+								await hourlyAlarm.enableHourlyAlarm();
+							} else {
+								await hourlyAlarm.disableHourlyAlarm();
+							}
+						}
+					})
+					.catch(async function (err) {
+						console.error(err);
+						await hourlyAlarm.disableHourlyAlarm();
+
+						if (getPreference("hourlyAlarm")) {
+							await hourlyAlarm.enableHourlyAlarm();
+						}
+					})
+				;
+				break;
 		}
 	}
 });
@@ -301,12 +337,10 @@ window.doNotif = function doNotif(options, suffixConfirmIfNoButtons=false){
 		;
 	});
 }
-appGlobal["doNotif"] = doNotif;
 
 
 
 
-appGlobal["version"] = browser.runtime.getManifest().version;
 const CHECK_UPDATES_INTERVAL_NAME = 'checkUpdatesInterval',
 	CHECK_UPDATES_INTERVAL_DELAY = 10
 ;

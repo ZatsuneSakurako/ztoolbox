@@ -70,4 +70,7 @@ async function checkHasUpdate() {
 
 
 
-export {getVersions, checkHasUpdate};
+export const ChromeUpdateNotification = {
+	getVersions,
+	checkHasUpdate
+};

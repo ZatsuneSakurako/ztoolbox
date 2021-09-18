@@ -1,9 +1,8 @@
 'use strict';
-import { ZDK } from './ZDK.js';
 
 
 
-class DropboxController {
+export class DropboxController {
 	/**
 	 * https://developer.mozilla.org/en-US/Add-ons/WebExtensions/API/identity/launchWebAuthFlow
 	 * http://dropbox.github.io/dropbox-sdk-js/tutorial-JavaScript%20SDK.html
@@ -120,7 +119,7 @@ class DropboxController {
 
 		if(metaData!==null){
 			try{
-				data = JSON.parse(await zDK.loadBlob(metaData.fileBlob, 'text'));
+				data = JSON.parse(await ZDK.loadBlob(metaData.fileBlob, 'text'));
 			} catch (e) {
 				console.error( e);
 				throw 'InvalidJson';
@@ -205,8 +204,4 @@ class DropboxController {
 			}
 		}
 	}
-}
-
-export {
-	DropboxController
 }

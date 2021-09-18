@@ -1,8 +1,4 @@
-import { ZDK } from '../classes/ZDK.js';
-
-
-
-let deviantArt = {
+export const deviantArt = {
 	dataURL:"http://www.deviantart.com/notifications/",
 	getViewURL: function(websiteState) {
 		if (websiteState.count > 0) {
@@ -151,10 +147,4 @@ let deviantArt = {
 		output.data = result;
 		return output;
 	}
-};
-
-
-
-export {
-	deviantArt
 };

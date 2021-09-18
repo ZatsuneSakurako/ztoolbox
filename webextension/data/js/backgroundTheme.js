@@ -112,12 +112,8 @@ export async function theme_cache_update(colorStylesheetNode) {
 	if (!window.Mustache) {
 		await import('./lib/mustache.js');
 	}
-	if (!window.appGlobal) {
-		window.backgroundPage = await browser.runtime.getBackgroundPage();
-		window.appGlobal = backgroundPage.appGlobal;
-		await backgroundPage.baseRequiredPromise;
-	}
-	const style = Mustache.render(appGlobal.mustacheTemplates.get("backgroundTheme"), {
+	const {getTemplate} = await import('./init-templates.js');
+	const style = Mustache.render(await getTemplate("backgroundTheme"), {
 		"isDarkTheme": (currentTheme === "dark"),
 		"isLightTheme": (currentTheme === "light"),
 		"baseColor_hsl": baseColor_hsl,

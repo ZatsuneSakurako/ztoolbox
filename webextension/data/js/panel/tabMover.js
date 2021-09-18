@@ -1,22 +1,15 @@
+import {i18ex} from '../options-api.js';
+import {renderTemplate} from '../init-templates.js';
+import {ZDK} from "../classes/ZDK.js";
+
 const tabMover = document.querySelector('#tabMover');
 /**
  *
  * @type {browser.windows.Window[]}
  */
 let browserWindows;
+const TAB_MOVER_TEMPLATE = 'tabMover';
 async function update() {
-	/**
-	 *
-	 * @type {Window}
-	 */
-	const backgroundPage = await browser.runtime.getBackgroundPage();
-	const tabMoverTemplate = backgroundPage.appGlobal.mustacheTemplates.get('tabMover');
-	if (!tabMoverTemplate) {
-		console.warn('tabMover template missing');
-		return false;
-	}
-
-
 	const currentBrowserWindow = await browser.windows.getCurrent({
 		populate: false,
 		windowTypes: ["normal"]
@@ -42,15 +35,14 @@ async function update() {
 		})
 	;
 
-	const i18ex = backgroundPage.i18ex;
 	while (tabMover.hasChildNodes()) {
 		tabMover.removeChild(tabMover.lastChild);
 	}
 	if (browserWindows.length) {
 		for (const win of browserWindows) {
-			backgroundPage.zDK.appendTo(
+			ZDK.appendTo(
 				tabMover,
-				backgroundPage.Mustache.render(tabMoverTemplate, {
+				await renderTemplate(TAB_MOVER_TEMPLATE, {
 					'title': i18ex._("windowId", {
 						"windowId": win.id
 					}),
@@ -62,9 +54,9 @@ async function update() {
 			);
 		}
 	} else {
-		backgroundPage.zDK.appendTo(
+		ZDK.appendTo(
 			tabMover,
-			backgroundPage.Mustache.render(tabMoverTemplate, {
+			await renderTemplate(TAB_MOVER_TEMPLATE, {
 				'title': i18ex._("newWindow"),
 				'windowId': '',
 				'tabName': ''
@@ -130,6 +122,8 @@ browser.windows.onFocusChanged.addListener(update);
 browser.tabs.onUpdated.addListener(function (info, changeInfo, tab) {
 	if (tab.active === true && ((changeInfo.hasOwnProperty("status") && changeInfo.status === "complete") || changeInfo.hasOwnProperty("title"))) {
 		// Only update context menu if the active tab have a "complete" load
-		update();
+		update()
+			.catch(console.error)
+		;
 	}
 });

@@ -1,6 +1,7 @@
 'use strict';
 
 import { ZDK } from "../classes/ZDK.js";
+import {i18ex} from '../options-api.js';
 
 const ALARM_NAME = 'REFRESH_DATA';
 
@@ -108,7 +109,7 @@ class websiteDefaultData {
 
 
 let isRefreshingData = false;
-async function refreshWebsitesData() {
+export async function refreshWebsitesData() {
 	if (isRefreshingData === true) {
 		console.warn('Already refreshing...');
 		return false;
@@ -123,7 +124,7 @@ async function refreshWebsitesData() {
 		promises.set(website, refreshWebsite(website));
 		promises.get(website)
 			.then(() => {
-				if (appGlobal["notificationGlobalyDisabled"] === false) {
+				if (!!localStorage.getItem('notificationGloballyDisabled')) {
 					doNotifyWebsite(website);
 				}
 			})
@@ -197,7 +198,24 @@ async function refreshWebsitesData() {
 	isRefreshingData = false;
 	return data;
 }
-appGlobal["refreshWebsitesData"] = refreshWebsitesData;
+
+chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
+	if (sender.hasOwnProperty("url")) {
+		console.debug(`Receiving message from: ${sender.url} (${sender.id})`);
+	}
+
+	if (chrome.runtime.id !== sender.id) {
+		console.error('Message received from unknown sender id');
+	} else if (typeof message === "object" && message.hasOwnProperty("data")) {
+		if (message.id === 'refreshWebsitesData') {
+			refreshWebsitesData()
+				.then(sendResponse)
+				.catch(sendResponse)
+			;
+			return true;
+		}
+	}
+});
 
 browser.alarms.onAlarm.addListener(function (alarm) {
 	if (alarm.name === ALARM_NAME) {

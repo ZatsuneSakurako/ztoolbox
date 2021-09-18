@@ -1,27 +1,14 @@
 'use strict';
 
+import { ChromePreferences } from './classes/chrome-preferences.js';
+import { i18extended } from './classes/i18extended.js';
 import { options } from './options-data.js';
 
-// noinspection ES6ConvertVarToLetConst
-let chromeSettings = null,
-	i18ex = null,
-	loadingPromise = null
+const chromeSettings = new ChromePreferences(options),
+	i18ex = new i18extended(browser.i18n.getMessage("language")),
+	loadingPromise = chromeSettings.loadingPromise
 ;
-if (location.pathname.endsWith('init.html')) {
-	chromeSettings = window.chromeSettings = new window.zDK.ChromePreferences(options);
-	i18ex = window.i18ex = new zDK.i18extended(browser.i18n.getMessage("language"));
-} else {
-	loadingPromise = new Promise(resolve => {
-		browser.runtime.getBackgroundPage().then(backgroundPage => {
-			if (backgroundPage === null) return;
 
-			chromeSettings = backgroundPage.chromeSettings;
-			i18ex = backgroundPage.i18ex;
-
-			resolve(backgroundPage);
-		});
-	})
-}
 export { chromeSettings, i18ex, loadingPromise };
 
 /*		---- Nodes translation ----		*/
@@ -149,8 +136,6 @@ function settingNode_onChange() {
 	}
 }
 async function refreshSettings(event) {
-	const backgroundPage = await browser.runtime.getBackgroundPage();
-
 	let prefId = "";
 	let prefValue = "";
 	if (typeof event.key === "string") {
@@ -171,7 +156,7 @@ async function refreshSettings(event) {
 			switch (chromeSettings.options.get(prefId).type) {
 				case 'string':
 					if (typeof chromeSettings.options.get(prefId).stringList === 'boolean' && chromeSettings.options.get(prefId).stringList === true) {
-						prefNode.value = backgroundPage.getFilterListFromPreference(getPreference(prefId)).join("\n");
+						prefNode.value = getFilterListFromPreference(getPreference(prefId)).join("\n");
 					} else {
 						prefNode.value = prefValue;
 					}
@@ -271,11 +256,7 @@ export function loadPreferences(selector) {
 	});
 }
 
-browser.runtime.getBackgroundPage().then(backgroundPage => {
-	if (backgroundPage === null) {
-		return;
-	}
-
+if (location.href.endsWith('/options.html')) {
 	document.addEventListener('click', function (e) {
 		const label = e.target.closest('[data-input-number-control]');
 		if (!label) return;
@@ -313,18 +294,16 @@ browser.runtime.getBackgroundPage().then(backgroundPage => {
 
 		prefNode_FileType_onChange.apply(input, [e, input])
 	});
-});
+}
 
 /*				---- Import data from ----				*/
 async function prefNode_FileType_onChange(event) {
-	let backgroundPage = await browser.runtime.getBackgroundPage();
-	backgroundPage.chromeSettings.prefNode_FileType_onChange(event);
+	chromeSettings.prefNode_FileType_onChange(event);
 }
 
 /*		---- Import/Export preferences from file ----		*/
 async function exportPrefsToFile() {
-	let backgroundPage = await browser.runtime.getBackgroundPage();
-	backgroundPage.chromeSettings.exportPrefsToFile("ztoolbox", document);
+	chromeSettings.exportPrefsToFile("ztoolbox", document);
 }
 
 async function importPrefsFromFile(event) {
@@ -341,11 +320,7 @@ async function importPrefsFromFile(event) {
 	}
 
 	if (error === false) {
-		if (typeof refreshStreamsFromPanel === "function") {
-			refreshStreamsFromPanel();
-		} else {
-			sendDataToMain("refreshStreams", "");
-		}
+		sendDataToMain("refreshData", "");
 	}
 }
 window.importPrefsFromFile = importPrefsFromFile;

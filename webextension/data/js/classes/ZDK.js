@@ -1,34 +1,12 @@
 'use strict';
 
-import { ChromePreferences } from './chrome-preferences.js';
-import { i18extended } from './i18extended.js';
-
-
-
-class ZDK {
-	/**
-	 *
-	 * @return {ChromePreferences}
-	 * @constructor
-	 */
-	get ChromePreferences() {
-		return ChromePreferences;
-	}
-
-	/**
-	 *
-	 * @return {i18extended}
-	 */
-	get i18extended() {
-		return i18extended;
-	}
-
+export class ZDK {
 	/**
 	 *
 	 * @param {string} title
 	 * @return title
 	 */
-	customTitleForConsole(title) {
+	static customTitleForConsole(title) {
 		return [`%c${title}`, 'background: #4676d7;border-radius:5px;padding:5px;margin:2px 5px 2px 0px'];
 	}
 
@@ -38,7 +16,7 @@ class ZDK {
 	 * @param {Boolean} readType
 	 * @return {Promise}
 	 */
-	loadBlob(blob, readType=null){
+	static loadBlob(blob, readType=null){
 		return new Promise((resolve, reject) => {
 			const reader = new FileReader();
 			reader.addEventListener("loadend", function() {
@@ -103,7 +81,7 @@ class ZDK {
 	 * @param {HTMLDocument|Document} doc
 	 * @returns {null | HTMLElement[]}
 	 */
-	insertHtml(action, selector, html, doc=document) {
+	static insertHtml(action, selector, html, doc=document) {
 		if (typeof action !== 'string' || action === '') {
 			throw 'Wrong action';
 		}
@@ -138,7 +116,7 @@ class ZDK {
 	 * @param {HTMLDocument|Document} doc
 	 * @returns {null | HTMLElement[]}
 	 */
-	appendTo(selector, html, doc=document) {
+	static appendTo(selector, html, doc=document) {
 		return this.insertHtml('appendTo', selector, html, doc);
 	}
 
@@ -149,7 +127,7 @@ class ZDK {
 	 * @param {HTMLDocument|Document} doc
 	 * @returns {null | HTMLElement[]}
 	 */
-	insertBefore(selector, html, doc=document) {
+	static insertBefore(selector, html, doc=document) {
 		return this.insertHtml('insertBefore', selector, html, doc);
 	}
 
@@ -173,20 +151,4 @@ class ZDK {
 			setTimeout(resolve, millisecond);
 		})
 	}
-}
-
-
-
-
-
-export * from './chrome-notification-controller.js';
-export * as ChromeUpdateNotification from './chromeUpdateNotification.js';
-export * from './chrome-preferences.js';
-export * from './i18extended.js';
-export * from './queue.js';
-export * from './data-store.js';
-export * from './ztimer.js';
-export * from './version.js';
-export {
-	ZDK
 }

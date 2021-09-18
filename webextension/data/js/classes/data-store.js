@@ -1,9 +1,6 @@
 'use strict';
-import { ZDK } from './ZDK.js';
 
-
-
-class DataStore {
+export class DataStore {
 	/**
 	 *
 	 * @param {Window} win
@@ -554,10 +551,4 @@ class DataStore {
 			}
 		}, false);
 	}
-}
-
-
-
-export {
-	DataStore
 }

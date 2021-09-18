@@ -24,8 +24,8 @@ function setPageJS(content) {
 
 const preferences = new Promise((resolve, reject) => {
 	chrome.runtime.sendMessage({
+		"id": "getPreferences",
 		"data": {
-			"id": "getPreferences",
 			"preferences": [
 				"serviceWorkerWhitelist"
 			]

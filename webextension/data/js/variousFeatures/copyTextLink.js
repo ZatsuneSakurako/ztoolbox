@@ -1,8 +1,8 @@
 'use strict';
 
 import {default as env} from '../env.js';
+import {i18ex} from '../options-api.js';
 import {copyToClipboard} from '../copyToClipboard.js';
-const i18ex = window.i18ex;
 
 
 window.baseRequiredPromise.then(() => {
@@ -41,8 +41,8 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
 	}
 
 	if (typeof message === "object" && message.hasOwnProperty("data")) {
-		if (message.data.id === "copyLinkText_reply") {
-			onCopyLinkTextReply(message.data.data)
+		if (message.id === "copyLinkText_reply") {
+			onCopyLinkTextReply(message.data)
 				.catch(console.error)
 			;
 		}

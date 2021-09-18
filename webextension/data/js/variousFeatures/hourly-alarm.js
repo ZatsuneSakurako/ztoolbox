@@ -2,7 +2,7 @@
 const i18ex = window.i18ex;
 
 const HOURLY_ALARM_NAME = 'hourlyAlarm';
-class HourlyAlarm {
+export class HourlyAlarm {
 	constructor() {
 		if (getPreference('hourlyAlarm') === true) {
 			this.enableHourlyAlarm();
@@ -21,7 +21,7 @@ class HourlyAlarm {
 			currentTime: moment().format(i18ex._('displayTimeFormat'))
 		});
 
-		if(appGlobal['notificationGlobalyDisabled']===false){
+		if (!!localStorage.getItem('notificationGloballyDisabled')) {
 			doNotif({
 				"id": "hourly-alarm",
 				'message': msg,
@@ -29,7 +29,7 @@ class HourlyAlarm {
 				'soundObjectVolume': getPreference('hourlyAlarm_sound_volume')
 			});
 
-			if(getPreference('notify_vocal')){
+			if (getPreference('notify_vocal')) {
 				voiceReadMessage(i18ex._('language'), i18ex._('timeIsNow', {
 					currentTime: moment().format(i18ex._('spokenTimeFormat'))
 				}));
@@ -80,12 +80,21 @@ class HourlyAlarm {
 	}
 }
 
-window.baseRequiredPromise.then(async function() {
-	window.hourlyAlarm = new HourlyAlarm();
-});
+async function init() {
+	if (!window.hourlyAlarm) {
+		await window.baseRequiredPromise;
+		window.hourlyAlarm = new HourlyAlarm();
+	}
+}
+init()
+	.catch(console.error)
+;
 
-browser.alarms.onAlarm.addListener(function (alarm) {
+browser.alarms.onAlarm.addListener(async function (alarm) {
 	if (alarm.name === HOURLY_ALARM_NAME) {
+		await init()
+			.catch(console.error)
+		;
 		hourlyAlarm.actionOnAlarm(alarm);
 	}
 });

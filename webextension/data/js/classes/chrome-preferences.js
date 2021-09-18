@@ -110,7 +110,7 @@ const CHROME_PREFERENCES_UPDATED_ID = '_updated',
 	CHROME_PREFERENCES_SYNC_ID = '_synchronisedAt'
 ;
 
-class ChromePreferences extends Map{
+class ChromePreferences extends Map {
 	constructor(options){
 		super();
 
@@ -370,79 +370,9 @@ ${err}`);
 				continue;
 			}
 
-
-
-			if(prefId==="hitbox_user_id"){
-				preferences["smashcast_user_id"] = preferences["hitbox_user_id"];
-				delete preferences["hitbox_user_id"];
-				prefId="smashcast_user_id";
-			}
-			if(prefId==="beam_user_id"){
-				preferences["mixer_user_id"] = preferences["beam_user_id"];
-				delete preferences["beam_user_id"];
-				prefId="mixer_user_id";
-			}
-
 			if(this.options.has(prefId) && typeof this.options.get(prefId).type !== "undefined" && this.options.get(prefId).type !== "control" && this.options.get(prefId).type !== "file" && typeof preferences[prefId] === typeof this.defaultSettingsSync.get(prefId)){
 				if(mergePreferences){
-					let oldPref = this.get(prefId),
-						newPrefArray
-					;
-
-					switch(prefId){
-						case 'stream_keys_list':
-							let prefData = null;
-							try {
-								prefData = JSON.parse(oldPref);
-							} catch (e) {
-								console.error(e);
-							}
-
-							if(prefData===null){
-								prefData = oldPref;
-							}
-
-							let streamListSetting = new appGlobal.StreamListFromSetting(false);
-
-							streamListSetting.parseSetting(prefData).forEach((website, websiteMap)=>{
-								websiteMap.forEach((id, streamSetting)=>{
-									let newStreamSettings;
-									if(streamListSetting.streamExist(website, id)){
-										newStreamSettings = streamListSetting.streamExist(website, id);
-									} else {
-										newStreamSettings = StreamListFromSetting.getDefault();
-									}
-
-									for(let settingName in streamSetting){
-										if(streamSetting.hasOwnProperty(settingName)){
-											newStreamSettings[settingName] = streamSetting[settingName];
-										}
-									}
-
-									streamListSetting.mapDataAll.get(website).set(id, newStreamSettings);
-								});
-							});
-
-							streamListSetting.update();
-
-							break;
-						case "statusBlacklist":
-						case "statusWhitelist":
-						case "gameBlacklist":
-						case "gameWhitelist":
-							let toLowerCase = (str)=>{return str.toLowerCase()};
-							let oldPrefArrayLowerCase = oldPref.split(/,\s*/).map(toLowerCase);
-							newPrefArray = oldPref.split(/,\s*/);
-							preferences[prefId].split(/,\s*/).forEach(value=>{
-								if(oldPrefArrayLowerCase.indexOf(value.toLowerCase()) === -1){
-									newPrefArray.push(value);
-								}
-							});
-							this.set(prefId, newPrefArray.join(","));
-							break;
-						default:
-							this.set(prefId, preferences[prefId]);
-					}
+					this.set(prefId, preferences[prefId]);
 				} else {
 					this.set(prefId, preferences[prefId]);
 				}
@@ -455,41 +385,11 @@ ${err}`);
 		return browser.storage.sync.set(this.getSyncPreferences());
 	}
 	async restaureFromSync(mergePreferences=false){
-		const appGlobal = (browser.extension.getBackgroundPage() !== null)? browser.extension.getBackgroundPage().appGlobal : appGlobal,
-			items = await browser.storage.sync.get(this.getSyncKeys());
-
+		const items = await browser.storage.sync.get(this.getSyncKeys());
 		for(let prefId in items){
 			if(items.hasOwnProperty(prefId)){
 				if(mergePreferences){
-					let oldPref = this.get(prefId);
-					let newPrefArray;
-					switch(prefId){
-						case "stream_keys_list":
-							let oldPrefArray = oldPref.split(",");
-							newPrefArray = items[prefId].split(/,\s*/);
-							newPrefArray = oldPrefArray.concat(newPrefArray);
-
-							this.set(prefId, newPrefArray.join());
-							let streamListSetting = new appGlobal.StreamListFromSetting(true);
-							streamListSetting.update();
-							break;
-						case "statusBlacklist":
-						case "statusWhitelist":
-						case "gameBlacklist":
-						case "gameWhitelist":
-							let toLowerCase = (str)=>{return str.toLowerCase()};
-							let oldPrefArrayLowerCase = oldPref.split(/,\s*/).map(toLowerCase);
-							newPrefArray = oldPref.split(/,\s*/);
-							items[prefId].split(/,\s*/).forEach(value=>{
-								if(oldPrefArrayLowerCase.indexOf(value.toLowerCase()) === -1){
-									newPrefArray.push(value);
-								}
-							});
-							this.set(prefId, newPrefArray.join(","));
-							break;
-						default:
-							this.set(prefId, items[prefId]);
-					}
+					this.set(prefId, items[prefId]);
 				} else {
 					this.set(prefId, items[prefId]);
 				}
@@ -887,9 +787,9 @@ ${err}`);
 							});
 						} else {
 							if (opts.readType !== null) {
-								promiseList.push(zDK.loadBlob(file, opts.readType));
+								promiseList.push(ZDK.loadBlob(file, opts.readType));
 							} else {
-								promiseList.push(zDK.loadBlob(file));
+								promiseList.push(ZDK.loadBlob(file));
 							}
 						}
 					}

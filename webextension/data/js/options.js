@@ -20,8 +20,12 @@ window.theme_update = async function theme_update(){
 
 
 async function sendDataToMain(id, data) {
-	const backgroundPage = await browser.extension.getBackgroundPage();
-	backgroundPage.appGlobal.sendDataToMain("ZToolBox_Options", id,  data);
+	browser.runtime.sendMessage({
+		id,
+		data: data ?? null
+	})
+		.catch(console.error)
+	;
 }
 window.sendDataToMain = sendDataToMain;
 
@@ -35,19 +39,12 @@ import('./browserDetect.js')
 ;
 
 function init(){
-	browser.runtime.getBackgroundPage()
-		.then(backgroundPage => {
-			window.backgroundPage = backgroundPage;
-			window.appGlobal = backgroundPage.appGlobal;
+	theme_update();
 
-			theme_update();
-
-			loadingPromise.then(() => {
-				loadPreferences('section#preferences');
-				loadTranslations();
-			});
-		})
-	;
+	loadingPromise.then(() => {
+		loadPreferences('section#preferences');
+		loadTranslations();
+	});
 }
 document.addEventListener('DOMContentLoaded', init);
 

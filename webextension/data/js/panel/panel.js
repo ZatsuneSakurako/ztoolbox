@@ -1,16 +1,46 @@
-import { loadTranslations } from '../options-api.js';
+import {ZDK} from '../classes/ZDK.js';
+import {loadTranslations, i18ex} from '../options-api.js';
+import {renderTemplate} from '../init-templates.js';
 import {copyToClipboard} from '../copyToClipboard.js';
+import {theme_cache_update} from '../backgroundTheme.js';
 
 
 
-const backgroundPage = browser.extension.getBackgroundPage(),
-	{appGlobal, ZDK} = backgroundPage,
-	{websites, websitesData, mustacheTemplates} = appGlobal
-;
 
-const sendDataToMain = function (id, data) {
-	appGlobal.sendDataToMain("ZToolBox_Panel", id, data);
+const sendDataToMain = function (id, data=null) {
+	browser.runtime.sendMessage({
+		id,
+		data
+	})
 };
+
+let notificationGloballyDisabled, websites, websitesData;
+chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
+	if (sender.hasOwnProperty("url")) {
+		console.debug(`Receiving message from: ${sender.url} (${sender.id})`);
+	}
+
+	if (chrome.runtime.id !== sender.id) {
+		console.error('Message received from unknown sender id');
+	} else if (typeof message === "object" && message.hasOwnProperty("data")) {
+		if (message.id === 'mainToPanel_panelData') {
+			notificationGloballyDisabled = message.data.notificationGloballyDisabled;
+			websites = new Map(message.data.websites);
+			websitesData = new Map(
+				message.data.websitesData
+					.map(data => {
+						if (data[1] && data[1].folders) {
+							data[1].folders = new Map(data[1].folders)
+						}
+						return data;
+					})
+			);
+			updatePanelData()
+				.catch(console.error)
+			;
+		}
+	}
+});
 
 document.addEventListener('click', e => {
 	const elm = e.target.closest('[role="button"]');
@@ -26,25 +56,26 @@ document.addEventListener('click', e => {
 	const elm = e.target.closest('#disableNotifications');
 	if (!elm) return;
 
-	let disableNotificationsButton = document.querySelector('#disableNotifications');
-	appGlobal['notificationGlobalyDisabled'] = !appGlobal['notificationGlobalyDisabled'];
-	disableNotificationsButton.classList.toggle('off', backgroundPage.appGlobal['notificationGlobalyDisabled']);
-
-	if (disableNotificationsButton.dataset.opentipId) {
-		disableNotificationsButton.dataset.translateTitle = (backgroundPage.appGlobal['notificationGlobalyDisabled'])? 'GloballyDisabledNotifications' : 'GloballyDisableNotifications';
-	}
+	browser.runtime.sendMessage({
+		id: 'btn_notificationGloballyDisabled',
+		data: null
+	})
+		.catch(console.error)
+	;
 });
 
 document.addEventListener('click', e => {
-	const elm = e.target.closest('#refreshStreams');
+	const elm = e.target.closest('#refreshData');
 	if (!elm) return;
 
 	elm.dataset.translateTitle = '';
 	elm.disabled = true;
 	const triggered = Date.now();
 
-	appGlobal.refreshWebsitesData()
-		.catch(console.error)
+	browser.runtime.sendMessage({
+		id: 'refreshWebsitesData',
+		data: null
+	})
 		.finally(() => {
 			if (Date.now() - triggered > 2500) {
 				elm.dataset.translateTitle = "Refresh";
@@ -56,7 +87,9 @@ document.addEventListener('click', e => {
 				}, 3000);
 			}
 
-			updatePanelData();
+			updatePanelData()
+				.catch(console.error)
+			;
 		})
 	;
 });
@@ -76,10 +109,17 @@ document.addEventListener('click', e => {
 				clipboardResult = await copyToClipboard(tab.title);
 			}
 
-			backgroundPage.doNotif({
-				'id': 'copied_title_text',
-				"message": (clipboardResult) ? backgroundPage.i18ex._("copied_title_text") : backgroundPage.i18ex._("error_copying_to_clipboard")
-			});
+			browser.runtime.sendMessage({
+				id: "doNotif",
+				data: {
+					options: {
+						'id': 'copied_title_text',
+						"message": (clipboardResult) ? i18ex._("copied_title_text") : i18ex._("error_copying_to_clipboard")
+					}
+				}
+			})
+				.catch(console.error)
+			;
 		})
 		.catch(console.error)
 	;
@@ -96,7 +136,7 @@ document.addEventListener('click', e => {
 
 
 window.theme_update = function theme_update() {
-	let panelColorStylesheet = backgroundPage.backgroundTheme.theme_cache_update(document.querySelector("#generated-color-stylesheet"));
+	let panelColorStylesheet = theme_cache_update(document.querySelector("#generated-color-stylesheet"));
 
 	if (typeof panelColorStylesheet === "object" && panelColorStylesheet !== null) {
 		console.info("Theme update");
@@ -117,13 +157,19 @@ function removeAllChildren(node){
 	}
 }
 
-function updatePanelData() {
+async function updatePanelData() {
 	console.log("Updating panel data");
+
+	let disableNotificationsButton = document.querySelector('#disableNotifications');
+	disableNotificationsButton.classList.toggle('off', notificationGloballyDisabled);
+	if (disableNotificationsButton.dataset.opentipId) {
+		disableNotificationsButton.dataset.translateTitle = notificationGloballyDisabled? 'GloballyDisabledNotifications' : 'GloballyDisableNotifications';
+	}
 
 	let websiteDataList_Node = document.querySelector("#panelContent #refreshItem");
 	removeAllChildren(websiteDataList_Node);
 
-	websitesData.forEach((websiteData, website) => {
+	for (let [website, websiteData] of websitesData) {
 		let websiteRenderData = {
 			"logged": websiteData.logged,
 			"count": websiteData.count,
@@ -152,8 +198,8 @@ function updatePanelData() {
 
 		let websiteNode = document.createElement("article");
 		websiteDataList_Node.appendChild(websiteNode);
-		websiteNode.outerHTML = backgroundPage.Mustache.render(mustacheTemplates.get("panelCheckedDataItem"), websiteRenderData);
-	});
+		websiteNode.outerHTML = await renderTemplate("panelCheckedDataItem", websiteRenderData);
+	}
 }
 
 
@@ -165,7 +211,7 @@ document.addEventListener('click', e => {
 	if (!node) return;
 
 	e.stopPropagation();
-	backgroundPage.openTabIfNotExist(node.dataset.folderUrl)
+	ZDK.openTabIfNotExist(node.dataset.folderUrl)
 		.catch(console.error)
 	;
 	return false;
@@ -189,15 +235,12 @@ document.addEventListener('click', e => {
 		return false;
 	}
 
-	backgroundPage.openTabIfNotExist(href)
+	ZDK.openTabIfNotExist(href)
 		.catch(console.error)
 	;
 
 	return false;
 });
-backgroundPage.panel__UpdateData = (data) => {
-	updatePanelData(data);
-};
 
 
 
@@ -211,7 +254,7 @@ function current_version(version) {
 		current_version_node.dataset.translateTitle = '';
 	}
 }
-current_version(appGlobal["version"]);
+current_version(browser.runtime.getManifest().version);
 
 
 loadTranslations();

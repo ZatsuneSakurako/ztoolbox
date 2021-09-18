@@ -1,13 +1,11 @@
 'use strict';
 
-let backgroundPage = null;
-
 const applyPanelSize = () => {
 	const html = document.querySelector('html'),
 		body = document.querySelector('body');
-	html.style.height = backgroundPage.getPreference('panel_height');
+	html.style.height = getPreference('panel_height');
 
-	const panelWidth = backgroundPage.getPreference('panel_width');
+	const panelWidth = getPreference('panel_width');
 	body.style.width = panelWidth;
 	document.documentElement.style.setProperty('--opentip-maxwidth', `${((panelWidth/2<300)? (panelWidth/2) : panelWidth)}px`);
 };
@@ -24,11 +22,11 @@ async function baseInit() {
 	if (typeof browser === 'undefined' || browser === null) {
 		await import('../lib/browser-polyfill.js');
 	}
-	await import('../options-api.js');
 
-	backgroundPage = await window.browser.runtime.getBackgroundPage();
-	window.appGlobal = backgroundPage.appGlobal;
-	await backgroundPage.baseRequiredPromise;
+	const {getPreference, savePreference, loadingPromise} = await import('../options-api.js');
+	window.getPreference = getPreference;
+	window.savePreference = savePreference;
+	await loadingPromise;
 }
 const baseInitPromise = baseInit();
 baseInitPromise.then(async () => {
@@ -46,9 +44,6 @@ baseInitPromise.then(async () => {
 
 		document.querySelector('head').appendChild(optionColorStylesheet);
 	}
-
-	document.querySelector('#disableNotifications').classList.toggle('off', backgroundPage.appGlobal['notificationGlobalyDisabled']);
-	document.querySelector('#disableNotifications').dataset.translateTitle = (backgroundPage.appGlobal['notificationGlobalyDisabled'])? 'GloballyDisabledNotifications' : 'GloballyDisableNotifications';
 });
 
 window.onload = function () {

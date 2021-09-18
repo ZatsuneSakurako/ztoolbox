@@ -1,8 +1,4 @@
-import { ZDK } from '../classes/ZDK.js';
-
-
-
-let freshRss = {
+export const freshRss = {
 	get dataURL() {
 		return `${getPreference('freshRss_baseUrl')}?a=normal&state=3`;
 	},
@@ -70,10 +66,4 @@ let freshRss = {
 		output.data = result;
 		return output;
 	}
-};
-
-
-
-export {
-	freshRss
 };

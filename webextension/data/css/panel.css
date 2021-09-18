@@ -186,6 +186,9 @@ section .buttonItem .title,
 	content: attr(data-folder-title)": "attr(data-folder-count);
 }
 
+#freshRssContent {
+	padding-right: 0;
+}
 section > iframe {
 	height: 100%;
 	width: 100%;
