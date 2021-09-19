@@ -2,6 +2,7 @@
 * \+ : Fresh RSS
 * \- : Clean unused ZDK features
 * \- : Delete features muted-pause, RSS links, Twitch points, untrackMe
+* fix : Fix badge refresh
 
 # 0.17.3
 * fix : Twitch points - url change detection

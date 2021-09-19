@@ -118,11 +118,11 @@ export async function refreshWebsitesData() {
 	isRefreshingData = true;
 
 	console.debug('Refreshing websites data...');
-	let promises = new Map();
-
-	websites.forEach((websiteAPI, website) => {
-		promises.set(website, refreshWebsite(website));
-		promises.get(website)
+	const promises = [];
+	for (let website of websites.keys()) {
+		const promise = refreshWebsite(website);
+		promises.push(promise);
+		promise
 			.then(() => {
 				if (!localStorage.getItem('notificationGloballyDisabled')) {
 					doNotifyWebsite(website);
@@ -131,7 +131,7 @@ export async function refreshWebsitesData() {
 			.catch((data) => {
 				console.log('refreshWebsitesData', data);
 			});
-	});
+	}
 
 	const data = await Promise.allSettled(promises);
 
@@ -159,7 +159,7 @@ export async function refreshWebsitesData() {
 
 
 	let count = null;
-	websitesData.forEach((websiteData, website) => {
+	for (let [, websiteData] of websitesData) {
 		if (websiteData.logged && websiteData.count !== null) {
 			if (count === null) {
 				count = 0;
@@ -167,7 +167,7 @@ export async function refreshWebsitesData() {
 			const _nb = parseInt(websiteData.count);
 			count += isNaN(_nb) ? 0 : _nb;
 		}
-	});
+	}
 
 	if (getPreference('showExperimented') === true) {
 		console.groupCollapsed('Websites check end');
@@ -192,9 +192,6 @@ export async function refreshWebsitesData() {
 		browser.browserAction.setBadgeBackgroundColor({color: (count !== null && count > 0)? "#FF0000" : "#424242"});
 	}
 
-	if (typeof window.panel__UpdateData === 'function') {
-		window.panel__UpdateData();
-	}
 	isRefreshingData = false;
 	return data;
 }
@@ -250,6 +247,11 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
 				refreshWebsitesData()
 					.then(sendResponse)
 					.catch(sendResponse)
+					.finally(() => {
+						sendDataToPanel()
+							.catch(console.error)
+						;
+					})
 				;
 				return true;
 			case 'refreshData-openWebsite':
@@ -294,7 +296,6 @@ async function refreshWebsite(website) {
 	} catch (e) {
 		console.error(e);
 	}
-	console.log(website, data)
 
 
 	if (data !== null) {

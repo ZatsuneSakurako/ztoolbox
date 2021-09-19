@@ -85,10 +85,6 @@ document.addEventListener('click', e => {
 					elm.disabled = false;
 				}, 3000);
 			}
-
-			updatePanelData()
-				.catch(console.error)
-			;
 		})
 	;
 });
