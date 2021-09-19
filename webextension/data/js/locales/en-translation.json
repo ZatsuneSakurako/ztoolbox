@@ -159,8 +159,6 @@
 	"FileTooBig": "File is too big",
 	"WrongFileType": "Wrong file type",
 	"timeIsNow": "It is now {{currentTime}}",
-	"displayTimeFormat": "hh:mmA",
-	"spokenTimeFormat": "hA",
 
 	"updateSimple": "Update available",
 	"updateDetail": "An update of {{name}} is available, update the local repository"

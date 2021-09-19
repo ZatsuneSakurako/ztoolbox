@@ -5,7 +5,9 @@
 class i18extended {
 	constructor(currentLanguage) {
 		let loadPromise = () => {
-			return new Promise((resolve, reject) => {
+			return new Promise(async (resolve, reject) => {
+				await import('../lib/i18next.js');
+				await import('../lib/i18nextXHRBackend.js');
 				// fallback to one language
 				i18next.use(i18nextXHRBackend);
 				i18next.init({

@@ -162,8 +162,6 @@
 	"FileTooBig": "Le fichier est trop gros",
 	"WrongFileType": "Mauvais type de fichier",
 	"timeIsNow": "Il est maintenant {{currentTime}}",
-	"displayTimeFormat": "HH:mm",
-	"spokenTimeFormat": "HH [heure]",
 
 	"updateSimple": "Mise à jour disponible",
 	"updateDetail": "Une mise à jour de {{name}} est disponible, rafraîchir le dépôt local"

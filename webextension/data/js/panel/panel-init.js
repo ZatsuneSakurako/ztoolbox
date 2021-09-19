@@ -23,6 +23,7 @@ async function baseInit() {
 		await import('../lib/browser-polyfill.js');
 	}
 
+	await import('../classes/chrome-preferences.js');
 	const {getPreference, savePreference, loadingPromise} = await import('../options-api.js');
 	window.getPreference = getPreference;
 	window.savePreference = savePreference;
@@ -70,7 +71,7 @@ window.onload = function () {
 		await baseInitPromise;
 
 		let jsFiles = [
-			'../lib/lodash.custom.min.js',
+			'../lib/throttle.js',
 			'../copyToClipboard.js',
 			'../panel/browserTabUtils.js',
 			'../panel/tabMover.js',

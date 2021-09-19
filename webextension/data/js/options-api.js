@@ -2,14 +2,22 @@
 
 import { ChromePreferences } from './classes/chrome-preferences.js';
 import { i18extended } from './classes/i18extended.js';
-import { options } from './options-data.js';
 
-const chromeSettings = new ChromePreferences(options),
-	i18ex = new i18extended(browser.i18n.getMessage("language")),
-	loadingPromise = chromeSettings.loadingPromise
+const optionPromise = (async function () {
+	return (await import('./options-data.js')).options
+})()
+
+const chromeSettings = new ChromePreferences(optionPromise),
+	loadingPromise = (async () => {
+		await chromeSettings.loadingPromise;
+
+		const {i18extended} = await import('./classes/i18extended.js');
+		window.i18ex = new i18extended(browser.i18n.getMessage("language"));
+		await i18ex.loadingPromise;
+	})()
 ;
 
-export { chromeSettings, i18ex, loadingPromise };
+export { chromeSettings, loadingPromise };
 
 /*		---- Nodes translation ----		*/
 function translateNodes() {

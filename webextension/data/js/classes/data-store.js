@@ -217,16 +217,6 @@ export class DataStore {
 
 	/**
 	 * @param {Object} defaultData
-	 * @param {Object} data
-	 * @returns {Object} Returns `object`.
-	 * @see _.defaults
-	 */
-	static extendsWithDefault(defaultData, data){
-		return _.defaultsDeep(data, defaultData);
-	}
-
-	/**
-	 * @param {Object} defaultData
 	 * @param {Object} data to modify
 	 * @returns {Object} dat without the defaultData
 	 */

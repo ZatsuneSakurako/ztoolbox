@@ -5,7 +5,7 @@
 				{ "version": "0.17.2",
 					"update_link": "https://gitlab.com/ZatsuneNoMokou/ztoolbox/raw/master/dist/z_toolbox_dev.xpi",
 					"applications": {
-						"gecko": { "strict_min_version": "78" } } }
+						"gecko": { "strict_min_version": "91" } } }
 			]
 		}
 	}

@@ -1,7 +1,5 @@
 'use strict';
 
-import {i18ex} from '../options-api.js';
-
 async function launchSearch(tab, imgUrl) {
 	try {
 		const response = await browser.tabs.sendMessage(

@@ -1,5 +1,5 @@
 import {ZDK} from '../classes/ZDK.js';
-import {loadTranslations, i18ex} from '../options-api.js';
+import {loadTranslations} from '../options-api.js';
 import {renderTemplate} from '../init-templates.js';
 import {copyToClipboard} from '../copyToClipboard.js';
 import {theme_cache_update} from '../backgroundTheme.js';

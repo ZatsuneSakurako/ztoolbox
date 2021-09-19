@@ -1,4 +1,5 @@
 import {triggerOnCurrentTab, onTabChange} from './browserTabUtils.js';
+import {throttle} from "../lib/throttle.js";
 
 /**
  *
@@ -22,13 +23,11 @@ async function updateServiceWorker() {
 	console.dir(triggerResult)
 }
 
-const _onTabChange = _.debounce(() => {
+const _onTabChange = throttle(() => {
 	updateServiceWorker()
 		.catch(err => {
 			console.error(err);
 		})
 	;
-}, 100, {
-	maxWait: 200
-});
+}, 100);
 onTabChange(_onTabChange);

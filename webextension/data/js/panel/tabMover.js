@@ -1,4 +1,3 @@
-import {i18ex} from '../options-api.js';
 import {renderTemplate} from '../init-templates.js';
 import {ZDK} from "../classes/ZDK.js";
 

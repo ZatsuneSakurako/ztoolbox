@@ -111,72 +111,75 @@ const CHROME_PREFERENCES_UPDATED_ID = '_updated',
 ;
 
 class ChromePreferences extends Map {
-	constructor(options){
+	constructor(options) {
 		super();
 
 		if (options === undefined) {
 			throw "Missing argument"
 		}
 
-
-		options[CHROME_PREFERENCES_UPDATED_ID] = {
-			"hidden": true,
-			"prefLevel": "experimented",
-			"sync": true,
-			"type": "string",
-			"value": ""
-		};
-		options[CHROME_PREFERENCES_SYNC_ID] = {
-			"hidden": true,
-			"prefLevel": "experimented",
-			"sync": false,
-			"type": "string",
-			"value": ""
-		};
-
-
-		let mapOptions = new Map();
-		for(let i in options){
-			if(options.hasOwnProperty(i)){
-				mapOptions.set(i, options[i]);
+		let loadPromise = async () => {
+			if (options instanceof Promise) {
+				options = await options;
 			}
-		}
 
-		Object.defineProperty(this, "CHROME_PREFERENCES_UPDATED_ID", {
-			value: CHROME_PREFERENCES_UPDATED_ID,
-			configurable: false,
-			writable: false
-		});
+			options[CHROME_PREFERENCES_UPDATED_ID] = {
+				"hidden": true,
+				"prefLevel": "experimented",
+				"sync": true,
+				"type": "string",
+				"value": ""
+			};
+			options[CHROME_PREFERENCES_SYNC_ID] = {
+				"hidden": true,
+				"prefLevel": "experimented",
+				"sync": false,
+				"type": "string",
+				"value": ""
+			};
 
-		Object.defineProperty(this, "options", {
-			value: mapOptions,
-			writable: false
-		});
 
-		let defaultSettings = new Map();
-		let defaultSettingsSync = new Map();
-		for (let id in options) {
-			if (options.hasOwnProperty(id)) {
-				let option = options[id];
-				if (typeof option.value !== "undefined") {
-					defaultSettings.set(id, option.value);
+			let mapOptions = new Map();
+			for (let i in options) {
+				if (options.hasOwnProperty(i)) {
+					mapOptions.set(i, options[i]);
+				}
+			}
 
-					if (!(typeof option.sync === "boolean" && option.sync === false)) {
-						defaultSettingsSync.set(id, option.value);
+			Object.defineProperty(this, "CHROME_PREFERENCES_UPDATED_ID", {
+				value: CHROME_PREFERENCES_UPDATED_ID,
+				configurable: false,
+				writable: false
+			});
+
+			Object.defineProperty(this, "options", {
+				value: mapOptions,
+				writable: false
+			});
+
+			let defaultSettings = new Map();
+			let defaultSettingsSync = new Map();
+			for (let id in options) {
+				if (options.hasOwnProperty(id)) {
+					let option = options[id];
+					if (typeof option.value !== "undefined") {
+						defaultSettings.set(id, option.value);
+
+						if (!(typeof option.sync === "boolean" && option.sync === false)) {
+							defaultSettingsSync.set(id, option.value);
+						}
 					}
 				}
 			}
-		}
-		Object.defineProperty(this, "defaultSettings", {
-			value: defaultSettings,
-			writable: false
-		});
-		Object.defineProperty(this, "defaultSettingsSync", {
-			value: defaultSettingsSync,
-			writable: false
-		});
+			Object.defineProperty(this, "defaultSettings", {
+				value: defaultSettings,
+				writable: false
+			});
+			Object.defineProperty(this, "defaultSettingsSync", {
+				value: defaultSettingsSync,
+				writable: false
+			});
 
-		let loadPromise = async () => {
 			let currentLocalStorage = null, err = "";
 			try {
 				currentLocalStorage = await browser.storage.local.get(null)

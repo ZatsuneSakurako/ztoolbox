@@ -1,7 +1,6 @@
 'use strict';
 
 import { ZDK } from "../classes/ZDK.js";
-import {i18ex} from '../options-api.js';
 
 const ALARM_NAME = 'REFRESH_DATA';
 

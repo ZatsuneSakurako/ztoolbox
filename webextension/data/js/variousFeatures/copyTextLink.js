@@ -1,7 +1,6 @@
 'use strict';
 
 import {default as env} from '../env.js';
-import {i18ex} from '../options-api.js';
 import {copyToClipboard} from '../copyToClipboard.js';
 
 

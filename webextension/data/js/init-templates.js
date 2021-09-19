@@ -3,10 +3,6 @@ templatesSource.set('backgroundTheme', '/data/template/backgroundTheme.mst');
 templatesSource.set('panelCheckedDataItem', '/data/template/panel/checkedDataItem.mst');
 templatesSource.set('tabMover', '/data/template/panel/tabMover.mst');
 
-if (window.moment) {
-	window.moment.locale(browser.i18n.getMessage('language'));
-}
-
 
 export async function getMustache() {
 	if (!window.Mustache) {

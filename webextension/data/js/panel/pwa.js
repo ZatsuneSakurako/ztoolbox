@@ -1,5 +1,6 @@
 import {ZDK} from '../classes/ZDK.js';
 import {triggerOnCurrentTab, onTabChange} from './browserTabUtils.js';
+import {throttle} from "../lib/throttle.js";
 
 async function onPwaClick() {
 	const {result} = await triggerOnCurrentTab('ztoolbox_trigger-pwa').catch(console.error);
@@ -70,13 +71,11 @@ async function updatePwaButton() {
 	};
 }
 
-const _onTabChange = _.debounce(() => {
+const _onTabChange = throttle(() => {
 	updatePwaButton()
 		.catch(err => {
 			console.error(err);
 		})
 	;
-}, 100, {
-	maxWait: 200
-});
+}, 100);
 onTabChange(_onTabChange);

@@ -1,5 +1,4 @@
 'use strict';
-import {i18ex} from '../options-api.js'
 
 const HOURLY_ALARM_NAME = 'hourlyAlarm';
 export class HourlyAlarm {
@@ -16,9 +15,10 @@ export class HourlyAlarm {
 			return
 		}
 
+
 		const msg = i18ex._('timeIsNow', {
-			//currentTime: new Date(alarm.scheduledTime).toLocaleTimeString()
-			currentTime: moment().format(i18ex._('displayTimeFormat'))
+			// currentTime: new Date(alarm.scheduledTime).toLocaleTimeString()
+			currentTime: new Intl.DateTimeFormat(i18ex._('language'), { timeStyle: 'short' }).format(new Date(alarm.scheduledTime))
 		});
 
 		if (!localStorage.getItem('notificationGloballyDisabled')) {
@@ -30,8 +30,13 @@ export class HourlyAlarm {
 			});
 
 			if (getPreference('notify_vocal')) {
+				const timeStr = new Intl.DateTimeFormat(i18ex._('language'), { hour: 'numeric' }).format(new Date());
+				if (i18ex._('language') === 'fr') {
+					timeStr.replace(/\s*h$/i, ' heure')
+				}
+
 				voiceReadMessage(i18ex._('language'), i18ex._('timeIsNow', {
-					currentTime: moment().format(i18ex._('spokenTimeFormat'))
+					currentTime: timeStr
 				}));
 			}
 		}
@@ -58,8 +63,13 @@ export class HourlyAlarm {
 			}
 		}
 
+		const date = new Date();
+		date.setHours(date.getHours() + 1);
+		date.setMinutes(0);
+		date.setSeconds(0);
+		date.setMilliseconds(0);
 		browser.alarms.create(HOURLY_ALARM_NAME, {
-			'when': moment().startOf('hour').add(1, 'h').valueOf(), // moment#valueOf is just like Date#valueOf (which is Like Date#getTime)
+			'when': date.valueOf(),
 			'periodInMinutes': 60
 		});
 	}

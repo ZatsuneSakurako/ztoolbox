@@ -78,21 +78,6 @@ async function init() {
 		await _cp("./node_modules/webextension-polyfill/dist/browser-polyfill.js", jsLib);
 		await _cp("./node_modules/webextension-polyfill/dist/browser-polyfill.js.map", jsLib);
 
-		echo("Copying/Building Lodash Debounce - Custom Build..."); // https://lodash.com/custom-builds
-		let stdout = null;
-		try {
-			stdout = await exec(`cd ${jsLib} && lodash exports=global include=debounce,difference --production --source-map`);
-		} catch(err){
-			if(err){
-				error(err);
-				process.exit(1);
-			}
-		}
-
-		if(stdout!==null){
-			info(stdout);
-		}
-
 		echo("Copying i18next...");
 		await _cp("./node_modules/i18next/i18next.js", jsLib);
 
@@ -108,10 +93,6 @@ async function init() {
 		cp ./tmp/Tooltip-master/js/Tooltip.js $jsLib
 		rm -R tmp
 		*/
-
-		echo("Copying Moment.js...");
-		await _cp("./node_modules/moment/moment.js", jsLib);
-		await _cp("./node_modules/moment/locale/fr.js", path.join(jsLib, "./moment-locale-fr.js"));
 	}
 }
 init();

@@ -2,9 +2,8 @@
 
 
 import {default as env} from './env.js';
-import {getPreference, i18ex, savePreference} from './options-api.js';
+import {getPreference, savePreference} from './options-api.js';
 import {ChromeNotificationController} from './classes/chrome-notification-controller.js';
-import {ChromeUpdateNotification} from './classes/chromeUpdateNotification.js';
 import {HourlyAlarm} from "./variousFeatures/hourly-alarm.js";
 
 window.getPreference = getPreference;
@@ -339,11 +338,14 @@ async function onCheckUpdatesInterval() {
 		return;
 	}
 
-	const lastCheck = moment(localStorage.getItem('checkUpdate'));
-	if (lastCheck.isValid() === true && moment.duration(moment().diff(lastCheck)).as('hours') < 6) {
+	const lastCheck = new Date(localStorage.getItem('checkUpdate')),
+		durationMinutes = (new Date() - lastCheck) / 60000 // date2 - date1 make milliseconds
+	;
+	if (!isNaN(durationMinutes) && durationMinutes < 6 * 60) {
 		return;
 	}
 
+	const {ChromeUpdateNotification} = await import('./classes/chromeUpdateNotification.js');
 	const hasUpdate = await ChromeUpdateNotification.checkHasUpdate();
 	localStorage.setItem('checkUpdate_state', !!hasUpdate? '1' : '');
 	localStorage.setItem('checkUpdate', (new Date()).toISOString());

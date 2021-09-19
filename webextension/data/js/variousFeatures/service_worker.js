@@ -2,6 +2,8 @@
  *
  * @return {boolean}
  */
+import {throttle} from "../lib/throttle.js";
+
 function enableFeature() {
 	const whitelist = getPreference('serviceWorkerWhitelist');
 	if (typeof whitelist !== 'object' || whitelist === null) {
@@ -38,7 +40,7 @@ async function updateRegistration() {
  *
  * @type {DebouncedFunc<function(): void>}
  */
-const debounced = _.debounce(function () {
+const debounced = throttle(function () {
 	updateRegistration()
 		.catch(console.error)
 	;
