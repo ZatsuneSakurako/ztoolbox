@@ -7,7 +7,7 @@ export function load() {
 	}
 
 	const node = document.createElement('iframe');
-	node.src = "https://freshrss.zatsunenomokou.eu/i/?a=normal&state=3&znmCustomView=1"
+	node.src = getPreference('freshRss_baseUrl') + "?a=normal&state=3&znmCustomView=1"
 	node.loading = 'lazy';
 	$freshRssContent.append(node);
 }
