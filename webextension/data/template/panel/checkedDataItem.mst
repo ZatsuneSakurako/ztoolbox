@@ -1,6 +1,7 @@
-<article class="websiteItem refreshItem cursor"
-         data-logged="{{logged}}" data-website="{{website}}"
-         style="background-image: url('{{websiteIcon}}')">
+<a class="websiteItem refreshItem cursor"
+   href="{{{href}}}" target="_blank"
+   data-logged="{{logged}}" data-website="{{website}}"
+   style="background-image: url('{{websiteIcon}}')">
 
 	<div class="websiteTitle" data-website="{{website}}" data-count="{{count}}"></div>
 
@@ -20,4 +21,4 @@
 			<span class="folder" data-translate-id="not_logged"></span>
 		{{/logged}}
 	</div>
-</article>
+</a>

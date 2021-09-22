@@ -78,6 +78,7 @@ window.onload = function () {
 			'../panel/pwa.js',
 			'../panel/service-worker.js',
 			'../panel/freshrss.js',
+			'../variousFeatures/website-data.js',
 			'../panel/panel.js'
 		];
 

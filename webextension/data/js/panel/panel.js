@@ -3,7 +3,7 @@ import {loadTranslations} from '../options-api.js';
 import {renderTemplate} from '../init-templates.js';
 import {copyToClipboard} from '../copyToClipboard.js';
 import {theme_cache_update} from '../backgroundTheme.js';
-
+import {WebsiteData} from "../variousFeatures/website-data.js";
 
 
 
@@ -28,9 +28,7 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
 			websitesData = new Map(
 				message.data.websitesData
 					.map(data => {
-						if (data[1] && data[1].folders) {
-							data[1].folders = new Map(data[1].folders)
-						}
+						data[1] = WebsiteData.fromJSON(data[1]);
 						return data;
 					})
 			);
@@ -170,7 +168,8 @@ async function updatePanelData() {
 			"count": websiteData.count,
 			"website": website,
 			"websiteIcon": websiteData.websiteIcon,
-			"folders": []
+			"folders": [],
+			"href": websiteData.href
 		};
 
 		if (websiteData.logged) {
@@ -209,24 +208,6 @@ document.addEventListener('click', e => {
 	ZDK.openTabIfNotExist(node.dataset.folderUrl)
 		.catch(console.error)
 	;
-	return false;
-});
-
-document.addEventListener('click', e => {
-	const node = e.target.closest('#panelContent .websiteItem');
-	if (!node) return;
-
-	e.stopPropagation();
-
-	browser.runtime.sendMessage({
-		id: 'refreshData-openWebsite',
-		data: {
-			website: node.dataset.website
-		}
-	})
-		.catch(console.error)
-	;
-
 	return false;
 });
 

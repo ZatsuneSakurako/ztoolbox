@@ -1,4 +1,4 @@
-export const freshRss = {
+const freshRss = {
 	get dataURL() {
 		return `${getPreference('freshRss_baseUrl')}?a=normal&state=3`;
 	},
@@ -67,3 +67,5 @@ export const freshRss = {
 		return output;
 	}
 };
+
+export default freshRss;

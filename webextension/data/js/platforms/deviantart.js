@@ -1,4 +1,4 @@
-export const deviantArt = {
+const deviantArt = {
 	dataURL:"http://www.deviantart.com/notifications/",
 	getViewURL: function(websiteState) {
 		if (websiteState.count > 0) {
@@ -148,3 +148,5 @@ export const deviantArt = {
 		return output;
 	}
 };
+
+export default deviantArt;

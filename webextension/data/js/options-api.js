@@ -5,7 +5,7 @@ import { i18extended } from './classes/i18extended.js';
 
 const optionPromise = (async function () {
 	return (await import('./options-data.js')).options
-})()
+})();
 
 const chromeSettings = new ChromePreferences(optionPromise),
 	loadingPromise = (async () => {

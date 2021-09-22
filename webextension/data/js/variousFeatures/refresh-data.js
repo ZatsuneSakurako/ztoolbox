@@ -1,14 +1,13 @@
 'use strict';
 
-import { ZDK } from "../classes/ZDK.js";
+import {ZDK} from "../classes/ZDK.js";
 
 const ALARM_NAME = 'REFRESH_DATA';
 
 
 
-function doNotifyWebsite(website) {
-	let websiteAPI = websites.get(website),
-		websiteData = websitesData.get(website),
+function doNotifyWebsite(website, websiteAPI) {
+	let websiteData = websitesData.get(website),
 		foldersList = ''
 	;
 
@@ -86,27 +85,6 @@ function doNotifyWebsite(website) {
 }
 
 
-class websiteDefaultData {
-	constructor() {
-		return {
-			notificationState: {
-				count: null,
-				/**
-				 * Undefined to know when we're checking the first time
-				 * @type {?boolean}
-				 */
-				logged: undefined
-			},
-			count: 0,
-			folders: new Map(),
-			websiteIcon: '',
-			logged: null,
-			loginId: ''
-		};
-	}
-}
-
-
 let isRefreshingData = false;
 export async function refreshWebsitesData() {
 	if (isRefreshingData === true) {
@@ -116,15 +94,31 @@ export async function refreshWebsitesData() {
 
 	isRefreshingData = true;
 
+
+	const websites = new Map();
+	websites.set(
+		'deviantArt',
+		(await import('../platforms/deviantart.js')).default
+	);
+	websites.set(
+		'freshRss',
+		(await import('../platforms/freshrss.js')).default
+	);
+
 	console.debug('Refreshing websites data...');
 	const promises = [];
-	for (let website of websites.keys()) {
-		const promise = refreshWebsite(website);
+	for (let [website, websiteAPI] of websites) {
+		if (!websitesData.has(website)) {
+			const {WebsiteData} = await import("./website-data.js");
+			websitesData.set(website, new WebsiteData());
+		}
+
+		const promise = refreshWebsite(website, websiteAPI);
 		promises.push(promise);
 		promise
 			.then(() => {
 				if (!localStorage.getItem('notificationGloballyDisabled')) {
-					doNotifyWebsite(website);
+					doNotifyWebsite(website, websiteAPI);
 				}
 			})
 			.catch((data) => {
@@ -203,9 +197,7 @@ async function sendDataToPanel() {
 			notificationGloballyDisabled: !!localStorage.getItem('notificationGloballyDisabled'),
 			websitesData: [...websitesData.entries()]
 				.map(data => {
-					if (data[1] && data[1].folders) {
-						data[1].folders = [...data[1].folders];
-					}
+					data[1] = data[1].toJSON();
 					return data;
 				})
 		}
@@ -225,6 +217,16 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
 		switch (message.id) {
 			case 'panel_onload':
 				if (isFromPanel) {
+					if (websitesData.size === 0) {
+						refreshWebsitesData()
+							.finally(() => {
+								sendDataToPanel()
+									.catch(console.error)
+								;
+							})
+						;
+					}
+
 					sendDataToPanel()
 						.catch(console.error)
 					;
@@ -253,21 +255,6 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
 					})
 				;
 				return true;
-			case 'refreshData-openWebsite':
-				let website = message.data.website,
-					websiteAPI = websites.get(website),
-					websiteData = websitesData.get(website),
-
-					href = websiteAPI[(websiteData.logged) ? "getViewURL" : "getLoginURL"](websiteData)
-				;
-
-				websiteData.logged
-				if (href !== undefined) {
-					ZDK.openTabIfNotExist(href)
-						.catch(console.error)
-					;
-				}
-				break;
 		}
 	}
 });
@@ -281,15 +268,15 @@ browser.alarms.onAlarm.addListener(function (alarm) {
 });
 
 
-async function refreshWebsite(website) {
+async function refreshWebsite(website, websiteAPI) {
 	let data = null, request = null;
 
-	if (typeof websites.get(website).getData !== 'function') {
-		throw new Error('Expected getData to be a funtion');
+	if (!websiteAPI || typeof websiteAPI.getData !== 'function') {
+		throw new Error('Expected getData to be a function');
 	}
 
 	try {
-		const result = await websites.get(website).getData();
+		const result = await websiteAPI.getData();
 		data = result.data;
 		request = result.response;
 	} catch (e) {
@@ -307,6 +294,7 @@ async function refreshWebsite(website) {
 		if (data.has("folders")) {
 			websiteData.folders = data.get("folders");
 		}
+		websiteData.href = websiteAPI[(websiteData.logged) ? "getViewURL" : "getLoginURL"](websiteData)
 		return request;
 	} else {
 		console.warn(`Error retrieving page for "${website}"`);
@@ -317,18 +305,8 @@ async function refreshWebsite(website) {
 }
 
 
-let websites = new Map(),
-	websitesData = new Map()
-;
+let websitesData = new Map();
+window.websitesData = websitesData
 window.baseRequiredPromise.then(async function () {
-	const {deviantArt} = await import('../platforms/deviantart.js');
-	const {freshRss} = await import('../platforms/freshrss.js');
-	websites.set('deviantArt', deviantArt);
-	websites.set('freshRss', freshRss);
-
-	websites.forEach((websiteAPI, website) => {
-		websitesData.set(website, new websiteDefaultData());
-	});
-
 	refreshWebsitesData();
 });
