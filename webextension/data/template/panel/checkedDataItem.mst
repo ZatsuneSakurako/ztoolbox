@@ -1,5 +1,5 @@
 <a class="websiteItem refreshItem cursor"
-   href="{{{href}}}" target="_blank"
+   {{#href}}href="{{{href}}}" target="_blank" {{/href}}{{^href}}href="#"{{/href}}
    data-logged="{{logged}}" data-website="{{website}}"
    style="background-image: url('{{websiteIcon}}')">
 

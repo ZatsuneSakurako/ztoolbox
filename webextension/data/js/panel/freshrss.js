@@ -1,3 +1,4 @@
+let freshRssCount = 0;
 export function load() {
 	const $freshRssContent = document.querySelector('#freshRssContent');
 	if (!$freshRssContent) return;
@@ -7,10 +8,22 @@ export function load() {
 	}
 
 	const node = document.createElement('iframe');
-	node.src = getPreference('freshRss_baseUrl') + "?a=normal&state=3&znmCustomView=1"
+	const params = new URLSearchParams({
+		a: 'normal',
+		state: freshRssCount === 0 ? 1 : 2,
+		znmCustomView: 1
+	})
+	node.src = getPreference('freshRss_baseUrl') + "?" + params.toString()
 	node.loading = 'lazy';
 	$freshRssContent.append(node);
 }
+
+document.addEventListener('freshRssDataUpdate', function (e) {
+	const freshRssData = e.detail;
+	if (freshRssData && freshRssData.count !== undefined) {
+		freshRssCount = freshRssData.count;
+	}
+})
 
 
 
@@ -33,8 +46,7 @@ document.addEventListener('click', function (e) {
 	const target = e.target.closest('[data-website="freshRss"]');
 	if (!target) return;
 
-	e.stopPropagation();
-	e.stopImmediatePropagation();
+	e.preventDefault();
 	setTimeout(() => {
 		document.querySelector('#freshRssContentRadio').click()
 	})

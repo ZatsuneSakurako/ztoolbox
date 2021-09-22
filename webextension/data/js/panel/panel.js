@@ -32,6 +32,9 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
 						return data;
 					})
 			);
+			document.dispatchEvent(new CustomEvent('freshRssDataUpdate', {
+				detail: websitesData.get('freshRss')
+			}));
 			updatePanelData()
 				.catch(console.error)
 			;
