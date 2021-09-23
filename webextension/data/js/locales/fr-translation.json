@@ -32,7 +32,7 @@
 	"freshRss_baseUrl_title": "URL de votre instance FreshRss (devrait finir par un /i/)",
 	"freshRss_baseUrl_description": "Rafraîchissement de donnée quand URL fournie",
 
-	"notify_checkedData_title": "Affiche une notification pour deviantArt",
+	"notify_checkedData_title": "Affiche une notification pour deviantArt/freshRss",
 	"notify_checkedData_description": "Notification quand cochée",
 
 	"notify_all_viewed_title": "Affiche une notification quand tout est vu pour un/des site(s)",
@@ -47,7 +47,7 @@
 
 	"open_optionpage": "Ouvrir la page d'option",
 
-	"check_delay_title": "Délais de vérification de deviantArt",
+	"check_delay_title": "Délais de vérification de deviantArt/freshRss",
 	"check_delay_description": "Délai entre chaque vérification, en minute",
 
 	"timeout_delay_title": "Délai de timeout des requêtes",

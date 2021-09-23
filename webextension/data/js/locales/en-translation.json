@@ -32,7 +32,7 @@
 	"freshRss_baseUrl_title": "URL of your FreshRss instance (should end with /i/)",
 	"freshRss_baseUrl_description": "Data refresh with url provided",
 
-	"notify_checkedData_title": "Show a notification for deviantArt",
+	"notify_checkedData_title": "Show a notification for deviantArt/freshRss",
 	"notify_checkedData_description": "Notification when checked",
 
 	"notify_all_viewed_title": "Show a notification when all view in website(s)",
@@ -47,7 +47,7 @@
 
 	"open_optionpage": "Open option page",
 
-	"check_delay_title": "deviantArt verification delay",
+	"check_delay_title": "deviantArt/freshRss verification delay",
 	"check_delay_description": "Delay between verifications, in minute",
 
 	"launchpadAddLink_title": "Add link to go Launchpad PPA page from an index page",
