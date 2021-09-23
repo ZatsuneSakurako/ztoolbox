@@ -100,10 +100,14 @@ export async function refreshWebsitesData() {
 		'deviantArt',
 		(await import('../platforms/deviantart.js')).default
 	);
-	websites.set(
-		'freshRss',
-		(await import('../platforms/freshrss.js')).default
-	);
+	if (!!getPreference('freshRss_baseUrl')) {
+		websites.set(
+			'freshRss',
+			(await import('../platforms/freshrss.js')).default
+		);
+	} else if (websitesData.has('freshRss')) {
+		websitesData.delete('freshRss');
+	}
 
 	console.debug('Refreshing websites data...');
 	const promises = [];

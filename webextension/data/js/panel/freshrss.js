@@ -12,7 +12,7 @@ export function load() {
 		a: 'normal',
 		state: freshRssCount === 0 ? 1 : 2,
 		znmCustomView: 1
-	})
+	});
 	node.src = getPreference('freshRss_baseUrl') + "?" + params.toString()
 	node.loading = 'lazy';
 	$freshRssContent.append(node);
