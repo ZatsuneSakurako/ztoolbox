@@ -83,16 +83,6 @@ async function init() {
 
 		echo("Copying i18next-xhr-backend...");
 		await _cp("./node_modules/i18next-xhr-backend/i18nextXHRBackend.js", jsLib);
-
-		/*
-		echo("Downloading Tooltip...");
-		curl -L -# -o master.zip https://github.com/matthias-schuetz/Tooltip/archive/master.zip
-		echo("Copying Tooltip...");
-		mkdir tmp && unzip -qq master.zip -d tmp && rm master.zip
-		cp ./tmp/Tooltip-master/css/tooltip.css $cssLib
-		cp ./tmp/Tooltip-master/js/Tooltip.js $jsLib
-		rm -R tmp
-		*/
 	}
 }
 init();
