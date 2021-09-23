@@ -24,7 +24,13 @@ function getVoiceLanguage(langCode){
 		}
 	})
 }
-function voiceReadMessage(langCode, message){
+
+/**
+ *
+ * @param {string} langCode
+ * @param {string} message
+ */
+export function voiceReadMessage(langCode, message){
 	let voiceReady = function(data){
 		if(data.constructor.name === "SpeechSynthesisVoice"){
 			let msg = new SpeechSynthesisUtterance();

@@ -62,7 +62,12 @@ function doNotifyWebsite(website, websiteAPI) {
 		}
 
 		if (getPreference('notify_vocal')) {
-			voiceReadMessage(i18ex._('language'), i18ex._('count_new_notif', {'count': websiteData.count}));
+			import('../voiceAPI.js')
+				.then(({voiceReadMessage}) => {
+					voiceReadMessage(i18ex._('language'), i18ex._('count_new_notif', {'count': websiteData.count}));
+				})
+				.catch(console.error)
+			;
 		}
 
 	} else if (getPreference('notify_all_viewed') && (typeof websiteData.count === 'number' && websiteData.count === 0) && (typeof websiteData.notificationState.count === 'number' && websiteData.notificationState.count > 0)) {

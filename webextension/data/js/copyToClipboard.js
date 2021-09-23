@@ -3,7 +3,7 @@
  * @param {string} string
  * @return {Promise<boolean>}
  */
-async function copyToClipboard(string) {
+export async function copyToClipboard(string) {
 	try {
 		await navigator.clipboard.writeText(string);
 		return true;
@@ -11,8 +11,4 @@ async function copyToClipboard(string) {
 		console.error(e);
 		return false;
 	}
-}
-
-export {
-	copyToClipboard
 }

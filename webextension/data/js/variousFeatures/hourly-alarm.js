@@ -35,9 +35,14 @@ export class HourlyAlarm {
 					timeStr.replace(/\s*h$/i, ' heure')
 				}
 
-				voiceReadMessage(i18ex._('language'), i18ex._('timeIsNow', {
-					currentTime: timeStr
-				}));
+				import('../voiceAPI.js')
+					.then(({voiceReadMessage}) => {
+						voiceReadMessage(i18ex._('language'), i18ex._('timeIsNow', {
+							currentTime: timeStr
+						}));
+					})
+					.catch(console.error)
+				;
 			}
 		}
 	}

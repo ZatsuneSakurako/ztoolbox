@@ -67,9 +67,8 @@ window.onload = function () {
 	(async () => {
 		await baseInitPromise;
 
-		let jsFiles = [
+		const jsFiles = [
 			'../lib/throttle.js',
-			'../copyToClipboard.js',
 			'../panel/browserTabUtils.js',
 			'../panel/tabMover.js',
 			'../panel/pwa.js',
@@ -78,7 +77,6 @@ window.onload = function () {
 			'../panel/freshrss.js',
 			'../panel/panel.js'
 		];
-
 
 		for (let src of jsFiles) {
 			await import(src);

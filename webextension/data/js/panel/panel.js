@@ -1,7 +1,6 @@
 import {ZDK} from '../classes/ZDK.js';
 import {loadTranslations} from '../options-api.js';
 import {renderTemplate} from '../init-templates.js';
-import {copyToClipboard} from '../copyToClipboard.js';
 import {theme_cache_update} from '../backgroundTheme.js';
 import {WebsiteData} from "../variousFeatures/website-data.js";
 
@@ -102,6 +101,7 @@ document.addEventListener('click', e => {
 			const [tab] = tabs;
 			let clipboardResult = false;
 			if (tab && tab.title) {
+				const {copyToClipboard} = await import('../copyToClipboard.js');
 				clipboardResult = await copyToClipboard(tab.title);
 			}
 

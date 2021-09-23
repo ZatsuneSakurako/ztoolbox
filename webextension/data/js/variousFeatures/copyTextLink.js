@@ -1,7 +1,7 @@
 'use strict';
 
 import {default as env} from '../env.js';
-import {copyToClipboard} from '../copyToClipboard.js';
+
 
 
 window.baseRequiredPromise.then(() => {
