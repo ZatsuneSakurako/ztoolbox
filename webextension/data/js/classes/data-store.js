@@ -49,8 +49,8 @@ export class DataStore {
 
 	/**
 	 *
-	 * @param {String} key
-	 * @param {String} id
+	 * @param {string} key
+	 * @param {string} id
 	 * @param {*} data
 	 */
 	compressData(key, id, data) {
@@ -87,8 +87,8 @@ export class DataStore {
 
 	/**
 	 *
-	 * @param {String} key
-	 * @param {String} id
+	 * @param {string} key
+	 * @param {string} id
 	 * @param {*} data
 	 */
 	decompressData(key, id, data) {
@@ -492,9 +492,9 @@ export class DataStore {
 
 	/**
 	 *
-	 * @param {String|String[]} keys
+	 * @param {string|string[]} keys
 	 * @param {Function} fn Return true to break loop
-	 * @param {Boolean=true} withData
+	 * @param {boolean=true} withData
 	 */
 	forEach(keys, fn, withData = true) {
 		for (let i in this.storage) {

@@ -90,6 +90,68 @@ function doNotifyWebsite(website, websiteAPI) {
 }
 
 
+/**
+ * @type {DataStore|undefined}
+ */
+let websitesDataStore;
+/**
+ *
+ * @return {Promise<DataStore>}
+ */
+async function getWebsiteDataStore() {
+	if (!!websitesDataStore) {
+		return websitesDataStore;
+	}
+
+	const {WebsiteData} = await import("./website-data.js"),
+		{DataStore} = await import('../classes/data-store.js'),
+		_websitesDataStore = new DataStore()
+	;
+	_websitesDataStore.setCompression('websiteData', function (key, id, data) {
+		data = data.toJSON();
+
+		if (data.count === 0) delete data.count;
+		if (data.folders.length === 0) delete data.folders;
+		if (!data.logged) delete data.logged;
+		if (!data.loginId) delete data.loginId;
+		if (!data.href) delete data.href;
+		if (!data.websiteIcon) delete data.websiteIcon;
+
+		if (data.notificationState) {
+			for (let [name, value] of Object.entries(data.notificationState)) {
+				if (!value) {
+					delete data.notificationState[name]
+				}
+			}
+			if ([...Object.values(data.notificationState)].length === 0) {
+				delete data.notificationState;
+			}
+		}
+
+		return data;
+	}, function (key, id, data) {
+		return WebsiteData.fromJSON(data);
+	});
+	websitesDataStore = _websitesDataStore;
+
+	return websitesDataStore;
+}
+async function loadStoredWebsitesData() {
+	if (websitesData.size === 0) {
+		const websitesDataStore = await getWebsiteDataStore(),
+			tmpWebsitesData = new Map()
+		;
+		websitesDataStore.forEach('websiteData', function (key, website, websiteData) {
+			tmpWebsitesData.set(website, websiteData);
+		});
+		websitesData.set('deviantArt', tmpWebsitesData.get('deviantArt'));
+		websitesData.set('freshRss', tmpWebsitesData.get('freshRss'));
+	}
+	return websitesData;
+}
+
+
+
 let isRefreshingData = false;
 export async function refreshWebsitesData() {
 	if (isRefreshingData === true) {
@@ -98,6 +160,11 @@ export async function refreshWebsitesData() {
 	}
 
 	isRefreshingData = true;
+
+
+	if (websitesData.size === 0) {
+		websitesData = await loadStoredWebsitesData();
+	}
 
 
 	const websites = new Map();
@@ -113,6 +180,8 @@ export async function refreshWebsitesData() {
 	} else if (websitesData.has('freshRss')) {
 		websitesData.delete('freshRss');
 	}
+
+
 
 	console.debug('Refreshing websites data...');
 	const promises = [];
@@ -178,6 +247,13 @@ export async function refreshWebsitesData() {
 		console.groupEnd();
 	}
 
+
+	const websitesDataStore = await getWebsiteDataStore();
+	for (let [website, data] of websitesData) {
+		websitesDataStore.set('websiteData', website, data);
+	}
+
+
 	if (typeof browser.browserAction.setBadgeText === 'function') {
 		let displayedCount;
 		if (count === null) {
@@ -227,7 +303,7 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
 			case 'panel_onload':
 				if (isFromPanel) {
 					if (websitesData.size === 0) {
-						refreshWebsitesData()
+						loadStoredWebsitesData()
 							.finally(() => {
 								sendDataToPanel()
 									.catch(console.error)

@@ -23,13 +23,13 @@ export class WebsiteData {
 	 */
 	static fromJSON(data) {
 		const newInstance = new WebsiteData();
-		newInstance.notificationState = data.notificationState;
-		newInstance.count = data.count;
-		newInstance.folders = new Map(data.folders);
-		newInstance.websiteIcon = data.websiteIcon;
-		newInstance.logged = data.logged;
-		newInstance.loginId = data.loginId;
-		newInstance.href = data.href;
+		newInstance.notificationState = data.notificationState ?? {};
+		newInstance.count = data.count ?? 0;
+		newInstance.folders = new Map(data.folders ?? []);
+		newInstance.websiteIcon = data.websiteIcon ?? '';
+		newInstance.logged = data.logged ?? false;
+		newInstance.loginId = data.loginId ?? '';
+		newInstance.href = data.href ?? '';
 		return newInstance;
 	}
 
