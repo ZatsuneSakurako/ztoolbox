@@ -4,10 +4,7 @@ const applyPanelSize = () => {
 	const html = document.querySelector('html'),
 		body = document.querySelector('body');
 	html.style.height = getPreference('panel_height');
-
-	const panelWidth = getPreference('panel_width');
-	body.style.width = panelWidth;
-	document.documentElement.style.setProperty('--opentip-maxwidth', `${((panelWidth/2<300)? (panelWidth/2) : panelWidth)}px`);
+	body.style.width = getPreference('panel_width');
 };
 
 import('../browserDetect.js')

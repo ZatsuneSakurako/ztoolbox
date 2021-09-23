@@ -1,7 +1,7 @@
 'use strict';
 
-import { ChromePreferences } from './classes/chrome-preferences.js';
-import { i18extended } from './classes/i18extended.js';
+import {ChromePreferences} from './classes/chrome-preferences.js';
+import {i18extended} from './classes/i18extended.js';
 
 const optionPromise = (async function () {
 	return (await import('./options-data.js')).options
@@ -29,56 +29,14 @@ function translateNodes() {
 	}
 }
 
-if (typeof Opentip !== "undefined") {
-	Opentip.styles.myDark = {
-		// Make it look like the alert style. If you omit this, it will default to "standard"
-		extends: "dark",
-		background: "#212121",
-		borderColor: "#212121"
-	};
-	Opentip.defaultStyle = "myDark"; // The default is "standard"
-}
-
-/**
- *
- * @type {Map<string, Opentip>}
- */
-const openTipObjets =  new Map();
 function translateNodes_title() {
 	for (let node of document.querySelectorAll("[data-translate-title]")) {
 		if (typeof node.tagName === "string") {
-			const titleText =  i18ex._(node.dataset.translateTitle);
-
-			let myOpentip = !!node.id? openTipObjets.get(node.id) : undefined;
-			let error = false;
-			if (!!myOpentip) {
-				myOpentip.setContent(titleText);
-				if (titleText.length === 0) {
-					myOpentip.deactivate();
-				} else {
-					myOpentip.activate();
-				}
-			} else if (titleText.length > 0) {
-				try {
-					const Ot = Opentip;
-					if (node.dataset.tooltipPosition) {
-						myOpentip = new Ot(node, titleText, "", {
-							"tipJoint": node.dataset.tooltipPosition
-						})
-					} else {
-						myOpentip = new Ot(node, titleText)
-					}
-				} catch (err) {
-					console.warn(err);
-					error = true;
-				}
-			}
-
-			if (error === false) {
-				!!node.id && openTipObjets.set(node.id, myOpentip);
-				delete node.dataset.translateTitle;
-				node.removeAttribute("title");
-			}
+			node.setAttribute(
+				'title',
+				i18ex._(node.dataset.translateTitle)
+			);
+			delete node.dataset.translateTitle;
 		}
 	}
 }

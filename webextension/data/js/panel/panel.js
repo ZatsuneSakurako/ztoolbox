@@ -158,9 +158,7 @@ async function updatePanelData() {
 
 	let disableNotificationsButton = document.querySelector('#disableNotifications');
 	disableNotificationsButton.classList.toggle('off', notificationGloballyDisabled);
-	if (disableNotificationsButton.dataset.opentipId) {
-		disableNotificationsButton.dataset.translateTitle = notificationGloballyDisabled? 'GloballyDisabledNotifications' : 'GloballyDisableNotifications';
-	}
+	disableNotificationsButton.dataset.translateTitle = notificationGloballyDisabled? 'GloballyDisabledNotifications' : 'GloballyDisableNotifications';
 
 	let websiteDataList_Node = document.querySelector("#panelContent #refreshItem");
 	removeAllChildren(websiteDataList_Node);
