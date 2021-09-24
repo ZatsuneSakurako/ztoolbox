@@ -63,7 +63,6 @@
 		}
 	],
 	"default_locale": "en",
-	"offline_enabled": false,
 	"permissions": [
 		"alarms",
 		"contextMenus",

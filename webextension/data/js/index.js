@@ -1,143 +1,24 @@
 'use strict';
 
-
 import {default as env} from './env.js';
-import {getPreference, savePreference} from './options-api.js';
-import {ChromeNotificationController} from './classes/chrome-notification-controller.js';
+import "./lib/browser-polyfill.js";
+import "./lib/content-scripts-register-polyfill___modified.js";
+
+import {i18ex} from './translation-api.js';
+
+import {getPreference, getPreferences} from './classes/chrome-preferences-2.js';
+import {sendNotification} from './classes/chrome-notification-controller.js';
+import {contextMenusController} from './contextMenusController.js';
+
 import {HourlyAlarm} from "./variousFeatures/hourly-alarm.js";
-
-window.getPreference = getPreference;
-window.savePreference = savePreference;
-window.env = env;
-
-
-
-/*
- * https://developer.mozilla.org/en-US/Add-ons/WebExtensions/API/menus/create
- */
-class ContextMenusController extends Map {
-	constructor(){
-		super();
-	}
-
-	_create(title, targetUrlPatterns, onClick, opts) {
-		/*if(browser.menu!==undefined && browser.menu !== null){
-			// tools_menu is available with it
-			console.info("browser.menu available");
-		}*/
-		if (!(browser.contextMenus !== undefined && browser.contextMenus !== null && typeof browser.contextMenus.create === "function")) {
-			return;
-		}
-
-		let targetUrlPatterns_processed = [];
-		if (Array.isArray(targetUrlPatterns)) {
-			targetUrlPatterns.forEach(url => {
-				if (/https?:\/\/.*/.test(url)) {
-					targetUrlPatterns_processed.push(url);
-				} else {
-					targetUrlPatterns_processed.push('http://' + url);
-					targetUrlPatterns_processed.push('https://' + url);
-				}
-			})
-		} else {
-			throw 'targetUrlPattern must be an array';
-		}
-		const contextData = {
-			'onClick': onClick,
-			'title': title,
-			'targetUrlPatterns': targetUrlPatterns,
-			'targetUrlPatterns_processed': targetUrlPatterns_processed
-		};
+import './variousFeatures/hourly-alarm.js';
+import './variousFeatures/iqdb.js';
+import './variousFeatures/refresh-data.js';
+import './variousFeatures/copyTextLink.js';
+import './variousFeatures/service_worker.js';
 
 
 
-		if (!opts || !opts.contexts || !Array.isArray(opts.contexts)) {
-			throw 'MissingContext';
-		}
-		const contexts = opts.contexts.map(item => item.toUpperCase());
-
-		const srcContexts = [];
-		[
-			'AUDIO',
-			'IMAGE',
-			'VIDEO'
-		].forEach(type => {
-			const index = contexts.indexOf(type);
-			if (browser.contextMenus.ContextType.hasOwnProperty(type) && index !== -1) {
-				srcContexts.push(browser.contextMenus.ContextType[type]);
-				contexts.splice(index, 1);
-			}
-		});
-
-		if (srcContexts.length > 0) {
-			const contextMenuOpts = Object.assign({
-				'enabled': true,
-				'targetUrlPatterns': targetUrlPatterns_processed,
-				'title': title,
-				"id": Math.random().toString().substr(2)
-			}, opts);
-			contextMenuOpts.contexts = srcContexts;
-
-			this.set(browser.contextMenus.create(contextMenuOpts), contextData);
-		}
-
-
-
-		const documentContexts = [];
-		[
-			'PAGE',
-			'TAB'
-		].forEach(type => {
-			const index = contexts.indexOf(type);
-			if (browser.contextMenus.ContextType.hasOwnProperty(type) && index !== -1) {
-				documentContexts.push(browser.contextMenus.ContextType[type]);
-				contexts.splice(index, 1);
-			}
-		});
-
-		if (documentContexts.length > 0) {
-			const contextMenuOpts = Object.assign({
-				"documentUrlPatterns": targetUrlPatterns_processed,
-				"enabled": true,
-				"title": title,
-				"id": Math.random().toString().substr(2)
-			}, opts);
-			contextMenuOpts.contexts = documentContexts;
-
-			this.set(browser.contextMenus.create(contextMenuOpts), contextData);
-		}
-
-
-
-		if (contexts.length > 0) {
-			console.warn(`UnsupportedContexts : ${contexts.join(', ')}`);
-		}
-	}
-
-	create(title, targetUrlPatterns, onClick) {
-		const pageTypeContexts = [];
-		if (browser.contextMenus.ContextType.hasOwnProperty("PAGE")) {
-			pageTypeContexts.push(browser.contextMenus.ContextType.PAGE)
-		}
-		if (browser.contextMenus.ContextType.hasOwnProperty("TAB")) {
-			pageTypeContexts.push(browser.contextMenus.ContextType.TAB)
-		}
-
-		return this._create(title, targetUrlPatterns, onClick, {
-			'contexts': pageTypeContexts
-		});
-	}
-
-	createImage(title, targetUrlPatterns, onClick) {
-		return this._create(title, targetUrlPatterns, onClick, {
-			'contexts': [
-				'image'
-			]
-		});
-	}
-}
-
-const contextMenusController = window.contextMenusController = new ContextMenusController();
 chrome.contextMenus.onClicked.addListener(function (info, tab) {
 	for (let [menuId, data] of contextMenusController) {
 		if (info.menuItemId === menuId) {
@@ -149,7 +30,7 @@ chrome.contextMenus.onClicked.addListener(function (info, tab) {
 		}
 	}
 });
-window.baseRequiredPromise.then(() => {
+i18ex.loadingPromise.then(() => {
 	contextMenusController.create(i18ex._("OpenWithoutPlaylist"), ["*.youtube.com/watch?*&list=*","*.youtube.com/watch?list=*"], function (info, tab) {
 		const removePlaylistFromUrl = url => {
 			const urlObj = new URL(url); // https://developer.mozilla.org/en-US/docs/Web/API/URL - https://developer.mozilla.org/en-US/docs/Web/API/URLSearchParams
@@ -182,14 +63,25 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
 	} else if (typeof message === "object" && message.hasOwnProperty("data")) {
 		switch (message.id) {
 			case "getPreferences":
-				let reply = {};
-				message.data.preferences.forEach(prefId => {
-					reply[prefId] = getPreference(prefId);
-				});
-				sendResponse({
-					"preferences": reply
-				})
-				break;
+				getPreferences(...message.data.preferences)
+					.then(values => {
+						let reply = {};
+						for (let [prefId, value] of values) {
+							reply[prefId] = value;
+						}
+
+						sendResponse({
+							"preferences": reply
+						})
+					})
+					.catch(err => {
+						console.error(err);
+						sendResponse({
+							preferences: {}
+						});
+					})
+				;
+				return true;
 			case 'doNotif':
 				const options = message.data.options;
 				const suffixConfirmIfNoButtons = message.data.suffixConfirmIfNoButtons;
@@ -203,8 +95,9 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
 			case 'hourlyAlarm_update':
 				HourlyAlarm.isEnabledHourlyAlarm()
 					.then(async function (isActivated) {
-						if (typeof isActivated === "boolean" && getPreference("hourlyAlarm") !== isActivated) {
-							if (getPreference("hourlyAlarm") === true) {
+						const preference = await getPreference("hourlyAlarm");
+						if (typeof isActivated === "boolean" && preference !== isActivated) {
+							if (preference === true) {
 								await hourlyAlarm.enableHourlyAlarm();
 							} else {
 								await hourlyAlarm.disableHourlyAlarm();
@@ -213,9 +106,10 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
 					})
 					.catch(async function (err) {
 						console.error(err);
+						const preference = await getPreference("hourlyAlarm");
 						await hourlyAlarm.disableHourlyAlarm();
 
-						if (getPreference("hourlyAlarm")) {
+						if (preference) {
 							await hourlyAlarm.enableHourlyAlarm();
 						}
 					})
@@ -226,16 +120,12 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
 });
 
 /**
- * @type {ChromeNotificationController}
- */
-const chromeNotifications = new ChromeNotificationController();
-/**
  *
  * @param {NotificationOptions} options
  * @param suffixConfirmIfNoButtons
  * @return {Promise<ChromeNotificationControllerObject>}
  */
-window.doNotif = function doNotif(options, suffixConfirmIfNoButtons=false){
+window.doNotif = function doNotif(options, suffixConfirmIfNoButtons=false) {
 	return new Promise((resolve, reject) => {
 		if (typeof options !== "object" || options === null) {
 			reject("Missing argument");
@@ -264,12 +154,12 @@ window.doNotif = function doNotif(options, suffixConfirmIfNoButtons=false){
 			}
 		}
 
-		if(suffixConfirmIfNoButtons === true){
+		if (suffixConfirmIfNoButtons === true){
 			options.title = `${options.title} (${i18ex._("click_to_confirm")})`;
 		}
 
 		let customOptions = null;
-		if(options.hasOwnProperty("soundObject") && options.hasOwnProperty("soundObjectVolume")){
+		if (options.hasOwnProperty("soundObject") && options.hasOwnProperty("soundObjectVolume")) {
 			customOptions = {
 				"soundObject": options.soundObject,
 				"soundObjectVolume": options.soundObjectVolume
@@ -278,12 +168,11 @@ window.doNotif = function doNotif(options, suffixConfirmIfNoButtons=false){
 			delete options.soundObjectVolume;
 		}
 
-		chromeNotifications.send(options, customOptions)
+		sendNotification(options, customOptions)
 			.then(result => {
 				const {triggeredType, notificationId, buttonIndex} = result;
 				console.info(`${notificationId}: ${triggeredType}${(buttonIndex && buttonIndex !== null)? ` (Button index: ${buttonIndex})`:""}`);
 
-				console.dir(buttonIndex)
 				// 0 is the first button, used as button of action
 				if ((buttonIndex === null || buttonIndex === 0)) {
 					resolve(result);
@@ -300,11 +189,10 @@ window.doNotif = function doNotif(options, suffixConfirmIfNoButtons=false){
 
 
 
-
 const CHECK_UPDATES_INTERVAL_NAME = 'checkUpdatesInterval',
 	CHECK_UPDATES_INTERVAL_DELAY = 10
 ;
-window.baseRequiredPromise.then(async function() {
+i18ex.loadingPromise.then(async function() {
 	if (env !== 'local') {
 		// Ignore when not in "local" env
 
@@ -322,7 +210,6 @@ window.baseRequiredPromise.then(async function() {
 	}
 
 	if (!existingAlarm || existingAlarm.periodInMinutes !== CHECK_UPDATES_INTERVAL_DELAY) {
-		console.dir(existingAlarm)
 		await browser.alarms.clear(CHECK_UPDATES_INTERVAL_NAME)
 			.catch(console.error)
 		;

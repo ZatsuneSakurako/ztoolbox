@@ -1,6 +1,6 @@
 'use strict';
 
-import {getPreference} from './options-api.js';
+import {getPreferences} from './classes/chrome-preferences-2.js';
 import {default as env} from './env.js';
 
 class Color {
@@ -49,8 +49,9 @@ class Color {
  * @return {Promise<HTMLStyleElement|null>}
  */
 export async function theme_cache_update(colorStylesheetNode) {
-	const currentTheme = getPreference("panel_theme"),
-		background_color = getPreference("background_color")
+	const options = await getPreferences("panel_theme", "background_color"),
+		currentTheme = options.get("panel_theme") ?? 'dark',
+		background_color = options.get("background_color") ?? '#000000'
 	;
 
 	const _cacheStr = window.localStorage.getItem('backgroundPage_theme_cache') ?? null;

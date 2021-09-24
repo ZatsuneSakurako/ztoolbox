@@ -1,6 +1,7 @@
 'use strict';
 
-import {loadPreferences, loadTranslations, savePreference, loadingPromise, getPreference} from './options-api.js';
+import {loadTranslations} from './translation-api.js';
+import {loadPreferences, savePreference, loadingPromise, getPreference} from './options-api.js';
 import {theme_cache_update} from "./backgroundTheme.js";
 
 
@@ -41,10 +42,10 @@ import('./browserDetect.js')
 ;
 
 function init(){
-	loadingPromise.then(() => {
+	loadingPromise.then(async () => {
+		await loadTranslations();
 		loadPreferences('section#preferences');
 		theme_update();
-		loadTranslations();
 	});
 }
 document.addEventListener('DOMContentLoaded', init);

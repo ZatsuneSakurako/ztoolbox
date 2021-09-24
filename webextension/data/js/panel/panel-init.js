@@ -1,12 +1,5 @@
 'use strict';
 
-const applyPanelSize = () => {
-	const html = document.querySelector('html'),
-		body = document.querySelector('body');
-	html.style.height = getPreference('panel_height');
-	body.style.width = getPreference('panel_width');
-};
-
 import('../browserDetect.js')
 	.then(module => {
 		document.documentElement.classList.toggle('isFirefox', module.isFirefox);
@@ -20,16 +13,19 @@ async function baseInit() {
 		await import('../lib/browser-polyfill.js');
 	}
 
-	await import('../classes/chrome-preferences.js');
-	const {getPreference, savePreference, loadingPromise} = await import('../options-api.js');
-	window.getPreference = getPreference;
-	window.savePreference = savePreference;
-	await loadingPromise;
+	const {getPreference} = await import('../classes/chrome-preferences-2.js');
+
+	const html = document.querySelector('html'),
+		body = document.querySelector('body')
+	;
+	html.style.height = await getPreference('panel_height');
+	body.style.width = await getPreference('panel_width');
+
+	const {loadTranslations} = await import('../translation-api.js');
+	await loadTranslations;
 }
 const baseInitPromise = baseInit();
 baseInitPromise.then(async () => {
-	applyPanelSize();
-
 	const {theme_cache_update} = await import('../backgroundTheme.js');
 	window.optionColorStylesheet = await theme_cache_update(document.querySelector('#generated-color-stylesheet'));
 	if (typeof optionColorStylesheet === 'object' && optionColorStylesheet !== null) {

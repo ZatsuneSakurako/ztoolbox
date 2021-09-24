@@ -1,5 +1,8 @@
 'use strict';
 
+import {i18ex} from "../translation-api.js";
+import {contextMenusController} from "../contextMenusController.js";
+
 async function launchSearch(tab, imgUrl) {
 	try {
 		const response = await browser.tabs.sendMessage(
@@ -21,7 +24,7 @@ async function launchSearch(tab, imgUrl) {
 	}
 }
 
-window.baseRequiredPromise.then(async function() {
+i18ex.loadingPromise.then(async function() {
 	contextMenusController.createImage(i18ex._('SearchOnIqdb'), ['*/*'], onIqdbMenuClick);
 })
 
@@ -63,4 +66,4 @@ async function onIqdbMenuClick(info) {
 		console.error(e);
 		unloadEvent();
 	}
-};
+}

@@ -1,5 +1,5 @@
 import {ZDK} from '../classes/ZDK.js';
-import {loadTranslations} from '../options-api.js';
+import {loadTranslations} from '../translation-api.js';
 import {renderTemplate} from '../init-templates.js';
 import {theme_cache_update} from '../backgroundTheme.js';
 import {WebsiteData} from "../variousFeatures/website-data.js";
@@ -227,6 +227,8 @@ function current_version(version) {
 current_version(browser.runtime.getManifest().version);
 
 
-loadTranslations();
+loadTranslations()
+	.catch(console.error)
+;
 
 sendDataToMain("panel_onload");

@@ -3,9 +3,11 @@
  * @return {boolean}
  */
 import {throttle} from "../lib/throttle.js";
+import {getPreference} from "../classes/chrome-preferences-2.js";
+import {i18ex} from "../translation-api.js";
 
-function enableFeature() {
-	const whitelist = getPreference('serviceWorkerWhitelist');
+async function enableFeature() {
+	const whitelist = await getPreference('serviceWorkerWhitelist');
 	if (typeof whitelist !== 'object' || whitelist === null) {
 		return false;
 	}
@@ -56,6 +58,6 @@ browser.storage.local.onChanged.addListener(function onChanged(changes) {
  * @type {RegisteredContentScript|null}
  */
 let contentScriptRegistration = null;
-window.baseRequiredPromise.then(async function() {
+i18ex.loadingPromise.then(async function() {
 	debounced();
 });

@@ -1,6 +1,6 @@
 'use strict';
 
-const options = {
+export const options = {
 	"check_delay": {
 		"title": "Streams status delay",
 		"description": "Delay between checks, in minute",
@@ -194,8 +194,4 @@ const options = {
 		"showPrefInPanel": false,
 		"prefLevel": "advanced"
 	}
-};
-
-export {
-	options
 };

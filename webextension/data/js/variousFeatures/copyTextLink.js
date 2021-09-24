@@ -1,10 +1,11 @@
 'use strict';
 
 import {default as env} from '../env.js';
+import {i18ex} from "../translation-api.js";
 
 
 
-window.baseRequiredPromise.then(() => {
+i18ex.loadingPromise.then(() => {
 	chrome.contextMenus.create({
 		id: 'link_CopyTextLink',
 		title: i18ex._("copy_link_text"),

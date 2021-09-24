@@ -1,86 +1,17 @@
 'use strict';
 
 import {ChromePreferences} from './classes/chrome-preferences.js';
-import {i18extended} from './classes/i18extended.js';
+import {loadTranslations} from './translation-api.js';
 
-const optionPromise = (async function () {
-	return (await import('./options-data.js')).options
-})();
-
-const chromeSettings = new ChromePreferences(optionPromise),
+const chromeSettings = new ChromePreferences(),
 	loadingPromise = (async () => {
 		await chromeSettings.loadingPromise;
-
-		const {i18extended} = await import('./classes/i18extended.js');
-		window.i18ex = new i18extended(browser.i18n.getMessage("language"));
-		await i18ex.loadingPromise;
+		await loadTranslations();
 	})()
 ;
 
 export { chromeSettings, loadingPromise };
 
-/*		---- Nodes translation ----		*/
-function translateNodes() {
-	for (let node of document.querySelectorAll("[data-translate-id]")) {
-		if (typeof node.tagName === "string") {
-			node.textContent = i18ex._(node.dataset.translateId);
-			delete node.dataset.translateId;
-		}
-	}
-}
-
-function translateNodes_title() {
-	for (let node of document.querySelectorAll("[data-translate-title]")) {
-		if (typeof node.tagName === "string") {
-			node.setAttribute(
-				'title',
-				i18ex._(node.dataset.translateTitle)
-			);
-			delete node.dataset.translateTitle;
-		}
-	}
-}
-
-export function loadTranslations() {
-	i18ex.loadingPromise
-		.then(()=>{
-			let body = document.querySelector('body'),
-				observer = new MutationObserver(function(mutations) {
-					mutations.forEach(function(mutation) {
-						if (mutation.type === "childList") {
-							translateNodes(document);
-							translateNodes_title(document);
-						} else if (mutation.type === "attributes") {
-							switch (mutation.attributeName) {
-								case 'data-translate-id':
-									translateNodes();
-									break;
-								case 'data-translate-title':
-									translateNodes_title();
-									break;
-							}
-						}
-					});
-				});
-
-			// configuration of the observer:
-			const config = {
-				attributes: true,
-				childList: true,
-				subtree: true
-			};
-
-			translateNodes();
-			translateNodes_title();
-
-			// pass in the target node, as well as the observer options
-			observer.observe(body, config);
-
-			// later, you can stop observing
-			//observer.disconnect();
-		})
-	;
-}
 
 export function getPreference(prefId) {
 	const pref = chromeSettings.get(prefId);
@@ -174,13 +105,6 @@ async function refreshSettings(event) {
 				sendDataToMain("hourlyAlarm_update")
 					.catch(console.error)
 				;
-			}
-			if (
-				typeof applyPanelSize === "function"
-				&&
-				(prefId === "panel_height" || prefId === "panel_width")
-			) {
-				applyPanelSize();
 			}
 		}
 	}

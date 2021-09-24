@@ -1,12 +1,18 @@
 'use strict';
 
 import {ZDK} from "../classes/ZDK.js";
+import {getPreference} from "../classes/chrome-preferences-2.js";
+import {i18ex} from "../translation-api.js";
+import {WebsiteData} from "./website-data.js";
+import {DataStore} from "../classes/data-store.js";
+import deviantArt from '../platforms/deviantart.js';
+import freshRss from '../platforms/freshrss.js';
 
 const ALARM_NAME = 'REFRESH_DATA';
 
 
 
-function doNotifyWebsite(website, websiteAPI) {
+async function doNotifyWebsite(website, websiteAPI) {
 	let websiteData = websitesData.get(website),
 		foldersList = ''
 	;
@@ -45,7 +51,7 @@ function doNotifyWebsite(website, websiteAPI) {
 		}
 		websiteData.notificationState.logged = websiteData.logged;
 	} else if (typeof websiteData.count === 'number' && !isNaN(websiteData.count) && (websiteData.notificationState.count === null || websiteData.count > websiteData.notificationState.count)) {
-		if (getPreference('notify_checkedData')) {
+		if (await getPreference('notify_checkedData')) {
 			doNotif({
 				"id": "refreshData-"+website,
 				"title": i18ex._('website_notif', {'website': website}),
@@ -61,7 +67,7 @@ function doNotifyWebsite(website, websiteAPI) {
 			;
 		}
 
-		if (getPreference('notify_vocal')) {
+		if (await getPreference('notify_vocal')) {
 			import('../voiceAPI.js')
 				.then(({voiceReadMessage}) => {
 					voiceReadMessage(i18ex._('language'), i18ex._('count_new_notif', {'count': websiteData.count}));
@@ -70,7 +76,7 @@ function doNotifyWebsite(website, websiteAPI) {
 			;
 		}
 
-	} else if (getPreference('notify_all_viewed') && (typeof websiteData.count === 'number' && websiteData.count === 0) && (typeof websiteData.notificationState.count === 'number' && websiteData.notificationState.count > 0)) {
+	} else if (await getPreference('notify_all_viewed') && (typeof websiteData.count === 'number' && websiteData.count === 0) && (typeof websiteData.notificationState.count === 'number' && websiteData.notificationState.count > 0)) {
 		doNotif({
 			"id": "refreshData-"+website,
 			"title": i18ex._('website_notif', {'website': website}),
@@ -96,17 +102,14 @@ function doNotifyWebsite(website, websiteAPI) {
 let websitesDataStore;
 /**
  *
- * @return {Promise<DataStore>}
+ * @return {DataStore}
  */
-async function getWebsiteDataStore() {
+function getWebsiteDataStore() {
 	if (!!websitesDataStore) {
 		return websitesDataStore;
 	}
 
-	const {WebsiteData} = await import("./website-data.js"),
-		{DataStore} = await import('../classes/data-store.js'),
-		_websitesDataStore = new DataStore()
-	;
+	const _websitesDataStore = new DataStore();
 	_websitesDataStore.setCompression('websiteData', function (key, id, data) {
 		data = data.toJSON();
 
@@ -136,16 +139,16 @@ async function getWebsiteDataStore() {
 
 	return websitesDataStore;
 }
-async function loadStoredWebsitesData() {
+function loadStoredWebsitesData() {
 	if (websitesData.size === 0) {
-		const websitesDataStore = await getWebsiteDataStore(),
+		const websitesDataStore = getWebsiteDataStore(),
 			tmpWebsitesData = new Map()
 		;
 		websitesDataStore.forEach('websiteData', function (key, website, websiteData) {
 			tmpWebsitesData.set(website, websiteData);
 		});
-		websitesData.set('deviantArt', tmpWebsitesData.get('deviantArt'));
-		websitesData.set('freshRss', tmpWebsitesData.get('freshRss'));
+		websitesData.set('deviantArt', tmpWebsitesData.get('deviantArt') ?? new WebsiteData());
+		websitesData.set('freshRss', tmpWebsitesData.get('freshRss') ?? new WebsiteData());
 	}
 	return websitesData;
 }
@@ -163,20 +166,14 @@ export async function refreshWebsitesData() {
 
 
 	if (websitesData.size === 0) {
-		websitesData = await loadStoredWebsitesData();
+		websitesData = loadStoredWebsitesData();
 	}
 
 
 	const websites = new Map();
-	websites.set(
-		'deviantArt',
-		(await import('../platforms/deviantart.js')).default
-	);
-	if (!!getPreference('freshRss_baseUrl')) {
-		websites.set(
-			'freshRss',
-			(await import('../platforms/freshrss.js')).default
-		);
+	websites.set('deviantArt', deviantArt);
+	if (!!await getPreference('freshRss_baseUrl')) {
+		websites.set('freshRss', freshRss);
 	} else if (websitesData.has('freshRss')) {
 		websitesData.delete('freshRss');
 	}
@@ -186,22 +183,20 @@ export async function refreshWebsitesData() {
 	console.debug('Refreshing websites data...');
 	const promises = [];
 	for (let [website, websiteAPI] of websites) {
-		if (!websitesData.has(website)) {
-			const {WebsiteData} = await import("./website-data.js");
-			websitesData.set(website, new WebsiteData());
-		}
-
 		const promise = refreshWebsite(website, websiteAPI);
 		promises.push(promise);
 		promise
 			.then(() => {
 				if (!localStorage.getItem('notificationGloballyDisabled')) {
-					doNotifyWebsite(website, websiteAPI);
+					doNotifyWebsite(website, websiteAPI)
+						.catch(console.error)
+					;
 				}
 			})
 			.catch((data) => {
 				console.log('refreshWebsitesData', data);
-			});
+			})
+		;
 	}
 
 	const data = await Promise.allSettled(promises);
@@ -213,7 +208,7 @@ export async function refreshWebsitesData() {
 		console.error(e);
 	}
 
-	if (!oldAlarm || oldAlarm.periodInMinutes !== getPreference('check_delay')) {
+	if (!oldAlarm || oldAlarm.periodInMinutes !== await getPreference('check_delay')) {
 		try {
 			await browser.alarms.clear(ALARM_NAME)
 		} catch (e) {
@@ -223,14 +218,14 @@ export async function refreshWebsitesData() {
 		await browser.alarms.create(
 			ALARM_NAME,
 			{
-				delayInMinutes: getPreference('check_delay')
+				delayInMinutes: await getPreference('check_delay')
 			}
 		);
 	}
 
 	updateCountIndicator();
 
-	if (getPreference('showExperimented') === true) {
+	if (await getPreference('showExperimented') === true) {
 		console.groupCollapsed('Websites check end');
 		console.log('fetchResponses:', data);
 		console.log('Data:', websitesData);
@@ -277,7 +272,7 @@ function updateCountIndicator() {
 }
 
 async function sendDataToPanel() {
-	await window.baseRequiredPromise;
+	await i18ex.loadingPromise;
 	return await browser.runtime.sendMessage({
 		id: 'mainToPanel_panelData',
 		data: {
@@ -301,12 +296,9 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
 			case 'panel_onload':
 				if (isFromPanel) {
 					if (websitesData.size === 0) {
-						loadStoredWebsitesData()
-							.finally(() => {
-								sendDataToPanel()
-									.catch(console.error)
-								;
-							})
+						loadStoredWebsitesData();
+						sendDataToPanel()
+							.catch(console.error)
 						;
 					}
 
@@ -402,6 +394,6 @@ async function refreshWebsite(website, websiteAPI) {
  */
 let websitesData = new Map();
 window.websitesData = websitesData
-window.baseRequiredPromise.then(async function () {
+i18ex.loadingPromise.then(async function () {
 	refreshWebsitesData();
 });

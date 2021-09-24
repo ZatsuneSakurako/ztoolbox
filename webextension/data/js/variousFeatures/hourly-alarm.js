@@ -1,16 +1,23 @@
 'use strict';
+import {getPreference} from '../classes/chrome-preferences-2.js';
+import {i18ex} from '../translation-api.js';
 
 const HOURLY_ALARM_NAME = 'hourlyAlarm';
 export class HourlyAlarm {
 	constructor() {
-		if (getPreference('hourlyAlarm') === true) {
-			this.enableHourlyAlarm();
-		} else {
-			this.disableHourlyAlarm();
-		}
+		getPreference('hourlyAlarm')
+			.then(value => {
+				if (value === true) {
+					this.enableHourlyAlarm();
+				} else {
+					this.disableHourlyAlarm();
+				}
+			})
+			.catch(console.error)
+		;
 	}
 
-	actionOnAlarm(alarm) {
+	async actionOnAlarm(alarm) {
 		if (alarm.name !== HOURLY_ALARM_NAME) {
 			return
 		}
@@ -25,11 +32,11 @@ export class HourlyAlarm {
 			doNotif({
 				"id": "hourly-alarm",
 				'message': msg,
-				'soundObject': getPreference('hourlyAlarm_sound'),
-				'soundObjectVolume': getPreference('hourlyAlarm_sound_volume')
+				'soundObject': await getPreference('hourlyAlarm_sound'),
+				'soundObjectVolume': await getPreference('hourlyAlarm_sound_volume')
 			});
 
-			if (getPreference('notify_vocal')) {
+			if (await getPreference('notify_vocal')) {
 				const timeStr = new Intl.DateTimeFormat(i18ex._('language'), { hour: 'numeric' }).format(new Date());
 				if (i18ex._('language') === 'fr') {
 					timeStr.replace(/\s*h$/i, ' heure')
@@ -97,7 +104,7 @@ export class HourlyAlarm {
 
 async function init() {
 	if (!window.hourlyAlarm) {
-		await window.baseRequiredPromise;
+		await i18ex.loadingPromise;
 		window.hourlyAlarm = new HourlyAlarm();
 	}
 }
@@ -110,6 +117,8 @@ browser.alarms.onAlarm.addListener(async function (alarm) {
 		await init()
 			.catch(console.error)
 		;
-		hourlyAlarm.actionOnAlarm(alarm);
+		hourlyAlarm.actionOnAlarm(alarm)
+			.catch(console.error)
+		;
 	}
 });

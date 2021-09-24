@@ -1,5 +1,7 @@
+import {getPreference} from '../classes/chrome-preferences-2.js';
+
 let freshRssCount = 0;
-export function load() {
+async function load() {
 	const $freshRssContent = document.querySelector('#freshRssContent');
 	if (!$freshRssContent) return;
 
@@ -13,7 +15,7 @@ export function load() {
 		state: freshRssCount === 0 ? 1 : 2,
 		znmCustomView: 1
 	});
-	node.src = getPreference('freshRss_baseUrl') + "?" + params.toString()
+	node.src = await getPreference('freshRss_baseUrl') + "?" + params.toString()
 	node.loading = 'lazy';
 	$freshRssContent.append(node);
 }
@@ -30,6 +32,8 @@ document.addEventListener('freshRssDataUpdate', function (e) {
 function onSectionChange(target) {
 	if (target.id === 'freshRssContentRadio') {
 		load()
+			.catch(console.error)
+		;
 	}
 }
 document.addEventListener('change', function (e) {

@@ -24,7 +24,17 @@ export class WebsiteData {
 	static fromJSON(data) {
 		const newInstance = new WebsiteData();
 		newInstance.notificationState = data.notificationState ?? {};
+		if (!('count' in newInstance.notificationState)) {
+			newInstance.notificationState.count = 0
+		}
+
 		newInstance.count = data.count ?? 0;
+		if (typeof newInstance.count === 'string') {
+			const count = parseInt(newInstance.count);
+			if (!isNaN(count)) {
+				newInstance.count = count;
+			}
+		}
 		newInstance.folders = new Map(data.folders ?? []);
 		newInstance.websiteIcon = data.websiteIcon ?? '';
 		newInstance.logged = data.logged ?? false;
@@ -35,7 +45,7 @@ export class WebsiteData {
 
 	toJSON() {
 		return {
-			notificationState: this.notificationState,
+			notificationState: JSON.parse(JSON.stringify(this.notificationState)),
 			count: this.count,
 			folders: [...this.folders.entries()],
 			websiteIcon: this.websiteIcon,

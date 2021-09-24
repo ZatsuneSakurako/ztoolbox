@@ -1,8 +1,11 @@
 import {throttle} from "../lib/throttle.js";
+import {getPreference} from "../classes/chrome-preferences-2.js";
+import {i18ex} from "../translation-api.js";
 
+let freshRssBaseUrl;
 const freshRss = {
 	get dataURL() {
-		return `${getPreference('freshRss_baseUrl')}?a=normal&state=3`;
+		return `${freshRssBaseUrl}?a=normal&state=3`;
 	},
 	/**
 	 *
@@ -10,7 +13,7 @@ const freshRss = {
 	 * @return {string}
 	 */
 	getViewURL(websiteState) {
-		return getPreference('freshRss_baseUrl');
+		return freshRssBaseUrl;
 	},
 	/**
 	 *
@@ -31,7 +34,8 @@ const freshRss = {
 			data: null
 		};
 
-		if (!getPreference('freshRss_baseUrl')) {
+		freshRssBaseUrl = await getPreference('freshRss_baseUrl');
+		if (!freshRssBaseUrl) {
 			return output;
 		}
 
@@ -59,7 +63,7 @@ const freshRss = {
 
 
 		const result = new Map();
-		result.set('count', dataNbNotifications ? dataNbNotifications[1] : 0);
+		result.set('count', dataNbNotifications ? parseInt(dataNbNotifications[1]) : 0);
 		result.set('logged', !!dataJsonVars);
 		result.set('loginId', !!dataUsername ? dataUsername[1] : '');
 
@@ -94,12 +98,15 @@ browser.storage.onChanged.addListener((changes, area) => {
  * @type {RegisteredContentScript|null}
  */
 let contentScriptRegistration = null;
-window.baseRequiredPromise.then(async function() {
+i18ex.loadingPromise.then(async function() {
 	debounced();
 });
 
 async function updateRegistration() {
-	if (!getPreference('freshRss_baseUrl')) {
+	return;
+
+	const freshRssUrl = await getPreference('freshRss_baseUrl');
+	if (!freshRssUrl) {
 		if (!!contentScriptRegistration) {
 			contentScriptRegistration.unregister();
 			contentScriptRegistration = null;
@@ -116,7 +123,7 @@ async function updateRegistration() {
 			],
 			"matches": [ '<all_urls>' ],
 			"includeGlobs": [
-				getPreference('freshRss_baseUrl') + "*"
+				freshRssUrl + "*"
 			],
 			"runAt": "document_start",
 			allFrames: true

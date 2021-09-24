@@ -1,4 +1,10 @@
 import { ZDK } from './ZDK.js';
+import {
+	CHROME_PREFERENCES_SYNC_ID,
+	CHROME_PREFERENCES_UPDATED_ID,
+	getBooleanFromVar,
+	getPreferenceConfig
+} from './chrome-preferences-2.js';
 
 
 
@@ -28,29 +34,6 @@ function decodeString(string){
 	return string;
 }
 
-/**
- *
- * @param {string} string
- * @return {number|string|boolean}
- */
-function getBooleanFromVar(string) {
-	switch(typeof string){
-		case "boolean":
-			return string;
-		case "number":
-		case "string":
-			if(string === "true" || string === "on" || string === 1){
-				return true;
-			} else if(string === "false" || string === "off" || string === 0){
-				return false;
-			} else {
-				console.warn(`getBooleanFromVar: Unkown boolean (${string})`);
-				return string;
-			}
-		default:
-			console.warn(`getBooleanFromVar: Unknown type to make boolean (${typeof string})`);
-	}
-}
 function getFilterListFromPreference(string){
 	if(typeof string !== "string"){
 		console.warn("Type error");
@@ -106,38 +89,12 @@ function getValueFromNode(node){
 	}
 }
 
-const CHROME_PREFERENCES_UPDATED_ID = '_updated',
-	CHROME_PREFERENCES_SYNC_ID = '_synchronisedAt'
-;
-
 class ChromePreferences extends Map {
-	constructor(options) {
+	constructor() {
 		super();
 
-		if (options === undefined) {
-			throw "Missing argument"
-		}
-
 		let loadPromise = async () => {
-			if (options instanceof Promise) {
-				options = await options;
-			}
-
-			options[CHROME_PREFERENCES_UPDATED_ID] = {
-				"hidden": true,
-				"prefLevel": "experimented",
-				"sync": true,
-				"type": "string",
-				"value": ""
-			};
-			options[CHROME_PREFERENCES_SYNC_ID] = {
-				"hidden": true,
-				"prefLevel": "experimented",
-				"sync": false,
-				"type": "string",
-				"value": ""
-			};
-
+			const options = await getPreferenceConfig();
 
 			let mapOptions = new Map();
 			for (let i in options) {
@@ -259,7 +216,7 @@ class ChromePreferences extends Map {
 		const oldExisting = this.has(prefId);
 		oldValue = (oldValue===null)? this.has(prefId) : oldValue;
 		if(this.loadingState==="success") {
-			if(prefId!==CHROME_PREFERENCES_UPDATED_ID){
+			if (prefId !== CHROME_PREFERENCES_UPDATED_ID){
 				// Keep '_updated' value up-to-date with the last change date
 				super.set(CHROME_PREFERENCES_UPDATED_ID, new Date());
 			}
