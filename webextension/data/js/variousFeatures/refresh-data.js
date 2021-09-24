@@ -228,17 +228,7 @@ export async function refreshWebsitesData() {
 		);
 	}
 
-
-	let count = null;
-	for (let [, websiteData] of websitesData) {
-		if (websiteData.logged && websiteData.count !== null) {
-			if (count === null) {
-				count = 0;
-			}
-			const _nb = parseInt(websiteData.count);
-			count += isNaN(_nb) ? 0 : _nb;
-		}
-	}
+	updateCountIndicator();
 
 	if (getPreference('showExperimented') === true) {
 		console.groupCollapsed('Websites check end');
@@ -253,8 +243,23 @@ export async function refreshWebsitesData() {
 		websitesDataStore.set('websiteData', website, data);
 	}
 
+	isRefreshingData = false;
+	return data;
+}
 
+function updateCountIndicator() {
 	if (typeof browser.browserAction.setBadgeText === 'function') {
+		let count = null;
+		for (let [, websiteData] of websitesData) {
+			if (websiteData.logged && websiteData.count !== null) {
+				if (count === null) {
+					count = 0;
+				}
+				const _nb = parseInt(websiteData.count);
+				count += isNaN(_nb) ? 0 : _nb;
+			}
+		}
+
 		let displayedCount;
 		if (count === null) {
 			displayedCount = '';
@@ -269,9 +274,6 @@ export async function refreshWebsitesData() {
 		browser.browserAction.setBadgeText({text: displayedCount});
 		browser.browserAction.setBadgeBackgroundColor({color: (count !== null && count > 0)? "#FF0000" : "#424242"});
 	}
-
-	isRefreshingData = false;
-	return data;
 }
 
 async function sendDataToPanel() {
@@ -290,10 +292,6 @@ async function sendDataToPanel() {
 }
 
 chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
-	if (sender.hasOwnProperty("url")) {
-		console.debug(`Receiving message from: ${sender.url} (${sender.id})`);
-	}
-
 	if (chrome.runtime.id !== sender.id) {
 		console.error('Message received from unknown sender id');
 	} else if (typeof message === "object" && message.hasOwnProperty("data")) {
@@ -340,6 +338,14 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
 					})
 				;
 				return true;
+			case 'freshRss_newTitle':
+				const freshRss = websitesData.get('freshRss');
+				freshRss.count = message.data.newCount;
+				updateCountIndicator();
+				sendDataToPanel()
+					.catch(console.error)
+				;
+				break;
 		}
 	}
 });
@@ -390,6 +396,10 @@ async function refreshWebsite(website, websiteAPI) {
 }
 
 
+/**
+ *
+ * @type {Map<string, WebsiteData>}
+ */
 let websitesData = new Map();
 window.websitesData = websitesData
 window.baseRequiredPromise.then(async function () {

@@ -1,3 +1,5 @@
+import {throttle} from "../lib/throttle.js";
+
 const freshRss = {
 	get dataURL() {
 		return `${getPreference('freshRss_baseUrl')}?a=normal&state=3`;
@@ -67,5 +69,61 @@ const freshRss = {
 		return output;
 	}
 };
+
+
+/**
+ *
+ * @type {DebouncedFunc<function(): void>}
+ */
+const debounced = throttle(function () {
+	setTimeout(() => {
+		updateRegistration()
+			.catch(console.error)
+		;
+	})
+}, 500);
+
+browser.storage.onChanged.addListener((changes, area) => {
+	if (area === "local" && 'freshRss_baseUrl' in changes) {
+		debounced();
+	}
+});
+
+/**
+ *
+ * @type {RegisteredContentScript|null}
+ */
+let contentScriptRegistration = null;
+window.baseRequiredPromise.then(async function() {
+	debounced();
+});
+
+async function updateRegistration() {
+	if (!getPreference('freshRss_baseUrl')) {
+		if (!!contentScriptRegistration) {
+			contentScriptRegistration.unregister();
+			contentScriptRegistration = null;
+		}
+		return;
+	}
+
+	if (!contentScriptRegistration) {
+		contentScriptRegistration = await browser.contentScripts.register({
+			"js": [
+				{
+					file: "/data/js/contentscripts/freshRss.js"
+				}
+			],
+			"matches": [ '<all_urls>' ],
+			"includeGlobs": [
+				getPreference('freshRss_baseUrl') + "*"
+			],
+			"runAt": "document_start",
+			allFrames: true
+		});
+	}
+}
+
+
 
 export default freshRss;
