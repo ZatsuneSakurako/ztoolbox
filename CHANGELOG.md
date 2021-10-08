@@ -1,7 +1,7 @@
 # WIP
 * \+ : Fresh RSS
 * \- : Clean unused ZDK features
-* \- : Delete features muted-pause, RSS links, Twitch points, untrackMe
+* \- : Delete features muted-pause, RSS links, Twitch points, untrackMe, PWA
 * fix : Fix badge refresh
 
 # 0.17.3

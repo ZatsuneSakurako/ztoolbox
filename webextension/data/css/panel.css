@@ -203,10 +203,6 @@ section > iframe {
 	margin: 0;
 }
 
-.isFirefox #pwa {
-	display: none;
-}
-
 
 
 #current_version::before {

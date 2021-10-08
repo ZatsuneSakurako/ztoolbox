@@ -67,7 +67,6 @@ window.onload = function () {
 			'../lib/throttle.js',
 			'../panel/browserTabUtils.js',
 			'../panel/tabMover.js',
-			'../panel/pwa.js',
 			'../panel/service-worker.js',
 			'../variousFeatures/website-data.js',
 			'../panel/freshrss.js',
