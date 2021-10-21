@@ -59,16 +59,6 @@
 	"amazonShareLink_title": "Ajoute un bouton pour partager, dans le presse-papier, plus facilement des articles Amazon",
 	"amazonShareLink_description": "Ajoutera le bouton si coché (rafraîchir les pages ouvertes)",
 
-	"hourlyAlarm_title": "Notification par heure",
-	"hourlyAlarm_description": "Affiche une notification par heure quand coché",
-
-	"hourlyAlarm_sound_title": "Lit un son avec les notifications par heure",
-	"hourlyAlarm_sound_description": "Importe un fichier audio",
-	"hourlyAlarm_sound": "Importer",
-
-	"hourlyAlarm_sound_volume_title": "Volume son pour les notification par heure",
-	"hourlyAlarm_sound_volume_description": "En pourcentage",
-
 	"serviceWorkerWhitelist_title": "Liste blanche du service worker",
 	"serviceWorkerWhitelist_description": "JSON object",
 

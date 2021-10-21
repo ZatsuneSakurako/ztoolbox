@@ -65,6 +65,7 @@
 		"storage",
 		"tabs",
 		"activeTab",
+		"nativeMessaging",
 		"<all_urls>",
 		"http://*/*",
 		"https://*/*"

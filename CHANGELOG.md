@@ -7,6 +7,7 @@
   * Twitch points
   * untrackMe
   * PWA
+  * Hourly Alarm
 * fix : Fix badge refresh
 
 # 0.17.3

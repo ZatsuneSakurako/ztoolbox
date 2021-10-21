@@ -101,11 +101,6 @@ async function refreshSettings(event) {
 					.catch(console.error)
 				;
 			}
-			if (prefId === "hourlyAlarm") {
-				sendDataToMain("hourlyAlarm_update")
-					.catch(console.error)
-				;
-			}
 		}
 	}
 }

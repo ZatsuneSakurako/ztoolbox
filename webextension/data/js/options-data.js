@@ -24,38 +24,6 @@ export const options = {
 		"value": true,
 		"group": "featurePreference"
 	},
-	"hourlyAlarm": {
-		"title": "Hourly alarm",
-		"description": "Display a notification per hour when checked",
-		"type": "bool",
-		"value": false,
-		"group": "featurePreference"
-	},
-	"hourlyAlarm_sound": {
-		"title": "Play sound with notifications",
-		"description": "Import audio file",
-		"label": "Import",
-		"type": "file",
-		"sync": false,
-		"fileMaxSize": 5 * 1024 * 1024,
-		"inputAccept": "audio/*",
-		"fileTypes": /^(audio\/|video\/ogg)/,
-		"readType": "dataUrl",
-		"value": {},
-		"group": "featurePreference"
-	},
-	"hourlyAlarm_sound_volume": {
-		"title": "Sound volume for the notification",
-		"description": "In percent",
-		"type": "integer",
-		"value": 70,
-		"minValue": 0,
-		"maxValue": 100,
-		"rangeInput": true,
-		"rangeOutputUnit": "%",
-		"prefLevel": "basic",
-		"group": "featurePreference"
-	},
 	"serviceWorkerWhitelist": {
 		"title": "Service worker whitelist",
 		"description": "JSON data {\"domain.com\": \"whitelist\"}",

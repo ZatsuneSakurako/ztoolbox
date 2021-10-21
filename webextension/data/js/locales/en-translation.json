@@ -56,16 +56,6 @@
 	"amazonShareLink_title": "Add button to share, into clipboard, easily Amazon articles",
 	"amazonShareLink_description": "Will add button if checked (refresh opened pages)",
 
-	"hourlyAlarm_title": "Hourly notification",
-	"hourlyAlarm_description": "Display a notification per hour when checked",
-
-	"hourlyAlarm_sound_title": "Play sound with the hourly notifications",
-	"hourlyAlarm_sound_description": "Import audio file",
-	"hourlyAlarm_sound": "Import",
-
-	"hourlyAlarm_sound_volume_title": "Sound volume for the hourly notification",
-	"hourlyAlarm_sound_volume_description": "In percent",
-
 	"serviceWorkerWhitelist_title": "Service worker whitelist",
 	"serviceWorkerWhitelist_description": "JSON object",
 

@@ -6,12 +6,10 @@ import "./lib/content-scripts-register-polyfill___modified.js";
 
 import {i18ex} from './translation-api.js';
 
-import {getPreference, getPreferences} from './classes/chrome-preferences-2.js';
+import {getPreferences} from './classes/chrome-preferences-2.js';
 import {sendNotification} from './classes/chrome-notification-controller.js';
 import {contextMenusController} from './contextMenusController.js';
 
-import {HourlyAlarm} from "./variousFeatures/hourly-alarm.js";
-import './variousFeatures/hourly-alarm.js';
 import './variousFeatures/iqdb.js';
 import './variousFeatures/refresh-data.js';
 import './variousFeatures/copyTextLink.js';
@@ -92,29 +90,6 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
 				;
 
 				return true;
-			case 'hourlyAlarm_update':
-				HourlyAlarm.isEnabledHourlyAlarm()
-					.then(async function (isActivated) {
-						const preference = await getPreference("hourlyAlarm");
-						if (typeof isActivated === "boolean" && preference !== isActivated) {
-							if (preference === true) {
-								await hourlyAlarm.enableHourlyAlarm();
-							} else {
-								await hourlyAlarm.disableHourlyAlarm();
-							}
-						}
-					})
-					.catch(async function (err) {
-						console.error(err);
-						const preference = await getPreference("hourlyAlarm");
-						await hourlyAlarm.disableHourlyAlarm();
-
-						if (preference) {
-							await hourlyAlarm.enableHourlyAlarm();
-						}
-					})
-				;
-				break;
 		}
 	}
 });
