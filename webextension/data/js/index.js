@@ -10,6 +10,7 @@ import {getPreferences} from './classes/chrome-preferences-2.js';
 import {sendNotification} from './classes/chrome-notification-controller.js';
 import {contextMenusController} from './contextMenusController.js';
 
+import './variousFeatures/clear-old-hourly-alarm.js';
 import './variousFeatures/iqdb.js';
 import './variousFeatures/refresh-data.js';
 import './variousFeatures/copyTextLink.js';
