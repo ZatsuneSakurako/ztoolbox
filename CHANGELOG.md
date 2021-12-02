@@ -8,6 +8,7 @@
   * untrackMe
   * PWA
   * Hourly Alarm
+* i : Copy text link now for Firefox only
 * fix : Fix badge refresh
 
 # 0.17.3

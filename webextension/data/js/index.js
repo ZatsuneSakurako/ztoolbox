@@ -13,8 +13,14 @@ import {contextMenusController} from './contextMenusController.js';
 import './variousFeatures/clear-old-hourly-alarm.js';
 import './variousFeatures/iqdb.js';
 import './variousFeatures/refresh-data.js';
-import './variousFeatures/copyTextLink.js';
 import './variousFeatures/service_worker.js';
+
+import {isFirefox} from "./browserDetect.js";
+if (isFirefox) {
+	import('./variousFeatures/copyTextLink.js')
+		.catch(console.error)
+	;
+}
 
 
 

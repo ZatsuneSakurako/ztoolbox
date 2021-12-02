@@ -5,6 +5,18 @@ import {i18ex} from "../translation-api.js";
 
 
 
+export const contentScriptRegistration = await browser.contentScripts.register({
+	"js": [
+		{
+			file: "/data/js/contentscripts/copyTextLink.js"
+		}
+	],
+	"matches": [ "<all_urls>" ],
+	"runAt": "document_idle",
+	allFrames: false
+});
+
+
 i18ex.loadingPromise.then(() => {
 	chrome.contextMenus.create({
 		id: 'link_CopyTextLink',
@@ -16,10 +28,12 @@ i18ex.loadingPromise.then(() => {
 
 
 chrome.contextMenus.onClicked.addListener(function (info, tab) {
-	chrome.tabs.sendMessage(tab.id, {
-		id: "copyLinkText",
-		data: ""
-	});
+	if (info.menuItemId === 'link_CopyTextLink') {
+		chrome.tabs.sendMessage(tab.id, {
+			id: "copyLinkText",
+			data: ""
+		});
+	}
 });
 
 async function onCopyLinkTextReply(responseData) {
