@@ -16,6 +16,8 @@ async function enableFeature() {
 }
 
 async function updateRegistration() {
+	await i18ex.loadingPromise;
+
 	await browser.scripting.unregisterContentScripts(['service_worker']);
 	if (!!await enableFeature()) {
 		await browser.scripting.registerContentScripts([
@@ -34,7 +36,7 @@ async function updateRegistration() {
 
 /**
  *
- * @type {DebouncedFunc<function(): void>}
+ * @type {function(): Promise<void>}
  */
 const debounced = throttle(function () {
 	updateRegistration()
@@ -42,13 +44,16 @@ const debounced = throttle(function () {
 	;
 }, 500);
 
-browser.storage.onChanged.addListener((changes, area) => {
+chrome.runtime.onStartup.addListener(function () {
+	debounced();
+});
+chrome.runtime.onInstalled.addListener(function () {
+	debounced();
+});
+
+browser.storage.local.onChanged.addListener((changes, area) => {
 	if (area !== "local") return;
 	if (!changes.serviceWorkerWhitelist) return;
 
 	debounced(changes);
-});
-
-i18ex.loadingPromise.then(async function() {
-	debounced();
 });

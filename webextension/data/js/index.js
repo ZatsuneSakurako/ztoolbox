@@ -51,7 +51,9 @@ browser.storage.onChanged.addListener((changes, area) => {
 
 
 
-i18ex.loadingPromise.then(() => {
+async function onStart_contextMenus() {
+	await i18ex.loadingPromise;
+
 	contextMenusController.create('OpenWithoutPlaylist', i18ex._("OpenWithoutPlaylist"), ["*.youtube.com/watch?*&list=*","*.youtube.com/watch?list=*"], function (info, tab) {
 		const removePlaylistFromUrl = url => {
 			const urlObj = new URL(url); // https://developer.mozilla.org/en-US/docs/Web/API/URL - https://developer.mozilla.org/en-US/docs/Web/API/URLSearchParams
@@ -72,7 +74,7 @@ i18ex.loadingPromise.then(() => {
 			;
 		}
 	});
-});
+}
 
 chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
 	if (sender.hasOwnProperty("url")) {
@@ -190,7 +192,9 @@ self.doNotif = function doNotif(options, suffixConfirmIfNoButtons=false) {
 const CHECK_UPDATES_INTERVAL_NAME = 'checkUpdatesInterval',
 	CHECK_UPDATES_INTERVAL_DELAY = 10
 ;
-i18ex.loadingPromise.then(async function() {
+async function onStart_checkUpdates() {
+	await i18ex.loadingPromise;
+
 	if (env !== 'local') {
 		// Ignore when not in "local" env
 
@@ -215,7 +219,7 @@ i18ex.loadingPromise.then(async function() {
 			'periodInMinutes': CHECK_UPDATES_INTERVAL_DELAY
 		});
 	}
-});
+}
 
 async function onCheckUpdatesInterval() {
 	if (env !== 'local') {
@@ -262,3 +266,30 @@ browser.alarms.onAlarm.addListener(function (alarm) {
 		;
 	}
 });
+
+chrome.runtime.onInstalled.addListener(function (installReason) {
+	let version = chrome.runtime.getManifest().version;
+	if (version === installReason.previousVersion) {
+		version = '';
+	}
+	console.log(`onInstalled (${installReason.reason}) ${version}`);
+});
+
+
+
+
+
+chrome.runtime.onStartup.addListener(function () {
+	onStart_checkUpdates()
+		.catch(console.error)
+	;
+});
+chrome.runtime.onInstalled.addListener(function () {
+	onStart_checkUpdates()
+		.catch(console.error)
+	;
+});
+
+onStart_contextMenus()
+	.catch(console.error)
+;

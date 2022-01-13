@@ -296,11 +296,32 @@ async function refreshWebsite(website, websiteAPI) {
 }
 
 
-window.websitesData = websitesData
 if (isBackgroundProcess) {
-	i18ex.loadingPromise.then(async function () {
-		refreshWebsitesData()
-			.catch(console.error)
-		;
-	});
+	self.websitesData = websitesData;
+}
+chrome.runtime.onStartup.addListener(function () {
+	if (!isBackgroundProcess) {
+		return;
+	}
+
+	onStartOrInstall()
+		.catch(console.error)
+	;
+});
+chrome.runtime.onInstalled.addListener(function () {
+	if (!isBackgroundProcess) {
+		return;
+	}
+
+	onStartOrInstall()
+		.catch(console.error)
+	;
+});
+async function onStartOrInstall() {
+	if (!isBackgroundProcess) {
+		return;
+	}
+
+	await i18ex.loadingPromise;
+	await refreshWebsitesData();
 }

@@ -4,7 +4,9 @@ import {default as env} from '../env.js';
 import {i18ex} from "../translation-api.js";
 
 
-i18ex.loadingPromise.then(async () => {
+async function initMenuCopyTextLink() {
+	await i18ex.loadingPromise;
+
 	await browser.scripting.unregisterContentScripts(['copyTextLink']);
 	export const contentScriptRegistration = await chrome.scripting.register([
 		{
@@ -24,7 +26,10 @@ i18ex.loadingPromise.then(async () => {
 		contexts: ["link"],
 		targetUrlPatterns: ["<all_urls>"]
 	});
-});
+}
+initMenuCopyTextLink()
+	.catch(console.error)
+;
 
 
 chrome.contextMenus.onClicked.addListener(function (info, tab) {
