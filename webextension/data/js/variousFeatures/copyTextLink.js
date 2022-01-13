@@ -4,20 +4,20 @@ import {default as env} from '../env.js';
 import {i18ex} from "../translation-api.js";
 
 
-
-export const contentScriptRegistration = await browser.contentScripts.register({
-	"js": [
+i18ex.loadingPromise.then(async () => {
+	await browser.scripting.unregisterContentScripts(['copyTextLink']);
+	export const contentScriptRegistration = await chrome.scripting.register([
 		{
-			file: "/data/js/contentscripts/copyTextLink.js"
+			"id": "copyTextLink",
+			"js": [
+				"/data/js/contentscripts/copyTextLink.js"
+			],
+			"matches": [ "<all_urls>" ],
+			"runAt": "document_idle",
+			allFrames: false
 		}
-	],
-	"matches": [ "<all_urls>" ],
-	"runAt": "document_idle",
-	allFrames: false
-});
+	]);
 
-
-i18ex.loadingPromise.then(() => {
 	chrome.contextMenus.create({
 		id: 'link_CopyTextLink',
 		title: i18ex._("copy_link_text"),

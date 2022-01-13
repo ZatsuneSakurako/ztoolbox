@@ -218,7 +218,7 @@ export async function refreshWebsitesData() {
 }
 
 export async function updateCountIndicator() {
-	if (typeof browser.browserAction.setBadgeText !== 'function') {
+	if (typeof browser.action.setBadgeText !== 'function') {
 		return;
 	}
 
@@ -244,8 +244,8 @@ export async function updateCountIndicator() {
 		displayedCount = count.toString();
 	}
 
-	await browser.browserAction.setBadgeText({text: displayedCount});
-	await browser.browserAction.setBadgeBackgroundColor({color: (count !== null && count > 0) ? "#FF0000" : "#424242"});
+	await browser.action.setBadgeText({text: displayedCount});
+	await browser.action.setBadgeBackgroundColor({color: (count !== null && count > 0) ? "#FF0000" : "#424242"});
 }
 
 browser.alarms.onAlarm.addListener(function (alarm) {

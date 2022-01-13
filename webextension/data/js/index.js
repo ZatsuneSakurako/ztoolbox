@@ -2,7 +2,6 @@
 
 import {default as env} from './env.js';
 import "./lib/browser-polyfill.js";
-import "./lib/content-scripts-register-polyfill___modified.js";
 
 import {i18ex} from './translation-api.js';
 
@@ -10,6 +9,8 @@ import './classes/chrome-native.js';
 import {getPreference, getPreferences} from './classes/chrome-preferences-2.js';
 import {sendNotification} from './classes/chrome-notification-controller.js';
 import {contextMenusController} from './contextMenusController.js';
+
+import {ChromeUpdateNotification} from './classes/chromeUpdateNotification.js';
 
 import './variousFeatures/clear-old-hourly-alarm.js';
 import './variousFeatures/iqdb.js';

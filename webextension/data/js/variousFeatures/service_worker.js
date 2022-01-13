@@ -16,25 +16,19 @@ async function enableFeature() {
 }
 
 async function updateRegistration() {
-	if (!await enableFeature()) {
-		if (!!contentScriptRegistration) {
-			contentScriptRegistration.unregister();
-			contentScriptRegistration = null;
-		}
-		return;
-	}
-
-	if (!contentScriptRegistration) {
-		contentScriptRegistration = await browser.contentScripts.register({
-			"js": [
-				{
-					file: "/data/js/contentscripts/service_worker.js"
-				}
-			],
-			"matches": [ "<all_urls>" ],
-			"runAt": "document_start",
-			allFrames: false
-		});
+	await browser.scripting.unregisterContentScripts(['service_worker']);
+	if (!!await enableFeature()) {
+		await browser.scripting.registerContentScripts([
+			{
+				"id": "service_worker",
+				"js": [
+					"/data/js/contentscripts/service_worker.js"
+				],
+				"matches": [ "<all_urls>" ],
+				"runAt": "document_start",
+				allFrames: false
+			}
+		]);
 	}
 }
 
@@ -55,11 +49,6 @@ browser.storage.onChanged.addListener((changes, area) => {
 	debounced(changes);
 });
 
-/**
- *
- * @type {RegisteredContentScript|null}
- */
-let contentScriptRegistration = null;
 i18ex.loadingPromise.then(async function() {
 	debounced();
 });

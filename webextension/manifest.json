@@ -6,7 +6,7 @@
 			"strict_min_version": "91.0"
 		}
 	},
-	"manifest_version": 2,
+	"manifest_version": 3,
 	"name": "Z-ToolBox (Dev)",
 	"short_name": "ZToolBoxDev",
 	"description": "__MSG_extShortDesc__",
@@ -19,10 +19,10 @@
 		"128": "/icon_128.png"
 	},
 	"background": {
-		"persistent": false,
-		"page": "/data/init.html"
+		"service_worker": "/data/js/index.js",
+		"type": "module"
 	},
-	"browser_action": {
+	"action": {
 		"browser_style": false,
 		"default_icon": {
 			"16": "/icon_16.png",
@@ -48,22 +48,22 @@
 		"alarms",
 		"contextMenus",
 		"notifications",
+		"scripting",
 		"storage",
 		"tabs",
 		"activeTab",
-		"nativeMessaging",
+		"nativeMessaging"
+	],
+	"optional_permissions": [
+		"clipboardWrite"
+	],
+	"host_permissions": [
 		"<all_urls>",
 		"http://*/*",
 		"https://*/*"
 	],
-	"optional_permissions": [
-		"clipboardWrite",
-		"webRequest",
-		"webRequestBlocking"
-	],
 	"options_ui": {
-		"page": "data/options.html",
-		"chrome_style": false
+		"page": "data/options.html"
 	},
-	"minimum_chrome_version": "90.0"
+	"minimum_chrome_version": "92.0"
 }
