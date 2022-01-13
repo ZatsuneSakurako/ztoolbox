@@ -1,3 +1,6 @@
+# WIP
+* i : Move to manifest v3
+
 # 
 * fix : panel - tab title overflow
 * fix : deviantArt - use watch page as data URL
