@@ -4,11 +4,12 @@ import {ZDK} from "../classes/ZDK.js";
 import {getPreference} from "../classes/chrome-preferences-2.js";
 import {i18ex} from "../translation-api.js";
 import {WebsiteData} from "./website-data.js";
-import {DataStore} from "../classes/data-store.js";
 import deviantArt from '../platforms/deviantart.js';
 import freshRss from '../platforms/freshrss.js';
 
-const ALARM_NAME = 'REFRESH_DATA';
+export const ALARM_NAME = 'REFRESH_DATA',
+	refreshDataStorageBase = `_websitesDataStore`
+;
 
 
 
@@ -96,59 +97,18 @@ async function doNotifyWebsite(website, websiteAPI) {
 }
 
 
-/**
- * @type {DataStore|undefined}
- */
-let websitesDataStore;
+const isBackgroundProcess = !location.pathname.endsWith('panel.html');
 /**
  *
- * @return {DataStore}
+ * @type {Map<string, WebsiteData>}
  */
-function getWebsiteDataStore() {
-	if (!!websitesDataStore) {
-		return websitesDataStore;
-	}
-
-	const _websitesDataStore = new DataStore();
-	_websitesDataStore.setCompression('websiteData', function (key, id, data) {
-		data = data.toJSON();
-
-		if (data.count === 0) delete data.count;
-		if (data.folders.length === 0) delete data.folders;
-		if (!data.logged) delete data.logged;
-		if (!data.loginId) delete data.loginId;
-		if (!data.href) delete data.href;
-		if (!data.websiteIcon) delete data.websiteIcon;
-
-		if (data.notificationState) {
-			for (let [name, value] of Object.entries(data.notificationState)) {
-				if (!value) {
-					delete data.notificationState[name]
-				}
-			}
-			if ([...Object.values(data.notificationState)].length === 0) {
-				delete data.notificationState;
-			}
-		}
-
-		return data;
-	}, function (key, id, data) {
-		return WebsiteData.fromJSON(data);
-	});
-	websitesDataStore = _websitesDataStore;
-
-	return websitesDataStore;
-}
-function loadStoredWebsitesData() {
+let websitesData = new Map();
+export async function loadStoredWebsitesData() {
 	if (websitesData.size === 0) {
-		const websitesDataStore = getWebsiteDataStore(),
-			tmpWebsitesData = new Map()
-		;
-		websitesDataStore.forEach('websiteData', function (key, website, websiteData) {
-			tmpWebsitesData.set(website, websiteData);
-		});
-		websitesData.set('deviantArt', tmpWebsitesData.get('deviantArt') ?? new WebsiteData());
-		websitesData.set('freshRss', tmpWebsitesData.get('freshRss') ?? new WebsiteData());
+		let raw = (await browser.storage.local.get([refreshDataStorageBase])) ?? {};
+		raw = raw[refreshDataStorageBase];
+		websitesData.set('deviantArt', !!raw.deviantArt ? WebsiteData.fromJSON(raw.deviantArt) : new WebsiteData());
+		websitesData.set('freshRss', !!raw.freshRss ? WebsiteData.fromJSON(raw.freshRss) : new WebsiteData());
 	}
 	return websitesData;
 }
@@ -163,10 +123,11 @@ export async function refreshWebsitesData() {
 	}
 
 	isRefreshingData = true;
+	const dateStart = new Date();
 
 
 	if (websitesData.size === 0) {
-		websitesData = loadStoredWebsitesData();
+		websitesData = await loadStoredWebsitesData();
 	}
 
 
@@ -182,12 +143,13 @@ export async function refreshWebsitesData() {
 
 	console.debug('Refreshing websites data...');
 	const promises = [];
+	const {_notificationGloballyDisabled} = await browser.storage.local.get(['_notificationGloballyDisabled'])
 	for (let [website, websiteAPI] of websites) {
 		const promise = refreshWebsite(website, websiteAPI);
 		promises.push(promise);
 		promise
 			.then(() => {
-				if (!localStorage.getItem('notificationGloballyDisabled')) {
+				if (!_notificationGloballyDisabled) {
 					doNotifyWebsite(website, websiteAPI)
 						.catch(console.error)
 					;
@@ -199,7 +161,9 @@ export async function refreshWebsitesData() {
 		;
 	}
 
-	const data = await Promise.allSettled(promises);
+	const data = await Promise.allSettled(promises)
+		.catch(console.error)
+	;
 
 	let oldAlarm = null;
 	try {
@@ -223,53 +187,74 @@ export async function refreshWebsitesData() {
 		);
 	}
 
-	updateCountIndicator();
+	updateCountIndicator()
+		.catch(console.error)
+	;
 
 	if (await getPreference('showExperimented') === true) {
 		console.groupCollapsed('Websites check end');
+		console.log('timings:', {
+			dateStart,
+			dateEnd: new Date()
+		});
 		console.log('fetchResponses:', data);
 		console.log('Data:', websitesData);
 		console.groupEnd();
 	}
 
+	if (websitesData.size > 0) {
+		const output = {};
+		for (let [website, data] of websitesData) {
+			output[website] = data.toJSON();
+		}
 
-	const websitesDataStore = await getWebsiteDataStore();
-	for (let [website, data] of websitesData) {
-		websitesDataStore.set('websiteData', website, data);
+		await browser.storage.local.set({
+			[refreshDataStorageBase]: output
+		});
 	}
 
 	isRefreshingData = false;
 	return data;
 }
 
-function updateCountIndicator() {
-	if (typeof browser.browserAction.setBadgeText === 'function') {
-		let count = null;
-		for (let [, websiteData] of websitesData) {
-			if (websiteData.logged && websiteData.count !== null) {
-				if (count === null) {
-					count = 0;
-				}
-				const _nb = parseInt(websiteData.count);
-				count += isNaN(_nb) ? 0 : _nb;
-			}
-		}
-
-		let displayedCount;
-		if (count === null) {
-			displayedCount = '';
-		} else if (count >= 1000000) {
-			displayedCount = `${parseInt(count / 1000000)}M`;
-		} else if (count >= 10000) {
-			displayedCount = `${parseInt(count / 1000)}k`;
-		} else {
-			displayedCount = count.toString();
-		}
-
-		browser.browserAction.setBadgeText({text: displayedCount});
-		browser.browserAction.setBadgeBackgroundColor({color: (count !== null && count > 0)? "#FF0000" : "#424242"});
+export async function updateCountIndicator() {
+	if (typeof browser.browserAction.setBadgeText !== 'function') {
+		return;
 	}
+
+	let count = null;
+	for (let [, websiteData] of websitesData) {
+		if (websiteData.logged && websiteData.count !== null) {
+			if (count === null) {
+				count = 0;
+			}
+			const _nb = parseInt(websiteData.count);
+			count += isNaN(_nb) ? 0 : _nb;
+		}
+	}
+
+	let displayedCount;
+	if (count === null) {
+		displayedCount = '';
+	} else if (count >= 1000000) {
+		displayedCount = `${parseInt(count / 1000000)}M`;
+	} else if (count >= 10000) {
+		displayedCount = `${parseInt(count / 1000)}k`;
+	} else {
+		displayedCount = count.toString();
+	}
+
+	await browser.browserAction.setBadgeText({text: displayedCount});
+	await browser.browserAction.setBadgeBackgroundColor({color: (count !== null && count > 0) ? "#FF0000" : "#424242"});
 }
+
+browser.alarms.onAlarm.addListener(function (alarm) {
+	if (alarm.name === ALARM_NAME) {
+		refreshWebsitesData()
+			.catch(console.error)
+		;
+	}
+});
 
 async function sendDataToPanel() {
 	await i18ex.loadingPromise;
@@ -388,12 +373,9 @@ async function refreshWebsite(website, websiteAPI) {
 }
 
 
-/**
- *
- * @type {Map<string, WebsiteData>}
- */
-let websitesData = new Map();
 window.websitesData = websitesData
 i18ex.loadingPromise.then(async function () {
-	refreshWebsitesData();
+	refreshWebsitesData()
+		.catch(console.error)
+	;
 });
