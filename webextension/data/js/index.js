@@ -108,7 +108,7 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
  * @param suffixConfirmIfNoButtons
  * @return {Promise<ChromeNotificationControllerObject>}
  */
-window.doNotif = function doNotif(options, suffixConfirmIfNoButtons=false) {
+self.doNotif = function doNotif(options, suffixConfirmIfNoButtons=false) {
 	return new Promise((resolve, reject) => {
 		if (typeof options !== "object" || options === null) {
 			reject("Missing argument");
