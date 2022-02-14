@@ -1,19 +1,16 @@
-const
-	pjson = require('../package.json'),
-	fs = require("fs-extra"),
-	path = require("path"),
-	pwd = path.join(__dirname, ".."),
+import fs from "fs-extra";
+import path from "path";
+import webExt from "web-ext";
+import chromeWebStoreUpload from "chrome-webstore-upload";
+import {exec as _exec} from "child_process";
+import klawSync from "klaw-sync";
+import dotenv from "dotenv";
+import pjson from "../package.json";
+import {fsReadFile} from "./common/file-operations.js";
+import {error, info, success, warning} from "./common/custom-console.js";
+import {projectRootDir as pwd} from "./projectRootDir.js";
 
-	webExt = require('web-ext'),
-	chromeWebStoreUpload = require('chrome-webstore-upload'),
-
-	{ exec:_exec } = require('child_process'),
-
-	{fsReadFile} = require("./common/file-operations"),
-	echo = console.log,
-	{error, warning, info, success} = require("./common/custom-console"),
-
-	klawSync = require('klaw-sync'),
+const echo = console.log,
 
 	yargs = require('yargs')
 		.usage('Usage: $0 [options]')
@@ -39,14 +36,14 @@ const
 		.alias('h', 'help')
 		.argv
 ;
-require('dotenv').config();
+dotenv.config();
 
 
 
 /**
  *
- * @param {String} cmd
- * @return {Promise<String>}
+ * @param {string} cmd
+ * @return {Promise<string>}
  */
 function exec(cmd) {
 	return new Promise((resolve, reject)=>{
@@ -62,7 +59,7 @@ function exec(cmd) {
 
 /**
  *
- * @param {String} msg
+ * @param {string} msg
  */
 function throwException(msg) {
 	console.trace();
@@ -236,7 +233,7 @@ async function init() {
 
 		if (!signedXpi) {
 			// Exemple file name : z_toolbox_dev-0.17.1-an+fx.xpi
-			const xpiFiles = fs.readdirSync(__dirname+'/..', {
+			const xpiFiles = fs.readdirSync(pwd, {
 					encoding: "utf8",
 					withFileTypes: true
 				})
@@ -251,7 +248,7 @@ async function init() {
 		if (!signedXpi || !fs.existsSync(signedXpi)) {
 			error('Firefox signing : Could not find the signed file');
 		} else {
-			fs.moveSync(signedXpi, __dirname + '/../dist/z_toolbox_dev.xpi', {
+			fs.moveSync(signedXpi, pwd + '/dist/z_toolbox_dev.xpi', {
 				overwrite: true
 			});
 		}

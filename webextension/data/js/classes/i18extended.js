@@ -1,15 +1,14 @@
 'use strict';
-
+import '../lib/i18next.js';
+import '../lib/i18nextHttpBackend.js';
 
 
 class i18extended {
 	constructor(currentLanguage) {
 		let loadPromise = () => {
 			return new Promise(async (resolve, reject) => {
-				await import('../lib/i18next.js');
-				await import('../lib/i18nextXHRBackend.js');
 				// fallback to one language
-				i18next.use(i18nextXHRBackend);
+				i18next.use(i18nextHttpBackend);
 				i18next.init({
 					lng: 'en',
 					backend: {

@@ -1,9 +1,5 @@
-const
-	{ exec:_exec, execSync:_execSync } = require('child_process'),
-	exec = require('util').promisify(_exec)
-;
-
-let pwd = null;
+import {execSync as _execSync} from "child_process";
+import {projectRootDir as pwd} from "../projectRootDir.js";
 
 /**
  *
@@ -11,7 +7,7 @@ let pwd = null;
  * @param {Boolean} outputInConsole
  * @return {Buffer | String} Stdout from the command
  */
-function execSync(command, outputInConsole=false) {
+export function execSync(command, outputInConsole=false) {
 	let options = {
 		"cwd": pwd,
 		"timeout": 20 * 1000 // 10s
@@ -23,11 +19,3 @@ function execSync(command, outputInConsole=false) {
 
 	return _execSync(command, options);
 }
-
-module.exports = function (workingDir) {
-	pwd = workingDir;
-	return {
-		"execSync": execSync,
-		"exec": exec
-	}
-};

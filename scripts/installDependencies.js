@@ -1,88 +1,43 @@
-const
-	echo = console.log,
+import fs from "fs-extra";
+import path from "path";
 
-	fs = require('fs-extra'),
-	path = require('path'),
-	pwd = path.join(__dirname, ".."),
+import {cp} from "./common/file-operations.js";
+import {info, error} from "./common/custom-console.js";
+import {projectRootDir} from "./projectRootDir.js";
 
-	{ exec:_exec } = require('child_process'),
-
-	cssLib = path.join(pwd, './webextension/data/css/lib/'),
-	jsLib = path.join(pwd, './webextension/data/js/lib/')
+const fontPath = path.join(projectRootDir, './webextension/data/font/'),
+	jsLib = path.join(projectRootDir, './webextension/data/js/lib/')
 ;
 
-const {cp} = require("./common/file-operations");
-const {error, warning, info, success} = require("./common/custom-console");
-
-
 /**
  *
- * @param {Promise} promise
- * @return {Promise<*>}
+ * @param {string} src
+ * @param {string} dest
+ * @private
  */
-async function exceptionHandler(promise) {
-	let result;
-
-	try{
-		result = await promise;
-	} catch(err){
-		console.trace();
-		error(err);
-		process.exit(1);
-	}
-
-	return result;
+function _cp(src, dest) {
+	return cp(path.join(projectRootDir, src), dest);
 }
 
 
-/**
- *
- * @param {String} cmd
- * @return {Promise<String>}
- */
-function exec(cmd) {
-	return new Promise((resolve, reject)=>{
-		_exec(cmd, (err, stdout, stderr) => {
-			if(err===null) {
-				reject(err);
-			} else {
-				resolve(stdout);
-			}
-		});
-	})
+const exist_jsLib = fs.pathExistsSync(jsLib);
+if (!exist_jsLib) {
+	error("JS lib folder not found!");
+	process.exit(1);
+} else {
+	info("Copying mustache...");
+	_cp("./node_modules/mustache/mustache.js", jsLib);
+
+	info("Copying webextension-polyfill...");
+	_cp("./node_modules/webextension-polyfill/dist/browser-polyfill.js", jsLib);
+	_cp("./node_modules/webextension-polyfill/dist/browser-polyfill.js.map", jsLib);
+
+	info("Copying i18next...");
+	_cp("./node_modules/i18next/i18next.js", jsLib);
+
+	info("Copying i18next-http-backend...");
+	_cp("./node_modules/i18next-http-backend/i18nextHttpBackend.js", jsLib);
+
+	info("Copying MaterialIcons (marella/material-icons)...");
+	_cp("./node_modules/material-icons/iconfont/material-icons.woff2", path.normalize(`${fontPath}/MaterialIcons-Regular.woff2`));
 }
-
-
-
-
-async function init() {
-	const exist_cssLib = await fs.pathExists(cssLib),
-		exist_jsLib = await fs.pathExists(jsLib)
-	;
-
-	const _cp = function (src, dest) {
-		return exceptionHandler(cp(path.join(pwd, src), dest));
-	};
-
-	if(!exist_cssLib){
-		error("CSS lib folder not found!");
-		process.exit(1);
-	} else if(!exist_jsLib){
-		error("JS lib folder not found!");
-		process.exit(1);
-	} else {
-		echo("Copying mustache...");
-		await _cp("./node_modules/mustache/mustache.js", jsLib);
-
-		echo("Copying webextension-polyfill...");
-		await _cp("./node_modules/webextension-polyfill/dist/browser-polyfill.js", jsLib);
-		await _cp("./node_modules/webextension-polyfill/dist/browser-polyfill.js.map", jsLib);
-
-		echo("Copying i18next...");
-		await _cp("./node_modules/i18next/i18next.js", jsLib);
-
-		echo("Copying i18next-xhr-backend...");
-		await _cp("./node_modules/i18next-xhr-backend/i18nextXHRBackend.js", jsLib);
-	}
-}
-init();
