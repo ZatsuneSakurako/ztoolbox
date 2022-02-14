@@ -15,8 +15,8 @@ async function baseInit() {
 
 	const {getPreference} = await import('../classes/chrome-preferences-2.js');
 
-	const html = document.querySelector('html'),
-		body = document.querySelector('body')
+	const html = document.documentElement,
+		body = document.body
 	;
 	html.style.height = await getPreference('panel_height');
 	body.style.width = await getPreference('panel_width');
@@ -34,9 +34,9 @@ baseInitPromise.then(async () => {
 		let currentThemeNode = document.querySelector('#generated-color-stylesheet');
 		currentThemeNode.parentNode.removeChild(currentThemeNode);
 
-		document.querySelector('body').dataset.theme = optionColorStylesheet.dataset.theme;
+		document.body.dataset.theme = optionColorStylesheet.dataset.theme;
 
-		document.querySelector('head').appendChild(optionColorStylesheet);
+		document.head.appendChild(optionColorStylesheet);
 	}
 });
 
@@ -46,18 +46,12 @@ window.onload = function () {
 	(async () => {
 		await baseInitPromise;
 
-		const jsFiles = [
-			'../lib/throttle.js',
-			'../panel/browserTabUtils.js',
-			'../panel/tabMover.js',
-			'../panel/service-worker.js',
-			'../variousFeatures/website-data.js',
-			'../panel/freshrss.js',
-			'../panel/panel.js'
-		];
-
-		for (let src of jsFiles) {
-			await import(src);
-		}
+		await import('../lib/throttle.js');
+		await import('../panel/browserTabUtils.js');
+		await import('../panel/tabMover.js');
+		await import('../panel/service-worker.js');
+		await import('../variousFeatures/website-data.js');
+		await import('../panel/freshrss.js');
+		await import('../panel/panel.js');
 	})();
 };
