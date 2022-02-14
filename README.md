@@ -6,15 +6,10 @@ Web Extension to test various things.
 The icon of the web extension is made from https://pixabay.com/photo-1674891/ (in [CC0 Public Domain](https://pixabay.com/fr/service/terms/#usage)).
 
 Sources:
-- Debounce (from Lodash), from https://github.com/lodash/lodash (License MIT).
 - i18next and i18next-xhr-backend are from https://github.com/i18next/i18next and https://github.com/i18next/i18next-xhr-backend (License MIT).
 - mustache.js (or Mustache), from https://github.com/janl/mustache.js (License MIT).
-- XML2jsobj, from https://www.sitepoint.com/how-to-convert-xml-to-a-javascript-object/
-- Opentip from https://github.com/enyo/opentip (License MIT)
-  - Version in Z-Toolbox is a modified one because it is the same modified version as Live Notifier (prevent conflicts because of some data-attributes)
-- Moment.js, from http://momentjs.com/ (License MIT)
 - The RSS icon is from https://pixabay.com/photo-2440955/ (in [CC0 Public Domain](https://pixabay.com/fr/service/terms/#usage))
 - The FreshRSS icon is from https://github.com/FreshRSS/FreshRSS (License AGPL-3.0) with the background change to remove the white background
 
 
-The "Material Icons" (version 2.11 and later) font is part of Google material design, in Apache 2.0 license (open source), is available [here](https://google.github.io/material-design-icons/).
+The "Material Icons" font is part of Google material design, in Apache 2.0 license (open source), is available [here](https://google.github.io/material-design-icons/).
