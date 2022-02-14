@@ -208,17 +208,23 @@ async function onCheckUpdatesInterval() {
 		return;
 	}
 
-	const lastCheck = new Date(localStorage.getItem('checkUpdate')),
-		durationMinutes = (new Date() - lastCheck) / 60000 // date2 - date1 make milliseconds
+	const lastCheck = (await browser.storage.local.get(['_checkUpdate']))?._checkUpdate ?? {};
+	const lastCheckDate = new Date(lastCheck.checkedAt),
+		durationMinutes = (new Date() - lastCheckDate) / 60000 // date2 - date1 make milliseconds
 	;
 	if (!isNaN(durationMinutes) && durationMinutes < 6 * 60) {
 		return;
 	}
 
-	const {ChromeUpdateNotification} = await import('./classes/chromeUpdateNotification.js');
-	const hasUpdate = await ChromeUpdateNotification.checkHasUpdate();
-	localStorage.setItem('checkUpdate_state', !!hasUpdate? '1' : '');
-	localStorage.setItem('checkUpdate', (new Date()).toISOString());
+	const {ChromeUpdateNotification} = await import('./classes/chromeUpdateNotification.js'),
+		hasUpdate = await ChromeUpdateNotification.checkHasUpdate()
+	;
+	await browser.storage.local.set({
+		_checkUpdate: {
+			hasUpdate,
+			checkedAt: new Date()
+		}
+	});
 	if (hasUpdate === false) {
 		return;
 	}

@@ -214,17 +214,21 @@ document.addEventListener('click', e => {
 
 
 
-function current_version(version) {
+async function current_version(version) {
 	let current_version_node = document.querySelector("#current_version");
 	//current_version_node.textContent = version;
 	current_version_node.dataset.currentVersion = version;
-	current_version_node.dataset.hasUpdate = !!localStorage.getItem('checkUpdate_state');
-	if (!localStorage.getItem('checkUpdate_state')) {
+
+	const lastCheck = (await browser.storage.local.get(['_checkUpdate']))?._checkUpdate ?? {};
+	current_version_node.dataset.hasUpdate = lastCheck.hasUpdate ?? false;
+	if (!lastCheck.hasUpdate ?? false) {
 		// if no update, no text
 		current_version_node.dataset.translateTitle = '';
 	}
 }
-current_version(browser.runtime.getManifest().version);
+current_version(browser.runtime.getManifest().version)
+	.catch(console.error)
+;
 
 
 loadTranslations()
