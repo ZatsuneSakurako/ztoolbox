@@ -54,18 +54,11 @@ export async function theme_cache_update(colorStylesheetNode) {
 		background_color = options.get("background_color") ?? '#000000'
 	;
 
-	const _cacheStr = window.localStorage.getItem('backgroundPage_theme_cache') ?? null;
-	let _cache = null;
-	if (!!_cacheStr && ['0', 'false'].includes(_cacheStr) === false) {
-		try {
-			_cache = JSON.parse(_cacheStr);
-		} catch (e) {
-			console.error(e);
-			_cache = null;
-		}
-	}
-
-	if (!!_cache) {
+	const chromeStorage = await browser.storage.local.get(['_backgroundPage_theme_cache']);
+	let _cache = chromeStorage._backgroundPage_theme_cache ?? null;
+	if (!_cache || typeof _cache !== 'object') {
+		_cache = null;
+	} else {
 		if (_cache.version !== browser.runtime.getManifest().version) {
 			_cache = null;
 		} else if (env === 'local' && new Date().toLocaleDateString() !== new Date(_cache._createdAt).toLocaleDateString()) {
@@ -78,7 +71,7 @@ export async function theme_cache_update(colorStylesheetNode) {
 			console.info("Loaded theme is already good");
 			return null;
 		} else {
-			console.info("Using localStorage theme cache");
+			console.info("Using chrome storage theme cache");
 
 			const styleElement = document.createElement("style");
 			styleElement.id = "generated-color-stylesheet";
@@ -126,15 +119,15 @@ export async function theme_cache_update(colorStylesheetNode) {
 		"invBaseColor_light": (currentTheme === "dark")? "77%" : "33%"
 	});
 
-	window.localStorage.setItem('backgroundPage_theme_cache',
-		JSON.stringify({
+	await browser.storage.local.set({
+		_backgroundPage_theme_cache: {
 			_createdAt: new Date().toISOString(),
 			theme: currentTheme,
 			background_color: background_color,
 			style: style,
 			version: browser.runtime.getManifest().version
-		})
-	);
+		}
+	});
 
 	const styleElement = document.createElement("style");
 	styleElement.id = "generated-color-stylesheet";
