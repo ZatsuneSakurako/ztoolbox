@@ -53,5 +53,7 @@ window.onload = function () {
 		await import('../variousFeatures/website-data.js');
 		await import('../panel/freshrss.js');
 		await import('../panel/panel.js');
-	})();
+	})()
+		.catch(console.error)
+	;
 };
