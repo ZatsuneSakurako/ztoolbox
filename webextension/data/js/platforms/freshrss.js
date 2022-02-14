@@ -1,6 +1,4 @@
-import {throttle} from "../lib/throttle.js";
 import {getPreference} from "../classes/chrome-preferences-2.js";
-import {i18ex} from "../translation-api.js";
 
 let freshRssBaseUrl;
 const freshRss = {
