@@ -1,10 +1,10 @@
+import {options as _options} from '/data/js/options-data.js';
 export const CHROME_PREFERENCES_UPDATED_ID = '_updated',
 	CHROME_PREFERENCES_SYNC_ID = '_synchronisedAt'
 ;
 
-export async function getPreferenceConfig(returnMap=false) {
-	const {options:_options} = await import( '/data/js/options-data.js'),
-		options = JSON.parse(JSON.stringify(_options)),
+export function getPreferenceConfig(returnMap=false) {
+	const options = JSON.parse(JSON.stringify(_options)),
 		mapOptions = new Map()
 	;
 
@@ -38,7 +38,7 @@ export async function getPreferenceConfig(returnMap=false) {
  * @return {number|string|boolean}
  */
 export function getBooleanFromVar(string) {
-	switch(typeof string){
+	switch(typeof string) {
 		case "boolean":
 			return string;
 		case "number":
@@ -57,7 +57,7 @@ export function getBooleanFromVar(string) {
 }
 
 export async function savePreference(prefId, value) {
-	const options = await getPreferenceConfig(true),
+	const options = getPreferenceConfig(true),
 		configOption = options.get(prefId)
 	;
 
@@ -89,7 +89,7 @@ export async function savePreference(prefId, value) {
 }
 
 export async function getPreferences(...prefIds) {
-	const options = await getPreferenceConfig(true);
+	const options = getPreferenceConfig(true);
 
 	if (prefIds.length <= 0) {
 		prefIds = [...options.keys()];
