@@ -6,6 +6,7 @@ import "./lib/content-scripts-register-polyfill___modified.js";
 
 import {i18ex} from './translation-api.js';
 
+import './classes/chrome-native.js';
 import {getPreferences} from './classes/chrome-preferences-2.js';
 import {sendNotification} from './classes/chrome-notification-controller.js';
 import {contextMenusController} from './contextMenusController.js';
