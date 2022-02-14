@@ -1,27 +1,15 @@
 'use strict';
 
-import {ChromePreferences} from './classes/chrome-preferences.js';
+import {ChromePreferences, getFilterListFromPreference, getValueFromNode} from './classes/chrome-preferences.js';
+import {
+	getPreference,
+	savePreference,
+	getBooleanFromVar,
+	getPreferenceConfig
+} from './classes/chrome-preferences-2.js';
 import {loadTranslations} from './translation-api.js';
 
-const chromeSettings = new ChromePreferences(),
-	loadingPromise = (async () => {
-		await chromeSettings.loadingPromise;
-		await loadTranslations();
-	})()
-;
-
-export { chromeSettings, loadingPromise };
-
-
-export function getPreference(prefId) {
-	const pref = chromeSettings.get(prefId);
-	if (pref !== undefined) {
-		return pref;
-	}
-}
-export function savePreference(prefId, value) {
-	chromeSettings.set(prefId, value);
-}
+export const loadingPromise = loadTranslations();
 
 function settingNode_onChange() {
 	const node = this,
@@ -29,10 +17,14 @@ function settingNode_onChange() {
 	;
 
 	if (node.validity.valid) {
-		savePreference(settingName, chromeSettings.getValueFromNode(node));
+		savePreference(settingName, getValueFromNode(node))
+			.catch(console.error)
+		;
 	}
 }
 async function refreshSettings(event) {
+	const options = getPreferenceConfig(true);
+
 	let prefId = "";
 	let prefValue = "";
 	if (typeof event.key === "string") {
@@ -40,20 +32,20 @@ async function refreshSettings(event) {
 		prefValue = event.newValue;
 	} else if (typeof event.target === "object") {
 		prefId = event.target.id;
-		prefValue = getPreference(prefId);
+		prefValue = await getPreference(prefId);
 	}
 	let prefNode = document.querySelector(`#preferences #${prefId}`);
-	
+
 	let isPanelPage = location.pathname.indexOf("panel.html") !== -1;
-	
-	if (event.type !== "input" && !(isPanelPage && typeof chromeSettings.options.get(prefId).showPrefInPanel === "boolean" && chromeSettings.options.get(prefId).showPrefInPanel === false) && typeof chromeSettings.options.get(prefId).type === "string" && !(typeof chromeSettings.options.get(prefId).hidden === "boolean" && chromeSettings.options.get(prefId).hidden)) {
+
+	if (event.type !== "input" && !(isPanelPage && typeof options.get(prefId).showPrefInPanel === "boolean" && options.get(prefId).showPrefInPanel === false) && typeof options.get(prefId).type === "string" && !(typeof options.get(prefId).hidden === "boolean" && options.get(prefId).hidden)) {
 		if (prefNode === null) {
 			console.warn(`${prefId} node is null`);
 		} else {
-			switch (chromeSettings.options.get(prefId).type) {
+			switch (options.get(prefId).type) {
 				case 'string':
-					if (typeof chromeSettings.options.get(prefId).stringList === 'boolean' && chromeSettings.options.get(prefId).stringList === true) {
-						prefNode.value = getFilterListFromPreference(getPreference(prefId)).join("\n");
+					if (typeof options.get(prefId).stringList === 'boolean' && options.get(prefId).stringList === true) {
+						prefNode.value = getFilterListFromPreference(await getPreference(prefId)).join("\n");
 					} else {
 						prefNode.value = prefValue;
 					}
@@ -75,22 +67,22 @@ async function refreshSettings(event) {
 					prefNode.value = parseInt(prefValue);
 					break;
 				case 'bool':
-					prefNode.checked = chromeSettings.getBooleanFromVar(prefValue);
+					prefNode.checked = getBooleanFromVar(prefValue);
 					break;
 				case 'control':
 					// Nothing to update, no value
 					break;
 			}
-			let body = document.querySelector('body');
+			let body = document.body;
 			if (prefId === "showAdvanced") {
-				if (getPreference('showAdvanced')) {
+				if (await getPreference('showAdvanced')) {
 					body.classList.add('showAdvanced');
 				} else {
 					body.classList.remove('showAdvanced');
 				}
 			}
 			if (prefId === 'showExperimented') {
-				if (getPreference("showExperimented")) {
+				if (await getPreference("showExperimented")) {
 					body.classList.add("showExperimented");
 				} else {
 					body.classList.remove("showExperimented");
@@ -109,7 +101,7 @@ async function refreshSettings(event) {
 
 // Saves/Restaure options from/to browser.storage
 function saveOptionsInSync(event) {
-	chromeSettings.saveInSync()
+	ChromePreferences.saveInSync()
 		.then(() => {
 			// Update status to let user know options were saved.
 			let status = document.getElementById('status');
@@ -124,15 +116,15 @@ function saveOptionsInSync(event) {
 		.catch(console.warn)
 	;
 }
-function restaureOptionsFromSync(event) {
+async function restaureOptionsFromSync(event) {
 	// Default values
 	let mergePreferences = event.shiftKey;
-	return chromeSettings.restaureFromSync((typeof mergePreferences === 'boolean')? mergePreferences : false);
+	return await ChromePreferences.restaureFromSync((typeof mergePreferences === 'boolean')? mergePreferences : false);
 }
 
 /*		---- Node generation of settings ----		*/
-export function loadPreferences(selector) {
-	chromeSettings.loadPreferencesNodes(document.querySelector(selector));
+export async function loadPreferences(selector) {
+	await ChromePreferences.loadPreferencesNodes(document.querySelector(selector));
 
 	browser.storage.onChanged.addListener((changes, area) => {
 		if (area === "local") {
@@ -189,22 +181,22 @@ if (location.href.endsWith('/options.html')) {
 
 /*				---- Import data from ----				*/
 async function prefNode_FileType_onChange(event) {
-	await chromeSettings.prefNode_FileType_onChange(event);
+	await ChromePreferences.prefNode_FileType_onChange(event);
 }
 
 /*		---- Import/Export preferences from file ----		*/
 async function exportPrefsToFile() {
-	await chromeSettings.exportPrefsToFile("ztoolbox", document);
+	await ChromePreferences.exportPrefsToFile("ztoolbox");
 }
 
-async function importPrefsFromFile(event) {
+export async function importPrefsFromFile(event) {
 	let mergePreferences = (typeof event === "object" && typeof event.shiftKey === "boolean")? event.shiftKey : false;
 
 	console.warn("Merge: " + mergePreferences);
 
 	let error = false;
 	try {
-		await chromeSettings.importPrefsFromFile("ztoolbox", mergePreferences, document);
+		await ChromePreferences.importPrefsFromFile("ztoolbox", mergePreferences);
 	} catch (e) {
 		error = true;
 		console.error(e);
@@ -214,4 +206,3 @@ async function importPrefsFromFile(event) {
 		sendDataToMain("refreshData", "");
 	}
 }
-window.importPrefsFromFile = importPrefsFromFile;

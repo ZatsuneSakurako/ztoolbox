@@ -1,22 +1,20 @@
 'use strict';
 
 import {loadTranslations} from './translation-api.js';
-import {loadPreferences, savePreference, loadingPromise, getPreference} from './options-api.js';
+import {loadPreferences, loadingPromise, importPrefsFromFile} from './options-api.js';
 import {theme_cache_update} from "./backgroundTheme.js";
 
 
 
-window.getPreference = getPreference;
-window.savePreference = savePreference;
 window.theme_update = async function theme_update(){
 	let panelColorStylesheet = await theme_cache_update(document.querySelector("#generated-color-stylesheet"));
-	
+
 	if(typeof panelColorStylesheet === "object" && panelColorStylesheet !== null){
 		console.info("Theme update");
-		
+
 		let currentThemeNode = document.querySelector("#generated-color-stylesheet");
 		currentThemeNode.parentNode.removeChild(currentThemeNode);
-		
+
 		document.querySelector("head").appendChild(panelColorStylesheet);
 	}
 };
@@ -60,7 +58,7 @@ if (typeof browser.storage.sync === 'object') {
 		if (!input) return;
 
 		if (input.checked === false) return;
-		window.importPrefsFromFile.call(input, [e, input]);
+		importPrefsFromFile.call(input, [e, input]);
 	});
 
 	document.addEventListener('click', function (e) {

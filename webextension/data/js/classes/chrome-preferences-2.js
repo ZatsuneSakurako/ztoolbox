@@ -38,14 +38,14 @@ export function getPreferenceConfig(returnMap=false) {
  * @return {number|string|boolean}
  */
 export function getBooleanFromVar(string) {
-	switch(typeof string) {
+	switch (typeof string) {
 		case "boolean":
 			return string;
 		case "number":
 		case "string":
-			if(string === "true" || string === "on" || string === 1){
+			if (string === "true" || string === "on" || string === 1) {
 				return true;
-			} else if(string === "false" || string === "off" || string === 0){
+			} else if (string === "false" || string === "off" || string === 0) {
 				return false;
 			} else {
 				console.warn(`getBooleanFromVar: Unkown boolean (${string})`);
