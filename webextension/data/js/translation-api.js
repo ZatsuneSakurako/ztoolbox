@@ -28,7 +28,7 @@ window.i18ex = i18ex;
 export async function loadTranslations() {
 	await i18ex.loadingPromise;
 
-	let body = document.querySelector('body'),
+	let body = document.body,
 		observer = new MutationObserver(function(mutations) {
 			mutations.forEach(function(mutation) {
 				if (mutation.type === "childList") {

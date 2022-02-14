@@ -156,7 +156,7 @@ export const ChromePreferences = Object.freeze({
 	async loadPreferencesNodes(container) {
 		const doc = container.ownerDocument,
 			isPanelPage = container.baseURI.indexOf("panel.html") !== -1,
-			body = doc.querySelector("body")
+			body = doc.body
 		;
 
 		const options = getPreferenceConfig(true);

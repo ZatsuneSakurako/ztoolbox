@@ -15,7 +15,7 @@ window.theme_update = async function theme_update(){
 		let currentThemeNode = document.querySelector("#generated-color-stylesheet");
 		currentThemeNode.parentNode.removeChild(currentThemeNode);
 
-		document.querySelector("head").appendChild(panelColorStylesheet);
+		document.head.appendChild(panelColorStylesheet);
 	}
 };
 

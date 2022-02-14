@@ -140,9 +140,9 @@ window.theme_update = function theme_update() {
 		let currentThemeNode = document.querySelector("#generated-color-stylesheet");
 		currentThemeNode.remove();
 
-		document.querySelector("body").dataset.theme = panelColorStylesheet.dataset.theme;
+		document.body.dataset.theme = panelColorStylesheet.dataset.theme;
 
-		document.querySelector("head").appendChild(panelColorStylesheet);
+		document.head.appendChild(panelColorStylesheet);
 	}
 };
 
