@@ -25,6 +25,7 @@ class i18extended {
 							});
 							reject(false);
 						} else {
+							document.documentElement.lang = currentLanguage;
 							Object.defineProperty(this, "loadingState", {
 								value: "success",
 								configurable: true,
