@@ -22,7 +22,7 @@ function translateNodes_title() {
 	}
 }
 
-export const i18ex = new i18extended(browser.i18n.getMessage("language"));
+export const i18ex = new i18extended();
 self.i18ex = i18ex;
 
 export async function loadTranslations() {
