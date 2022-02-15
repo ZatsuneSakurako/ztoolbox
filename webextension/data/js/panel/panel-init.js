@@ -43,6 +43,9 @@ baseInitPromise.then(async () => {
 window.onload = function () {
 	window.onload = null;
 
+	// TODO Remove later
+	window.localStorage.clear();
+
 	(async () => {
 		await baseInitPromise;
 
