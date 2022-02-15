@@ -1,5 +1,5 @@
 <a class="websiteItem refreshItem cursor"
-   {{#href}}href="{{{href}}}" target="_blank" {{/href}}{{^href}}href="#"{{/href}}
+	{{#href}}href="{{{href}}}" target="_blank" {{/href}}{{^href}}href="#"{{/href}}
    data-logged="{{logged}}" data-website="{{website}}"
    style="background-image: url('{{websiteIcon}}')">
 
@@ -8,13 +8,15 @@
 	<div class="websiteData">
 		{{#logged}}
 			{{#folders}}
-				<span class="folder"
-				      {{#folderHaveUrl}}
-					      data-translate-title="open_folder"
-					      data-folder-url="{{folderUrl}}"
-				      {{/folderHaveUrl}}
-						data-folder-title="{{folderTitle}}"
-						data-folder-count="{{folderCount}}"></span>
+				{{#folderHaveUrl}}
+					<a class="folder" href="{{folderUrl}}" target="_blank"
+					   data-translate-title="open_folder"
+					   data-folder-title="{{folderTitle}}"
+					   data-folder-count="{{folderCount}}"></a>
+				{{/folderHaveUrl}}
+				{{^folderHaveUrl}}
+					<span class="folder" data-folder-title="{{folderTitle}}" data-folder-count="{{folderCount}}"></span>
+				{{/folderHaveUrl}}
 			{{/folders}}
 		{{/logged}}
 		{{^logged}}

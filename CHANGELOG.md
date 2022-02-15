@@ -9,6 +9,7 @@
   * PWA
   * Hourly Alarm
 * i : Copy text link now for Firefox only
+* i : Less message dependencies between panel and main
 * fix : Fix badge refresh
 
 # 0.17.3

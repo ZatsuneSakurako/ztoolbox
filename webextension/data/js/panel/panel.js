@@ -150,21 +150,6 @@ async function updatePanelData() {
 
 
 
-
-
-document.addEventListener('click', e => {
-	const node = e.target.closest('#panelContent .websiteItem .folder[data-folder-url]');
-	if (!node) return;
-
-	e.stopPropagation();
-	ZDK.openTabIfNotExist(node.dataset.folderUrl)
-		.catch(console.error)
-	;
-	return false;
-});
-
-
-
 async function current_version(version) {
 	let current_version_node = document.querySelector("#current_version");
 	//current_version_node.textContent = version;
