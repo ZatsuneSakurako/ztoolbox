@@ -2,44 +2,9 @@ import {ZDK} from '../classes/ZDK.js';
 import {loadTranslations} from '../translation-api.js';
 import {renderTemplate} from '../init-templates.js';
 import {theme_cache_update} from '../backgroundTheme.js';
-import {WebsiteData} from "../variousFeatures/website-data.js";
+import {refreshWebsitesData, loadStoredWebsitesData} from "../variousFeatures/refresh-data.js";
 
 
-
-const sendDataToMain = function (id, data=null) {
-	browser.runtime.sendMessage({
-		id,
-		data
-	})
-};
-
-let notificationGloballyDisabled, websitesData;
-chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
-	if (sender.hasOwnProperty("url")) {
-		console.debug(`Receiving message from: ${sender.url} (${sender.id})`);
-	}
-
-	if (chrome.runtime.id !== sender.id) {
-		console.error('Message received from unknown sender id');
-	} else if (typeof message === "object" && message.hasOwnProperty("data")) {
-		if (message.id === 'mainToPanel_panelData') {
-			notificationGloballyDisabled = message.data.notificationGloballyDisabled;
-			websitesData = new Map(
-				message.data.websitesData
-					.map(data => {
-						data[1] = WebsiteData.fromJSON(data[1]);
-						return data;
-					})
-			);
-			document.dispatchEvent(new CustomEvent('freshRssDataUpdate', {
-				detail: websitesData.get('freshRss')
-			}));
-			updatePanelData()
-				.catch(console.error)
-			;
-		}
-	}
-});
 
 document.addEventListener('click', e => {
 	const elm = e.target.closest('[role="button"]');
@@ -55,10 +20,16 @@ document.addEventListener('click', e => {
 	const elm = e.target.closest('#disableNotifications');
 	if (!elm) return;
 
-	browser.runtime.sendMessage({
-		id: 'btn_notificationGloballyDisabled',
-		data: null
-	})
+	browser.storage.local.get(['_notificationGloballyDisabled'])
+		.then(async ({_notificationGloballyDisabled}) => {
+			await browser.storage.local.set({
+				_notificationGloballyDisabled: !_notificationGloballyDisabled
+			});
+
+			updatePanelData()
+				.catch(console.error)
+			;
+		})
 		.catch(console.error)
 	;
 });
@@ -71,10 +42,7 @@ document.addEventListener('click', e => {
 	elm.disabled = true;
 	const triggered = Date.now();
 
-	browser.runtime.sendMessage({
-		id: 'refreshWebsitesData',
-		data: null
-	})
+	refreshWebsitesData()
 		.finally(() => {
 			if (Date.now() - triggered > 2500) {
 				elm.dataset.translateTitle = "Refresh";
@@ -85,39 +53,11 @@ document.addEventListener('click', e => {
 					elm.disabled = false;
 				}, 3000);
 			}
-		})
-	;
-});
 
-document.addEventListener('click', e => {
-	const elm = e.target.closest('#copyTabTitle');
-	if (!elm) return;
-
-	browser.tabs.query({
-		active: true,
-		currentWindow: true
-	})
-		.then(async tabs => {
-			const [tab] = tabs;
-			let clipboardResult = false;
-			if (tab && tab.title) {
-				const {copyToClipboard} = await import('../copyToClipboard.js');
-				clipboardResult = await copyToClipboard(tab.title);
-			}
-
-			browser.runtime.sendMessage({
-				id: "doNotif",
-				data: {
-					options: {
-						'id': 'copied_title_text',
-						"message": (clipboardResult) ? i18ex._("copied_title_text") : i18ex._("error_copying_to_clipboard")
-					}
-				}
-			})
+			updatePanelData()
 				.catch(console.error)
 			;
 		})
-		.catch(console.error)
 	;
 });
 
@@ -146,7 +86,11 @@ window.theme_update = function theme_update() {
 	}
 };
 
-function removeAllChildren(node){
+/**
+ *
+ * @param {Node} node
+ */
+function removeAllChildren(node) {
 	// Taken from https://stackoverflow.com/questions/683366/remove-all-the-children-dom-elements-in-div
 	while (node.hasChildNodes()) {
 		node.removeChild(node.lastChild);
@@ -156,12 +100,19 @@ function removeAllChildren(node){
 async function updatePanelData() {
 	console.log("Updating panel data");
 
+	const {_notificationGloballyDisabled} = await browser.storage.local.get(['_notificationGloballyDisabled']);
+
 	let disableNotificationsButton = document.querySelector('#disableNotifications');
-	disableNotificationsButton.classList.toggle('off', notificationGloballyDisabled);
-	disableNotificationsButton.dataset.translateTitle = notificationGloballyDisabled? 'GloballyDisabledNotifications' : 'GloballyDisableNotifications';
+	disableNotificationsButton.classList.toggle('off', !!_notificationGloballyDisabled ?? false);
+	disableNotificationsButton.dataset.translateTitle = !!_notificationGloballyDisabled? 'GloballyDisabledNotifications' : 'GloballyDisableNotifications';
 
 	let websiteDataList_Node = document.querySelector("#panelContent #refreshItem");
 	removeAllChildren(websiteDataList_Node);
+
+	const websitesData = await loadStoredWebsitesData();
+	document.dispatchEvent(new CustomEvent('freshRssDataUpdate', {
+		detail: websitesData.get('freshRss')
+	}));
 
 	for (let [website, websiteData] of websitesData) {
 		let websiteRenderData = {
@@ -235,4 +186,6 @@ loadTranslations()
 	.catch(console.error)
 ;
 
-sendDataToMain("panel_onload");
+updatePanelData()
+	.catch(console.error)
+;

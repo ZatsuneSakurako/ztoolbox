@@ -249,85 +249,8 @@ export async function updateCountIndicator() {
 }
 
 browser.alarms.onAlarm.addListener(function (alarm) {
-	if (alarm.name === ALARM_NAME) {
-		refreshWebsitesData()
-			.catch(console.error)
-		;
-	}
-});
+	if (!isBackgroundProcess) return;
 
-async function sendDataToPanel() {
-	await i18ex.loadingPromise;
-	return await browser.runtime.sendMessage({
-		id: 'mainToPanel_panelData',
-		data: {
-			notificationGloballyDisabled: !!localStorage.getItem('notificationGloballyDisabled'),
-			websitesData: [...websitesData.entries()]
-				.map(data => {
-					data[1] = data[1].toJSON();
-					return data;
-				})
-		}
-	});
-}
-
-chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
-	if (chrome.runtime.id !== sender.id) {
-		console.error('Message received from unknown sender id');
-	} else if (typeof message === "object" && message.hasOwnProperty("data")) {
-		const isFromPanel = sender.url.endsWith('/panel.html');
-
-		switch (message.id) {
-			case 'panel_onload':
-				if (isFromPanel) {
-					if (websitesData.size === 0) {
-						loadStoredWebsitesData();
-						sendDataToPanel()
-							.catch(console.error)
-						;
-					}
-
-					sendDataToPanel()
-						.catch(console.error)
-					;
-				}
-				break;
-			case 'btn_notificationGloballyDisabled':
-				const oldState = localStorage.getItem('notificationGloballyDisabled') !== null;
-				if (oldState) {
-					localStorage.removeItem('notificationGloballyDisabled');
-				} else {
-					localStorage.setItem('notificationGloballyDisabled', '1');
-				}
-
-				sendDataToPanel()
-					.catch(console.error)
-				;
-				break;
-			case 'refreshWebsitesData':
-				refreshWebsitesData()
-					.then(sendResponse)
-					.catch(sendResponse)
-					.finally(() => {
-						sendDataToPanel()
-							.catch(console.error)
-						;
-					})
-				;
-				return true;
-			case 'freshRss_newTitle':
-				const freshRss = websitesData.get('freshRss');
-				freshRss.count = message.data.newCount;
-				updateCountIndicator();
-				sendDataToPanel()
-					.catch(console.error)
-				;
-				break;
-		}
-	}
-});
-
-browser.alarms.onAlarm.addListener(function (alarm) {
 	if (alarm.name === ALARM_NAME) {
 		refreshWebsitesData()
 			.catch(console.error)
@@ -374,8 +297,10 @@ async function refreshWebsite(website, websiteAPI) {
 
 
 window.websitesData = websitesData
-i18ex.loadingPromise.then(async function () {
-	refreshWebsitesData()
-		.catch(console.error)
-	;
-});
+if (isBackgroundProcess) {
+	i18ex.loadingPromise.then(async function () {
+		refreshWebsitesData()
+			.catch(console.error)
+		;
+	});
+}
