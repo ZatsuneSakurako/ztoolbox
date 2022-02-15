@@ -1,4 +1,3 @@
-import {ZDK} from '../classes/ZDK.js';
 import {loadTranslations} from '../translation-api.js';
 import {renderTemplate} from '../init-templates.js';
 import {theme_cache_update} from '../backgroundTheme.js';
