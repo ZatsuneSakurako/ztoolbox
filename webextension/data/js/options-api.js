@@ -38,6 +38,11 @@ async function refreshSettings(event) {
 
 	let isPanelPage = location.pathname.indexOf("panel.html") !== -1;
 
+	if (prefId.charAt(0) === '_' && options.has(prefId) === false) {
+		// Ignore internal settings that aren't made to be displayed
+		return;
+	}
+
 	if (event.type !== "input" && !(isPanelPage && typeof options.get(prefId).showPrefInPanel === "boolean" && options.get(prefId).showPrefInPanel === false) && typeof options.get(prefId).type === "string" && !(typeof options.get(prefId).hidden === "boolean" && options.get(prefId).hidden)) {
 		if (prefNode === null) {
 			console.warn(`${prefId} node is null`);

@@ -106,7 +106,7 @@ let websitesData = new Map();
 export async function loadStoredWebsitesData() {
 	if (websitesData.size === 0) {
 		let raw = (await browser.storage.local.get([refreshDataStorageBase])) ?? {};
-		raw = raw[refreshDataStorageBase];
+		raw = raw[refreshDataStorageBase] ?? {};
 		websitesData.set('deviantArt', !!raw.deviantArt ? WebsiteData.fromJSON(raw.deviantArt) : new WebsiteData());
 		websitesData.set('freshRss', !!raw.freshRss ? WebsiteData.fromJSON(raw.freshRss) : new WebsiteData());
 	}

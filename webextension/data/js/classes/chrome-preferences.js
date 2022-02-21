@@ -120,7 +120,7 @@ export const ChromePreferences = Object.freeze({
 				continue;
 			}
 
-			if (options.has(prefId) && typeof options.get(prefId).type !== "undefined" && options.get(prefId).type !== "control" && options.get(prefId).type !== "file" && typeof preferences[prefId] === typeof defaultSettingsSync.get(prefId)) {
+			if (options.has(prefId) && typeof options.get(prefId).type !== "undefined" && options.get(prefId).type !== "control" && options.get(prefId).type !== "file" && typeof preferences[prefId] === typeof options.get(prefId).value) {
 				if(mergePreferences){
 					await savePreference(prefId, preferences[prefId]);
 				} else {
@@ -154,9 +154,8 @@ export const ChromePreferences = Object.freeze({
 	 * @param {HTMLElement} container
 	 */
 	async loadPreferencesNodes(container) {
-		const doc = container.ownerDocument,
-			isPanelPage = container.baseURI.indexOf("panel.html") !== -1,
-			body = doc.body
+		const isPanelPage = container.baseURI.indexOf("panel.html") !== -1,
+			body = document.body
 		;
 
 		const options = getPreferenceConfig(true);
@@ -190,10 +189,10 @@ export const ChromePreferences = Object.freeze({
 			let groupNode = null;
 			if (typeof option.group === "string" && option.group !== "") {
 				const groupId = option.group;
-				groupNode = doc.querySelector(`#${groupId}.pref_group`);
+				groupNode = document.querySelector(`#${groupId}.pref_group`);
 
 				if (groupNode === null) {
-					groupNode = doc.createElement("div");
+					groupNode = document.createElement("div");
 					groupNode.id = groupId;
 					groupNode.classList.add("pref_group");
 					if(groupId === "dailymotion" || groupId === "smashcast" || groupId === "hitbox" || groupId === "twitch" || groupId === "mixer" || groupId === "beam"){
@@ -505,7 +504,7 @@ export const ChromePreferences = Object.freeze({
 				opts.inputAccept = null
 			}
 
-			let node = doc.createElement("input");
+			let node = document.createElement("input");
 			node.type = "file";
 			node.className = "hide";
 			if (opts.inputAccept !== null) {
@@ -559,7 +558,7 @@ export const ChromePreferences = Object.freeze({
 				}
 			});
 
-			doc.head.appendChild(node);
+			document.head.appendChild(node);
 			ZDK.simulateClick(node);
 		});
 	},

@@ -47,11 +47,13 @@ const debounced = throttle(function () {
 		.catch(console.error)
 	;
 }, 500);
-browser.storage.local.onChanged.addListener(function onChanged(changes) {
+
+browser.storage.onChanged.addListener((changes, area) => {
+	if (area !== "local") return;
 	if (!changes.serviceWorkerWhitelist) return;
 
 	debounced(changes);
-})
+});
 
 /**
  *
