@@ -1,7 +1,6 @@
 const port = chrome.runtime.connectNative('eu.gitlab.zatsunenomokou.chromenativebridge');
 
-// noinspection JSUnusedLocalSymbols
-port.onMessage.addListener(function(msg, port) {
+port.onMessage.addListener(function(msg) {
 	if (typeof msg === 'string') {
 		try {
 			msg = JSON.parse(msg)
@@ -13,17 +12,10 @@ port.onMessage.addListener(function(msg, port) {
 		return;
 	}
 
-	if (msg.result && typeof msg.result === 'object') {
-		if (msg.result.connected === 'z-toolbox') {
-			//
-		}
+	if (msg.type === 'ws open') {
+		console.dir(msg);
 	}
 });
-
-/*setTimeout(() => {
-	port.postMessage({command: 'getPreference', id: "theme"});
-	port.postMessage("ping");
-}, 5000);*/
 
 function randomId() {
 	let output = '';
@@ -37,7 +29,13 @@ function randomId() {
 	return output;
 }
 
-function callNative(command, data) {
+/**
+ * Return the generated message id
+ * @param {string} command
+ * @param {object} [data]
+ * @return {string}
+ */
+function callNative(command, data={}) {
 	const _id = randomId();
 	port.postMessage({
 		...data,
@@ -47,15 +45,56 @@ function callNative(command, data) {
 	return _id;
 }
 
-function fnNative(command, data) {
+/**
+ *
+ * @param {string} command
+ * @param {object} [data]
+ * @return {Promise<unknown>}
+ */
+function fnNative(command, data={}) {
 	return new Promise((resolve, reject) => {
 		const _id = callNative(command, data);
 		port.onMessage.addListener(function callback(msg, port) {
 			if (typeof msg === 'string') msg = JSON.parse(msg);
-			if (msg && msg._id === _id) {
+			if (msg && msg.data._id === _id) {
 				port.onMessage.removeListener(callback);
-				resolve(msg);
+
+				if (msg.type === 'error' || msg.error !== false) {
+					reject(msg)
+				} else {
+					resolve(msg.result);
+				}
 			}
 		});
 	});
+}
+
+
+
+export function ping() {
+	callNative('ping');
+}
+
+/**
+ *
+ * @param {string} id
+ * @return {Promise<*>}
+ */
+export async function getPreference(id) {
+	const result = await fnNative('getPreference', {
+		id
+	});
+	return result.value;
+}
+
+/**
+ *
+ * @param {string[]} ids
+ * @return {Promise<*[]>}
+ */
+export async function getPreferences(ids) {
+	const result = await fnNative('getPreferences', {
+		ids
+	});
+	return result.value;
 }
