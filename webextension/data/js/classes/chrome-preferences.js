@@ -139,9 +139,9 @@ export const ChromePreferences = Object.freeze({
 		for (let prefId in items) {
 			if(items.hasOwnProperty(prefId)){
 				if(mergePreferences){
-					savePreference(prefId, items[prefId]);
+					await savePreference(prefId, items[prefId]);
 				} else {
-					savePreference(prefId, items[prefId]);
+					await savePreference(prefId, items[prefId]);
 				}
 			}
 		}
