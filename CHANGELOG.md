@@ -1,4 +1,4 @@
-# WIP
+# 0.18.0
 * \+ : Fresh RSS
 * \- : Clean unused ZDK features
 * \- : Delete features :
