@@ -1,41 +1,33 @@
-const chalk = require('chalk');
+import chalk from "chalk";
 
 /**
  *
- * @param {String} msg
+ * @param {string} msg
  */
-function error(msg){
+export function error(msg) {
 	return console.log(chalk.bold.red(msg));
 }
 
 /**
  *
- * @param {String} msg
+ * @param {string} msg
  */
-function warning(msg){
+export function warning(msg) {
 	return console.log(chalk.keyword('orange')(msg));
 }
 
 /**
  *
- * @param {String} msg
+ * @param {string} msg
  */
-function info(msg) {
+export function info(msg) {
 	return console.log(chalk.blueBright(msg));
 }
 
 /**
  *
- * @param {String} msg
+ * @param {string} msg
  */
-function success(msg){
+export function success(msg) {
 	return console.log(chalk.green(msg));
 }
-
-
-module.exports = {
-	"error": error,
-	"warning": warning,
-	"info": info,
-	"success": success
-};

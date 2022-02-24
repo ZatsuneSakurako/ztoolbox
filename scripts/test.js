@@ -1,13 +1,10 @@
-const
-	WARNING_CHAR="⚠",
-	SUCCESS_CHAR="✅",
-	{error, warning, info, success} = require('./common/custom-console'),
-	stylelint = require('stylelint'),
+import stylelint from "stylelint";
+import {error, info, success, warning} from "./common/custom-console.js";
+import {execSync} from "./common/custom-child-process.js";
+import { projectRootDir as pwd } from "./projectRootDir.js";
 
-	path = require('path'),
-	pwd = path.join(__dirname, ".."),
-
-	{ exec, execSync } = require('./common/custom-child-process')(pwd)
+const WARNING_CHAR="⚠",
+	SUCCESS_CHAR="✅"
 ;
 
 

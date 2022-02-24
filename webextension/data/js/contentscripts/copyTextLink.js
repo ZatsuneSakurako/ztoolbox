@@ -24,10 +24,8 @@ async function copyToClipboard(string) {
  */
 function sendToMain(id, data) {
 	chrome.runtime.sendMessage(chrome.runtime.id, {
-		data: {
-			id,
-			data
-		}
+		id,
+		data: data
 	}, function () {
 		console.log('[CopyTextLink]', arguments);
 	});

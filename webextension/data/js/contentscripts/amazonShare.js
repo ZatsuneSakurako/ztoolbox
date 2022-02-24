@@ -28,8 +28,8 @@
 
 
 	chrome.runtime.sendMessage({
+		"id": "getPreferences",
 		"data": {
-			"id": "getPreferences",
 			"preferences": [
 				"amazonShareLink"
 			]

@@ -1,49 +1,74 @@
 const templatesSource = window.templatesSource = new Map();
 templatesSource.set('backgroundTheme', '/data/template/backgroundTheme.mst');
 templatesSource.set('panelCheckedDataItem', '/data/template/panel/checkedDataItem.mst');
-templatesSource.set('panelRssLinks', '/data/template/panel/rssLinks.mst');
 templatesSource.set('tabMover', '/data/template/panel/tabMover.mst');
 
-moment.locale(browser.i18n.getMessage('language'));
+
+export async function getMustache() {
+	if (!window.Mustache) {
+		await import('./lib/mustache.js');
+	}
+	return window.Mustache;
+}
+
+export async function renderTemplate(templateId, context) {
+	return (await getMustache()).render(await getTemplate(templateId), context);
+}
+
+const loadMap = new Map();
+export async function getTemplate(templateId) {
+	let loadedTemplate = loadMap.get(templateId);
+	if (!loadedTemplate) {
+		const templatePath = templatesSource.get(templateId);
+		if (!templatePath) {
+			throw new Error('UNKNOWN_TEMPLATE');
+		}
+
+		try {
+			const response = await fetch(browser.runtime.getURL(templatePath));
+			const loadText = new Promise((resolve, reject) => {
+				response.text()
+					.then(resolve)
+					.catch(reject)
+			})
+			loadedTemplate = {id: templateId, response: loadText};
+		} catch (reason) {
+			console.error(reason);
+			loadedTemplate = {id: templateId, reason: reason}
+		}
+		loadMap.set(templateId, loadedTemplate);
+	}
 
 
-async function loadMustacheTemplates(map) {
+	if (!loadedTemplate.response) {
+		console.dir(loadedTemplate)
+		throw new Error('TEMPLATE_LOADING_ERROR');
+	}
+
+	const template = await loadedTemplate.response;
+	(await getMustache()).parse(template);
+
+	return template;
+}
+
+export async function getTemplates(...templates) {
 	let templatePromises = [],
-		templateMap = new Map();
+		templateMap = new Map()
+	;
 
-	for (const [id, url] of map) {
-		templatePromises.push(new Promise((resolve, reject) => {
-			fetch(browser.extension.getURL(url))
-				.then(response => {
-					resolve({id: id, response: response})
-				})
-				.catch(reason => {
-					reject({id: id, response: reason})
-				})
-			;
-		}));
+	for (const id of templates) {
+		templatePromises.push(getTemplate(id));
 	}
 
 	const templatesData = await Promise.allSettled(templatePromises);
-	for (let settledData of templatesData) {
+	for (let [i, settledData] of templatesData.entries()) {
 		if (settledData.status === 'rejected') {
 			console.error(settledData.reason);
 			continue;
 		}
 
-		const data = settledData.value,
-			templateId = data.id
-		;
-		const template = await data.response.text();
-		templateMap.set(templateId, await template);
-		Mustache.parse(template);
+		templateMap.set(templates[i], settledData.value);
+
 	}
 	return templateMap;
 }
-
-loadMustacheTemplates(templatesSource)
-	.then(async (loadMap)=>{
-		appGlobal.mustacheTemplates = loadMap;
-		await chromeSettings.loadingPromise;
-	})
-;

@@ -1,11 +1,23 @@
 'use strict';
 
 import {default as env} from '../env.js';
-import {copyToClipboard} from '../copyToClipboard.js';
-const i18ex = window.i18ex;
+import {i18ex} from "../translation-api.js";
 
 
-window.baseRequiredPromise.then(() => {
+
+export const contentScriptRegistration = await browser.contentScripts.register({
+	"js": [
+		{
+			file: "/data/js/contentscripts/copyTextLink.js"
+		}
+	],
+	"matches": [ "<all_urls>" ],
+	"runAt": "document_idle",
+	allFrames: false
+});
+
+
+i18ex.loadingPromise.then(() => {
 	chrome.contextMenus.create({
 		id: 'link_CopyTextLink',
 		title: i18ex._("copy_link_text"),
@@ -16,10 +28,12 @@ window.baseRequiredPromise.then(() => {
 
 
 chrome.contextMenus.onClicked.addListener(function (info, tab) {
-	chrome.tabs.sendMessage(tab.id, {
-		id: "copyLinkText",
-		data: ""
-	});
+	if (info.menuItemId === 'link_CopyTextLink') {
+		chrome.tabs.sendMessage(tab.id, {
+			id: "copyLinkText",
+			data: ""
+		});
+	}
 });
 
 async function onCopyLinkTextReply(responseData) {
@@ -41,8 +55,8 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
 	}
 
 	if (typeof message === "object" && message.hasOwnProperty("data")) {
-		if (message.data.id === "copyLinkText_reply") {
-			onCopyLinkTextReply(message.data.data)
+		if (message.id === "copyLinkText_reply") {
+			onCopyLinkTextReply(message.data)
 				.catch(console.error)
 			;
 		}

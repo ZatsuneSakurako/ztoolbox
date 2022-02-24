@@ -29,7 +29,10 @@
 	"whitelist_title": "Liste blanche",
 
 
-	"notify_checkedData_title": "Affiche une notification pour deviantArt",
+	"freshRss_baseUrl_title": "URL de votre instance FreshRss (devrait finir par un /i/)",
+	"freshRss_baseUrl_description": "Rafraîchissement de donnée quand URL fournie",
+
+	"notify_checkedData_title": "Affiche une notification pour deviantArt/freshRss",
 	"notify_checkedData_description": "Notification quand cochée",
 
 	"notify_all_viewed_title": "Affiche une notification quand tout est vu pour un/des site(s)",
@@ -44,7 +47,7 @@
 
 	"open_optionpage": "Ouvrir la page d'option",
 
-	"check_delay_title": "Délais de vérification de deviantArt",
+	"check_delay_title": "Délais de vérification de deviantArt/freshRss",
 	"check_delay_description": "Délai entre chaque vérification, en minute",
 
 	"timeout_delay_title": "Délai de timeout des requêtes",
@@ -55,25 +58,6 @@
 
 	"amazonShareLink_title": "Ajoute un bouton pour partager, dans le presse-papier, plus facilement des articles Amazon",
 	"amazonShareLink_description": "Ajoutera le bouton si coché (rafraîchir les pages ouvertes)",
-
-	"unTrackUrlParams_title": "Retire les paramètres de tracking des urls",
-	"unTrackUrlParams_description": "Activé si coché",
-
-	"unTrackUrlParamsExclude_title": "Domaines exclus des redirections de tracking",
-	"unTrackUrlParamsExclude_description": "1 domaine par ligne",
-
-	"twitchPoints_title": "Twitch clic auto points",
-	"twitchPoints_description": "Activé si coché",
-
-	"hourlyAlarm_title": "Notification par heure",
-	"hourlyAlarm_description": "Affiche une notification par heure quand coché",
-
-	"hourlyAlarm_sound_title": "Lit un son avec les notifications par heure",
-	"hourlyAlarm_sound_description": "Importe un fichier audio",
-	"hourlyAlarm_sound": "Importer",
-
-	"hourlyAlarm_sound_volume_title": "Volume son pour les notification par heure",
-	"hourlyAlarm_sound_volume_description": "En pourcentage",
 
 	"serviceWorkerWhitelist_title": "Liste blanche du service worker",
 	"serviceWorkerWhitelist_description": "JSON object",
@@ -132,7 +116,6 @@
 	"copied_link_text": "Texte du lien copié",
 	"copied_title_text": "Titre copié",
 	"error_copying_to_clipboard": "Erreur lors de la copie dans le presse-papier",
-	"copyTabTitle": "Copier le titre de l'onglet actuel",
 
 
 
@@ -168,8 +151,6 @@
 	"FileTooBig": "Le fichier est trop gros",
 	"WrongFileType": "Mauvais type de fichier",
 	"timeIsNow": "Il est maintenant {{currentTime}}",
-	"displayTimeFormat": "HH:mm",
-	"spokenTimeFormat": "HH [heure]",
 
 	"updateSimple": "Mise à jour disponible",
 	"updateDetail": "Une mise à jour de {{name}} est disponible, rafraîchir le dépôt local"

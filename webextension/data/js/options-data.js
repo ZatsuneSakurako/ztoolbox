@@ -1,6 +1,6 @@
 'use strict';
 
-const options = {
+export const options = {
 	"check_delay": {
 		"title": "Streams status delay",
 		"description": "Delay between checks, in minute",
@@ -8,18 +8,6 @@ const options = {
 		"value": 5,
 		"minValue": 1,
 		"prefLevel": "advanced"
-	},
-	"timeout_delay": {
-		"title": "Streams timeout delay",
-		"description": "Timeout delay of requests, in sec (between 10 and 30)",
-		"type": "integer",
-		"value": 30,
-		"minValue": 10,
-		"maxValue": 30,
-		"rangeInput": true,
-		"rangeOutputUnit": "s",
-		"group": "checking",
-		"prefLevel": "experimented"
 	},
 	/*			Features Prefs			*/
 	"launchpadAddLink": {
@@ -36,68 +24,6 @@ const options = {
 		"value": true,
 		"group": "featurePreference"
 	},
-	"unTrackUrlParams": {
-		"title": "Remove tracking params from urls",
-		"description": "Enabled if checked",
-		"type": "bool",
-		"value": false,
-		"group": "featurePreference"
-	},
-	"unTrackUrlParamsExclude": {
-		"title": "Excluded domain from tracking url redirections",
-		"description": "One domain per line",
-		"type": "string",
-		"value": "mail.google.co,gmail.co,hotmail.co,mail.yahoo.co,outlook.live.co,mail.rediff.co",
-		"stringList": true,
-		"group": "featurePreference"
-	},
-	"youtubeSubscriptions": {
-		"title": "Youtube categories",
-		"description": "JSON data {\"category\": [\"user/someId\"]}",
-		"type": "json",
-		"value": "{}",
-		"stringList": true,
-		"group": "featurePreference"
-	},
-	"twitchPoints": {
-		"title": "Twitch auto clic points",
-		"description": "Enabled if checked",
-		"type": "bool",
-		"value": false,
-		"group": "featurePreference"
-	},
-	"hourlyAlarm": {
-		"title": "Hourly alarm",
-		"description": "Display a notification per hour when checked",
-		"type": "bool",
-		"value": false,
-		"group": "featurePreference"
-	},
-	"hourlyAlarm_sound": {
-		"title": "Play sound with notifications",
-		"description": "Import audio file",
-		"label": "Import",
-		"type": "file",
-		"sync": false,
-		"fileMaxSize": 5 * 1024 * 1024,
-		"inputAccept": "audio/*",
-		"fileTypes": /^(audio\/|video\/ogg)/,
-		"readType": "dataUrl",
-		"value": {},
-		"group": "featurePreference"
-	},
-	"hourlyAlarm_sound_volume": {
-		"title": "Sound volume for the notification",
-		"description": "In percent",
-		"type": "integer",
-		"value": 70,
-		"minValue": 0,
-		"maxValue": 100,
-		"rangeInput": true,
-		"rangeOutputUnit": "%",
-		"prefLevel": "basic",
-		"group": "featurePreference"
-	},
 	"serviceWorkerWhitelist": {
 		"title": "Service worker whitelist",
 		"description": "JSON data {\"domain.com\": \"whitelist\"}",
@@ -107,6 +33,14 @@ const options = {
 		"group": "featurePreference"
 	},
 	/*			Notifications			*/
+	"freshRss_baseUrl": {
+		"title": "Base url of your FreshRss instance",
+		"description": "Data refresh with url provided",
+		"type": "string",
+		"value": '',
+		"group": "notifications",
+		"prefLevel": "basic"
+	},
 	"notify_checkedData": {
 		"title": "Show a notification for deviantArt",
 		"description": "Notification when checked",
@@ -228,8 +162,4 @@ const options = {
 		"showPrefInPanel": false,
 		"prefLevel": "advanced"
 	}
-};
-
-export {
-	options
 };

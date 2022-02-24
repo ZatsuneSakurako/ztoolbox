@@ -1,7 +1,9 @@
-<html>
+<html lang="en">
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+	<title>Z-Toolbox - Panel</title>
 
 	<link rel="stylesheet" type="text/css" media="all" href="css/inputs.css" />
 	<link rel="stylesheet" type="text/css" media="all" href="css/panel.css" />
@@ -12,36 +14,24 @@
 	<link rel="stylesheet" type="text/css" media="all" href="css/fonts.css" />
 
 	<link rel="stylesheet" href="css/custom-scrollbar.css" type="text/css" />
-	<link rel="stylesheet" type="text/css" media="all" href="css/lib/opentip_modified.css" />
 </head>
 <body>
 	<header>
 		<!--<div id="vide" class="vide"></div>-->
 		<button id="disableNotifications"></button>
-		<button id="refreshStreams" data-translate-title="Refresh"><i class="material-icons">refresh</i></button>
+		<button id="refreshData" data-translate-title="Refresh"><i class="material-icons">refresh</i></button>
 		<label for="panelContentRadio" role="button"><i class="material-icons">home_work</i></label>
-		<label for="tabContentRadio" role="button"><i class="material-icons">tab</i></label>
 		<button id="settings" data-translate-title="Settings"><i class="material-icons">settings</i></button>
 	</header>
 
 	<input type="radio" name="sections" id="panelContentRadio" checked>
 	<section id="panelContent">
 		<div id="refreshItem"></div>
-		<div id="rssItem"></div>
-	</section>
-
-	<input type="radio" name="sections" id="tabContentRadio">
-	<section>
-		<button class="buttonItem cursor" id="copyTabTitle">
-			<span class="icon"><i class="material-icons">content_copy</i></span>
-			<span class="title" data-translate-id="copyTabTitle"></span>
-		</button>
-		<button class="buttonItem cursor hide" id="pwa">
-			<span class="icon"><i class="material-icons">add_circle_outline</i></span>
-			<span class="title">PWA<br /></span>
-		</button>
 		<div id="tabMover"></div>
 	</section>
+
+	<input type="radio" name="sections" id="freshRssContentRadio" aria-label="FreshRSS">
+	<section id="freshRssContent"></section>
 
 	<footer>
 		<div>
@@ -53,8 +43,9 @@
 			</div>
 		</div>
 	</footer>
-	<script id="panelInit" src="js/panel/panel-init.js"></script>
 
-	<script src="./js/lib/opentip-native_modified.js" type="module" defer></script>
+	<script src="js/classes/ZDK.js" type="module" defer></script>
+
+	<script id="panelInit" src="js/panel/panel-init.js"></script>
 </body>
 </html>

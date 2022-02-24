@@ -1,22 +1,16 @@
-import { ZDK } from './ZDK.js';
+import {ZDK} from './ZDK.js';
+import {
+	CHROME_PREFERENCES_SYNC_ID,
+	CHROME_PREFERENCES_UPDATED_ID,
+	getBooleanFromVar,
+	getPreferenceConfig, savePreference, getPreference
+} from './chrome-preferences-2.js';
 
 
 
 /*		---- get/save preference ----		*/
-function encodeString(string){
-	if(typeof string !== "string"){
-		console.warn(`encodeString: wrong type (${typeof string})`);
-		return string;
-	} else {
-		// Using a regexp with g flag, in a replace method let it replace all
-		string = string.replace(/%/g,"%25");
-		string = string.replace(/:/g,"%3A");
-		string = string.replace(/,/g,"%2C");
-	}
-	return string;
-}
-function decodeString(string){
-	if(typeof string !== "string"){
+function decodeString(string) {
+	if (typeof string !== "string") {
 		console.warn(`encodeString: wrong type (${typeof string})`);
 		return string;
 	} else {
@@ -28,38 +22,15 @@ function decodeString(string){
 	return string;
 }
 
-/**
- *
- * @param {string} string
- * @return {number|string|boolean}
- */
-function getBooleanFromVar(string) {
-	switch(typeof string){
-		case "boolean":
-			return string;
-		case "number":
-		case "string":
-			if(string === "true" || string === "on" || string === 1){
-				return true;
-			} else if(string === "false" || string === "off" || string === 0){
-				return false;
-			} else {
-				console.warn(`getBooleanFromVar: Unkown boolean (${string})`);
-				return string;
-			}
-		default:
-			console.warn(`getBooleanFromVar: Unknown type to make boolean (${typeof string})`);
-	}
-}
-function getFilterListFromPreference(string){
-	if(typeof string !== "string"){
+export function getFilterListFromPreference(string) {
+	if (typeof string !== "string") {
 		console.warn("Type error");
 		string = "";
 	}
 	let list = string.split(",");
-	for(let i in list){
-		if(list.hasOwnProperty(i)){
-			if(list[i].length === 0){
+	for (let i in list) {
+		if(list.hasOwnProperty(i)) {
+			if (list[i].length === 0) {
 				delete list[i];
 				// Keep a null item, but this null is not considered in for..in loops
 			} else {
@@ -69,17 +40,16 @@ function getFilterListFromPreference(string){
 	}
 	return list;
 }
-window.getFilterListFromPreference = getFilterListFromPreference;
 
 /**
  *
  * @param {HTMLInputElement} node
  * @return {void|string|boolean|number}
  */
-function getValueFromNode(node){
+export function getValueFromNode(node) {
 	const tagName = node.tagName.toLowerCase();
 	if (tagName === "textarea") {
-		if (node.dataset.settingType==="json") {
+		if (node.dataset.settingType === "json") {
 			let json;
 			try {
 				json = JSON.parse(node.value);
@@ -106,423 +76,106 @@ function getValueFromNode(node){
 	}
 }
 
-const CHROME_PREFERENCES_UPDATED_ID = '_updated',
-	CHROME_PREFERENCES_SYNC_ID = '_synchronisedAt'
-;
-
-class ChromePreferences extends Map{
-	constructor(options){
-		super();
-
-		if (options === undefined) {
-			throw "Missing argument"
-		}
-
-
-		options[CHROME_PREFERENCES_UPDATED_ID] = {
-			"hidden": true,
-			"prefLevel": "experimented",
-			"sync": true,
-			"type": "string",
-			"value": ""
-		};
-		options[CHROME_PREFERENCES_SYNC_ID] = {
-			"hidden": true,
-			"prefLevel": "experimented",
-			"sync": false,
-			"type": "string",
-			"value": ""
-		};
-
-
-		let mapOptions = new Map();
-		for(let i in options){
-			if(options.hasOwnProperty(i)){
-				mapOptions.set(i, options[i]);
-			}
-		}
-
-		Object.defineProperty(this, "CHROME_PREFERENCES_UPDATED_ID", {
-			value: CHROME_PREFERENCES_UPDATED_ID,
-			configurable: false,
-			writable: false
-		});
-
-		Object.defineProperty(this, "options", {
-			value: mapOptions,
-			writable: false
-		});
-
-		let defaultSettings = new Map();
-		let defaultSettingsSync = new Map();
-		for (let id in options) {
-			if (options.hasOwnProperty(id)) {
-				let option = options[id];
-				if (typeof option.value !== "undefined") {
-					defaultSettings.set(id, option.value);
-
-					if (!(typeof option.sync === "boolean" && option.sync === false)) {
-						defaultSettingsSync.set(id, option.value);
-					}
-				}
-			}
-		}
-		Object.defineProperty(this, "defaultSettings", {
-			value: defaultSettings,
-			writable: false
-		});
-		Object.defineProperty(this, "defaultSettingsSync", {
-			value: defaultSettingsSync,
-			writable: false
-		});
-
-		let loadPromise = async () => {
-			let currentLocalStorage = null, err = "";
-			try {
-				currentLocalStorage = await browser.storage.local.get(null)
-			} catch (err) {
-				Object.defineProperty(this, "loadingState", {
-					value: "failed",
-					configurable: true,
-					writable: false
-				});
-			}
-
-			if (this.loadingState === "failed") {
-				throw err;
-			} else {
-				if (currentLocalStorage !== null) {
-					for (let prefId in currentLocalStorage) {
-						if (currentLocalStorage.hasOwnProperty(prefId)) { // Make sure to not loop constructors
-							if (this.defaultSettings.has(prefId)) {
-								super.set(prefId, currentLocalStorage[prefId]);
-							} else {
-								super.set(prefId, currentLocalStorage[prefId]);
-								console.warn(`${prefId} ${prefId.length} has no default value (value: ${currentLocalStorage[prefId]})`);
-							}
-						}
-					}
-				}
-
-				Object.defineProperty(this, "loadingState", {
-					value: "success",
-					configurable: true,
-					writable: false
-				});
-				return true;
-			}
-		};
-		Object.defineProperty(this, "loadingState", {
-			value: "loading",
-			configurable: true,
-			writable: false
-		});
-		Object.defineProperty(this, "loadingPromise", {
-			writable: false,
-			value: loadPromise()
-		});
-	}
-
-
-	get(prefId){
-		return this.getRealValue(prefId);
-	}
-
-	set(prefId, value, oldValue=null){
-		const getSettableValue = value=>{
-			if(this.options.has(prefId) && this.options.get(prefId).type === "integer"){
-				if(typeof this.options.get(prefId).minValue === "number" && parseInt(value) < this.options.get(prefId).minValue){
-					value = this.options.get(prefId).minValue;
-				} else if(typeof this.options.get(prefId).maxValue === "number" && parseInt(value) > this.options.get(prefId).maxValue){
-					value = this.options.get(prefId).maxValue;
-				}
-			}
-			if(typeof this.defaultSettings.get(prefId) === "boolean" || typeof this.defaultSettings.get(prefId) === "number"){
-				value = value.toString();
-			}
-			return value;
-		};
-
-		const oldExisting = this.has(prefId);
-		oldValue = (oldValue===null)? this.has(prefId) : oldValue;
-		if(this.loadingState==="success") {
-			if(prefId!==CHROME_PREFERENCES_UPDATED_ID){
-				// Keep '_updated' value up-to-date with the last change date
-				super.set(CHROME_PREFERENCES_UPDATED_ID, new Date());
-			}
-
-			super.set(prefId, getSettableValue(value));
-			browser.storage.local.set({[prefId] : value})
-				.catch(err => {
-					if(err){
-						if(oldExisting===true){
-							super.delete(prefId);
-						} else {
-							super.set(prefId, oldValue);
-						}
-						console.warn(`Preference Write Error, new data deleted.
-${err}`);
-					}
-				})
-			;
-		} else {
-			console.warn("Still loading Preferences, operation delayed");
-			this.loadingPromise.then(()=>{// ()=>{} style of function very important to keep the right "this"
-				this.set(prefId, value, oldExisting);
-			});
-			return super.set(prefId, getSettableValue(value));
-		}
-	}
-
-	"delete"(prefId, oldValue=null){
-		if(this.loadingState==="success"){
-			oldValue = (oldValue===null)? this.get(prefId) : oldValue;
-			browser.storage.local.remove([prefId])
-				.catch(err=>{
-					if(err){
-						super.set(key, oldValue); // Put data back if DB Error
-						console.warn(`Preferences Error, old data for the key back.
-${err}`);
-					}
-				})
-			;
-			return super.delete(prefId);
-		} else {
-			console.warn("Still loading Preferences, operation delayed");
-			this.loadingPromise.then(()=>{// ()=>{} style of function very important to keep the right "this"
-				this.delete(prefId, this.get(prefId));
-			});
-			return this.delete(prefId);
-		}
-	}
-
-
-	getRealValue(prefId){
-		if(this.has(prefId)){
-			const current_pref = super.get(prefId);
-			if(this.options.has(prefId)) {
-				switch (this.options.get(prefId).type) {
-					case "string":
-					case "json":
-					case "color":
-					case "menulist":
-						return current_pref;
-					case "integer":
-						if (isNaN(parseInt(current_pref))) {
-							console.warn(`${prefId} is not a number (${current_pref})`);
-							return this.defaultSettings.get(prefId);
-						} else if (typeof this.options.get(prefId).minValue === "number" && parseInt(current_pref) < this.options.get(prefId).minValue) {
-							return this.options.get(prefId).minValue;
-						} else if (typeof this.options.get(prefId).maxValue === "number" && parseInt(current_pref) > this.options.get(prefId).maxValue) {
-							return this.options.get(prefId).maxValue;
-						} else {
-							return parseInt(current_pref);
-						}
-					case "bool":
-						return getBooleanFromVar(current_pref);
-					case "file":
-						return current_pref;
-				}
-			} else {
-				console.warn(`Unknown preference "${prefId}"`);
-			}
-		} else if(typeof this.defaultSettings.get(prefId) !== "undefined"){
-			console.warn(`Preference ${prefId} not found, using default`);
-			let val = this.defaultSettings.get(prefId);
-			if (this.options.get(prefId).type === 'json') {
-				val = JSON.parse(val);
-			}
-			this.set(prefId, val);
-			return val;
-		} else {
-			//console.warn(`Preference ${prefId} not found, no default`);
-		}
-	}
-	getSyncPreferences(){
+export const ChromePreferences = Object.freeze({
+	async getSyncPreferences() {
 		let obj = {};
-		this.options.forEach((option, prefId)=>{
-			if(option.hasOwnProperty("sync") === true && option.sync === false){
-				//continue;
-			} else if(option.type === "control" || option.type === "file"){
-				//continue;
-			} else {
-				obj[prefId] = this.get(prefId);
+		const options = getPreferenceConfig(true);
+
+		for (const [prefId, option] of options) {
+			if (option.hasOwnProperty("sync") === true && option.sync === false) {
+				continue;
+			} else if(option.type === "control" || option.type === "file") {
+				continue;
 			}
-		});
+
+			obj[prefId] = await getPreference(prefId);
+		}
+
 		return obj;
-	}
-	getSyncKeys(){
+	},
+
+	getSyncKeys() {
+		const options = getPreferenceConfig(true);
+
 		let keysArray = [];
-		this.defaultSettingsSync.forEach((value, key)=>{
-			keysArray.push(key);
-		});
+		for (const [prefId, ] of options) {
+			if (option.hasOwnProperty("sync") === true && option.sync === true) {
+				keysArray.push(prefId);
+			}
+		}
+
 		return keysArray;
-	}
+	},
 
 	/**
 	 *
 	 * @param {JSON} preferences
 	 * @param {Boolean=false} mergePreferences
 	 */
-	importFromJSON(preferences, mergePreferences=false){
-		for(let prefId in preferences){
-			if(!preferences.hasOwnProperty(prefId)){
+	async importFromJSON(preferences, mergePreferences=false) {
+		const options = getPreferenceConfig(true);
+
+		for (let prefId in preferences) {
+			if (!preferences.hasOwnProperty(prefId)){
 				continue;
 			}
 
-
-
-			if(prefId==="hitbox_user_id"){
-				preferences["smashcast_user_id"] = preferences["hitbox_user_id"];
-				delete preferences["hitbox_user_id"];
-				prefId="smashcast_user_id";
-			}
-			if(prefId==="beam_user_id"){
-				preferences["mixer_user_id"] = preferences["beam_user_id"];
-				delete preferences["beam_user_id"];
-				prefId="mixer_user_id";
-			}
-
-			if(this.options.has(prefId) && typeof this.options.get(prefId).type !== "undefined" && this.options.get(prefId).type !== "control" && this.options.get(prefId).type !== "file" && typeof preferences[prefId] === typeof this.defaultSettingsSync.get(prefId)){
+			if (options.has(prefId) && typeof options.get(prefId).type !== "undefined" && options.get(prefId).type !== "control" && options.get(prefId).type !== "file" && typeof preferences[prefId] === typeof options.get(prefId).value) {
 				if(mergePreferences){
-					let oldPref = this.get(prefId),
-						newPrefArray
-					;
-
-					switch(prefId){
-						case 'stream_keys_list':
-							let prefData = null;
-							try {
-								prefData = JSON.parse(oldPref);
-							} catch (e) {
-								ZDK.console.error(e);
-							}
-
-							if(prefData===null){
-								prefData = oldPref;
-							}
-
-							let streamListSetting = new appGlobal.StreamListFromSetting(false);
-
-							streamListSetting.parseSetting(prefData).forEach((website, websiteMap)=>{
-								websiteMap.forEach((id, streamSetting)=>{
-									let newStreamSettings;
-									if(streamListSetting.streamExist(website, id)){
-										newStreamSettings = streamListSetting.streamExist(website, id);
-									} else {
-										newStreamSettings = StreamListFromSetting.getDefault();
-									}
-
-									for(let settingName in streamSetting){
-										if(streamSetting.hasOwnProperty(settingName)){
-											newStreamSettings[settingName] = streamSetting[settingName];
-										}
-									}
-
-									streamListSetting.mapDataAll.get(website).set(id, newStreamSettings);
-								});
-							});
-
-							streamListSetting.update();
-
-							break;
-						case "statusBlacklist":
-						case "statusWhitelist":
-						case "gameBlacklist":
-						case "gameWhitelist":
-							let toLowerCase = (str)=>{return str.toLowerCase()};
-							let oldPrefArrayLowerCase = oldPref.split(/,\s*/).map(toLowerCase);
-							newPrefArray = oldPref.split(/,\s*/);
-							preferences[prefId].split(/,\s*/).forEach(value=>{
-								if(oldPrefArrayLowerCase.indexOf(value.toLowerCase()) === -1){
-									newPrefArray.push(value);
-								}
-							});
-							this.set(prefId, newPrefArray.join(","));
-							break;
-						default:
-							this.set(prefId, preferences[prefId]);
-					}
+					await savePreference(prefId, preferences[prefId]);
 				} else {
-					this.set(prefId, preferences[prefId]);
+					await savePreference(prefId, preferences[prefId]);
 				}
 			} else {
 				console.warn(`Error trying to import ${prefId}`);
 			}
 		}
-	}
-	saveInSync(){
-		return browser.storage.sync.set(this.getSyncPreferences());
-	}
+	},
+	async saveInSync() {
+		return browser.storage.sync.set(await ChromePreferences.getSyncPreferences());
+	},
 	async restaureFromSync(mergePreferences=false){
-		const appGlobal = (browser.extension.getBackgroundPage() !== null)? browser.extension.getBackgroundPage().appGlobal : appGlobal,
-			items = await browser.storage.sync.get(this.getSyncKeys());
-
-		for(let prefId in items){
+		const items = await browser.storage.sync.get(ChromePreferences.getSyncKeys());
+		for (let prefId in items) {
 			if(items.hasOwnProperty(prefId)){
 				if(mergePreferences){
-					let oldPref = this.get(prefId);
-					let newPrefArray;
-					switch(prefId){
-						case "stream_keys_list":
-							let oldPrefArray = oldPref.split(",");
-							newPrefArray = items[prefId].split(/,\s*/);
-							newPrefArray = oldPrefArray.concat(newPrefArray);
-
-							this.set(prefId, newPrefArray.join());
-							let streamListSetting = new appGlobal.StreamListFromSetting(true);
-							streamListSetting.update();
-							break;
-						case "statusBlacklist":
-						case "statusWhitelist":
-						case "gameBlacklist":
-						case "gameWhitelist":
-							let toLowerCase = (str)=>{return str.toLowerCase()};
-							let oldPrefArrayLowerCase = oldPref.split(/,\s*/).map(toLowerCase);
-							newPrefArray = oldPref.split(/,\s*/);
-							items[prefId].split(/,\s*/).forEach(value=>{
-								if(oldPrefArrayLowerCase.indexOf(value.toLowerCase()) === -1){
-									newPrefArray.push(value);
-								}
-							});
-							this.set(prefId, newPrefArray.join(","));
-							break;
-						default:
-							this.set(prefId, items[prefId]);
-					}
+					await savePreference(prefId, items[prefId]);
 				} else {
-					this.set(prefId, items[prefId]);
+					await savePreference(prefId, items[prefId]);
 				}
 			}
 		}
 		return "success";
-	}
+	},
 
 
 	/**
 	 *
 	 * @param {HTMLElement} container
 	 */
-	loadPreferencesNodes(container){
-		const doc = container.ownerDocument,
-			isPanelPage = container.baseURI.indexOf("panel.html") !== -1,
-			body = doc.querySelector("body");
-		this.options.forEach((option, id)=>{
-			if(typeof option.type === "undefined"){
-				return;
+	async loadPreferencesNodes(container) {
+		const isPanelPage = container.baseURI.indexOf("panel.html") !== -1,
+			body = document.body
+		;
+
+		const options = getPreferenceConfig(true);
+		for (const [id, option] of options) {
+			if (typeof option.type === "undefined") {
+				continue;
 			}
-			if(option.hasOwnProperty("hidden") && option.hidden === true){
-				return;
+			if (option.hasOwnProperty("hidden") && option.hidden === true) {
+				continue;
 			}
-			if(id === "showAdvanced"){
-				if(this.get("showAdvanced")){
+
+			if (id === "showAdvanced") {
+				if(await getPreference("showAdvanced")) {
 					body.classList.add("showAdvanced");
 				} else {
 					body.classList.remove("showAdvanced");
 				}
 			}
-			if(id === "showExperimented"){
-				if(this.get("showExperimented")){
+			if (id === "showExperimented") {
+				if(await getPreference("showExperimented")) {
 					body.classList.add("showExperimented");
 				} else {
 					body.classList.remove("showExperimented");
@@ -530,16 +183,16 @@ ${err}`);
 			}
 
 			if(isPanelPage && ((typeof option.prefLevel === "string" && option.prefLevel === "experimented") || (option.hasOwnProperty("showPrefInPanel") && typeof option.showPrefInPanel === "boolean" && option.showPrefInPanel === false))){
-				return;
+				continue;
 			}
 
 			let groupNode = null;
-			if(typeof option.group === "string" && option.group !== ""){
+			if (typeof option.group === "string" && option.group !== "") {
 				const groupId = option.group;
-				groupNode = doc.querySelector(`#${groupId}.pref_group`);
+				groupNode = document.querySelector(`#${groupId}.pref_group`);
 
-				if(groupNode === null){
-					groupNode = doc.createElement("div");
+				if (groupNode === null) {
+					groupNode = document.createElement("div");
 					groupNode.id = groupId;
 					groupNode.classList.add("pref_group");
 					if(groupId === "dailymotion" || groupId === "smashcast" || groupId === "hitbox" || groupId === "twitch" || groupId === "mixer" || groupId === "beam"){
@@ -549,31 +202,13 @@ ${err}`);
 				}
 			}
 
-			if(groupNode===null){
+			if (groupNode === null) {
 				groupNode = container;
 			}
 
-			groupNode.appendChild(this.newPreferenceNode(groupNode, id));
-		});
-	}
-
-	/**
-	 *
-	 * @param {HTMLInputElement} node
-	 * @return {void|string|boolean|number}
-	 */
-	getValueFromNode(node) {
-		return getValueFromNode(node);
-	}
-
-	/**
-	 *
-	 * @param {string} string
-	 * @return {number|string|boolean}
-	 */
-	getBooleanFromVar(string) {
-		return getBooleanFromVar(string);
-	}
+			groupNode.appendChild(await ChromePreferences.newPreferenceNode(groupNode, id));
+		}
+	},
 
 	/**
 	 *
@@ -581,8 +216,10 @@ ${err}`);
 	 * @param {String} id
 	 * @return {HTMLDivElement}
 	 */
-	newPreferenceNode(parent, id){
-		const prefObj = this.options.get(id);
+	async newPreferenceNode(parent, id){
+		const options = getPreferenceConfig(true),
+			prefObj = options.get(id)
+		;
 
 		let node = document.createElement("div");
 		node.classList.add("preferenceContainer");
@@ -611,21 +248,21 @@ ${err}`);
 			beforeInputNode = null,
 			afterInputNode = null,
 			output;
-		switch(prefObj.type){
+		switch(prefObj.type) {
 			case "json":
 				prefNode = document.createElement("textarea");
 				prefNode.dataset.stringTextarea = true;
-				prefNode.value = JSON.stringify(this.get(id));
+				prefNode.value = JSON.stringify(await getPreference(id));
 				break;
 			case "string":
 				if(typeof prefObj.stringTextArea === "boolean" && prefObj.stringTextArea === true){
 					prefNode = document.createElement("textarea");
 					prefNode.dataset.stringTextarea = true;
-					prefNode.value = this.get(id);
+					prefNode.value = await getPreference(id);
 				} else if(typeof prefObj.stringList === "boolean" && prefObj.stringList === true){
 					prefNode = document.createElement("textarea");
 					prefNode.dataset.stringList = true;
-					prefNode.value = getFilterListFromPreference(this.get(id)).join("\n");
+					prefNode.value = getFilterListFromPreference(await getPreference(id)).join("\n");
 
 					node.classList.add("stringList");
 				} else {
@@ -637,14 +274,14 @@ ${err}`);
 						prefNode.type = "text";
 					}
 
-					prefNode.value = this.get(id);
+					prefNode.value = await getPreference(id);
 				}
 				break;
 			case "integer":
 
 				prefNode = document.createElement("input");
 				prefNode.required = true;
-				if(typeof prefObj.rangeInput === "boolean" && prefObj.rangeInput === true && typeof prefObj.minValue === "number" && typeof prefObj.maxValue === "number"){
+				if (typeof prefObj.rangeInput === "boolean" && prefObj.rangeInput === true && typeof prefObj.minValue === "number" && typeof prefObj.maxValue === "number") {
 					prefNode.type = "range";
 					prefNode.step = 1;
 
@@ -668,17 +305,17 @@ ${err}`);
 				if(typeof prefObj.maxValue === "number"){
 					prefNode.max = prefObj.maxValue;
 				}
-				prefNode.value = parseInt(this.get(id));
+				prefNode.value = parseInt(await getPreference(id));
 				break;
 			case "bool":
 				prefNode = document.createElement("input");
 				prefNode.type = "checkbox";
-				prefNode.checked = getBooleanFromVar(this.get(id));
+				prefNode.checked = getBooleanFromVar(await getPreference(id));
 				break;
 			case "color":
 				prefNode = document.createElement("input");
 				prefNode.type = "color";
-				prefNode.value = this.get(id);
+				prefNode.value = await getPreference(id);
 				break;
 			case "control":
 				prefNode = document.createElement("button");
@@ -690,7 +327,7 @@ ${err}`);
 
 				beforeInputNode = document.createElement("output");
 				beforeInputNode.id = id;
-				const filePrefValue = this.get(id);
+				const filePrefValue = await getPreference(id);
 				if(filePrefValue!==null && typeof filePrefValue==="object" && filePrefValue.hasOwnProperty("name")){
 					beforeInputNode.textContent = filePrefValue.name;
 				}
@@ -705,7 +342,7 @@ ${err}`);
 				if(Array.isArray(prefObj.options) && prefObj.options.length <= 5){
 					prefNode = document.createElement("div");
 
-					const currentValue = this.get(id);
+					const currentValue = await getPreference(id);
 					for(let o in prefObj.options){
 						if(prefObj.options.hasOwnProperty(o)){
 							let option = prefObj.options[o];
@@ -744,22 +381,27 @@ ${err}`);
 						}
 					}
 
-					prefNode.value = this.get(id);
+					prefNode.value = await getPreference(id);
 				}
 				break;
 		}
+
+		if (!prefNode) {
+			throw new Error('UNKNOWN_TYPE');
+		}
+
 		prefNode.id = id;
-		if(prefObj.type !== "control"){
+		if (prefObj.type !== "control") {
 			prefNode.classList.add("preferenceInput");
 		}
-		if(prefObj.type === "control" || prefObj.type === "file"){
+		if (prefObj.type === "control" || prefObj.type === "file") {
 			prefNode.dataset.translateId = `${id}`;
 		}
 
 		prefNode.dataset.settingType = prefObj.type;
 
-		if(prefObj.type === "bool") {
-			if(beforeInputNode!==null){
+		if (prefObj.type === "bool") {
+			if (beforeInputNode !== null) {
 				node.appendChild(beforeInputNode);
 			}
 			node.appendChild(prefNode);
@@ -771,21 +413,21 @@ ${err}`);
 		} else {
 			node.appendChild(labelNode);
 
-			if(beforeInputNode!==null){
+			if (beforeInputNode !== null) {
 				node.appendChild(beforeInputNode);
 			}
 			node.appendChild(prefNode);
-			if(afterInputNode){
+			if (afterInputNode) {
 				node.appendChild(afterInputNode);
 			}
 		}
 
 		let isPanelPage = parent.baseURI.indexOf("panel.html") !== -1;
-		if(id.indexOf("_keys_list") !== -1 || (isPanelPage && id.indexOf("_user_id") !== -1) || (!isPanelPage && (id === "statusBlacklist" || id === "statusWhitelist" || id === "gameBlacklist" || id === "gameWhitelist"))){
+		if (id.indexOf("_keys_list") !== -1 || (isPanelPage && id.indexOf("_user_id") !== -1) || (!isPanelPage && (id === "statusBlacklist" || id === "statusWhitelist" || id === "gameBlacklist" || id === "gameWhitelist"))) {
 			node.classList.add("flex_input_text");
 		}
 
-		if(typeof prefNode.type === "string" && prefNode.type === "range"){
+		if (typeof prefNode.type === "string" && prefNode.type === "range") {
 			output.textContent = `${prefNode.value}${((typeof prefObj.rangeOutputUnit==="string")? prefObj.rangeOutputUnit : "")}`;
 			prefNode.addEventListener("change",function(){
 				output.textContent = `${prefNode.value}${((typeof prefObj.rangeOutputUnit==="string")? prefObj.rangeOutputUnit : "")}`;
@@ -794,26 +436,25 @@ ${err}`);
 		}
 
 		return node;
-	}
+	},
 
 	/**
 	 *
-	 * @param {String} appName
-	 * @param {HTMLDocument} doc
+	 * @param {string} appName
 	 */
-	async exportPrefsToFile(appName, doc=document){
+	async exportPrefsToFile(appName) {
 		let exportData = {
-			"preferences": this.getSyncPreferences()
+			"preferences": await ChromePreferences.getSyncPreferences()
 		};
 
 		exportData[`${appName}_version`] = browser.runtime.getManifest().version;
 
 
 
-		const iframe = doc.body.appendChild(doc.createElement('iframe'));
+		const iframe = document.body.appendChild(document.createElement('iframe'));
 		iframe.classList.add("hidden");
 
-		let link = doc.createElement("a");
+		let link = document.createElement("a");
 		link.setAttribute("download", `${appName}_preferences.json`);
 
 		const url = URL.createObjectURL(new Blob([
@@ -833,11 +474,10 @@ ${err}`);
 		await ZDK.setTimeout(1000);
 		URL.revokeObjectURL(url);
 		iframe.remove();
-	}
+	},
 
 	/**
 	 *
-	 * @param {HTMLDocument=document} doc
 	 * @param {Object=null} opts
 	 * @param {String=null} opts.readType
 	 * @param {Number=null} opts.fileMaxSize
@@ -845,7 +485,7 @@ ${err}`);
 	 * @param {String=null} opts.inputAccept
 	 * @return {Promise<FileList>}
 	 */
-	importDataFormFiles(doc=document, opts=null){
+	importDataFormFiles(opts=null) {
 		return new Promise((resolve, reject) => {
 			if (opts === null && typeof opts !== "object") {
 				reject("Wrong argument");
@@ -864,32 +504,32 @@ ${err}`);
 				opts.inputAccept = null
 			}
 
-			let node = doc.createElement("input");
+			let node = document.createElement("input");
 			node.type = "file";
 			node.className = "hide";
 			if (opts.inputAccept !== null) {
 				node.accept = opts.inputAccept;
 			}
 
-			node.addEventListener("change", async function(){
+			node.addEventListener("change", async function() {
 				node.remove();
 
-				if(typeof node.files !== "undefined"){
+				if (typeof node.files !== "undefined") {
 					let promiseList = [];
 					for(let file of node.files) {
-						if(opts.fileMaxSize!==null && file.size>opts.fileMaxSize) {
+						if (opts.fileMaxSize !== null && file.size>opts.fileMaxSize) {
 							promiseList.push({
 								"error": "FileTooBig"
 							});
-						} else if(opts.fileTypes!==null && opts.fileTypes instanceof RegExp && !opts.fileTypes.test(file.type)){
+						} else if(opts.fileTypes !== null && opts.fileTypes instanceof RegExp && !opts.fileTypes.test(file.type)){
 							promiseList.push({
 								"error": "WrongFileType"
 							});
 						} else {
 							if (opts.readType !== null) {
-								promiseList.push(zDK.loadBlob(file, opts.readType));
+								promiseList.push(ZDK.loadBlob(file, opts.readType));
 							} else {
-								promiseList.push(zDK.loadBlob(file));
+								promiseList.push(ZDK.loadBlob(file));
 							}
 						}
 					}
@@ -918,25 +558,26 @@ ${err}`);
 				}
 			});
 
-			doc.head.appendChild(node);
+			document.head.appendChild(node);
 			ZDK.simulateClick(node);
 		});
-	}
+	},
 
-	async prefNode_FileType_onChange(event){
-		const {target: prefNode} = event,
+	async prefNode_FileType_onChange(event) {
+		const options = await getPreferenceConfig(true),
+			{target: prefNode} = event,
 			settingName = prefNode.id,
 			outputNode = prefNode.ownerDocument.querySelector(`output[id="${prefNode.id}"]`)
 		;
 
-		if(prefNode.dataset.action!==undefined && prefNode.dataset.action==="delete"){
-			this.set(prefNode.id, chromeSettings.defaultSettings.get(prefNode.id));
+		if (prefNode.dataset.action !== undefined && prefNode.dataset.action === "delete") {
+			await savePreference(prefNode.id, options.get(prefNode.id)?.value);
 
-			if(outputNode!==null){
+			if (outputNode !== null) {
 				outputNode.textContent = "";
 			}
 		} else {
-			const prefObj = this.options.get(prefNode.id);
+			const prefObj = options.get(prefNode.id);
 
 			let fileMaxSize = (prefObj.hasOwnProperty("fileMaxSize") && prefObj.fileMaxSize!=="null")? prefObj.fileMaxSize : null;
 			if(typeof fileMaxSize==="string"){
@@ -949,7 +590,7 @@ ${err}`);
 			let filesData = null;
 
 			try {
-				filesData = await this.importDataFormFiles(prefNode.ownerDocument, {
+				filesData = await ChromePreferences.importDataFormFiles({
 					"fileMaxSize": fileMaxSize,
 					"readType": (prefObj.hasOwnProperty("readType"))? prefObj.readType : "dataUrl",
 					"fileTypes": (prefObj.hasOwnProperty("fileTypes") && prefObj.fileTypes instanceof RegExp)? prefObj.fileTypes : null,
@@ -959,71 +600,69 @@ ${err}`);
 				console.warn(e);
 			}
 
-			if(Array.isArray(filesData) && filesData.length>0){
-				if(filesData[0].hasOwnProperty("data")){
+			if (filesData && Array.isArray(filesData) && filesData.length > 0) {
+				if (filesData[0].hasOwnProperty("data")) {
 					savePreference(settingName, filesData[0]);
 
-					if(outputNode!==null){
+					if (outputNode !== null) {
 						outputNode.textContent =  filesData[0].name;
 					}
 				} else {
 					const error = filesData[0].error;
 
-					if(error==="WrongFileType" || error==="FileTooBig"){
+					if (error === "WrongFileType" || error === "FileTooBig") {
 						const errorMsg = document.createElement("span");
 						errorMsg.classList.add("error");
 						errorMsg.textContent = i18ex._(error);
 						outputNode.appendChild(errorMsg);
 
-						setTimeout(()=>{
+						setTimeout(() => {
 							errorMsg.remove();
 						}, 2000);
 					}
 				}
 			}
 		}
-	}
+	},
 
 	/**
 	 *
-	 * @param {String} appName
-	 * @param {Boolean} mergePreferences
-	 * @param {HTMLDocument} doc
+	 * @param {string} appName
+	 * @param {boolean} mergePreferences
 	 */
-	async importPrefsFromFile(appName, mergePreferences, doc=document){
-		let files = await this.importDataFormFiles(doc, {
+	async importPrefsFromFile(appName, mergePreferences) {
+		let files = await ChromePreferences.importDataFormFiles({
 			"readType": "text"
 		});console.dir(files)
 
-		if(files.length === 0 || files.length > 1){
+		if (files.length === 0 || files.length > 1) {
 			throw `[Input error] ${node.files.length} file(s) loaded`;
-		} else {
-			let file_JSONData = null;
-			try{
-				file_JSONData = JSON.parse(files[0].data);
-			} catch(error){
-				if(error.message && error.message.indexOf("SyntaxError") !== -1){
-					throw `An error occurred when trying to parse file (Check the file you have used)`;
-				} else {
-					throw `An error occurred when trying to parse file (${error})`;
-				}
+		}
+
+		let file_JSONData = null;
+		try {
+			file_JSONData = JSON.parse(files[0].data);
+		} catch (error) {
+			if (error.message && error.message.indexOf("SyntaxError") !== -1) {
+				throw `An error occurred when trying to parse file (Check the file you have used)`;
+			} else {
+				throw `An error occurred when trying to parse file (${error})`;
 			}
-			if(file_JSONData !== null){
-				if(file_JSONData.hasOwnProperty(`${appName}_version`) && file_JSONData.hasOwnProperty("preferences") && typeof file_JSONData.preferences === "object"){
-					this.importFromJSON(file_JSONData.preferences, (typeof mergePreferences==="boolean")? mergePreferences : false);
-					return true;
-				} else {
-					throw `An error occurred when trying to parse file (Check the file you have used)`;
-				}
+		}
+		if (file_JSONData !== null) {
+			if (file_JSONData.hasOwnProperty(`${appName}_version`) && file_JSONData.hasOwnProperty("preferences") && typeof file_JSONData.preferences === "object") {
+				await ChromePreferences.importFromJSON(file_JSONData.preferences, (typeof mergePreferences === "boolean") ? mergePreferences : false);
+				return true;
+			} else {
+				throw `An error occurred when trying to parse file (Check the file you have used)`;
 			}
 		}
 	}
-}
+});
 
 
 
 export {
 	CHROME_PREFERENCES_SYNC_ID,
 	CHROME_PREFERENCES_UPDATED_ID,
-	ChromePreferences
-}
+} from './chrome-preferences-2.js';

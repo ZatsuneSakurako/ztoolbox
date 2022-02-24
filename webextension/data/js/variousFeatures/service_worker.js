@@ -2,8 +2,12 @@
  *
  * @return {boolean}
  */
-function enableFeature() {
-	const whitelist = getPreference('serviceWorkerWhitelist');
+import {throttle} from "../lib/throttle.js";
+import {getPreference} from "../classes/chrome-preferences-2.js";
+import {i18ex} from "../translation-api.js";
+
+async function enableFeature() {
+	const whitelist = await getPreference('serviceWorkerWhitelist');
 	if (typeof whitelist !== 'object' || whitelist === null) {
 		return false;
 	}
@@ -38,22 +42,24 @@ async function updateRegistration() {
  *
  * @type {DebouncedFunc<function(): void>}
  */
-const debounced = _.debounce(function () {
+const debounced = throttle(function () {
 	updateRegistration()
 		.catch(console.error)
 	;
 }, 500);
-browser.storage.local.onChanged.addListener(function onChanged(changes) {
+
+browser.storage.onChanged.addListener((changes, area) => {
+	if (area !== "local") return;
 	if (!changes.serviceWorkerWhitelist) return;
 
 	debounced(changes);
-})
+});
 
 /**
  *
  * @type {RegisteredContentScript|null}
  */
 let contentScriptRegistration = null;
-window.baseRequiredPromise.then(async function() {
+i18ex.loadingPromise.then(async function() {
 	debounced();
 });

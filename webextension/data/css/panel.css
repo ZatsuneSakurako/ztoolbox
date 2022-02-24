@@ -128,6 +128,12 @@ footer * {
 }
 
 
+section a.buttonItem,
+#panelContent a.websiteItem {
+	color: inherit;
+	text-decoration: none;
+	display: block;
+}
 section .buttonItem,
 #panelContent .websiteItem {
 	background-repeat: no-repeat;
@@ -185,21 +191,16 @@ section .buttonItem .title,
 #panelContent .websiteItem[data-Logged="true"] .websiteData .folder::after {
 	content: attr(data-folder-title)": "attr(data-folder-count);
 }
-.websiteItem.rssItem {
-	background-image: url("/data/images/rss-2440955.svg");
-}
-#panelContent .websiteItem.rssItem .websiteData {
-	padding-left: 0;
-}
-#panelContent .websiteItem.rssItem.rssItem--successs .websiteData {
-	text-transform: capitalize;
-}
-#panelContent .websiteItem.rssItem.rssItem--hideData .websiteData {
-	display: none;
-}
 
-.isFirefox #pwa {
-	display: none;
+#freshRssContent {
+	padding-right: 0;
+}
+section > iframe {
+	height: 100%;
+	width: 100%;
+	border: 0;
+	padding: 0;
+	margin: 0;
 }
 
 

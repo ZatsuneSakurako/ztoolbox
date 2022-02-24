@@ -1,3 +1,21 @@
+# 0.18.0
+* \+ : Fresh RSS
+* \- : Clean unused ZDK features
+* \- : Delete features :
+  * muted-pause
+  * RSS links
+  * Twitch points
+  * untrackMe
+  * PWA
+  * Hourly Alarm
+* i : Copy text link now for Firefox only
+* i : Less message dependencies between panel and main
+* fix : Fix badge refresh
+
+# 0.17.3
+* fix : Twitch points - url change detection
+* fix : Twitch points - error when no chat
+
 # 0.17.2
 * fix : Twitch points selector
 

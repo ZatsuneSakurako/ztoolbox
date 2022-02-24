@@ -1,42 +1,20 @@
-const
-	_fs = require('fs-extra'),
-	_path = require('path')
-;
+import fs from "fs-extra";
+import path from "path";
 
-function fsReadFile(filePath) {
-	return new Promise((resolve, reject)=>{
-		_fs.readFile(filePath, {encoding: 'utf-8'})
-			.then(resolve)
-			.catch(reject)
-		;
-	})
+export function fsReadFile(filePath) {
+	return fs.readFileSync(filePath, {encoding: 'utf-8'})
 }
 
 /**
  * Copy `src` to `dest`, in Promise way.
- *
- * @param {String} src
- * @param {String} dest
- * @return {Promise<>}
+ * @param {string} src
+ * @param {string} dest
+ * @return {void}
  */
-function cp(src, dest) {
-	return new Promise((resolve, reject)=>{
-		if(_fs.lstatSync(dest).isDirectory()){
-			dest = _path.resolve(dest, "./" + _path.basename(src));
-		}
+export function cp(src, dest) {
+	if(fs.lstatSync(dest).isDirectory()){
+		dest = path.resolve(dest, "./" + path.basename(src));
+	}
 
-		_fs.copyFile(src, dest)
-			.then(resolve)
-			.catch(reject)
-		;
-	})
+	return fs.copyFileSync(src, dest);
 }
-
-
-
-
-
-module.exports = {
-	"fsReadFile": fsReadFile,
-	"cp": cp
-};

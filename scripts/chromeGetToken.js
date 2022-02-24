@@ -1,5 +1,7 @@
-require('dotenv').config();
-const fetch = require('node-fetch');
+import dotenv from "dotenv";
+import fetch from "node-fetch";
+
+dotenv.config();
 
 const params = new URLSearchParams();
 params.append('client_id', process.env.CHROME_CLIENT_ID);

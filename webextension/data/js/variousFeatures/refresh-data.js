@@ -1,15 +1,20 @@
 'use strict';
 
-import { Request } from '../classes/Request.js';
-import { ZDK } from "../classes/ZDK.js";
+import {ZDK} from "../classes/ZDK.js";
+import {getPreference} from "../classes/chrome-preferences-2.js";
+import {i18ex} from "../translation-api.js";
+import {WebsiteData} from "./website-data.js";
+import deviantArt from '../platforms/deviantart.js';
+import freshRss from '../platforms/freshrss.js';
 
-const ALARM_NAME = 'REFRESH_DATA';
+export const ALARM_NAME = 'REFRESH_DATA',
+	refreshDataStorageBase = `_websitesDataStore`
+;
 
 
 
-function doNotifyWebsite(website) {
-	let websiteAPI = websites.get(website),
-		websiteData = websitesData.get(website),
+async function doNotifyWebsite(website, websiteAPI) {
+	let websiteData = websitesData.get(website),
 		foldersList = ''
 	;
 
@@ -39,15 +44,15 @@ function doNotifyWebsite(website) {
 			})
 				.then(() => {
 					ZDK.openTabIfNotExist(websiteAPI.getLoginURL(websiteData))
-						.catch(ZDK.console.error)
+						.catch(console.error)
 					;
 				})
-				.catch(ZDK.console.error)
+				.catch(console.error)
 			;
 		}
 		websiteData.notificationState.logged = websiteData.logged;
 	} else if (typeof websiteData.count === 'number' && !isNaN(websiteData.count) && (websiteData.notificationState.count === null || websiteData.count > websiteData.notificationState.count)) {
-		if (getPreference('notify_checkedData')) {
+		if (await getPreference('notify_checkedData')) {
 			doNotif({
 				"id": "refreshData-"+website,
 				"title": i18ex._('website_notif', {'website': website}),
@@ -56,18 +61,23 @@ function doNotifyWebsite(website) {
 			})
 				.then(() => {
 					ZDK.openTabIfNotExist(websiteAPI.getViewURL(websiteData))
-						.catch(ZDK.console.error)
+						.catch(console.error)
 					;
 				})
-				.catch(ZDK.console.error)
+				.catch(console.error)
 			;
 		}
 
-		if (getPreference('notify_vocal')) {
-			voiceReadMessage(i18ex._('language'), i18ex._('count_new_notif', {'count': websiteData.count}));
+		if (await getPreference('notify_vocal')) {
+			import('../voiceAPI.js')
+				.then(({voiceReadMessage}) => {
+					voiceReadMessage(i18ex._('language'), i18ex._('count_new_notif', {'count': websiteData.count}));
+				})
+				.catch(console.error)
+			;
 		}
 
-	} else if (getPreference('notify_all_viewed') && (typeof websiteData.count === 'number' && websiteData.count === 0) && (typeof websiteData.notificationState.count === 'number' && websiteData.notificationState.count > 0)) {
+	} else if (await getPreference('notify_all_viewed') && (typeof websiteData.count === 'number' && websiteData.count === 0) && (typeof websiteData.notificationState.count === 'number' && websiteData.notificationState.count > 0)) {
 		doNotif({
 			"id": "refreshData-"+website,
 			"title": i18ex._('website_notif', {'website': website}),
@@ -76,10 +86,10 @@ function doNotifyWebsite(website) {
 		})
 			.then(() => {
 				ZDK.openTabIfNotExist(websiteAPI.getViewURL(websiteData))
-					.catch(ZDK.console.error)
+					.catch(console.error)
 				;
 			})
-			.catch(ZDK.console.warn)
+			.catch(console.warn)
 		;
 	}
 
@@ -87,53 +97,73 @@ function doNotifyWebsite(website) {
 }
 
 
-class websiteDefaultData {
-	constructor() {
-		return {
-			notificationState: {
-				count: null,
-				/**
-				 * Undefined to know when we're checking the first time
-				 * @type {?boolean}
-				 */
-				logged: undefined
-			},
-			count: 0,
-			folders: new Map(),
-			websiteIcon: '',
-			logged: null,
-			loginId: ''
-		};
+const isBackgroundProcess = !location.pathname.endsWith('panel.html');
+/**
+ *
+ * @type {Map<string, WebsiteData>}
+ */
+let websitesData = new Map();
+export async function loadStoredWebsitesData() {
+	if (websitesData.size === 0) {
+		let raw = (await browser.storage.local.get([refreshDataStorageBase])) ?? {};
+		raw = raw[refreshDataStorageBase] ?? {};
+		websitesData.set('deviantArt', !!raw.deviantArt ? WebsiteData.fromJSON(raw.deviantArt) : new WebsiteData());
+		websitesData.set('freshRss', !!raw.freshRss ? WebsiteData.fromJSON(raw.freshRss) : new WebsiteData());
 	}
+	return websitesData;
 }
 
 
+
 let isRefreshingData = false;
-async function refreshWebsitesData() {
+export async function refreshWebsitesData() {
 	if (isRefreshingData === true) {
-		ZDK.console.warn('Already refreshing...');
+		console.warn('Already refreshing...');
 		return false;
 	}
 
 	isRefreshingData = true;
+	const dateStart = new Date();
 
-	ZDK.console.debug('Refreshing websites data...');
-	let promises = new Map();
 
-	websites.forEach((websiteAPI, website) => {
-		promises.set(website, refreshWebsite(website));
-		promises.get(website)
+	if (websitesData.size === 0) {
+		websitesData = await loadStoredWebsitesData();
+	}
+
+
+	const websites = new Map();
+	websites.set('deviantArt', deviantArt);
+	if (!!await getPreference('freshRss_baseUrl')) {
+		websites.set('freshRss', freshRss);
+	} else if (websitesData.has('freshRss')) {
+		websitesData.delete('freshRss');
+	}
+
+
+
+	console.debug('Refreshing websites data...');
+	const promises = [];
+	const {_notificationGloballyDisabled} = await browser.storage.local.get(['_notificationGloballyDisabled'])
+	for (let [website, websiteAPI] of websites) {
+		const promise = refreshWebsite(website, websiteAPI);
+		promises.push(promise);
+		promise
 			.then(() => {
-				if (appGlobal["notificationGlobalyDisabled"] === false) {
-					doNotifyWebsite(website);
+				if (!_notificationGloballyDisabled) {
+					doNotifyWebsite(website, websiteAPI)
+						.catch(console.error)
+					;
 				}
 			})
 			.catch((data) => {
-				ZDK.console.log('refreshWebsitesData', data);
-			});
-	});
+				console.log('refreshWebsitesData', data);
+			})
+		;
+	}
 
-	const data = await Promise.allSettled(promises);
+	const data = await Promise.allSettled(promises)
+		.catch(console.error)
+	;
 
 	let oldAlarm = null;
 	try {
@@ -142,7 +172,7 @@ async function refreshWebsitesData() {
 		console.error(e);
 	}
 
-	if (!oldAlarm || oldAlarm.periodInMinutes !== getPreference('check_delay')) {
+	if (!oldAlarm || oldAlarm.periodInMinutes !== await getPreference('check_delay')) {
 		try {
 			await browser.alarms.clear(ALARM_NAME)
 		} catch (e) {
@@ -152,54 +182,75 @@ async function refreshWebsitesData() {
 		await browser.alarms.create(
 			ALARM_NAME,
 			{
-				delayInMinutes: getPreference('check_delay')
+				delayInMinutes: await getPreference('check_delay')
 			}
 		);
 	}
 
+	updateCountIndicator()
+		.catch(console.error)
+	;
+
+	if (await getPreference('showExperimented') === true) {
+		console.groupCollapsed('Websites check end');
+		console.log('timings:', {
+			dateStart,
+			dateEnd: new Date()
+		});
+		console.log('fetchResponses:', data);
+		console.log('Data:', websitesData);
+		console.groupEnd();
+	}
+
+	if (websitesData.size > 0) {
+		const output = {};
+		for (let [website, data] of websitesData) {
+			output[website] = data.toJSON();
+		}
+
+		await browser.storage.local.set({
+			[refreshDataStorageBase]: output
+		});
+	}
+
+	isRefreshingData = false;
+	return data;
+}
+
+export async function updateCountIndicator() {
+	if (typeof browser.browserAction.setBadgeText !== 'function') {
+		return;
+	}
 
 	let count = null;
-	websitesData.forEach((websiteData, website) => {
+	for (let [, websiteData] of websitesData) {
 		if (websiteData.logged && websiteData.count !== null) {
 			if (count === null) {
 				count = 0;
 			}
-			count += websiteData.count;
+			const _nb = parseInt(websiteData.count);
+			count += isNaN(_nb) ? 0 : _nb;
 		}
-	});
-
-	if (getPreference('showExperimented') === true) {
-		ZDK.console.groupCollapsed('Websites check end');
-		ZDK.console.log('fetchResponses:', data);
-		ZDK.console.log('Data:', websitesData);
-		ZDK.console.groupEnd();
 	}
 
-	if (typeof browser.browserAction.setBadgeText === 'function') {
-		let displayedCount;
-		if (count === null) {
-			displayedCount = '';
-		} else if (count >= 1000000) {
-			displayedCount = `${parseInt(count / 1000000)}M`;
-		} else if (count >= 10000) {
-			displayedCount = `${parseInt(count / 1000)}k`;
-		} else {
-			displayedCount = count.toString();
-		}
-
-		browser.browserAction.setBadgeText({text: displayedCount});
-		browser.browserAction.setBadgeBackgroundColor({color: (count !== null && count > 0)? "#FF0000" : "#424242"});
+	let displayedCount;
+	if (count === null) {
+		displayedCount = '';
+	} else if (count >= 1000000) {
+		displayedCount = `${parseInt(count / 1000000)}M`;
+	} else if (count >= 10000) {
+		displayedCount = `${parseInt(count / 1000)}k`;
+	} else {
+		displayedCount = count.toString();
 	}
 
-	if (typeof window.panel__UpdateData === 'function') {
-		window.panel__UpdateData();
-	}
-	isRefreshingData = false;
-	return data;
+	await browser.browserAction.setBadgeText({text: displayedCount});
+	await browser.browserAction.setBadgeBackgroundColor({color: (count !== null && count > 0) ? "#FF0000" : "#424242"});
 }
-appGlobal["refreshWebsitesData"] = refreshWebsitesData;
 
 browser.alarms.onAlarm.addListener(function (alarm) {
+	if (!isBackgroundProcess) return;
+
 	if (alarm.name === ALARM_NAME) {
 		refreshWebsitesData()
 			.catch(console.error)
@@ -208,29 +259,19 @@ browser.alarms.onAlarm.addListener(function (alarm) {
 });
 
 
-async function refreshWebsite(website) {
+async function refreshWebsite(website, websiteAPI) {
 	let data = null, request = null;
-	if (typeof websites.get(website).getData === 'function') {
-		try {
-			const result = await websites.get(website).getData();
-			data = result.data;
-			request = result.response;
-		} catch (e) {
-			ZDK.console.error(e);
-		}
-	} else {
-		try {
-			request = await Request({
-				url: websites.get(website).dataURL,
-				overrideMimeType: 'text/html; charset=utf-8',
-				contentType: 'document',
-				Request_documentParseToJSON: websites.get(website).Request_documentParseToJSON
-			}).get();
 
-			data = request.map;
-		} catch (e) {
-			ZDK.console.error(e);
-		}
+	if (!websiteAPI || typeof websiteAPI.getData !== 'function') {
+		throw new Error('Expected getData to be a function');
+	}
+
+	try {
+		const result = await websiteAPI.getData();
+		data = result.data;
+		request = result.response;
+	} catch (e) {
+		console.error(e);
 	}
 
 
@@ -244,9 +285,10 @@ async function refreshWebsite(website) {
 		if (data.has("folders")) {
 			websiteData.folders = data.get("folders");
 		}
+		websiteData.href = websiteAPI[(websiteData.logged) ? "getViewURL" : "getLoginURL"](websiteData)
 		return request;
 	} else {
-		ZDK.console.warn(`Error retrieving page for "${website}"`);
+		console.warn(`Error retrieving page for "${website}"`);
 		//let websiteData = websitesData.get(website);
 		//websiteData.logged  = false;
 		return request;
@@ -254,18 +296,11 @@ async function refreshWebsite(website) {
 }
 
 
-let websites = new Map(),
-	websitesData = new Map()
-;
-appGlobal["websites"] = websites;
-appGlobal["websitesData"] = websitesData;
-window.baseRequiredPromise.then(async function () {
-	const {deviantArt} = await import('../platforms/deviantart.js');
-	websites.set('deviantArt', deviantArt);
-
-	websites.forEach((websiteAPI, website) => {
-		websitesData.set(website, new websiteDefaultData());
+window.websitesData = websitesData
+if (isBackgroundProcess) {
+	i18ex.loadingPromise.then(async function () {
+		refreshWebsitesData()
+			.catch(console.error)
+		;
 	});
-
-	refreshWebsitesData();
-});
+}
