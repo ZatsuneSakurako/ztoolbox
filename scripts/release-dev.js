@@ -5,14 +5,15 @@ import chromeWebStoreUpload from "chrome-webstore-upload";
 import {exec as _exec} from "child_process";
 import klawSync from "klaw-sync";
 import dotenv from "dotenv";
-import pjson from "../package.json";
+import _yargs from "yargs";
 import {fsReadFile} from "./common/file-operations.js";
 import {error, info, success, warning} from "./common/custom-console.js";
 import {projectRootDir as pwd} from "./projectRootDir.js";
 
-const echo = console.log,
+const pjson = JSON.parse(fs.readFileSync(pwd + '/package.json', {encoding: 'utf-8'})),
+	echo = console.log,
 
-	yargs = require('yargs')
+	yargs = _yargs(process.argv.slice(2))
 		.usage('Usage: $0 [options]')
 
 		.option('p', {
