@@ -25,7 +25,7 @@ async function launchSearch(tab, imgUrl) {
 }
 
 i18ex.loadingPromise.then(async function() {
-	contextMenusController.createImage(i18ex._('SearchOnIqdb'), ['*/*'], onIqdbMenuClick);
+	contextMenusController.createImage('SearchOnIqdb', i18ex._('SearchOnIqdb'), ['*/*'], onIqdbMenuClick);
 })
 
 async function onIqdbMenuClick(info) {

@@ -25,19 +25,8 @@ if (isFirefox) {
 
 
 
-chrome.contextMenus.onClicked.addListener(function (info, tab) {
-	for (let [menuId, data] of contextMenusController) {
-		if (info.menuItemId === menuId) {
-			try {
-				data.onClick(info, tab);
-			} catch (e) {
-				console.error(e);
-			}
-		}
-	}
-});
 i18ex.loadingPromise.then(() => {
-	contextMenusController.create(i18ex._("OpenWithoutPlaylist"), ["*.youtube.com/watch?*&list=*","*.youtube.com/watch?list=*"], function (info, tab) {
+	contextMenusController.create('OpenWithoutPlaylist', i18ex._("OpenWithoutPlaylist"), ["*.youtube.com/watch?*&list=*","*.youtube.com/watch?list=*"], function (info, tab) {
 		const removePlaylistFromUrl = url => {
 			const urlObj = new URL(url); // https://developer.mozilla.org/en-US/docs/Web/API/URL - https://developer.mozilla.org/en-US/docs/Web/API/URLSearchParams
 			urlObj.searchParams.delete("list");
