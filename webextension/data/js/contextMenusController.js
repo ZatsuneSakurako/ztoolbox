@@ -8,6 +8,15 @@ export class ContextMenusController extends Map {
 		super();
 	}
 
+	/**
+	 *
+	 * @param {string} id
+	 * @param {string} title
+	 * @param {string[]} targetUrlPatterns
+	 * @param {function(info:object, tab:Tab|undefined):void} onClick
+	 * @param opts
+	 * @private
+	 */
 	_create(id, title, targetUrlPatterns, onClick, opts) {
 		/*if(browser.menu!==undefined && browser.menu !== null){
 			// tools_menu is available with it
