@@ -120,6 +120,18 @@
 
 
 
+	"Shorten_this_link": "Shorten this link",
+	"Shorten_this_picture": "Shorten this picture",
+	"Shorten_this_page_URL": "Shorten this page URL",
+	"Shortened_link_copied_in_the_clipboard": "Shortened link copied in the clipboard",
+	"Error_when_copying_to_clipboard": "Error when copying into clipboad",
+	"Error_on_request": "Error when generating the link",
+	"Check_your_link_or_page": "Check your link or page",
+	"custom_lstu_server_title": "Custom LSTU server",
+	"custom_lstu_server_description": "LSTU server, for example https://lstu.fr/",
+
+
+
 	"website_notif": "{{website}} notification",
 	"website_notif_plural": "{{website}} notifications",
 	"website_not_logged": "No {{website}} account logged",

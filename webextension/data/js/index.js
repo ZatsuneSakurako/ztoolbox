@@ -7,7 +7,7 @@ import "./lib/content-scripts-register-polyfill___modified.js";
 import {i18ex} from './translation-api.js';
 
 import './classes/chrome-native.js';
-import {getPreferences} from './classes/chrome-preferences-2.js';
+import {getPreference, getPreferences} from './classes/chrome-preferences-2.js';
 import {sendNotification} from './classes/chrome-notification-controller.js';
 import {contextMenusController} from './contextMenusController.js';
 
@@ -17,11 +17,36 @@ import './variousFeatures/refresh-data.js';
 import './variousFeatures/service_worker.js';
 
 import {isFirefox} from "./browserDetect.js";
+import {throttle} from "./lib/throttle.js";
 if (isFirefox) {
 	import('./variousFeatures/copyTextLink.js')
 		.catch(console.error)
 	;
 }
+
+
+
+const updateLstuContextMenu = throttle(async function updateLstuContextMenu() {
+	const api_url = await getPreference('custom_lstu_server')
+	if (!!api_url && /https?:\/\/.+/.test(api_url)) {
+		await import('./variousFeatures/lstu.js');
+		self.lstu_onStart_contextMenus()
+			.catch(console.error)
+		;
+	} else {
+		for (let id of ['shorten_fromPage','shorten_fromLink','shorten_fromImage']) {
+			browser.contextMenus.remove(id);
+		}
+	}
+}, 5000);
+updateLstuContextMenu();
+browser.storage.onChanged.addListener((changes, area) => {
+	if (area !== "local") return;
+
+	if (changes.custom_lstu_server) {
+		updateLstuContextMenu();
+	}
+});
 
 
 
@@ -146,7 +171,7 @@ self.doNotif = function doNotif(options, suffixConfirmIfNoButtons=false) {
 				console.info(`${notificationId}: ${triggeredType}${(buttonIndex && buttonIndex !== null)? ` (Button index: ${buttonIndex})`:""}`);
 
 				// 0 is the first button, used as button of action
-				if ((buttonIndex === null || buttonIndex === 0)) {
+				if (buttonIndex === null || buttonIndex === 0) {
 					resolve(result);
 				} else {
 					reject(result);

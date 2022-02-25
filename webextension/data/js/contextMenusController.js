@@ -186,6 +186,10 @@ async function onStart_contextMenus() {
 	await browser.contextMenus.removeAll();
 	await i18ex.loadingPromise;
 	await contextMenusController._createAll();
+
+	if (self.lstu_onStart_contextMenus) {
+		lstu_onStart_contextMenus();
+	}
 }
 chrome.runtime.onStartup.addListener(function () {
 	onStart_contextMenus()
