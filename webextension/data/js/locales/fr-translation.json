@@ -123,6 +123,18 @@
 
 
 
+	"Shorten_this_link": "Raccourcir ce lien",
+	"Shorten_this_picture": "Raccourcir cette image",
+	"Shorten_this_page_URL": "Raccourcir l'URL de la page",
+	"Shortened_link_copied_in_the_clipboard": "Lien raccourci copié dans le presse-papier",
+	"Error_when_copying_to_clipboard": "Erreur lors de la copie dans le presse-papier",
+	"Error_on_request": "Erreur lors de la génération du lien",
+	"Check_your_link_or_page": "Vérifiez le lien ou page",
+	"custom_lstu_server_title": "Serveur LSTU personnalisé",
+	"custom_lstu_server_description": "Serveur LSTU, par exemple https://lstu.fr/",
+
+
+
 	"website_notif": "Notification {{website}}",
 	"website_notif_plural": "Notifications {{website}}",
 	"website_not_logged": "Aucun compte {{website}} connecté",

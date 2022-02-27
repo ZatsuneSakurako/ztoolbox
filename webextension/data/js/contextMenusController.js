@@ -8,6 +8,15 @@ export class ContextMenusController extends Map {
 		super();
 	}
 
+	/**
+	 *
+	 * @param {string} id
+	 * @param {string} title
+	 * @param {string[]} targetUrlPatterns
+	 * @param {function(info:object, tab:Tab|undefined):void} onClick
+	 * @param opts
+	 * @private
+	 */
 	_create(id, title, targetUrlPatterns, onClick, opts) {
 		/*if(browser.menu!==undefined && browser.menu !== null){
 			// tools_menu is available with it
@@ -177,6 +186,10 @@ async function onStart_contextMenus() {
 	await browser.contextMenus.removeAll();
 	await i18ex.loadingPromise;
 	await contextMenusController._createAll();
+
+	if (self.lstu_onStart_contextMenus) {
+		lstu_onStart_contextMenus();
+	}
 }
 chrome.runtime.onStartup.addListener(function () {
 	onStart_contextMenus()

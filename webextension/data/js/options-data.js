@@ -32,6 +32,13 @@ export const options = {
 		"stringList": true,
 		"group": "featurePreference"
 	},
+	"custom_lstu_server": {
+		"title": "Custom LSTU server",
+		"description": "LSTU server, for example https://lstu.fr/",
+		"type": "string",
+		"value": "",
+		"group": "featurePreference"
+	},
 	/*			Notifications			*/
 	"freshRss_baseUrl": {
 		"title": "Base url of your FreshRss instance",
