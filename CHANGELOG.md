@@ -1,5 +1,6 @@
-# WIP
+# 0.19.0
 * \+ : Lstu
+* i : Update dependencies
 
 # 0.18.0
 * \+ : Fresh RSS
