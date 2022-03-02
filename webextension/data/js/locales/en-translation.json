@@ -99,16 +99,6 @@
 	"debug_checkingLivesState": "State of the stream refresh",
 	"footer_title": "Addon under GPL v3 licence.",
 	"footer_by": "by",
-	"supportWithPatreon": "Support this addon and his creator",
-
-
-
-	"rssSomeError": "Some error occurred",
-	"rssForbidenPage": "Unauthorized page",
-	"rssNoItem": "No rss detected",
-	"rssNoTitle": "No title",
-	"loading": "Loading... <i></i>",
-	"reloadTabs": "After activation / update / installation, a page refresh is necessary",
 
 
 
