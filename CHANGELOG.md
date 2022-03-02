@@ -1,3 +1,6 @@
+# 0.20.0
+* \+ : Settings to display or not FreshRss in panel
+
 # 0.19.0
 * \+ : Lstu
 * i : Update dependencies

@@ -32,6 +32,9 @@
 	"freshRss_baseUrl_title": "URL de votre instance FreshRss (devrait finir par un /i/)",
 	"freshRss_baseUrl_description": "Rafraîchissement de donnée quand URL fournie",
 
+	"freshRss_showInPanel_title": "Affiche les données dans une iframe depuis le panel",
+	"freshRss_showInPanel_description": "",
+
 	"notify_checkedData_title": "Affiche une notification pour deviantArt/freshRss",
 	"notify_checkedData_description": "Notification quand cochée",
 

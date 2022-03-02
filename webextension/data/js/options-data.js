@@ -48,6 +48,14 @@ export const options = {
 		"group": "notifications",
 		"prefLevel": "basic"
 	},
+	"freshRss_showInPanel": {
+		"title": "Show FreshRss data in iframe",
+		"description": "",
+		"type": "bool",
+		"value": false,
+		"group": "notifications",
+		"prefLevel": "basic"
+	},
 	"notify_checkedData": {
 		"title": "Show a notification for deviantArt",
 		"description": "Notification when checked",
