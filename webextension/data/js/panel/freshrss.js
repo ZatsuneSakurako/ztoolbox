@@ -53,11 +53,11 @@ getPreference('freshRss_showInPanel')
 ;
 document.addEventListener('click', function (e) {
 	if (freshRss_showInPanel === false) return;
-	const target = e.target.closest('[data-website="freshRss"]');
+	const target = e.target.closest('[data-website="freshRss"][href]');
 	if (!target) return;
 
 	e.preventDefault();
 	setTimeout(() => {
 		document.querySelector('#freshRssContentRadio').click()
 	})
-})
+});
