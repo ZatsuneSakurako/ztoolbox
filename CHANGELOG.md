@@ -1,5 +1,7 @@
 # 0.20.0
 * \+ : Settings to display or not FreshRss in panel
+* \- : Clean old translations
+* Fix : FreshRSS with no data (no URL)
 
 # 0.19.0
 * \+ : Lstu
