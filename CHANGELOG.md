@@ -1,4 +1,4 @@
-# WIP
+# 0.20.1
 * fix : Amazon share - price/link detection
 * fix : deviantArt - fix data url
 
