@@ -45,13 +45,19 @@ document.addEventListener('change', function (e) {
 onSectionChange(document.querySelector('[name="sections"]:checked'));
 
 
-
+let freshRss_showInPanel = false;
+getPreference('freshRss_showInPanel')
+	.then(value => {
+		freshRss_showInPanel = value;
+	})
+;
 document.addEventListener('click', function (e) {
-	const target = e.target.closest('[data-website="freshRss"]');
+	if (freshRss_showInPanel === false) return;
+	const target = e.target.closest('[data-website="freshRss"][href]');
 	if (!target) return;
 
 	e.preventDefault();
 	setTimeout(() => {
 		document.querySelector('#freshRssContentRadio').click()
 	})
-})
+});

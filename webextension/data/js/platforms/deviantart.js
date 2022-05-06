@@ -1,12 +1,12 @@
 const deviantArt = {
-	dataURL:"http://www.deviantart.com/notifications/",
+	dataURL:"http://www.deviantart.com/notifications/watch",
 	getViewURL: function(websiteState) {
 		if (websiteState.count > 0) {
-			return "http://www.deviantart.com/notifications/";
+			return "http://www.deviantart.com/notifications/watch";
 		} else if (websiteState.logged !== null && websiteState.logged && websiteState.loginId !== "") {
 			return `http://www.deviantart.com/${websiteState.loginId}`;
 		} else if (websiteState.logged !== null && websiteState.logged === false) {
-			return "http://www.deviantart.com/notifications/"; // dA will redirect it to https://www.deviantart.com/users/login?ref=*
+			return "http://www.deviantart.com/notifications/watch"; // dA will redirect it to https://www.deviantart.com/users/login?ref=*
 		} else {
 			return "http://www.deviantart.com/";
 		}

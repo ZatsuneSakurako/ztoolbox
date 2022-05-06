@@ -32,6 +32,9 @@
 	"freshRss_baseUrl_title": "URL of your FreshRss instance (should end with /i/)",
 	"freshRss_baseUrl_description": "Data refresh with url provided",
 
+	"freshRss_showInPanel_title": "Display data from an iframe in the panel",
+	"freshRss_showInPanel_description": "",
+
 	"notify_checkedData_title": "Show a notification for deviantArt/freshRss",
 	"notify_checkedData_description": "Notification when checked",
 
@@ -96,16 +99,6 @@
 	"debug_checkingLivesState": "State of the stream refresh",
 	"footer_title": "Addon under GPL v3 licence.",
 	"footer_by": "by",
-	"supportWithPatreon": "Support this addon and his creator",
-
-
-
-	"rssSomeError": "Some error occurred",
-	"rssForbidenPage": "Unauthorized page",
-	"rssNoItem": "No rss detected",
-	"rssNoTitle": "No title",
-	"loading": "Loading... <i></i>",
-	"reloadTabs": "After activation / update / installation, a page refresh is necessary",
 
 
 
