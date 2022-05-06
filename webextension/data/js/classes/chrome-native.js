@@ -56,7 +56,13 @@ function fnNative(command, data={}) {
 		const _id = callNative(command, data);
 		port.onMessage.addListener(function callback(msg, port) {
 			if (typeof msg === 'string') msg = JSON.parse(msg);
-			if (msg && msg.data._id === _id) {
+			if (!msg.data && msg.error) {
+				if (msg.error) {
+					console.error(msg);
+				} else {
+					console.warn('NativeMessageUnexpected', msg);
+				}
+			} else if (msg && msg.data && msg.data._id === _id) {
 				port.onMessage.removeListener(callback);
 
 				if (msg.type === 'error' || msg.error !== false) {
@@ -97,4 +103,24 @@ export async function getPreferences(ids) {
 		ids
 	});
 	return result.value;
+}
+
+/**
+ *
+ * @return {Promise<*[]>}
+ */
+export async function getDefaultValues() {
+	return await fnNative('getDefaultValues');
+}
+self.getDefaultValues = getDefaultValues;
+
+/**
+ *
+ * @param {string} sectionName
+ * @return {Promise<*[]>}
+ */
+export async function showSection(sectionName) {
+	return await fnNative('showSection', {
+		sectionName
+	});
 }
