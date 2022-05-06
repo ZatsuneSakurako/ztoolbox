@@ -1,3 +1,6 @@
+# WIP
+* fix : Amazon share - price/link detection
+
 # 0.20.0
 * \+ : Settings to display or not FreshRss in panel
 * \- : Clean old translations

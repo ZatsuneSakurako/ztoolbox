@@ -40,11 +40,11 @@
 		}
 
 		const linkRegex = /https:\/\/www\.amazon\.fr\/[^ ]+/gm,
-			$swfMailTo = document.querySelector('#swfMailTo'),
+			$swfImageMailTo = document.querySelector('#swfImageMailTo'),
 			$productTitle = document.querySelector('#productTitle')
 			// $selectedImg = document.querySelector('#main-image-container li.selected img')
 		;
-		console.log($swfMailTo, $productTitle)
+		console.log($swfImageMailTo, $productTitle)
 
 		const newLink = document.createElement('button');
 		newLink.classList.add('a-link-normal', 'email');
@@ -53,6 +53,7 @@
 		newLink.addEventListener('click', async function () {
 			let priceTxt = 'Aucun prix';
 			const priceSelectors = [
+				'#corePrice_feature_div .a-offscreen',
 				'#price_inside_buybox',
 				'#buyBoxAccordion > .a-accordion-active h5'
 			];
@@ -65,11 +66,11 @@
 			}
 
 			const result = await copyToClipboard(`${$productTitle.innerText.trim()} (${priceTxt})
-${new URL($swfMailTo.href).searchParams.get('body').match(linkRegex)[0]}`);
+${new URL($swfImageMailTo.href).searchParams.get('body').match(linkRegex)[0]}`);
 
 			/* Alert the copied text */
 			notifyMe(!!result ? 'Copié !' : 'Erreur lors de la copie');
 		});
-		$swfMailTo.after(newLink);
+		$swfImageMailTo.before(newLink);
 	});
 })(document);
