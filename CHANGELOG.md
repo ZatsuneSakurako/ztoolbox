@@ -1,3 +1,6 @@
+# 0.20.2
+* fix : deviantArt - change login url
+
 # 0.20.1
 * fix : Amazon share - price/link detection
 * fix : deviantArt - fix data url

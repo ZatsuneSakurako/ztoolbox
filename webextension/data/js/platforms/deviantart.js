@@ -12,7 +12,7 @@ const deviantArt = {
 		}
 	},
 	getLoginURL: function(websiteState) {
-		return "http://www.deviantart.com/notifications/"; // dA will redirect it to https://www.deviantart.com/users/login?ref=*
+		return "http://www.deviantart.com/notifications/watch"; // dA will redirect it to https://www.deviantart.com/users/login?ref=*
 	},
 
 	/**
