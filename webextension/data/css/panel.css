@@ -148,6 +148,13 @@ section .buttonItem,
 	position: relative;
 	text-align: left;
 }
+section .buttonItem .data,
+#panelContent .websiteItem .data {
+	-webkit-line-clamp: 3;
+	overflow: hidden;
+	display: -webkit-box;
+	-webkit-box-orient: vertical;
+}
 
 section .buttonItem .icon {
 	font-size: 32px;

@@ -1,3 +1,6 @@
+# 
+* fix : panel - tab title overflow
+
 # 0.20.2
 * fix : deviantArt - change login url
 
