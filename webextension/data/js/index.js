@@ -235,9 +235,7 @@ async function onCheckUpdatesInterval() {
 		return;
 	}
 
-	const {ChromeUpdateNotification} = await import('./classes/chromeUpdateNotification.js'),
-		hasUpdate = await ChromeUpdateNotification.checkHasUpdate()
-	;
+	const hasUpdate = await ChromeUpdateNotification.checkHasUpdate();
 	await browser.storage.local.set({
 		_checkUpdate: {
 			hasUpdate,
