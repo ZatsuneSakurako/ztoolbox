@@ -129,7 +129,6 @@ const deviantArt = {
 			for (let [name, item] of Object.entries(streams)) {
 				if (['NETWORKBAR_RECOMMENDED_GROUPS', 'NETWORKBAR_WATCHED_GROUPS'].includes(name.toUpperCase())) continue;
 
-				console.info(item)
 				const folderCount = item.items.length,
 					folderName = item?.streamParams?.notificationType ?? item?.streamParams?.requestEndpoint
 				;
