@@ -1,5 +1,6 @@
 # 
 * fix : panel - tab title overflow
+* fix : deviantArt - use watch page as data URL
 
 # 0.20.2
 * fix : deviantArt - change login url

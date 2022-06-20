@@ -1,18 +1,19 @@
 const deviantArt = {
-	dataURL:"http://www.deviantart.com/notifications/watch",
+	// Old data url dataURL:"http://www.deviantart.com/notifications/watch",
+	dataURL:"https://www.deviantart.com/watch/deviations",
 	getViewURL: function(websiteState) {
 		if (websiteState.count > 0) {
-			return "http://www.deviantart.com/notifications/watch";
+			return this.dataURL;
 		} else if (websiteState.logged !== null && websiteState.logged && websiteState.loginId !== "") {
 			return `http://www.deviantart.com/${websiteState.loginId}`;
 		} else if (websiteState.logged !== null && websiteState.logged === false) {
-			return "http://www.deviantart.com/notifications/watch"; // dA will redirect it to https://www.deviantart.com/users/login?ref=*
+			return this.getLoginURL(websiteState); // dA will redirect it to https://www.deviantart.com/users/login?ref=*
 		} else {
 			return "http://www.deviantart.com/";
 		}
 	},
 	getLoginURL: function(websiteState) {
-		return "http://www.deviantart.com/notifications/watch"; // dA will redirect it to https://www.deviantart.com/users/login?ref=*
+		return "https://www.deviantart.com/watch/deviations"; // dA will redirect it to https://www.deviantart.com/users/login?ref=*
 	},
 
 	/**
@@ -125,15 +126,14 @@ const deviantArt = {
 		} else {
 			console.debug('@@streams', initialData['@@streams']);
 			const streams = initialData['@@streams'];
-			for (let name in streams) {
-				if (streams.hasOwnProperty(name) === false) {
-					continue;
-				}
+			for (let [name, item] of Object.entries(streams)) {
+				if (['NETWORKBAR_RECOMMENDED_GROUPS', 'NETWORKBAR_WATCHED_GROUPS'].includes(name.toUpperCase())) continue;
 
-				const item = streams[name],
-					folderCount = item.items.length,
-					folderName = item.streamParams.notificationType
+				console.info(item)
+				const folderCount = item.items.length,
+					folderName = item?.streamParams?.notificationType ?? item?.streamParams?.requestEndpoint
 				;
+				console.info(folderName, folderCount);
 
 				count += folderCount;
 				result.get('folders').set(folderName, {
