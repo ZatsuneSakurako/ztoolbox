@@ -41,15 +41,6 @@
 			"matches": ["https://iqdb.org/"],
 			"js": ["/data/js/contentscripts/iqdb_search.js"],
 			"run_at": "document_start"
-		},
-		{
-			"matches": [
-				"https://www.amazon.fr/gp/product/*",
-				"https://www.amazon.fr/dp/*",
-				"https://www.amazon.fr/*/dp/*"
-			],
-			"js": ["/data/js/contentscripts/amazonShare.js"],
-			"run_at": "document_idle"
 		}
 	],
 	"default_locale": "en",

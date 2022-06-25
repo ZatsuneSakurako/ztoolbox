@@ -59,9 +59,6 @@
 	"launchpadAddLink_title": "Ajoute un lien pour aller sur la page du PPA de Launchpad depuis une page d'index",
 	"launchpadAddLink_description": "Ajoutera le lien si coché",
 
-	"amazonShareLink_title": "Ajoute un bouton pour partager, dans le presse-papier, plus facilement des articles Amazon",
-	"amazonShareLink_description": "Ajoutera le bouton si coché (rafraîchir les pages ouvertes)",
-
 	"serviceWorkerWhitelist_title": "Liste blanche du service worker",
 	"serviceWorkerWhitelist_description": "JSON object",
 

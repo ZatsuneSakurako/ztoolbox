@@ -17,13 +17,6 @@ export const options = {
 		"value": false,
 		"group": "featurePreference"
 	},
-	"amazonShareLink": {
-		"title": "Add button to share easily amazon articles",
-		"description": "Will add button if checked",
-		"type": "bool",
-		"value": true,
-		"group": "featurePreference"
-	},
 	"serviceWorkerWhitelist": {
 		"title": "Service worker whitelist",
 		"description": "JSON data {\"domain.com\": \"whitelist\"}",

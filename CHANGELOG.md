@@ -1,6 +1,7 @@
 # 
 * fix : panel - tab title overflow
 * fix : deviantArt - use watch page as data URL
+* \- : Remove Amazon share
 
 # 0.20.2
 * fix : deviantArt - change login url
