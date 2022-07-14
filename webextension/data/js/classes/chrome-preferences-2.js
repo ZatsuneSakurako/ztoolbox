@@ -125,10 +125,14 @@ export async function getPreferences(...prefIds) {
 
 		switch (optionConfig.type) {
 			case "string":
-			case "json":
 			case "color":
 			case "menulist":
 				// No internal process to the value
+				break;
+			case "json":
+				if (typeof current_pref === 'string') {
+					current_pref = JSON.parse(current_pref);
+				}
 				break;
 			case "integer":
 				if (typeof current_pref === 'string' && isNaN(parseInt(current_pref))) {

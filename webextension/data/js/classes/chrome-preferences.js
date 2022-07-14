@@ -120,12 +120,19 @@ export const ChromePreferences = Object.freeze({
 				continue;
 			}
 
-			if (options.has(prefId) && typeof options.get(prefId).type !== "undefined" && options.get(prefId).type !== "control" && options.get(prefId).type !== "file" && typeof preferences[prefId] === typeof options.get(prefId).value) {
-				if(mergePreferences){
+			const optionConf = options.get(prefId);
+			if (!!optionConf && !['control', 'file', 'json'].includes(optionConf.type) && typeof preferences[prefId] === typeof optionConf.value) {
+				if(mergePreferences) {
 					await savePreference(prefId, preferences[prefId]);
 				} else {
 					await savePreference(prefId, preferences[prefId]);
 				}
+			} else if (!!optionConf && optionConf.type === 'json' && ['string', 'object'].includes(typeof preferences[prefId])) {
+				let jsonValue = preferences[prefId];
+				if (typeof jsonValue === 'string') {
+					jsonValue = JSON.parse(jsonValue);
+				}
+				await savePreference(prefId, jsonValue);
 			} else {
 				console.warn(`Error trying to import ${prefId}`);
 			}
