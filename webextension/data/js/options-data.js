@@ -32,6 +32,14 @@ export const options = {
 		"value": "",
 		"group": "featurePreference"
 	},
+	"tabPageServerIp_alias": {
+		"title": "IP aliases",
+		"description": "IP/Name (IP as key)",
+		"type": "json",
+		"value": "{\"127.0.0.1\": \"localhost\"}",
+		"stringList": true,
+		"group": "featurePreference"
+	},
 	/*			Notifications			*/
 	"freshRss_baseUrl": {
 		"title": "Base url of your FreshRss instance",

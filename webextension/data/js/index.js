@@ -16,6 +16,7 @@ import './variousFeatures/clear-old-hourly-alarm.js';
 import './variousFeatures/iqdb.js';
 import './variousFeatures/refresh-data.js';
 import './variousFeatures/service_worker.js';
+import './variousFeatures/tabPageServerIp.js';
 
 import {isFirefox} from "./browserDetect.js";
 import {throttle} from "./lib/throttle.js";

@@ -149,11 +149,15 @@ section .buttonItem,
 	text-align: left;
 }
 section .buttonItem .data,
-#panelContent .websiteItem .data {
+#panelContent .websiteItem .data,
+#panelContent .buttonItem.tabPageServerIp .title {
 	-webkit-line-clamp: 3;
 	overflow: hidden;
 	display: -webkit-box;
 	-webkit-box-orient: vertical;
+}
+#panelContent .buttonItem.tabPageServerIp .title {
+	-webkit-line-clamp: 1;
 }
 
 section .buttonItem .icon {
@@ -165,6 +169,10 @@ section .buttonItem .icon {
 }
 section .buttonItem .icon .material-icons {
 	font-size: inherit;
+}
+section .buttonItem .icon img,
+section .buttonItem .icon svg {
+	width: 32px;
 }
 
 #panelContent .websiteItem .websiteTitle::before {

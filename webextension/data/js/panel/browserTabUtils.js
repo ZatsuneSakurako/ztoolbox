@@ -1,15 +1,21 @@
 /**
- * @param {string} name
+ *
+ * @return {Promise<browser.tabs.Tab|undefined>}
  */
-async function triggerOnCurrentTab(name) {
+export async function getCurrentTab() {
 	const win = await browser.windows.getCurrent({
 		'populate': true,
 		'windowTypes': ['normal']
 	});
-	const [activeTab] = win.tabs.filter(tab => {
+	return win.tabs.find(tab => {
 		return tab.hasOwnProperty('active') && tab.active === true;
 	});
-
+}
+/**
+ * @param {string} name
+ */
+async function triggerOnCurrentTab(name) {
+	const activeTab = await getCurrentTab();
 	if (!activeTab) {
 		return;
 	}

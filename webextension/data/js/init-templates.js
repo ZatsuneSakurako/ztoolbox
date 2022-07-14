@@ -2,6 +2,7 @@ const templatesSource = window.templatesSource = new Map();
 templatesSource.set('backgroundTheme', '/data/template/backgroundTheme.mst');
 templatesSource.set('panelCheckedDataItem', '/data/template/panel/checkedDataItem.mst');
 templatesSource.set('tabMover', '/data/template/panel/tabMover.mst');
+templatesSource.set('tabPageServerIp', '/data/template/panel/tabPageServerIp.mst');
 
 
 export async function getMustache() {

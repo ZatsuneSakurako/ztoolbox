@@ -2,6 +2,7 @@ import {loadTranslations} from '../translation-api.js';
 import {renderTemplate} from '../init-templates.js';
 import {theme_cache_update} from '../backgroundTheme.js';
 import {refreshWebsitesData, loadStoredWebsitesData} from "../variousFeatures/refresh-data.js";
+import * as tabPageServerIp from "./tabPageServerIp.js";
 
 
 
@@ -112,6 +113,10 @@ async function updatePanelData() {
 	document.dispatchEvent(new CustomEvent('freshRssDataUpdate', {
 		detail: websitesData.get('freshRss')
 	}));
+
+	tabPageServerIp.updateData()
+		.catch(console.error)
+	;
 
 	for (let [website, websiteData] of websitesData) {
 		let websiteRenderData = {
