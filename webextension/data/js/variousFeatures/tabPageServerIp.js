@@ -16,7 +16,7 @@ chrome.webRequest.onCompleted.addListener(function (details) {
 
 }, {'urls' : [], 'types' : ['main_frame']});
 
-chrome.webRequest.onErrorOccurred.addListener(function (details) {
+chrome.webRequest.onBeforeRequest.addListener(function (details) {
 	updateData({
 		[details.tabId]: {
 			url: details.url,
