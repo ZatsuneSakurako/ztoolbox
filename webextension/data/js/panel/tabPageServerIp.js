@@ -6,8 +6,6 @@ const idTabPageServerIp = 'tabPageServerIp',
 	tabPageServerIpStorage = '_tabPageServerIp'
 ;
 
-await browser.windows.getCurrent()
-
 export async function updateData() {
 	const $tabPageServerIp = document.querySelector(`#${idTabPageServerIp}`),
 		raw = (await browser.storage.local.get([tabPageServerIpStorage])),
