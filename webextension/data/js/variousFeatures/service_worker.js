@@ -16,7 +16,7 @@ async function enableFeature() {
 }
 
 async function updateRegistration() {
-	if (!enableFeature()) {
+	if (!await enableFeature()) {
 		if (!!contentScriptRegistration) {
 			contentScriptRegistration.unregister();
 			contentScriptRegistration = null;

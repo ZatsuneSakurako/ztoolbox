@@ -2,6 +2,7 @@
 * fix : panel - tab title overflow
 * fix : deviantArt - use watch page as data URL
 * fix : Preferences - load + import of JSON settings
+* fix : Service worker blocker activation
 * \- : Remove Amazon share
 
 # 0.20.2
