@@ -1,4 +1,5 @@
 import {getPreference} from "../classes/chrome-preferences-2.js";
+import {hasFetchPermission} from "../../hasFetchPermission.js";
 
 let freshRssBaseUrl;
 const freshRss = {
@@ -33,7 +34,7 @@ const freshRss = {
 		};
 
 		freshRssBaseUrl = await getPreference('freshRss_baseUrl');
-		if (!freshRssBaseUrl) {
+		if (!freshRssBaseUrl || !(await hasFetchPermission())) {
 			return output;
 		}
 

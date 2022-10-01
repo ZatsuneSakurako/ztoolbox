@@ -1,3 +1,5 @@
+import {hasFetchPermission} from "../../hasFetchPermission.js";
+
 const deviantArt = {
 	// Old data url dataURL:"http://www.deviantart.com/notifications/watch",
 	dataURL:"https://www.deviantart.com/watch/deviations",
@@ -26,6 +28,10 @@ const deviantArt = {
 			data: null
 		};
 
+		if (!(await hasFetchPermission())) {
+			return output;
+		}
+
 		let rawData = rawHtml;
 		if (rawHtml === null) {
 			try {
@@ -33,7 +39,7 @@ const deviantArt = {
 				rawData = await output.response.text();
 			} catch (e) {
 				console.error(e);
-				return output
+				return output;
 			}
 		}
 

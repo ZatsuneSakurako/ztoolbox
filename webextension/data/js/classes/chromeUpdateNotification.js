@@ -1,5 +1,7 @@
 "use strict";
 
+import {hasFetchPermission} from "../../hasFetchPermission.js";
+
 export const VERSION_NUMBERS_REG =  /^(\d+)\.(\d+)\.(\d+)(?:\.(\d+))?$/;
 
 export class Version extends Array {
@@ -155,6 +157,10 @@ async function getVersions() {
  * @return {Promise<boolean>}
  */
 async function checkHasUpdate() {
+	if (!(await hasFetchPermission())) {
+		return false;
+	}
+
 	const currentVersion = new Version(browser.runtime.getManifest().version),
 		versions = await getVersions()
 	;
