@@ -1,5 +1,6 @@
 # WIP
 * i : Move to manifest v3
+* fix : Handle `<all_urls>` permission in Firefox
 * \- : Remove service worker
 
 # 
