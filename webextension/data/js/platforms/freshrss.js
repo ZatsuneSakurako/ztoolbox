@@ -44,7 +44,7 @@ const freshRss = {
 				rawData = await output.response.text();
 			} catch (e) {
 				console.error(e);
-				return outut;
+				return output;
 			}
 		}
 
