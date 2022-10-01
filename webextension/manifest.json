@@ -34,12 +34,20 @@
 	},
 	"content_scripts": [
 		{
-			"matches": ["*://ppa.launchpad.net/*/*/*/"],
-			"js": ["/data/js/contentscripts/launchpad-addlink.js"]
+			"matches": [
+				"*://ppa.launchpad.net/*/*/*/"
+			],
+			"js": [
+				"/data/js/contentscripts/launchpad-addlink.js"
+			]
 		},
 		{
-			"matches": ["https://iqdb.org/"],
-			"js": ["/data/js/contentscripts/iqdb_search.js"],
+			"matches": [
+				"https://iqdb.org/"
+			],
+			"js": [
+				"/data/js/contentscripts/iqdb_search.js"
+			],
 			"run_at": "document_start"
 		}
 	],
