@@ -3,6 +3,7 @@ import {renderTemplate} from '../init-templates.js';
 import {theme_cache_update} from '../backgroundTheme.js';
 import {refreshWebsitesData, loadStoredWebsitesData} from "../variousFeatures/refresh-data.js";
 import * as tabPageServerIp from "./tabPageServerIp.js";
+import "./requestPermission.js";
 
 
 

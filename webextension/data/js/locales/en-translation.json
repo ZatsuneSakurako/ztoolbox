@@ -18,6 +18,8 @@
 
 	"Settings": "Settings",
 
+	"request-all-url-permission": "Grant permission to retrieve data",
+
 	"OpenWithoutPlaylist": "Open without playlist",
 
 	"clipboard_success": "Copied into the clipboad.",
