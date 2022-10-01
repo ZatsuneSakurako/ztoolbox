@@ -14,7 +14,7 @@ chrome.webRequest.onCompleted.addListener(function (details) {
 		.catch(console.error)
 	;
 
-}, {'urls' : [], 'types' : ['main_frame']});
+}, {'urls' : ["<all_urls>"], 'types' : ['main_frame']});
 
 chrome.webRequest.onBeforeRequest.addListener(function (details) {
 	updateData({
@@ -25,7 +25,7 @@ chrome.webRequest.onBeforeRequest.addListener(function (details) {
 	})
 		.catch(console.error)
 	;
-}, {'urls' : [], 'types' : ['main_frame']});
+}, {'urls' : ["<all_urls>"], 'types' : ['main_frame']});
 
 browser.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
 	const url = !!tab.url && new URL(tab.url);
