@@ -155,7 +155,7 @@ async function onStart_checkUpdates() {
 }
 
 async function onCheckUpdatesInterval() {
-	if (env !== 'local') {
+	if (env !== 'local' || isFirefox) {
 		// Ignore when not in "local" env
 		return;
 	}
