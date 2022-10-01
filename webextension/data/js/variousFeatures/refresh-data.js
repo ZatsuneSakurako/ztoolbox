@@ -6,6 +6,7 @@ import {i18ex} from "../translation-api.js";
 import {WebsiteData} from "./website-data.js";
 import deviantArt from '../platforms/deviantart.js';
 import freshRss from '../platforms/freshrss.js';
+import {doNotif} from "../doNotif.js";
 
 export const ALARM_NAME = 'REFRESH_DATA',
 	refreshDataStorageBase = `_websitesDataStore`
