@@ -170,3 +170,12 @@ export async function getPreference(prefId) {
 	const values = await getPreferences(prefId);
 	return values.get(prefId);
 }
+
+/**
+ *
+ * @param {...string} prefIds
+ * @returns {Promise<void>}
+ */
+export function deletePreferences(...prefIds) {
+	return browser.storage.local.remove(prefIds)
+}

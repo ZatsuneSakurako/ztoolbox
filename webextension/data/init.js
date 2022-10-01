@@ -1,1 +1,0 @@
-importScripts('./js/index.js');
