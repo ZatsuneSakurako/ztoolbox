@@ -3,7 +3,7 @@
 		"gecko": {
 			"id": "ztoolbox_dev@zatsunenomokou.eu",
 			"update_url": "https://gitlab.com/ZatsuneNoMokou/ztoolbox/raw/master/dist/z_toolbox_dev.update.json",
-			"strict_min_version": "91.0"
+			"strict_min_version": "106.0"
 		}
 	},
 	"manifest_version": 3,
@@ -46,6 +46,7 @@
 	"default_locale": "en",
 	"permissions": [
 		"alarms",
+		"clipboardWrite",
 		"contextMenus",
 		"notifications",
 		"scripting",
@@ -54,9 +55,6 @@
 		"activeTab",
 		"nativeMessaging",
 		"webRequest"
-	],
-	"optional_permissions": [
-		"clipboardWrite"
 	],
 	"host_permissions": [
 		"<all_urls>",
