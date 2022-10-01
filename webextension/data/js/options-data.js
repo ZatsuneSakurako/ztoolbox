@@ -17,14 +17,6 @@ export const options = {
 		"value": false,
 		"group": "featurePreference"
 	},
-	"serviceWorkerWhitelist": {
-		"title": "Service worker whitelist",
-		"description": "JSON data {\"domain.com\": \"whitelist\"}",
-		"type": "json",
-		"value": "{\"*\": \"whitelist\"}",
-		"stringList": true,
-		"group": "featurePreference"
-	},
 	"custom_lstu_server": {
 		"title": "Custom LSTU server",
 		"description": "LSTU server, for example https://lstu.fr/",

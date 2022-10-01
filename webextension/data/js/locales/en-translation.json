@@ -56,9 +56,6 @@
 	"launchpadAddLink_title": "Add link to go Launchpad PPA page from an index page",
 	"launchpadAddLink_description": "Will add link if checked",
 
-	"serviceWorkerWhitelist_title": "Service worker whitelist",
-	"serviceWorkerWhitelist_description": "JSON object",
-
 	"panel_height_title": "Panel's height",
 	"panel_height_description": "Size in pixels",
 

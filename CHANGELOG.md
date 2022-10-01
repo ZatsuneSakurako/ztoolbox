@@ -1,5 +1,6 @@
 # WIP
 * i : Move to manifest v3
+* \- : Remove service worker
 
 # 
 * fix : panel - tab title overflow
