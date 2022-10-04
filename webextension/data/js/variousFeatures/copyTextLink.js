@@ -8,7 +8,7 @@ async function initMenuCopyTextLink() {
 	await i18ex.loadingPromise;
 
 	await browser.scripting.unregisterContentScripts(['copyTextLink']);
-	export const contentScriptRegistration = await chrome.scripting.register([
+	await chrome.scripting.register([
 		{
 			"id": "copyTextLink",
 			"js": [
