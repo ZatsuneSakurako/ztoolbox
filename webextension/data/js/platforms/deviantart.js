@@ -1,4 +1,5 @@
 import {hasFetchPermission} from "../../hasFetchPermission.js";
+import JSON5 from '../lib/json5.js';
 
 const deviantArt = {
 	// Old data url dataURL:"http://www.deviantart.com/notifications/watch",
@@ -83,11 +84,12 @@ const deviantArt = {
 			 * 1st to unescape \" ....
 			 * 2nd to get the object
 			 */
-			initialData = JSON.parse(JSON.parse(`"${initialData[1]}"`));
+			initialData = JSON5.parse(JSON5.parse(`"${initialData[1]}"`));
 		} catch (e) {
 			console.error(e);
 			return output;
 		}
+		console.dir(initialData)
 
 		if (initialData.hasOwnProperty('@@publicSession') === false) {
 			return output;
