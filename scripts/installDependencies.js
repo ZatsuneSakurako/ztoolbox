@@ -40,4 +40,7 @@ if (!exist_jsLib) {
 
 	info("Copying MaterialIcons (marella/material-icons)...");
 	_cp("./node_modules/material-icons/iconfont/material-icons.woff2", path.normalize(`${fontPath}/MaterialIcons-Regular.woff2`));
+
+	info("Copying JSON5...");
+	_cp("./node_modules/json5/dist/index.mjs", path.normalize(`${jsLib}/json5.js`));
 }

@@ -8,7 +8,7 @@ import path from "path";
  * @return {void}
  */
 export function cp(src, dest) {
-	if(fs.lstatSync(dest).isDirectory()){
+	if(fs.existsSync(dest) && fs.lstatSync(dest).isDirectory()){
 		dest = path.resolve(dest, "./" + path.basename(src));
 	}
 
