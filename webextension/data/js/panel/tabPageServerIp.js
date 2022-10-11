@@ -8,7 +8,8 @@ const idTabPageServerIp = 'tabPageServerIp',
 
 export async function updateData() {
 	const $tabPageServerIp = document.querySelector(`#${idTabPageServerIp}`),
-		raw = (await browser.storage.local.get([tabPageServerIpStorage])),
+		storageArea = browser.storage.session ?? browser.storage.local,
+		raw = (await storageArea.get([tabPageServerIpStorage])),
 		data = Object.assign({}, raw[tabPageServerIpStorage])
 	;
 
@@ -42,7 +43,11 @@ export async function updateData() {
 		...tabData,
 		tabName: activeTab.title,
 		favIconUrl: activeTab.favIconUrl,
-		ipMore
+		ipMore,
+		description: [
+			ipMore ? ipMore : undefined,
+			tabData.statusCode !== 200 ? tabData.statusCode : undefined
+		].filter(s => !!s).join(', ')
 	});
 }
 

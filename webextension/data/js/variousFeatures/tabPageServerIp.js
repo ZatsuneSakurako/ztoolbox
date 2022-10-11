@@ -8,7 +8,8 @@ chrome.webRequest.onCompleted.addListener(function (details) {
 	updateData({
 		[details.tabId]: {
 			url: details.url,
-			ip: details.ip
+			ip: details.ip,
+			statusCode: details.statusCode
 		}
 	})
 		.catch(console.error)
@@ -53,7 +54,8 @@ browser.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
  * @return {Promise<Dict<TabPageServerIdData>>}
  */
 async function updateData(newData={}) {
-	const raw = (await browser.storage.local.get([tabPageServerIpStorage])),
+	const storageArea = browser.storage.session ?? browser.storage.local,
+		raw = (await storageArea.get([tabPageServerIpStorage])),
 		data = Object.assign({}, raw[tabPageServerIpStorage], newData)
 	;
 
@@ -69,7 +71,7 @@ async function updateData(newData={}) {
 		}
 	}
 
-	await browser.storage.local.set({
+	await storageArea.set({
 		[tabPageServerIpStorage]: data
 	});
 
@@ -77,9 +79,16 @@ async function updateData(newData={}) {
 }
 
 async function init() {
-	updateData()
+	await updateData()
 		.catch(console.error)
 	;
+
+	if (!!browser.storage.session) {
+		const data = await browser.storage.local.get([tabPageServerIpStorage]);
+		if (data[tabPageServerIpStorage]) {
+			await browser.storage.local.remove([tabPageServerIpStorage]);
+		}
+	}
 }
 
 
