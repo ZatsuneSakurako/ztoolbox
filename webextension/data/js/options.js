@@ -50,30 +50,10 @@ document.addEventListener('DOMContentLoaded', init);
 
 
 
-if (typeof browser.storage.sync === 'object') {
-	document.querySelector("#syncContainer").classList.remove("hide");
+document.addEventListener('click', function (e) {
+	const input = e.target.closest('#import_preferences');
+	if (!input) return;
 
-	document.addEventListener('click', function (e) {
-		const input = e.target.closest('#import_preferences');
-		if (!input) return;
-
-		if (input.checked === false) return;
-		importPrefsFromFile.call(input, [e, input]);
-	});
-
-	document.addEventListener('click', function (e) {
-		const input = e.target.closest('#restaure_sync');
-		if (!input) return;
-
-		restaureOptionsFromSync(e);
-	});
-
-	document.addEventListener('click', function (e) {
-		const input = e.target.closest('#save_sync');
-		if (!input) return;
-
-		saveOptionsInSync(e)
-			.catch(console.error)
-		;
-	});
-}
+	if (input.checked === false) return;
+	importPrefsFromFile.call(input, [e, input]);
+});

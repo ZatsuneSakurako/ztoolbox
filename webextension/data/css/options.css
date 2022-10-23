@@ -51,10 +51,6 @@ body:not(.showAdvanced) .preferenceContainer.advanced {
 	display: none;
 	visibility: hidden;
 }
-body:not(.showAdvanced) #sync_control_container {
-	display: none;
-	visibility: hidden;
-}
 body:not(.showExperimented) .preferenceContainer.experimented {
 	display: none;
 	visibility: hidden;

@@ -102,9 +102,12 @@ async function refreshSettings(event) {
 	}
 }
 
-/*		---- Save/Restaure preferences from sync ----		*/
+/*		---- Save/Restore preferences from sync ----		*/
 
-// Saves/Restaure options from/to browser.storage
+/**
+ * @deprecated
+ * @param event
+ */
 function saveOptionsInSync(event) {
 	ChromePreferences.saveInSync()
 		.then(() => {
@@ -121,7 +124,11 @@ function saveOptionsInSync(event) {
 		.catch(console.warn)
 	;
 }
-async function restaureOptionsFromSync(event) {
+/**
+ * @deprecated
+ * @param event
+ */
+async function restoreOptionsFromSync(event) {
 	// Default values
 	let mergePreferences = event.shiftKey;
 	return await ChromePreferences.restaureFromSync((typeof mergePreferences === 'boolean')? mergePreferences : false);
