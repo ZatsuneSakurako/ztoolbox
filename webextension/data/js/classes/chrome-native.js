@@ -1,12 +1,6 @@
 const port = chrome.runtime.connectNative('eu.gitlab.zatsunenomokou.chromenativebridge');
 
 port.onMessage.addListener(function(msg) {
-	if (typeof msg === 'string') {
-		try {
-			msg = JSON.parse(msg)
-		} catch (_) {}
-	}
-
 	if (!msg && typeof msg !== 'object') {
 		console.warn('UnexpectedMessage', msg);
 		return;
@@ -17,6 +11,10 @@ port.onMessage.addListener(function(msg) {
 	}
 });
 
+/**
+ *
+ * @returns {string}
+ */
 function randomId() {
 	let output = '';
 	let characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'.split('');
@@ -47,31 +45,41 @@ function callNative(command, data={}) {
 
 /**
  *
+ * @see callNative
  * @param {string} command
  * @param {object} [data]
+ * @param {number} timeout
  * @return {Promise<unknown>}
  */
-function fnNative(command, data={}) {
+function fnNative(command, data={}, timeout=5000) {
 	return new Promise((resolve, reject) => {
 		const _id = callNative(command, data);
-		port.onMessage.addListener(function callback(msg, port) {
-			if (typeof msg === 'string') msg = JSON.parse(msg);
-			if (!msg.data && msg.error) {
-				if (msg.error) {
-					console.error(msg);
-				} else {
-					console.warn('NativeMessageUnexpected', msg);
-				}
-			} else if (msg && msg.data && msg.data._id === _id) {
-				port.onMessage.removeListener(callback);
 
+		const timerId = setTimeout(() => {
+			port.onMessage.removeListener(callback);
+			reject(new Error('TIMEOUT'));
+		}, timeout);
+
+		const callback = function callback(msg, port) {
+			if (msg.type !== "commandReply" || msg.data._id !== _id) return;
+
+			clearTimeout(timerId);
+			port.onMessage.removeListener(callback);
+
+			if (!!msg.error) {
+				console.debug(msg);
+				reject(msg);
+			} else if (msg && msg.data) {
 				if (msg.type === 'error' || msg.error !== false) {
-					reject(msg)
+					reject(msg);
 				} else {
 					resolve(msg.result);
 				}
+			} else {
+				reject(new Error('UnexpectedMessage'));
 			}
-		});
+		};
+		port.onMessage.addListener(callback);
 	});
 }
 
@@ -102,7 +110,12 @@ export async function getPreferences(ids) {
 	const result = await fnNative('getPreferences', {
 		ids
 	});
-	return result.value;
+
+	const output = new Map();
+	for (let {id, value} of Object.values(result)) {
+		output.set(id, value);
+	}
+	return output;
 }
 
 /**
