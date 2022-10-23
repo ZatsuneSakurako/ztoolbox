@@ -157,7 +157,7 @@ export async function getPreferences(...prefIds) {
 				// No internal process to the value
 				break;
 			default:
-				console.warn(`Unknow type for preference ${prefId} : "${optionConfig.type}"`);
+				console.warn(`Unknown type for preference ${prefId} : "${optionConfig.type}"`);
 		}
 
 		output.set(prefId, current_pref);
