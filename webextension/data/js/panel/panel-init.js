@@ -18,8 +18,8 @@ async function baseInit() {
 	const html = document.documentElement,
 		body = document.body
 	;
-	html.style.height = await getPreference('panel_height');
-	body.style.width = await getPreference('panel_width');
+	html.style.height = (await getPreference('panel_height')) + 'px';
+	body.style.width = (await getPreference('panel_width')) + 'px';
 
 	const {loadTranslations} = await import('../translation-api.js');
 	await loadTranslations;
