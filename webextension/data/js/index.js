@@ -6,7 +6,7 @@ import "./lib/browser-polyfill.js";
 import {i18ex} from './translation-api.js';
 
 import './classes/chrome-native.js';
-import {getPreference, getPreferences} from './classes/chrome-preferences-2.js';
+import {deletePreferences, getPreference, getPreferences} from './classes/chrome-preferences-2.js';
 import {contextMenusController} from './contextMenusController.js';
 import {doNotif} from "./doNotif.js";
 
@@ -15,7 +15,6 @@ import {ChromeUpdateNotification} from './classes/chromeUpdateNotification.js';
 import './variousFeatures/clear-old-hourly-alarm.js';
 import './variousFeatures/iqdb.js';
 import './variousFeatures/refresh-data.js';
-import './variousFeatures/service_worker.js';
 import './variousFeatures/tabPageServerIp.js';
 
 import {isFirefox} from "./browserDetect.js";
@@ -210,13 +209,37 @@ chrome.runtime.onInstalled.addListener(function (installReason) {
 
 
 
+async function onStart_deleteOldPreferences() {
+	const preferences = ['serviceWorkerWhitelist'];
+
+	await i18ex.loadingPromise;
+
+	for (let prefId of preferences) {
+		let hasPreference = false;
+		try {
+			const val = await browser.storage.local.get(prefId);
+			hasPreference = prefId in val;
+		} catch (e) {
+			console.error(e);
+		}
+		if (!!hasPreference) {
+			await deletePreferences(prefId);
+		}
+	}
+}
 chrome.runtime.onStartup.addListener(function () {
 	onStart_checkUpdates()
+		.catch(console.error)
+	;
+	onStart_deleteOldPreferences()
 		.catch(console.error)
 	;
 });
 chrome.runtime.onInstalled.addListener(function () {
 	onStart_checkUpdates()
+		.catch(console.error)
+	;
+	onStart_deleteOldPreferences()
 		.catch(console.error)
 	;
 });
