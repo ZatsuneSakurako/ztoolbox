@@ -2,7 +2,10 @@
 * i : Move to manifest v3
 * \+ : Page IP / Status display
 * fix : Handle `<all_urls>` permission in Firefox
+* fix : Panel sizing
 * \- : Remove service worker
+* \- : Remove FreshRSS iframe mode
+* \- : Remove setting sync buttons
 
 # 
 * fix : panel - tab title overflow
