@@ -6,8 +6,24 @@ port.onMessage.addListener(function(msg) {
 		return;
 	}
 
-	if (msg.type === 'ws open') {
-		console.dir(msg);
+	switch (msg.type ?? null) {
+		case 'ws open':
+			console.log('[NativeMessaging]', 'ws open', msg);
+			break;
+		case "log":
+			if (Array.isArray(msg.data)) {
+				console.log('[NativeMessaging]', ...msg.data);
+			} else {
+				console.log('[NativeMessaging]', msg.data);
+			}
+			break;
+		case 'commandReply':
+			if (msg.data.command === 'ping') {
+				console.info('[NativeMessaging] pong');
+			}
+			break;
+		default:
+			console.log('[NativeMessaging]', 'Unknown type', msg);
 	}
 });
 
@@ -104,7 +120,7 @@ export async function getPreference(id) {
 /**
  *
  * @param {string[]} ids
- * @return {Promise<*[]>}
+ * @return {Promise<Map<string, undefined|*>>}
  */
 export async function getPreferences(ids) {
 	const result = await fnNative('getPreferences', {
