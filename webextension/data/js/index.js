@@ -210,7 +210,7 @@ chrome.runtime.onInstalled.addListener(function (installReason) {
 
 
 async function onStart_deleteOldPreferences() {
-	const preferences = ['serviceWorkerWhitelist'];
+	const preferences = ['serviceWorkerWhitelist', 'freshRss_showInPanel'];
 
 	await i18ex.loadingPromise;
 
