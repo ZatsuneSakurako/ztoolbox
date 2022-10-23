@@ -4,9 +4,10 @@
 * \+ : Page IP / Status display
 * fix : Handle `<all_urls>` permission in Firefox
 * fix : Panel sizing
-* \- : Remove service worker
-* \- : Remove FreshRSS iframe mode
-* \- : Remove setting sync buttons
+* \- : Removed features/options :
+  * service worker
+  * FreshRSS iframe mode
+  * Setting sync buttons
 
 # 
 * fix : panel - tab title overflow
@@ -43,6 +44,7 @@
   * Hourly Alarm
 * i : Copy text link now for Firefox only
 * i : Less message dependencies between panel and main
+* i : WIP native messaging
 * fix : Fix badge refresh
 
 # 0.17.3
