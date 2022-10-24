@@ -103,7 +103,7 @@ export const options = {
 		"prefLevel": "basic"
 	},
 	/*			Theme			*/
-	"panel_theme": {
+	"theme": {
 		"title": "Panel theme",
 		"description": "Choose the panel of the panel",
 		"type": "menulist",

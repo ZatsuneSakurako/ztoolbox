@@ -6,7 +6,7 @@ import "./lib/browser-polyfill.js";
 import {i18ex} from './translation-api.js';
 
 import './classes/chrome-native.js';
-import {deletePreferences, getPreference, getPreferences} from './classes/chrome-preferences-2.js';
+import {deletePreferences, getPreference, getPreferences, savePreference} from './classes/chrome-preferences-2.js';
 import {contextMenusController} from './contextMenusController.js';
 import {doNotif} from "./doNotif.js";
 
@@ -210,7 +210,7 @@ chrome.runtime.onInstalled.addListener(function (installReason) {
 
 
 async function onStart_deleteOldPreferences() {
-	const preferences = ['serviceWorkerWhitelist', 'freshRss_showInPanel'];
+	const preferences = ['serviceWorkerWhitelist', 'freshRss_showInPanel', 'panel_theme'];
 
 	await i18ex.loadingPromise;
 
@@ -219,6 +219,10 @@ async function onStart_deleteOldPreferences() {
 		try {
 			const val = await browser.storage.local.get(prefId);
 			hasPreference = prefId in val;
+
+			if (!!hasPreference && prefId === 'panel_theme') {
+				await savePreference(prefId, val);
+			}
 		} catch (e) {
 			console.error(e);
 		}

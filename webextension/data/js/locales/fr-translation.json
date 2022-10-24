@@ -64,10 +64,10 @@
 	"panel_width_title": "Largeur du panel",
 	"panel_width_description": "Taille en pixels",
 
-	"panel_theme_title": "Thème du panel",
-	"panel_theme_description": "Choix du thème pour le panel",
-	"panel_theme_dark": "Sombre",
-	"panel_theme_light": "Clair",
+	"theme_title": "Thème du panel",
+	"theme_description": "Choix du thème pour le panel",
+	"theme_dark": "Sombre",
+	"theme_light": "Clair",
 
 	"background_color_title": "Couleur du panel",
 	"background_color_description": "Choix de la couleur de base du panel",

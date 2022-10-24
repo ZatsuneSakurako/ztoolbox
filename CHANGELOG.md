@@ -1,6 +1,6 @@
 # WIP
 * i : Move to manifest v3
-* i : WIP native messaging (timeout system, getPreferences result)
+* i : WIP native messaging (timeout system, getPreferences result, theme option renaming)
 * \+ : Page IP / Status display
 * fix : Handle `<all_urls>` permission in Firefox
 * fix : Panel sizing

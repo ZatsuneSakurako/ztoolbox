@@ -49,8 +49,8 @@ class Color {
  * @return {Promise<HTMLStyleElement|null>}
  */
 export async function theme_cache_update(colorStylesheetNode) {
-	const options = await getPreferences("panel_theme", "background_color"),
-		currentTheme = options.get("panel_theme") ?? 'dark',
+	const options = await getPreferences("theme", "background_color"),
+		currentTheme = options.get("theme") ?? 'dark',
 		background_color = options.get("background_color") ?? '#000000'
 	;
 

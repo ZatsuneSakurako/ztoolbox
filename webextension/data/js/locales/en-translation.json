@@ -61,10 +61,10 @@
 	"panel_width_title": "Panel's width",
 	"panel_width_description": "Size in pixels",
 
-	"panel_theme_title": "Panel theme",
-	"panel_theme_description": "Choose the theme of the panel",
-	"panel_theme_dark": "Dark",
-	"panel_theme_light": "Light",
+	"theme_title": "Panel theme",
+	"theme_description": "Choose the theme of the panel",
+	"theme_dark": "Dark",
+	"theme_light": "Light",
 
 	"background_color_title": "Panel color",
 	"background_color_description": "Choose base color of the panel",
