@@ -54,7 +54,8 @@ export async function theme_cache_update(colorStylesheetNode) {
 		background_color = options.get("background_color") ?? '#000000'
 	;
 
-	const chromeStorage = await browser.storage.local.get(['_backgroundPage_theme_cache']);
+	const chromeStorageArea = browser.storage.session ?? browser.storage.local;
+	const chromeStorage = await chromeStorageArea.get(['_backgroundPage_theme_cache']);
 	let _cache = chromeStorage._backgroundPage_theme_cache ?? null;
 	if (!_cache || typeof _cache !== 'object') {
 		_cache = null;
@@ -119,7 +120,7 @@ export async function theme_cache_update(colorStylesheetNode) {
 		"invBaseColor_light": (currentTheme === "dark")? "77%" : "33%"
 	});
 
-	await browser.storage.local.set({
+	await chromeStorageArea.set({
 		_backgroundPage_theme_cache: {
 			_createdAt: new Date().toISOString(),
 			theme: currentTheme,

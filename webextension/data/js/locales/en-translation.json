@@ -49,6 +49,9 @@
 
 	"open_optionpage": "Open option page",
 
+	"check_enabled_title": "Data automatic refresh enabled",
+	"check_enabled_description": "Enabled if checked",
+
 	"check_delay_title": "deviantArt/freshRss verification delay",
 	"check_delay_description": "Delay between verifications, in minute",
 

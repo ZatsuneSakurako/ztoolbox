@@ -1,13 +1,17 @@
 # WIP
 * i : Move to manifest v3
 * i : WIP native messaging (timeout system, getPreferences result, theme option renaming)
+* i : Move data (deviantArt / FreshRSS, theme cache) to session storage if available
 * \+ : Page IP / Status display
+* \+ : Add enable refresh option
 * fix : Handle `<all_urls>` permission in Firefox
 * fix : Panel sizing
+* fix : deviantArt / FreshRSS refresh alarm missing periodic data
 * \- : Removed features/options :
   * service worker
   * FreshRSS iframe mode
   * Setting sync buttons
+  * The WIP data to support Dropbox sync 
 
 # 
 * fix : panel - tab title overflow

@@ -210,7 +210,18 @@ chrome.runtime.onInstalled.addListener(function (installReason) {
 
 
 async function onStart_deleteOldPreferences() {
-	const preferences = ['serviceWorkerWhitelist', 'freshRss_showInPanel', 'panel_theme'];
+	/**
+	 *
+	 * @type {Set<string>}
+	 */
+	const preferences = new Set(['serviceWorkerWhitelist', 'freshRss_showInPanel', 'panel_theme']);
+	if (browser.storage.session) {
+		preferences
+			.add('_backgroundPage_theme_cache')
+			.add('_updated')
+			.add('_websitesDataStore')
+		;
+	}
 
 	await i18ex.loadingPromise;
 

@@ -98,7 +98,9 @@ async function doNotifyWebsite(website, websiteAPI) {
 }
 
 
-const isBackgroundProcess = !location.pathname.endsWith('panel.html');
+const isBackgroundProcess = !location.pathname.endsWith('panel.html'),
+	dataStorageArea = browser.storage.session ?? browser.storage.local
+;
 /**
  *
  * @type {Map<string, WebsiteData>}
@@ -106,7 +108,7 @@ const isBackgroundProcess = !location.pathname.endsWith('panel.html');
 let websitesData = new Map();
 export async function loadStoredWebsitesData() {
 	if (websitesData.size === 0) {
-		let raw = (await browser.storage.local.get([refreshDataStorageBase])) ?? {};
+		let raw = (await dataStorageArea.get([refreshDataStorageBase])) ?? {};
 		raw = raw[refreshDataStorageBase] ?? {};
 		websitesData.set('deviantArt', !!raw.deviantArt ? WebsiteData.fromJSON(raw.deviantArt) : new WebsiteData());
 		websitesData.set('freshRss', !!raw.freshRss ? WebsiteData.fromJSON(raw.freshRss) : new WebsiteData());
@@ -144,7 +146,7 @@ export async function refreshWebsitesData() {
 
 	console.debug('Refreshing websites data...');
 	const promises = [];
-	const {_notificationGloballyDisabled} = await browser.storage.local.get(['_notificationGloballyDisabled'])
+	const {_notificationGloballyDisabled} = await dataStorageArea.get(['_notificationGloballyDisabled'])
 	for (let [website, websiteAPI] of websites) {
 		const promise = refreshWebsite(website, websiteAPI);
 		promises.push(promise);
@@ -166,27 +168,9 @@ export async function refreshWebsitesData() {
 		.catch(console.error)
 	;
 
-	let oldAlarm = null;
-	try {
-		oldAlarm = await browser.alarms.get(ALARM_NAME);
-	} catch (e) {
-		console.error(e);
-	}
-
-	if (!oldAlarm || oldAlarm.periodInMinutes !== await getPreference('check_delay')) {
-		try {
-			await browser.alarms.clear(ALARM_NAME)
-		} catch (e) {
-			console.error(e);
-		}
-
-		await browser.alarms.create(
-			ALARM_NAME,
-			{
-				delayInMinutes: await getPreference('check_delay')
-			}
-		);
-	}
+	await refreshAlarm()
+		.catch(console.error)
+	;
 
 	updateCountIndicator()
 		.catch(console.error)
@@ -209,13 +193,41 @@ export async function refreshWebsitesData() {
 			output[website] = data.toJSON();
 		}
 
-		await browser.storage.local.set({
+		await dataStorageArea.set({
 			[refreshDataStorageBase]: output
 		});
 	}
 
 	isRefreshingData = false;
 	return data;
+}
+
+async function refreshAlarm() {
+	let oldAlarm = null;
+	try {
+		oldAlarm = await browser.alarms.get(ALARM_NAME);
+	} catch (e) {
+		console.error(e);
+	}
+
+	const delayInMinutes = await getPreference('check_delay');
+	if (!oldAlarm || oldAlarm.periodInMinutes !== delayInMinutes) {
+		try {
+			await browser.alarms.clear(ALARM_NAME)
+		} catch (e) {
+			console.error(e);
+		}
+
+		if (await getPreference('check_enabled') === true) {
+			await browser.alarms.create(
+				ALARM_NAME,
+				{
+					delayInMinutes,
+					periodInMinutes: delayInMinutes
+				}
+			);
+		}
+	}
 }
 
 export async function updateCountIndicator() {
@@ -324,5 +336,11 @@ async function onStartOrInstall() {
 	}
 
 	await i18ex.loadingPromise;
+	await refreshAlarm()
+		.catch(console.error)
+	;
+	if (await getPreference('check_enabled') === true) {
+		return;
+	}
 	await refreshWebsitesData();
 }

@@ -1,12 +1,19 @@
 'use strict';
 
 export const options = {
+	"check_enabled": {
+		"title": "Data automatic refresh enabled",
+		"description": "Enabled if checked",
+		"type": "bool",
+		"value": true,
+		"prefLevel": "advanced"
+	},
 	"check_delay": {
 		"title": "Streams status delay",
 		"description": "Delay between checks, in minute",
 		"type": "integer",
 		"value": 5,
-		"minValue": 1,
+		"minValue": 5,
 		"prefLevel": "advanced"
 	},
 	/*			Features Prefs			*/

@@ -1,7 +1,5 @@
 import {ZDK} from './ZDK.js';
 import {
-	CHROME_PREFERENCES_SYNC_ID,
-	CHROME_PREFERENCES_UPDATED_ID,
 	getBooleanFromVar,
 	getPreferenceConfig, savePreference, getPreference
 } from './chrome-preferences-2.js';
@@ -666,10 +664,3 @@ export const ChromePreferences = Object.freeze({
 		}
 	}
 });
-
-
-
-export {
-	CHROME_PREFERENCES_SYNC_ID,
-	CHROME_PREFERENCES_UPDATED_ID,
-} from './chrome-preferences-2.js';

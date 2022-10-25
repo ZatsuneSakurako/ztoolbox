@@ -1,27 +1,9 @@
 import {options as _options} from '/data/js/options-data.js';
-export const CHROME_PREFERENCES_UPDATED_ID = '_updated',
-	CHROME_PREFERENCES_SYNC_ID = '_synchronisedAt'
-;
 
 export function getPreferenceConfig(returnMap=false) {
 	const options = JSON.parse(JSON.stringify(_options)),
 		mapOptions = new Map()
 	;
-
-	options[CHROME_PREFERENCES_UPDATED_ID] = {
-		"hidden": true,
-		"prefLevel": "experimented",
-		"sync": true,
-		"type": "string",
-		"value": ""
-	};
-	options[CHROME_PREFERENCES_SYNC_ID] = {
-		"hidden": true,
-		"prefLevel": "experimented",
-		"sync": false,
-		"type": "string",
-		"value": ""
-	};
 
 	if (!returnMap) return options;
 
@@ -75,15 +57,9 @@ export async function savePreference(prefId, value) {
 		}
 	}
 
-	const storagePush = {
+	return await browser.storage.local.set({
 		[prefId]: value
-	};
-	if (prefId !== CHROME_PREFERENCES_UPDATED_ID) {
-		// Keep '_updated' value up-to-date with the last change date
-		storagePush[CHROME_PREFERENCES_UPDATED_ID] = new Date();
-	}
-
-	return await browser.storage.local.set(storagePush)
+	})
 		.catch(console.error)
 	;
 }
