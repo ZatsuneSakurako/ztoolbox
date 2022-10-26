@@ -160,18 +160,21 @@ section .buttonItem .data,
 	-webkit-line-clamp: 1;
 }
 
-section .buttonItem .icon {
+section .buttonItem .icon,
+section .websiteItem .icon {
 	font-size: 32px;
 	left: 3px;
 	position: absolute;
 	top: 50%;
 	transform: translateY(-50%);
 }
-section .buttonItem .icon .material-icons {
+section .buttonItem .icon .material-icons,
+section .websiteItem .icon .material-icons {
 	font-size: inherit;
 }
 section .buttonItem .icon img,
-section .buttonItem .icon svg {
+section .buttonItem .icon svg,
+section .websiteItem .icon svg {
 	width: 32px;
 }
 

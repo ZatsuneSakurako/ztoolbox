@@ -126,7 +126,8 @@ async function updatePanelData() {
 			"website": website,
 			"websiteIcon": websiteData.websiteIcon,
 			"folders": [],
-			"href": websiteData.href
+			"href": websiteData.href,
+			"noData": websiteData.logged === null
 		};
 
 		if (websiteData.logged) {
