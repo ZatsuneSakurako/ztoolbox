@@ -54,7 +54,6 @@ window.onload = function () {
 		await import('../panel/tabMover.js');
 		await import('../panel/service-worker.js');
 		await import('../variousFeatures/website-data.js');
-		await import('../panel/freshrss.js');
 		await import('../panel/panel.js');
 	})()
 		.catch(console.error)

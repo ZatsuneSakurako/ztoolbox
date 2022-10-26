@@ -210,18 +210,6 @@ section .buttonItem .title,
 	content: attr(data-folder-title)": "attr(data-folder-count);
 }
 
-#freshRssContent {
-	padding-right: 0;
-}
-section > iframe {
-	height: 100%;
-	width: 100%;
-	border: 0;
-	padding: 0;
-	margin: 0;
-}
-
-
 
 #current_version::before {
 	content: " (v" attr(data-current-version) ")";

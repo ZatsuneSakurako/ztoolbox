@@ -110,15 +110,11 @@ async function updatePanelData() {
 	let websiteDataList_Node = document.querySelector("#panelContent #refreshItem");
 	removeAllChildren(websiteDataList_Node);
 
-	const websitesData = await loadStoredWebsitesData();
-	document.dispatchEvent(new CustomEvent('freshRssDataUpdate', {
-		detail: websitesData.get('freshRss')
-	}));
-
 	tabPageServerIp.updateData()
 		.catch(console.error)
 	;
 
+	const websitesData = await loadStoredWebsitesData();
 	for (let [website, websiteData] of websitesData) {
 		let websiteRenderData = {
 			"logged": websiteData.logged,
