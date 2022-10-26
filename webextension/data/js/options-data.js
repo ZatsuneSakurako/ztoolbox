@@ -73,7 +73,7 @@ export const options = {
 		"prefLevel": "basic"
 	},
 	"vocal_volume": {
-		"title": "Volume of vocal notifiations",
+		"title": "Volume of vocal notifications",
 		"description": "In percent",
 		"type": "integer",
 		"value": 70,
