@@ -4,6 +4,7 @@ import JSON5 from '../lib/json5.js';
 const deviantArt = {
 	// Old data url dataURL:"http://www.deviantart.com/notifications/watch",
 	dataURL:"https://www.deviantart.com/watch/deviations",
+	defaultFavicon: 'https://icons.duckduckgo.com/ip2/www.deviantart.com.ico',
 	getViewURL: function(websiteState) {
 		if (websiteState.count > 0) {
 			return this.dataURL;
@@ -41,22 +42,6 @@ const deviantArt = {
 			} catch (e) {
 				console.error(e);
 				return output;
-			}
-		}
-
-		const iconRegEx = /<link\s+[^>]*\s*rel=["']apple-touch-icon["']\s+sizes=["'](\d+x\d+)["']\s+href=["']([^"]+)["']\s*\/>/gm;
-
-		let iconUrl = null,
-			iconSize = 0
-		;
-		if (iconRegEx.test(rawData)) {
-			const iconsHtml = Array.from(rawData.matchAll(iconRegEx));
-			for (let iconHtml of iconsHtml) {
-				const sizes = iconHtml[1].split('x').map(Number.parseInt);
-				if (iconUrl === null || sizes[0] > iconSize[0]) {
-					iconUrl = iconHtml[2];
-					iconSize = sizes;
-				}
 			}
 		}
 
@@ -108,7 +93,7 @@ const deviantArt = {
 		result.set('loginId', data.user.username);
 		result.set('folders', new Map());
 
-		result.set("websiteIcon", iconUrl);
+		result.set("websiteIcon", this.defaultFavicon);
 
 
 

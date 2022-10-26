@@ -6,6 +6,7 @@ const freshRss = {
 	get dataURL() {
 		return `${freshRssBaseUrl}?a=normal&state=3`;
 	},
+	defaultFavicon: 'https://icons.duckduckgo.com/ip2/www.freshrss.org.ico',
 	/**
 	 *
 	 * @param {string} websiteState
@@ -66,7 +67,7 @@ const freshRss = {
 		result.set('logged', !!dataJsonVars);
 		result.set('loginId', !!dataUsername ? dataUsername[1] : '');
 
-		result.set("websiteIcon", browser.runtime.getURL('/data/images/freshrss-favicon.svg'));
+		result.set("websiteIcon", this.defaultFavicon);
 
 		output.data = result;
 		return output;

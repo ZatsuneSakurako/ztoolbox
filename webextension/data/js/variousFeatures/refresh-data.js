@@ -111,16 +111,16 @@ export async function loadStoredWebsitesData() {
 		let raw = (await dataStorageArea.get([refreshDataStorageBase])) ?? {};
 		raw = raw[refreshDataStorageBase] ?? {};
 
-		const deviantArt = !!raw.deviantArt ? WebsiteData.fromJSON(raw.deviantArt) : new WebsiteData();
-		websitesData.set('deviantArt', deviantArt);
-		if (!deviantArt.websiteIcon) {
-			deviantArt.websiteIcon = 'https://icons.duckduckgo.com/ip2/www.deviantart.com.ico';
+		const deviantArtData = !!raw.deviantArt ? WebsiteData.fromJSON(raw.deviantArt) : new WebsiteData();
+		websitesData.set('deviantArt', deviantArtData);
+		if (!deviantArtData.websiteIcon) {
+			deviantArtData.websiteIcon = deviantArt.defaultFavicon;
 		}
 
-		const freshRss = !!raw.freshRss ? WebsiteData.fromJSON(raw.freshRss) : new WebsiteData();
-		websitesData.set('freshRss', freshRss);
-		if (!freshRss.websiteIcon) {
-			freshRss.websiteIcon = 'https://icons.duckduckgo.com/ip2/www.freshrss.org.ico';
+		const freshRssData = !!raw.freshRss ? WebsiteData.fromJSON(raw.freshRss) : new WebsiteData();
+		websitesData.set('freshRss', freshRssData);
+		if (!freshRssData.websiteIcon) {
+			freshRssData.websiteIcon = freshRss.defaultFavicon;
 		}
 	}
 	return websitesData;
