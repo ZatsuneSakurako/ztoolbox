@@ -1,9 +1,5 @@
 <a class="websiteItem refreshItem cursor"{{#href}} href="{{{href}}}" target="_blank" {{/href}}
-   data-logged="{{logged}}" data-website="{{website}}" {{^noData}}style="background-image: url('{{websiteIcon}}')"{{/noData}}>
-
-	{{#noData}}
-		<span class="icon"><i class="material-icons">warning</i></span>
-	{{/noData}}
+   data-logged="{{logged}}" data-website="{{website}}" style="background-image: url('{{websiteIcon}}')">
 
 	<div class="websiteTitle" data-website="{{website}}" data-count="{{count}}"></div>
 	<div class="websiteData">

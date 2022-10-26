@@ -110,8 +110,18 @@ export async function loadStoredWebsitesData() {
 	if (websitesData.size === 0) {
 		let raw = (await dataStorageArea.get([refreshDataStorageBase])) ?? {};
 		raw = raw[refreshDataStorageBase] ?? {};
-		websitesData.set('deviantArt', !!raw.deviantArt ? WebsiteData.fromJSON(raw.deviantArt) : new WebsiteData());
-		websitesData.set('freshRss', !!raw.freshRss ? WebsiteData.fromJSON(raw.freshRss) : new WebsiteData());
+
+		const deviantArt = !!raw.deviantArt ? WebsiteData.fromJSON(raw.deviantArt) : new WebsiteData();
+		websitesData.set('deviantArt', deviantArt);
+		if (!deviantArt.websiteIcon) {
+			deviantArt.websiteIcon = 'https://icons.duckduckgo.com/ip2/www.deviantart.com.ico';
+		}
+
+		const freshRss = !!raw.freshRss ? WebsiteData.fromJSON(raw.freshRss) : new WebsiteData();
+		websitesData.set('freshRss', freshRss);
+		if (!freshRss.websiteIcon) {
+			freshRss.websiteIcon = 'https://icons.duckduckgo.com/ip2/www.freshrss.org.ico';
+		}
 	}
 	return websitesData;
 }
