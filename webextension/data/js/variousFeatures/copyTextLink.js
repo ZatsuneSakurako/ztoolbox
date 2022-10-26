@@ -7,8 +7,10 @@ import {i18ex} from "../translation-api.js";
 async function initMenuCopyTextLink() {
 	await i18ex.loadingPromise;
 
-	const currentContentScripts = new Set(await browser.scripting.getRegisteredContentScripts());
-	if (currentContentScripts.has('copyTextLink')) {
+	const currentContentScript = (await browser.scripting.getRegisteredContentScripts())
+		.find(item => item.id === 'copyTextLink')
+	;
+	if (!!currentContentScript) {
 		await browser.scripting.unregisterContentScripts({
 			ids: ['copyTextLink']
 		});
