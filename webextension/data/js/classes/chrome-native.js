@@ -10,6 +10,9 @@ port.onMessage.addListener(function(msg) {
 		case 'ws open':
 			console.log('[NativeMessaging]', 'ws open', msg);
 			break;
+		case 'ws close':
+			console.log('[NativeMessaging]', 'ws close', msg);
+			break;
 		case "log":
 			if (Array.isArray(msg.data)) {
 				console.log('[NativeMessaging]', ...msg.data);
