@@ -9,6 +9,13 @@ port.onMessage.addListener(function(msg) {
 	switch (msg.type ?? null) {
 		case 'ws open':
 			console.log('[NativeMessaging]', 'ws open', msg);
+			port.postMessage({
+				type: 'extensionName',
+				data: {
+					userAgent: navigator.userAgent,
+					extensionId: chrome.runtime.id
+				}
+			});
 			break;
 		case 'ws close':
 			console.log('[NativeMessaging]', 'ws close', msg);
@@ -86,7 +93,6 @@ function fnNative(command, data={}, timeout=5000) {
 			port.onMessage.removeListener(callback);
 
 			if (!!msg.error) {
-				console.debug(msg);
 				reject(msg);
 			} else if (msg && msg.data) {
 				if (msg.type === 'error' || msg.error !== false) {
