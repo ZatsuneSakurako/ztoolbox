@@ -15,7 +15,6 @@ button,
 input[type="number"],
 select,
 .panel-item,
-.websiteItem,
 .buttonItem {
 	background-color: var(--bgLight2, hsl(0, 0%, 26%)); /*#424242;*/
 }

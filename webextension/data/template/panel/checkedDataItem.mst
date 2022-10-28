@@ -1,7 +1,9 @@
-<a class="websiteItem refreshItem cursor"{{#href}} href="{{{href}}}" target="_blank" {{/href}}
-   data-logged="{{logged}}" data-website="{{website}}" style="background-image: url('{{websiteIcon}}')">
+<a class="buttonItem websiteItem cursor"{{#href}} href="{{{href}}}" target="_blank" {{/href}}
+   data-logged="{{logged}}" data-website="{{website}}">
 
-	<div class="websiteTitle" data-website="{{website}}" data-count="{{count}}"></div>
+	<img class="icon" src="{{websiteIcon}}" alt="" />
+
+	<div class="title" {{#logged}}data-count="{{count}}"{{/logged}}>{{website}}</div>
 	<div class="websiteData">
 		{{#logged}}
 			{{#folders}}
@@ -12,7 +14,7 @@
 					   data-folder-count="{{folderCount}}"></a>
 				{{/folderHaveUrl}}
 				{{^folderHaveUrl}}
-					<span class="folder" data-folder-title="{{folderTitle}}" data-folder-count="{{folderCount}}"></span>
+					<span class="folder" data-folder-count="{{folderCount}}">{{#logged}}{{folderTitle}}{{/logged}}</span>
 				{{/folderHaveUrl}}
 			{{/folders}}
 		{{/logged}}

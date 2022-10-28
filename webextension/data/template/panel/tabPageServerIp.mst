@@ -1,5 +1,5 @@
 <div class="buttonItem tabPageServerIp">
-	<span class="icon"><img src="{{favIconUrl}}" alt="" /></span>
-	<div class="title">{{tabName}}</div>
-	<div class="data">{{ip}}{{#description}} ({{description}}){{/description}}</div>
+	<img class="icon" src="{{favIconUrl}}" alt="" />
+	<div class="title ellipse">{{tabName}}</div>
+	<div class="data ellipse">{{ip}}{{#description}} ({{description}}){{/description}}</div>
 </div>

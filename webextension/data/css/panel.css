@@ -80,15 +80,13 @@ header [role="button"]:last-child {
 }
 #disableNotifications::before {
 	content: "notifications_active";
+	/*noinspection CssNoGenericFontName*/
 	font-family: "Material Icons"; /* stylelint-disable-line font-family-no-missing-generic-family-keyword */
 	font-size: 24px;
 	font-weight: normal;
 }
 #disableNotifications.off::before {
 	content: "notifications_off";
-	font-family: "Material Icons"; /* stylelint-disable-line font-family-no-missing-generic-family-keyword */
-	font-size: 24px;
-	font-weight: normal;
 }
 #vide,
 .vide {
@@ -128,17 +126,12 @@ footer * {
 }
 
 
-section a.buttonItem,
-#panelContent a.websiteItem {
+section a.buttonItem {
+	display: block;
 	color: inherit;
 	text-decoration: none;
-	display: block;
 }
-section .buttonItem,
-#panelContent .websiteItem {
-	background-repeat: no-repeat;
-	background-position: 3px center;
-	background-size: 32px auto;
+section .buttonItem {
 	font-size: 14px;
 	justify-content: space-between;
 	flex-direction: column;
@@ -148,47 +141,31 @@ section .buttonItem,
 	position: relative;
 	text-align: left;
 }
-section .buttonItem .data,
-#panelContent .websiteItem .data,
-#panelContent .buttonItem.tabPageServerIp .title {
+section .buttonItem .ellipse {
 	-webkit-line-clamp: 3;
 	overflow: hidden;
 	display: -webkit-box;
 	-webkit-box-orient: vertical;
 }
-#panelContent .buttonItem.tabPageServerIp .title {
+section .buttonItem.tabPageServerIp .title {
 	-webkit-line-clamp: 1;
 }
 
-section .buttonItem .icon,
-section .websiteItem .icon {
+section .buttonItem .icon {
 	font-size: 32px;
 	left: 3px;
 	position: absolute;
 	top: 50%;
 	transform: translateY(-50%);
-}
-section .buttonItem .icon .material-icons,
-section .websiteItem .icon .material-icons {
-	font-size: inherit;
-}
-section .buttonItem .icon img,
-section .buttonItem .icon svg,
-section .websiteItem .icon svg {
 	width: 32px;
 }
 
-#panelContent .websiteItem .websiteTitle::before {
-	content: attr(data-website);
-}
-section .buttonItem .title[data-count]::after,
-#panelContent .websiteItem[data-Logged="true"] .websiteTitle::after {
-	content: " (" attr(data-count) ")";
-}
-section .buttonItem .title,
-#panelContent .websiteItem .websiteTitle {
+section .buttonItem .title {
 	font-size: 1.1em;
 	font-weight: 700;
+}
+section .buttonItem .title[data-count]::after {
+	content: " (" attr(data-count) ")";
 }
 #panelContent .websiteItem .websiteData {
 	padding-left: 21px;
@@ -196,8 +173,9 @@ section .buttonItem .title,
 	display: flex;
 	flex-direction: column;
 }
-#panelContent .websiteItem[data-Logged="true"] .websiteData .folder[data-folder-url]::before {
+#panelContent .websiteItem .websiteData .folder[data-folder-url]::before {
 	content: "open_in_browser";
+	/*noinspection CssNoGenericFontName*/
 	font-family: 'Material Icons'; /* stylelint-disable-line font-family-no-missing-generic-family-keyword */
 	font-size: 1.5em;
 }
@@ -206,8 +184,8 @@ section .buttonItem .title,
 	flex-direction: row;
 	align-items: center;
 }
-#panelContent .websiteItem[data-Logged="true"] .websiteData .folder::after {
-	content: attr(data-folder-title)": "attr(data-folder-count);
+#panelContent .websiteItem .websiteData .folder[data-folder-count]::after {
+	content: ": "attr(data-folder-count);
 }
 
 
