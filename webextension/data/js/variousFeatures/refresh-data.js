@@ -349,7 +349,7 @@ async function onStartOrInstall() {
 	await refreshAlarm()
 		.catch(console.error)
 	;
-	if (await getPreference('check_enabled') === true) {
+	if (await getPreference('check_enabled') === false) {
 		return;
 	}
 	await refreshWebsitesData();
