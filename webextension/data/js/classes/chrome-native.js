@@ -28,9 +28,6 @@ port.onMessage.addListener(function(msg) {
 			}
 			break;
 		case 'commandReply':
-			if (msg.data.command === 'ping') {
-				console.info('[NativeMessaging] pong');
-			}
 			break;
 		default:
 			console.log('[NativeMessaging]', 'Unknown type', msg);
@@ -56,30 +53,30 @@ function randomId() {
 /**
  * Return the generated message id
  * @param {string} command
- * @param {object} [data]
+ * @param {any[]} data
  * @return {string}
  */
-function callNative(command, data={}) {
+function callNative(command, ...data) {
 	const _id = randomId();
 	port.postMessage({
-		...data,
 		_id,
-		command
+		data: data.length === 0 ? undefined : data,
+		type: command
 	});
 	return _id;
 }
 
+const timeout = 5000;
 /**
  *
  * @see callNative
  * @param {string} command
- * @param {object} [data]
- * @param {number} timeout
+ * @param {any[]} data
  * @return {Promise<unknown>}
  */
-function fnNative(command, data={}, timeout=5000) {
+function fnNative(command, ...data) {
 	return new Promise((resolve, reject) => {
-		const _id = callNative(command, data);
+		const _id = callNative(command, ...data);
 
 		const timerId = setTimeout(() => {
 			port.onMessage.removeListener(callback);
@@ -87,19 +84,15 @@ function fnNative(command, data={}, timeout=5000) {
 		}, timeout);
 
 		const callback = function callback(msg, port) {
-			if (msg.type !== "commandReply" || msg.data._id !== _id) return;
+			if (msg.type !== "commandReply" || msg._id !== _id) return;
 
 			clearTimeout(timerId);
 			port.onMessage.removeListener(callback);
 
 			if (!!msg.error) {
 				reject(msg);
-			} else if (msg && msg.data) {
-				if (msg.type === 'error' || msg.error !== false) {
-					reject(msg);
-				} else {
-					resolve(msg.result);
-				}
+			} else if (msg.result) {
+				resolve(msg.result);
 			} else {
 				reject(new Error('UnexpectedMessage'));
 			}
@@ -110,9 +103,15 @@ function fnNative(command, data={}, timeout=5000) {
 
 
 
-export function ping() {
-	callNative('ping');
+export async function ping() {
+	try {
+		await fnNative('ping');
+		console.info('[NativeMessaging] pong');
+	} catch (e) {
+		console.error(e);
+	}
 }
+self.ping = ping;
 
 /**
  *
@@ -120,9 +119,7 @@ export function ping() {
  * @return {Promise<*>}
  */
 export async function getPreference(id) {
-	const result = await fnNative('getPreference', {
-		id
-	});
+	const {result} = await fnNative('getPreference', id);
 	return result.value;
 }
 
@@ -132,12 +129,10 @@ export async function getPreference(id) {
  * @return {Promise<Map<string, undefined|*>>}
  */
 export async function getPreferences(ids) {
-	const result = await fnNative('getPreferences', {
-		ids
-	});
+	const {result} = await fnNative('getPreferences', ids);
 
 	const output = new Map();
-	for (let {id, value} of Object.values(result)) {
+	for (let {id, value} of result) {
 		output.set(id, value);
 	}
 	return output;
@@ -148,7 +143,8 @@ export async function getPreferences(ids) {
  * @return {Promise<*[]>}
  */
 export async function getDefaultValues() {
-	return await fnNative('getDefaultValues');
+	const {result} = await fnNative('getDefaultValues');
+	return result;
 }
 self.getDefaultValues = getDefaultValues;
 
@@ -158,7 +154,6 @@ self.getDefaultValues = getDefaultValues;
  * @return {Promise<*[]>}
  */
 export async function showSection(sectionName) {
-	return await fnNative('showSection', {
-		sectionName
-	});
+	const {result} = await fnNative('showSection', sectionName);
+	return result;
 }
