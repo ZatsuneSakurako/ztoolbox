@@ -21,11 +21,13 @@ port.onMessage.addListener(function(msg) {
 			console.log('[NativeMessaging]', 'ws close', msg);
 			break;
 		case "log":
-			if (Array.isArray(msg.data)) {
-				console.log('[NativeMessaging]', ...msg.data);
-			} else {
-				console.log('[NativeMessaging]', msg.data);
-			}
+			console.log('[NativeMessaging] log', msg.data);
+			break;
+		case 'ping':
+			port.postMessage({
+				type: 'commandReply',
+				_id: msg._id
+			});
 			break;
 		case 'commandReply':
 			break;
@@ -40,7 +42,7 @@ port.onMessage.addListener(function(msg) {
  */
 function randomId() {
 	let output = '';
-	let characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'.split('');
+	const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'.split('');
 	for (let i = 0; i <= 16; i++) {
 		characters.sort(() => {
 			return Math.random() * 2 - 1;
