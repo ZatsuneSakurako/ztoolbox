@@ -17,7 +17,7 @@ const freshRss = {
 	},
 	/**
 	 *
-	 * @param {string} websiteState
+	 * @param {string} [websiteState]
 	 * @return {string}
 	 */
 	getLoginURL(websiteState) {

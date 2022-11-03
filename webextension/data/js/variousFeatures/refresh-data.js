@@ -116,11 +116,22 @@ export async function loadStoredWebsitesData() {
 		if (!deviantArtData.websiteIcon) {
 			deviantArtData.websiteIcon = deviantArt.defaultFavicon;
 		}
+		if (!deviantArtData.href) {
+			deviantArtData.href = deviantArt.getLoginURL();
+		}
 
-		const freshRssData = !!raw.freshRss ? WebsiteData.fromJSON(raw.freshRss) : new WebsiteData();
-		websitesData.set('freshRss', freshRssData);
-		if (!freshRssData.websiteIcon) {
-			freshRssData.websiteIcon = freshRss.defaultFavicon;
+		const freshRss_baseUrl = await getPreference('freshRss_baseUrl');
+		if (!!freshRss_baseUrl) {
+			const freshRssData = !!raw.freshRss ? WebsiteData.fromJSON(raw.freshRss) : new WebsiteData();
+			websitesData.set('freshRss', freshRssData);
+			if (!freshRssData.websiteIcon) {
+				freshRssData.websiteIcon = freshRss.defaultFavicon;
+			}
+			if (!freshRssData.href) {
+				freshRssData.href = freshRss_baseUrl;
+			}
+		} else if (!!raw.freshRss) { // If no value in 'freshRss_baseUrl' but raw.freshRss data present
+			delete raw.freshRss;
 		}
 	}
 	return websitesData;
