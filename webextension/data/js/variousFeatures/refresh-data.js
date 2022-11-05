@@ -7,6 +7,7 @@ import {WebsiteData} from "./website-data.js";
 import deviantArt from '../platforms/deviantart.js';
 import freshRss from '../platforms/freshrss.js';
 import {doNotif} from "../doNotif.js";
+import * as ChromeNative from "../classes/chrome-native.js";
 
 export const ALARM_NAME = 'REFRESH_DATA',
 	refreshDataStorageBase = `_websitesDataStore`
@@ -150,6 +151,35 @@ export async function refreshWebsitesData() {
 	const dateStart = new Date();
 
 
+	if (await getPreference('check_enabled') === false) {
+		let data;
+		try {
+			data = await ChromeNative.getWebsitesData()
+		} catch (e) {
+			console.error(e);
+		}
+
+		console.groupCollapsed('Websites check end');
+		console.log('timings:', {
+			dateStart,
+			dateEnd: new Date()
+		});
+		console.log('Data:', data);
+		console.groupEnd();
+
+		await dataStorageArea.set({
+			[refreshDataStorageBase]: data
+		});
+
+		updateCountIndicator()
+			.catch(console.error)
+		;
+
+		isRefreshingData = false;
+		return;
+	}
+
+
 	if (websitesData.size === 0) {
 		websitesData = await loadStoredWebsitesData();
 	}
@@ -208,16 +238,23 @@ export async function refreshWebsitesData() {
 		console.groupEnd();
 	}
 
-	if (websitesData.size > 0) {
-		const output = {};
-		for (let [website, data] of websitesData) {
-			output[website] = data.toJSON();
-		}
 
-		await dataStorageArea.set({
-			[refreshDataStorageBase]: output
-		});
+
+	const output = {};
+	for (let [website, data] of websitesData) {
+		output[website] = data.toJSON();
 	}
+
+	await dataStorageArea.set({
+		[refreshDataStorageBase]: output
+	});
+
+	console.log('debug', output)
+	await ChromeNative.sendWebsitesData(output)
+		.catch(console.error)
+	;
+
+
 
 	isRefreshingData = false;
 	return data;
@@ -360,8 +397,6 @@ async function onStartOrInstall() {
 	await refreshAlarm()
 		.catch(console.error)
 	;
-	if (await getPreference('check_enabled') === false) {
-		return;
-	}
+
 	await refreshWebsitesData();
 }
