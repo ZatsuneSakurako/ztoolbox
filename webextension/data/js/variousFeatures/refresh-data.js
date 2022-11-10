@@ -1,7 +1,7 @@
 'use strict';
 
 import {ZDK} from "../classes/ZDK.js";
-import {getPreference} from "../classes/chrome-preferences-2.js";
+import {getPreference, getPreferences} from "../classes/chrome-preferences-2.js";
 import {i18ex} from "../translation-api.js";
 import {WebsiteData} from "./website-data.js";
 import deviantArt from '../platforms/deviantart.js';
@@ -151,7 +151,8 @@ export async function refreshWebsitesData() {
 	const dateStart = new Date();
 
 
-	if (await getPreference('check_enabled') === false) {
+	const preferences = await getPreferences('simplified_mode', 'check_enabled');
+	if (preferences.get('check_enabled') === false) {
 		let data;
 		try {
 			data = await ChromeNative.getWebsitesData()
@@ -177,6 +178,11 @@ export async function refreshWebsitesData() {
 
 		isRefreshingData = false;
 		return;
+	}
+	if (preferences.get('simplified_mode') === true) {
+		isRefreshingData = false;
+		console.info('Simplified mode, refresh disabled');
+		return false;
 	}
 
 

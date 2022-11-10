@@ -1,8 +1,8 @@
 import {loadTranslations} from '../translation-api.js';
 import {renderTemplate} from '../init-templates.js';
 import {theme_cache_update} from '../backgroundTheme.js';
-import {refreshWebsitesData, loadStoredWebsitesData} from "../variousFeatures/refresh-data.js";
 import * as tabPageServerIp from "./tabPageServerIp.js";
+import {getPreference} from "../classes/chrome-preferences-2.js";
 import "./requestPermission.js";
 
 
@@ -35,7 +35,7 @@ document.addEventListener('click', e => {
 	;
 });
 
-document.addEventListener('click', e => {
+document.addEventListener('click', async e => {
 	const elm = e.target.closest('#refreshData');
 	if (!elm) return;
 
@@ -43,6 +43,7 @@ document.addEventListener('click', e => {
 	elm.disabled = true;
 	const triggered = Date.now();
 
+	const {refreshWebsitesData} = await import('../variousFeatures/refresh-data.js');
 	refreshWebsitesData()
 		.finally(() => {
 			if (Date.now() - triggered > 2500) {
@@ -72,10 +73,10 @@ document.addEventListener('click', e => {
 });
 
 
-window.theme_update = function theme_update() {
-	let panelColorStylesheet = theme_cache_update(document.querySelector("#generated-color-stylesheet"));
+window.theme_update = async function theme_update() {
+	let panelColorStylesheet = await theme_cache_update(document.querySelector("#generated-color-stylesheet"));
 
-	if (typeof panelColorStylesheet === "object" && panelColorStylesheet !== null) {
+	if (!!panelColorStylesheet && typeof panelColorStylesheet === "object") {
 		console.info("Theme update");
 
 		let currentThemeNode = document.querySelector("#generated-color-stylesheet");
@@ -101,6 +102,14 @@ function removeAllChildren(node) {
 async function updatePanelData() {
 	console.log("Updating panel data");
 
+	tabPageServerIp.updateData()
+		.catch(console.error)
+	;
+
+	if (await getPreference('simplified_mode')) {
+		return;
+	}
+
 	const {_notificationGloballyDisabled} = await browser.storage.local.get(['_notificationGloballyDisabled']);
 
 	let disableNotificationsButton = document.querySelector('#disableNotifications');
@@ -110,10 +119,8 @@ async function updatePanelData() {
 	let websiteDataList_Node = document.querySelector("#panelContent #refreshItem");
 	removeAllChildren(websiteDataList_Node);
 
-	tabPageServerIp.updateData()
-		.catch(console.error)
-	;
 
+	const {loadStoredWebsitesData} = await import('../variousFeatures/refresh-data.js');
 	const websitesData = await loadStoredWebsitesData();
 	for (let [website, websiteData] of websitesData) {
 		let websiteRenderData = {

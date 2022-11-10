@@ -96,6 +96,12 @@ header [role="button"]:last-child {
 	display: none !important;
 	visibility: hidden !important;
 }
+body:not(.simple-version) .if-simple-version {
+	display: none;
+}
+body.simple-version .if-not-simple-version {
+	display: none;
+}
 
 .cursor {
 	cursor: pointer;

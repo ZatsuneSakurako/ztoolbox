@@ -13,13 +13,15 @@ async function baseInit() {
 		await import('../lib/browser-polyfill.js');
 	}
 
-	const {getPreference} = await import('../classes/chrome-preferences-2.js');
+	const {getPreferences} = await import('../classes/chrome-preferences-2.js');
 
 	const html = document.documentElement,
 		body = document.body
 	;
-	html.style.height = (await getPreference('panel_height')) + 'px';
-	body.style.width = (await getPreference('panel_width')) + 'px';
+	const preferences = await getPreferences('simplified_mode', 'panel_height', 'panel_width');
+	body.classList.toggle('simple-version', preferences.get('simplified_mode'));
+	html.style.height = preferences.get('panel_height') + 'px';
+	body.style.width = preferences.get('panel_width') + 'px';
 
 	const {loadTranslations} = await import('../translation-api.js');
 	await loadTranslations;

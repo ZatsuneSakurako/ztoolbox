@@ -16,6 +16,12 @@ export const options = {
 		"minValue": 5,
 		"prefLevel": "advanced"
 	},
+	"simplified_mode": {
+		"title": "Extension in simplified mode",
+		"description": "Enabled if checked",
+		"type": "bool",
+		"value": false,
+	},
 	/*			Features Prefs			*/
 	"launchpadAddLink": {
 		"title": "Add link to go back to PPA page from index page",
