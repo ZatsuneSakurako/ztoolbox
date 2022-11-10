@@ -1,6 +1,9 @@
 const port = chrome.runtime.connectNative('eu.gitlab.zatsunenomokou.chromenativebridge');
 
 port.onMessage.addListener(function(msg) {
+	if (location.pathname.endsWith('panel.html') || location.pathname.endsWith('options.html')) {
+		return;
+	}
 	if (!msg && typeof msg !== 'object') {
 		console.warn('UnexpectedMessage', msg);
 		return;
