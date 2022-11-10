@@ -165,7 +165,7 @@ async function current_version(version) {
 	current_version_node.dataset.currentVersion = version;
 
 	const lastCheck = (await browser.storage.local.get(['_checkUpdate']))?._checkUpdate ?? {};
-	current_version_node.dataset.hasUpdate = lastCheck.hasUpdate ?? false;
+	current_version_node.dataset.hasUpdate = (lastCheck.hasUpdate ?? false).toString();
 	if (!lastCheck.hasUpdate ?? false) {
 		// if no update, no text
 		current_version_node.dataset.translateTitle = '';
