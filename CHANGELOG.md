@@ -4,6 +4,7 @@
 * i : Move data (deviantArt / FreshRSS, theme cache) to session storage if available
 * \+ : Page IP / Status display
 * \+ : Add enable refresh option
+* \+ : Simplified mode (deviantArt/FreshRSS disabled)
 * fix : Handle `<all_urls>` permission in Firefox
 * fix : Panel sizing
 * fix : deviantArt / FreshRSS refresh alarm missing periodic data
