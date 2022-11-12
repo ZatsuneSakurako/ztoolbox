@@ -6,7 +6,8 @@ export const options = {
 		"description": "Enabled if checked",
 		"type": "bool",
 		"value": true,
-		"prefLevel": "advanced"
+		"prefLevel": "advanced",
+		"disabledInSimpleMode": true
 	},
 	"check_delay": {
 		"title": "Streams status delay",
@@ -14,7 +15,8 @@ export const options = {
 		"type": "integer",
 		"value": 5,
 		"minValue": 5,
-		"prefLevel": "advanced"
+		"prefLevel": "advanced",
+		"disabledInSimpleMode": true
 	},
 	"simplified_mode": {
 		"title": "Extension in simplified mode",
@@ -35,7 +37,8 @@ export const options = {
 		"description": "LSTU server, for example https://lstu.fr/",
 		"type": "string",
 		"value": "",
-		"group": "featurePreference"
+		"group": "featurePreference",
+		"disabledInSimpleMode": true
 	},
 	"tabPageServerIp_alias": {
 		"title": "IP aliases",
@@ -52,7 +55,8 @@ export const options = {
 		"type": "string",
 		"value": '',
 		"group": "notifications",
-		"prefLevel": "basic"
+		"prefLevel": "basic",
+		"disabledInSimpleMode": true
 	},
 	"notify_checkedData": {
 		"title": "Show a notification for deviantArt",
@@ -60,7 +64,8 @@ export const options = {
 		"type": "bool",
 		"value": true,
 		"group": "notifications",
-		"prefLevel": "basic"
+		"prefLevel": "basic",
+		"disabledInSimpleMode": true
 	},
 	"notify_all_viewed": {
 		"title": "Show a notification when all view in website(s)",
@@ -68,7 +73,8 @@ export const options = {
 		"type": "bool",
 		"value": false,
 		"group": "notifications",
-		"prefLevel": "advanced"
+		"prefLevel": "advanced",
+		"disabledInSimpleMode": true
 	},
 	"notify_vocal": {
 		"title": "Read a vocal notifications",
@@ -76,7 +82,8 @@ export const options = {
 		"type": "bool",
 		"value": false,
 		"group": "notifications",
-		"prefLevel": "basic"
+		"prefLevel": "basic",
+		"disabledInSimpleMode": true
 	},
 	"vocal_volume": {
 		"title": "Volume of vocal notifications",
@@ -88,7 +95,8 @@ export const options = {
 		"maxValue": 100,
 		"rangeInput": true,
 		"rangeOutputUnit": "%",
-		"prefLevel": "basic"
+		"prefLevel": "basic",
+		"disabledInSimpleMode": true
 	},
 	/*				Panel size					*/
 	"panel_height": {

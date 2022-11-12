@@ -186,6 +186,9 @@ export const ChromePreferences = Object.freeze({
 					body.classList.remove("showExperimented");
 				}
 			}
+			if (id === "simplified_mode") {
+				body.classList.toggle('simple-version', !!await getPreference("simplified_mode"));
+			}
 
 			if(isPanelPage && ((typeof option.prefLevel === "string" && option.prefLevel === "experimented") || (option.hasOwnProperty("showPrefInPanel") && typeof option.showPrefInPanel === "boolean" && option.showPrefInPanel === false))){
 				continue;
@@ -231,6 +234,9 @@ export const ChromePreferences = Object.freeze({
 		node.classList.add("preferenceContainer--" + id);
 		if(typeof prefObj.prefLevel === "string"){
 			node.classList.add(prefObj.prefLevel);
+		}
+		if (typeof prefObj.disabledInSimpleMode === "boolean" && !!prefObj.disabledInSimpleMode) {
+			node.classList.add('if-not-simple-version');
 		}
 
 		let labelNode = document.createElement("label");

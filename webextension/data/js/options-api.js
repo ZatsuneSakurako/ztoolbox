@@ -93,6 +93,9 @@ async function refreshSettings(event) {
 					body.classList.remove("showExperimented");
 				}
 			}
+			if (prefId === "simplified_mode") {
+				body.classList.toggle('simple-version', !!await getPreference("simplified_mode"));
+			}
 			if (prefId === "panel_theme" || prefId === "background_color" && typeof theme_update === "function") {
 				theme_update()
 					.catch(console.error)

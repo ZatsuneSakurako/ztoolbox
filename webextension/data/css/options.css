@@ -55,6 +55,12 @@ body:not(.showExperimented) .preferenceContainer.experimented {
 	display: none;
 	visibility: hidden;
 }
+body:not(.simple-version) .if-simple-version {
+	display: none;
+}
+body.simple-version .if-not-simple-version {
+	display: none;
+}
 .preferenceContainer:not(.flex_input_text) {
 	display: flex;
 	align-items: center;
