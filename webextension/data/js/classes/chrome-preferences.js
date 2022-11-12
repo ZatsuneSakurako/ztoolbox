@@ -173,18 +173,10 @@ export const ChromePreferences = Object.freeze({
 			}
 
 			if (id === "showAdvanced") {
-				if(await getPreference("showAdvanced")) {
-					body.classList.add("showAdvanced");
-				} else {
-					body.classList.remove("showAdvanced");
-				}
+				body.classList.toggle('showAdvanced', !!await getPreference("showAdvanced"));
 			}
 			if (id === "showExperimented") {
-				if(await getPreference("showExperimented")) {
-					body.classList.add("showExperimented");
-				} else {
-					body.classList.remove("showExperimented");
-				}
+				body.classList.toggle('showExperimented', !!await getPreference("showExperimented"));
 			}
 			if (id === "simplified_mode") {
 				body.classList.toggle('simple-version', !!await getPreference("simplified_mode"));
@@ -232,7 +224,7 @@ export const ChromePreferences = Object.freeze({
 		let node = document.createElement("div");
 		node.classList.add("preferenceContainer");
 		node.classList.add("preferenceContainer--" + id);
-		if(typeof prefObj.prefLevel === "string"){
+		if (typeof prefObj.prefLevel === "string") {
 			node.classList.add(prefObj.prefLevel);
 		}
 		if (typeof prefObj.disabledInSimpleMode === "boolean" && !!prefObj.disabledInSimpleMode) {
@@ -241,11 +233,11 @@ export const ChromePreferences = Object.freeze({
 
 		let labelNode = document.createElement("label");
 		labelNode.classList.add("preference");
-		if(typeof prefObj.description === "string"){
+		if (typeof prefObj.description === "string") {
 			labelNode.title = prefObj.description;
 		}
 		labelNode.htmlFor = id;
-		if(prefObj.type !== "control"){
+		if (prefObj.type !== "control") {
 			labelNode.dataset.translateTitle = `${id}_description`;
 		}
 

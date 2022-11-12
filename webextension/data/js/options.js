@@ -42,8 +42,12 @@ import('./browserDetect.js')
 function init(){
 	loadingPromise.then(async () => {
 		await loadTranslations();
-		loadPreferences('section#preferences');
-		theme_update();
+		loadPreferences('section#preferences')
+			.catch(console.error)
+		;
+		theme_update()
+			.catch(console.error)
+		;
 	});
 }
 document.addEventListener('DOMContentLoaded', init);

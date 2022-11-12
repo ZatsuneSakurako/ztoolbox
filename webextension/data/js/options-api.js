@@ -80,18 +80,10 @@ async function refreshSettings(event) {
 			}
 			let body = document.body;
 			if (prefId === "showAdvanced") {
-				if (await getPreference('showAdvanced')) {
-					body.classList.add('showAdvanced');
-				} else {
-					body.classList.remove('showAdvanced');
-				}
+				body.classList.toggle('showAdvanced', !!await getPreference("showAdvanced"));
 			}
-			if (prefId === 'showExperimented') {
-				if (await getPreference("showExperimented")) {
-					body.classList.add("showExperimented");
-				} else {
-					body.classList.remove("showExperimented");
-				}
+			if (prefId === "showExperimented") {
+				body.classList.toggle('showExperimented', !!await getPreference("showExperimented"));
 			}
 			if (prefId === "simplified_mode") {
 				body.classList.toggle('simple-version', !!await getPreference("simplified_mode"));
