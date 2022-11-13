@@ -2,6 +2,8 @@
  * https://developer.mozilla.org/en-US/Add-ons/WebExtensions/API/menus/create
  */
 import {i18ex} from "./translation-api.js";
+import {getPreference} from "./classes/chrome-preferences-2.js";
+import {updateLstuContextMenu} from "./variousFeatures/lstu.js";
 
 export class ContextMenusController extends Map {
 	constructor(){
@@ -18,11 +20,7 @@ export class ContextMenusController extends Map {
 	 * @private
 	 */
 	_create(id, title, targetUrlPatterns, onClick, opts) {
-		/*if(browser.menu!==undefined && browser.menu !== null){
-			// tools_menu is available with it
-			console.info("browser.menu available");
-		}*/
-		if (!(browser.contextMenus !== undefined && browser.contextMenus !== null && typeof browser.contextMenus.create === "function")) {
+		if (!(chrome.contextMenus !== undefined && chrome.contextMenus !== null && typeof chrome.contextMenus.create === "function")) {
 			return;
 		}
 
@@ -58,8 +56,8 @@ export class ContextMenusController extends Map {
 		const srcContexts = [];
 		for (const type of ['AUDIO', 'IMAGE', 'VIDEO']) {
 			const index = contexts.indexOf(type);
-			if (browser.contextMenus.ContextType.hasOwnProperty(type) && index !== -1) {
-				srcContexts.push(browser.contextMenus.ContextType[type]);
+			if (chrome.contextMenus.ContextType.hasOwnProperty(type) && index !== -1) {
+				srcContexts.push(chrome.contextMenus.ContextType[type]);
 				contexts.splice(index, 1);
 			}
 		}
@@ -73,8 +71,8 @@ export class ContextMenusController extends Map {
 		const documentContexts = [];
 		for (const type of ['PAGE', 'TAB']) {
 			const index = contexts.indexOf(type);
-			if (browser.contextMenus.ContextType.hasOwnProperty(type) && index !== -1) {
-				documentContexts.push(browser.contextMenus.ContextType[type]);
+			if (chrome.contextMenus.ContextType.hasOwnProperty(type) && index !== -1) {
+				documentContexts.push(chrome.contextMenus.ContextType[type]);
 				contexts.splice(index, 1);
 			}
 		}
@@ -99,8 +97,8 @@ export class ContextMenusController extends Map {
 				const srcContexts = [];
 				for (const type of ['AUDIO', 'IMAGE', 'VIDEO']) {
 					const index = contexts.indexOf(type);
-					if (browser.contextMenus.ContextType.hasOwnProperty(type) && index !== -1) {
-						srcContexts.push(browser.contextMenus.ContextType[type]);
+					if (chrome.contextMenus.ContextType.hasOwnProperty(type) && index !== -1) {
+						srcContexts.push(chrome.contextMenus.ContextType[type]);
 						contexts.splice(index, 1);
 					}
 				}
@@ -113,13 +111,13 @@ export class ContextMenusController extends Map {
 				}, opts);
 				contextMenuOpts.contexts = srcContexts;
 
-				await browser.contextMenus.create(contextMenuOpts);
+				await chrome.contextMenus.create(contextMenuOpts);
 			} else if (contextId.endsWith('_doc_context')) {
 				const documentContexts = [];
 				for (const type of ['PAGE', 'TAB']) {
 					const index = contexts.indexOf(type);
-					if (browser.contextMenus.ContextType.hasOwnProperty(type) && index !== -1) {
-						documentContexts.push(browser.contextMenus.ContextType[type]);
+					if (chrome.contextMenus.ContextType.hasOwnProperty(type) && index !== -1) {
+						documentContexts.push(chrome.contextMenus.ContextType[type]);
 						contexts.splice(index, 1);
 					}
 				}
@@ -133,7 +131,7 @@ export class ContextMenusController extends Map {
 					}, opts);
 					contextMenuOpts.contexts = documentContexts;
 
-					await browser.contextMenus.create(contextMenuOpts);
+					await chrome.contextMenus.create(contextMenuOpts);
 				}
 			} else {
 				throw new Error('UnexpectedId');
@@ -147,11 +145,11 @@ export class ContextMenusController extends Map {
 
 	create(id, title, targetUrlPatterns, onClick) {
 		const pageTypeContexts = [];
-		if (browser.contextMenus.ContextType.hasOwnProperty("PAGE")) {
-			pageTypeContexts.push(browser.contextMenus.ContextType.PAGE)
+		if (chrome.contextMenus.ContextType.hasOwnProperty("PAGE")) {
+			pageTypeContexts.push(chrome.contextMenus.ContextType.PAGE)
 		}
-		if (browser.contextMenus.ContextType.hasOwnProperty("TAB")) {
-			pageTypeContexts.push(browser.contextMenus.ContextType.TAB)
+		if (chrome.contextMenus.ContextType.hasOwnProperty("TAB")) {
+			pageTypeContexts.push(chrome.contextMenus.ContextType.TAB)
 		}
 
 		return this._create(id, title, targetUrlPatterns, onClick, {
@@ -182,14 +180,26 @@ chrome.contextMenus.onClicked.addListener(function (info, tab) {
 });
 
 
+chrome.storage.onChanged.addListener(async (changes, area) => {
+	if (area !== "local") return;
+
+	if (changes.custom_lstu_server) {
+		/**
+		 *
+		 * @type {string|undefined}
+		 */
+		const api_url = await getPreference('custom_lstu_server');
+		if (api_url && /https?:\/\/.+/.test(api_url)) {
+			updateLstuContextMenu();
+		}
+	}
+});
 async function onStart_contextMenus() {
-	await browser.contextMenus.removeAll();
+	await chrome.contextMenus.removeAll();
 	await i18ex.loadingPromise;
 	await contextMenusController._createAll();
 
-	if (self.lstu_onStart_contextMenus) {
-		lstu_onStart_contextMenus();
-	}
+	updateLstuContextMenu();
 }
 chrome.runtime.onStartup.addListener(function () {
 	onStart_contextMenus()

@@ -2,11 +2,20 @@
 
 import {i18ex} from "../translation-api.js";
 import {getPreference} from "../classes/chrome-preferences-2.js";
+import {throttle} from "../lib/throttle.js";
 
 
 
-self.lstu_onStart_contextMenus = async function onStart_contextMenus() {
+async function onStart_contextMenus() {
 	await i18ex.loadingPromise;
+
+	/**
+	 *
+	 * @type {string|undefined}
+	 */
+	const api_url = await getPreference('custom_lstu_server');
+	if (!api_url || !/https?:\/\/.+/.test(api_url)) return;
+
 
 
 	const pageMenu = [];
@@ -42,17 +51,17 @@ self.lstu_onStart_contextMenus = async function onStart_contextMenus() {
 		targetUrlPatterns: ["http://*/*", "https://*/*"]
 	});
 }
-
-browser.browserAction.onClicked.addListener(function (tab) {
-	let url = tab.url; // tabs.Tab
-	console.info(`[ActionButton] URL: ${url}`);
-	shortener_url__no_api(url)
+export const updateLstuContextMenu = throttle(async function updateLstuContextMenu() {
+	onStart_contextMenus()
 		.catch(console.error)
 	;
-});
+}, 5000);
+self.updateLstuContextMenu = updateLstuContextMenu;
+
+
 
 // noinspection JSUnusedLocalSymbols
-browser.contextMenus.onClicked.addListener(function (info, tab) {
+chrome.contextMenus.onClicked.addListener(function (info, tab) {
 	let url;
 	switch (info.menuItemId) {
 		case 'shorten_fromPage':
@@ -93,7 +102,7 @@ function _waitTabLoad(targetedTabId, timeout=60000) {
 			reject();
 		}, timeout);
 		const unloadEvent = () => {
-			browser.tabs.onUpdated.removeListener(onTabLoad);
+			chrome.tabs.onUpdated.removeListener(onTabLoad);
 			clearTimeout(timeoutId);
 		};
 
@@ -109,7 +118,7 @@ function _waitTabLoad(targetedTabId, timeout=60000) {
 				resolve(tab);
 			}
 		};
-		browser.tabs.onUpdated.addListener(onTabLoad);
+		chrome.tabs.onUpdated.addListener(onTabLoad);
 	})
 }
 

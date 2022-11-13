@@ -6,8 +6,7 @@ import "./lib/browser-polyfill.js";
 import {i18ex} from './translation-api.js';
 
 import './classes/chrome-native.js';
-import {deletePreferences, getPreference, getPreferences, savePreference} from './classes/chrome-preferences-2.js';
-import {contextMenusController} from './contextMenusController.js';
+import {deletePreferences, getPreferences, savePreference} from './classes/chrome-preferences-2.js';
 import {doNotif} from "./doNotif.js";
 
 import {ChromeUpdateNotification} from './classes/chromeUpdateNotification.js';
@@ -16,9 +15,9 @@ import './variousFeatures/clear-old-hourly-alarm.js';
 import './variousFeatures/iqdb.js';
 import './variousFeatures/refresh-data.js';
 import './variousFeatures/tabPageServerIp.js';
+import './variousFeatures/youtubePlaylist.js';
 
 import {isFirefox} from "./browserDetect.js";
-import {throttle} from "./lib/throttle.js";
 if (isFirefox) {
 	import('./variousFeatures/copyTextLink.js')
 		.catch(console.error)
@@ -26,55 +25,6 @@ if (isFirefox) {
 }
 
 
-
-const updateLstuContextMenu = throttle(async function updateLstuContextMenu() {
-	const api_url = await getPreference('custom_lstu_server')
-	if (!!api_url && /https?:\/\/.+/.test(api_url)) {
-		await import('./variousFeatures/lstu.js');
-		self.lstu_onStart_contextMenus()
-			.catch(console.error)
-		;
-	} else {
-		for (let id of ['shorten_fromPage','shorten_fromLink','shorten_fromImage']) {
-			browser.contextMenus.remove(id);
-		}
-	}
-}, 5000);
-updateLstuContextMenu();
-browser.storage.onChanged.addListener((changes, area) => {
-	if (area !== "local") return;
-
-	if (changes.custom_lstu_server) {
-		updateLstuContextMenu();
-	}
-});
-
-
-
-async function onStart_contextMenus() {
-	await i18ex.loadingPromise;
-
-	contextMenusController.create('OpenWithoutPlaylist', i18ex._("OpenWithoutPlaylist"), ["*.youtube.com/watch?*&list=*","*.youtube.com/watch?list=*"], function (info, tab) {
-		const removePlaylistFromUrl = url => {
-			const urlObj = new URL(url); // https://developer.mozilla.org/en-US/docs/Web/API/URL - https://developer.mozilla.org/en-US/docs/Web/API/URLSearchParams
-			urlObj.searchParams.delete("list");
-			urlObj.searchParams.delete("index");
-			return urlObj.toString();
-		};
-
-		if (info.hasOwnProperty("linkUrl")) {
-			browser.tabs.create({ "url": removePlaylistFromUrl(info.linkUrl) })
-				.catch(console.error)
-			;
-		} else {
-			browser.tabs.update(tab.id, {
-				"url": removePlaylistFromUrl(tab.url)
-			})
-				.catch(console.error)
-			;
-		}
-	});
-}
 
 chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
 	if (sender.hasOwnProperty("url")) {
@@ -130,7 +80,7 @@ async function onStart_checkUpdates() {
 	if (env !== 'local') {
 		// Ignore when not in "local" env
 
-		await browser.alarms.clear(CHECK_UPDATES_INTERVAL_NAME)
+		await chrome.alarms.clear(CHECK_UPDATES_INTERVAL_NAME)
 			.catch(console.error)
 		;
 		return;
@@ -138,16 +88,16 @@ async function onStart_checkUpdates() {
 
 	let existingAlarm = null;
 	try {
-		existingAlarm = await browser.alarms.get(CHECK_UPDATES_INTERVAL_NAME);
+		existingAlarm = await chrome.alarms.get(CHECK_UPDATES_INTERVAL_NAME);
 	} catch (e) {
 		console.error(e);
 	}
 
 	if (!existingAlarm || existingAlarm.periodInMinutes !== CHECK_UPDATES_INTERVAL_DELAY) {
-		await browser.alarms.clear(CHECK_UPDATES_INTERVAL_NAME)
+		await chrome.alarms.clear(CHECK_UPDATES_INTERVAL_NAME)
 			.catch(console.error)
 		;
-		browser.alarms.create(CHECK_UPDATES_INTERVAL_NAME, {
+		chrome.alarms.create(CHECK_UPDATES_INTERVAL_NAME, {
 			'periodInMinutes': CHECK_UPDATES_INTERVAL_DELAY
 		});
 	}
@@ -159,7 +109,7 @@ async function onCheckUpdatesInterval() {
 		return;
 	}
 
-	const lastCheck = (await browser.storage.local.get(['_checkUpdate']))?._checkUpdate ?? {};
+	const lastCheck = (await chrome.storage.local.get(['_checkUpdate']))?._checkUpdate ?? {};
 	const lastCheckDate = new Date(lastCheck.checkedAt),
 		durationMinutes = (new Date() - lastCheckDate) / 60000 // date2 - date1 make milliseconds
 	;
@@ -168,7 +118,7 @@ async function onCheckUpdatesInterval() {
 	}
 
 	const hasUpdate = await ChromeUpdateNotification.checkHasUpdate();
-	await browser.storage.local.set({
+	await chrome.storage.local.set({
 		_checkUpdate: {
 			hasUpdate,
 			checkedAt: new Date()
@@ -182,14 +132,14 @@ async function onCheckUpdatesInterval() {
 		'id': 'updateNotification',
 		"title": i18ex._('updateSimple'),
 		"message": i18ex._('updateDetail', {
-			name: browser.runtime.getManifest().name
+			name: chrome.runtime.getManifest().name
 		})
 	})
 		.catch(console.error)
 	;
 }
 
-browser.alarms.onAlarm.addListener(function (alarm) {
+chrome.alarms.onAlarm.addListener(function (alarm) {
 	if (alarm.name === CHECK_UPDATES_INTERVAL_NAME) {
 		onCheckUpdatesInterval()
 			.catch(console.error)
@@ -215,7 +165,7 @@ async function onStart_deleteOldPreferences() {
 	 * @type {Set<string>}
 	 */
 	const preferences = new Set(['serviceWorkerWhitelist', 'freshRss_showInPanel', 'panel_theme']);
-	if (browser.storage.session) {
+	if (chrome.storage.session) {
 		preferences
 			.add('_backgroundPage_theme_cache')
 			.add('_updated')
@@ -228,7 +178,7 @@ async function onStart_deleteOldPreferences() {
 	for (let prefId of preferences) {
 		let hasPreference = false;
 		try {
-			const val = await browser.storage.local.get(prefId);
+			const val = await chrome.storage.local.get(prefId);
 			hasPreference = prefId in val;
 
 			if (!!hasPreference && prefId === 'panel_theme') {
@@ -258,7 +208,3 @@ chrome.runtime.onInstalled.addListener(function () {
 		.catch(console.error)
 	;
 });
-
-onStart_contextMenus()
-	.catch(console.error)
-;

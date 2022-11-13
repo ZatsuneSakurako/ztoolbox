@@ -255,7 +255,6 @@ export async function refreshWebsitesData() {
 		[refreshDataStorageBase]: output
 	});
 
-	console.log('debug', output)
 	await ChromeNative.sendWebsitesData(output)
 		.catch(console.error)
 	;
