@@ -1,212 +1,194 @@
 'use strict';
 
-const ALARM_NAME = 'CHROME_NOTIFICATION_CONTROLLER';
+import {randomId} from "./randomId.js";
 
-
-
-let chromeAPI_button_availability = true;
-const chromeNotifications = new Map();
-browser.notifications.onClicked.addListener(function(notificationId){
-	if(chromeNotifications.has(notificationId) && typeof chromeNotifications.get(notificationId).fn === "function"){
-		chromeNotifications.get(notificationId).fn("onClicked");
-	}
-});
-if (browser.notifications.onButtonClicked) {
-	browser.notifications.onButtonClicked.addListener((notificationId, buttonIndex) => {
-		if (chromeNotifications.has(notificationId) && typeof chromeNotifications.get(notificationId).fn === "function") {
-			chromeNotifications.get(notificationId).fn('onButtonClicked', buttonIndex);
-		}
-	});
-}
-const onShownSupported = browser.notifications.hasOwnProperty('onShown');
-if (onShownSupported === true) {
-	browser.notifications.onShown.addListener(notificationId => {
-		console.info(`Notification "${notificationId}" shown.`);
-		if (chromeNotifications.has(notificationId) && typeof chromeNotifications.get(notificationId).fnOnShown === "function") {
-			chromeNotifications.get(notificationId).fnOnShown();
-		}
-	})
-}
-browser.notifications.onClosed.addListener((notificationId, byUser=false)=>{
-	if (byUser === true && chromeNotifications.has(notificationId)) {
-		chromeNotifications.get(notificationId).isClosed = true;
-	}
-});
-
-
-
-async function initAlarm() {
-	await browser.alarms.clear(ALARM_NAME);
-	browser.alarms.create(ALARM_NAME, {
-		'periodInMinutes': 0.25
-	});
-}
-browser.alarms.onAlarm.addListener(function (alarm) {
-	if (alarm.name === ALARM_NAME) {
-		browser.notifications.getAll()
-			.then(activeNotifications => {
-				chromeNotifications.forEach((notifTimer, notificationId) => {
-					if (activeNotifications.hasOwnProperty(notificationId) === false) {
-						if (typeof chromeNotifications.get(notificationId).fn === 'function') {
-							chromeNotifications.get(notificationId).fn((chromeNotifications.get(notificationId).isClosed) ? 'closed' : 'timeout');
-						} else {
-							console.warn(`${notifId} has timed out but data problem.`);
-						}
-					}
-				});
-			})
-		;
-	}
-});
-initAlarm()
-	.catch(console.error)
+const ALARM_NAME = 'CHROME_NOTIFICATION_CONTROLLER',
+	NOTIFICATION_STORAGE_ID = '_notification'
 ;
 
 
 
-/**
- * @typedef {object} ChromeNotificationControllerObject
- * @property {string} triggeredType
- * @property {string} notificationId
- * @property {number} buttonIndex
- */
+const chromeStorageArea = browser.storage.session ?? browser.storage.local;
+function clearStorage() {
+	if (!browser.storage.session) {
+		return chromeStorageArea.remove(NOTIFICATION_STORAGE_ID);
+	}
+}
+chrome.runtime.onStartup.addListener(function () {
+	clearStorage()
+		.catch(console.error)
+	;
+});
+chrome.runtime.onInstalled.addListener(function () {
+	clearStorage()
+		.catch(console.error)
+	;
+});
+
+
+
+let chromeAPI_button_availability = true;
+
 /**
  *
- * @param options Options from chrome.notifications.NotificationOptions
- * @param {null|(NotificationOptions & {id:string})} [customOption]
- * @param {Object} customOption.soundObject
- * @param {String} customOption.soundObject.data
- * @param {Number} customOption.soundObjectVolume
- * @return {Promise<ChromeNotificationControllerObject>}
+ * @see https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/notifications/NotificationOptions
+ * @param {object} options Options from chrome.notifications.NotificationOptions
+ * @param {NotificationData&object} [data]
+ * @return {Promise<string>}
  */
-function sendNotification(options=null, customOption=null) {
-	const sendNotification = (options) => {
-		return new Promise((resolve, reject) => {
-			const onError = (error) => {
-				if(error && typeof error.message === 'string' && (error.message === 'Adding buttons to notifications is not supported.' || error.message.indexOf("\"buttons\"") !== -1)){
-					chromeAPI_button_availability = false;
-					console.debug("Buttons not supported, retrying notification without them.");
-					if(options.buttons){
-						delete options.buttons;
-					}
+async function sendNotification(options, data) {
+	if (typeof options !== 'object' || options === null) {
+		throw new Error('MISSING_ARGUMENT');
+	}
+	if (!options.type || typeof options.type !== 'string') {
+		options.type = 'basic';
+	}
+	if (!options.title || typeof options.title !== 'string') {
+		options.title = browser.runtime.getManifest().name;
+	}
+	if (!options.iconUrl || typeof options.iconUrl !== "string" || options.iconUrl === "") {
+		const manifestIcons = browser.runtime.getManifest().icons;
+		let iconSize;
+		if (manifestIcons.hasOwnProperty("128")) {
+			iconSize = "128";
+		} else if (manifestIcons.hasOwnProperty("96")) {
+			iconSize = "96";
+		} else if (manifestIcons.hasOwnProperty("64")) {
+			iconSize = "64";
+		} else if (manifestIcons.hasOwnProperty("48")) {
+			iconSize = "48";
+		} else if (manifestIcons.hasOwnProperty("32")) {
+			iconSize = "32";
+		}
 
-					browser.notifications.create(options)
-						.then(resolve)
-						.catch(onError)
-					;
-				} else {
-					reject(error);
-				}
-			};
-			try{
-				if (!!options.id) {
-					const id = options.id;
-					delete options.id;
-					browser.notifications.create(id, options)
-						.then(resolve)
-						.catch(onError)
-					;
-				} else {
-					browser.notifications.create(options)
-						.then(resolve)
-						.catch(onError)
-					;
-				}
-			} catch(err) {
-				onError(err);
-			}
-		})
-	};
-	return new Promise((resolve, reject) => {
-		if (typeof options !== 'object' || options === null) {
-			reject('Missing argument');
+		if (iconSize !== undefined) {
+			options.iconUrl = manifestIcons[iconSize];
 		}
-		if (!options.type || typeof options.type !== 'string') {
-			options.type = 'basic';
+	}
+	if (!options.contextMessage || typeof options.contextMessage !== 'string') {
+		options.contextMessage = browser.runtime.getManifest().name;
+	}
+	if (!options.isClickable || typeof options.isClickable !== 'boolean') {
+		options.isClickable = true;
+	}
+	if (!chromeAPI_button_availability && options.buttons) {
+		delete options.buttons;
+	}
+
+	// Generate id if none provided
+	const id = options.id ?? randomId();
+	if ('id' in options) {
+		delete options.id;
+	}
+
+	await chromeStorageArea.set({
+		[NOTIFICATION_STORAGE_ID]: {
+			...data,
+			onButtonClickAutoClose: data.onButtonClickAutoClose ?? true,
+			onClickAutoClose: data.onClickAutoClose ?? true,
+			createdAt: (new Date()).toISOString()
 		}
-		if (!options.contextMessage || typeof options.contextMessage !== 'string') {
-			options.contextMessage = browser.runtime.getManifest().name;
-		}
-		if (!options.isClickable || typeof options.isClickable !== 'boolean') {
-			options.isClickable = true;
-		}
-		if (!chromeAPI_button_availability && options.buttons) {
+	});
+
+	/**
+	 * @type {string|undefined}
+	 */
+	let result;
+	let error;
+	try {
+		result = await browser.notifications.create(id, options);
+	} catch (e) {
+		error = e;
+	}
+
+	if (!error && !!result) {
+		return result;
+	}
+
+	if (error && typeof error.message === 'string' && (error.message === 'Adding buttons to notifications is not supported.' || error.message.indexOf("\"buttons\"") !== -1)) {
+		chromeAPI_button_availability = false;
+		console.debug("Buttons not supported, retrying notification without them.");
+		if (options.buttons) {
 			delete options.buttons;
 		}
 
-		let sound = null;
-		sendNotification(options)
-			.then(notificationId => {
-				console.debug( `Notification "${notificationId}" created.`);
-				if (customOption !== null && typeof customOption.soundObject === 'object' && customOption.soundObject !== null && typeof customOption.soundObject.data === 'string') {
-					sound = new Audio(customOption.soundObject.data);
-					sound.volume = customOption.soundObjectVolume / 100;
-					if (onShownSupported === false) {
-						sound.play();
-					}
-				}
-
-				chromeNotifications.set(notificationId, {
-					"isClosed": false,
-					"fn": (triggeredType, buttonIndex = null) => {
-						clear(notificationId);
-
-						if (sound !== null) {
-							sound.currentTime = 0;
-							sound.pause();
-						}
-
-						if (
-							triggeredType === 'timeout'
-							||
-							triggeredType === 'closed'
-							||
-							(
-								(chromeAPI_button_availability === true && options.hasOwnProperty('buttons') === true && typeof buttonIndex !== 'number')
-								||
-								(chromeAPI_button_availability === false && buttonIndex !== null)
-							)
-						) {
-							reject({
-								'triggeredType': triggeredType,
-								'notificationId': notificationId,
-								'buttonIndex': buttonIndex
-							});
-						} else {
-							// 0 is the first button, used as button of action
-							resolve({
-								'triggeredType': triggeredType,
-								'notificationId': notificationId,
-								'buttonIndex': buttonIndex
-							});
-						}
-					},
-					'fnOnShown': () => {
-						if (sound !== null && onShownSupported === true) {
-							sound.play();
-						}
-					}
-				});
-			})
-			.catch(error => {
-				if (sound !== null) {
-					sound.currentTime = 0;
-					sound.pause();
-				}
-				reject(error);
-			})
-		;
-	});
-}
-
-function clear(notificationId = null) {
-	if (notificationId !== null && chromeNotifications.has(notificationId)) {
-		browser.notifications.clear(notificationId);
-		chromeNotifications.delete(notificationId);
-		return true;
+		return await browser.notifications.create(id, options);
+	} else {
+		throw new Error(error);
 	}
-	return false;
 }
+
+/**
+ * @typedef {object} NotificationData
+ * @property {boolean} onButtonClickAutoClose
+ * @property {boolean} onClickAutoClose
+ */
+/**
+ *
+ * @param {string} id
+ * @return {Promise<NotificationData&object|undefined>}
+ */
+export async function getNotificationData(id) {
+	const notificationsData = await getAndClearNotificationData();
+	return notificationsData[id];
+}
+
+
+
+async function getAndClearNotificationData() {
+	const notificationsData = (await chromeStorageArea.get(NOTIFICATION_STORAGE_ID) ?? {})[NOTIFICATION_STORAGE_ID];
+
+	for (let [notificationId, data] of Object.entries(notificationsData)) {
+		const comparaisonDate = new Date(data.createdAt);
+		comparaisonDate.setMinutes(comparaisonDate.getMinutes() + 5);
+
+		if (Date.now() > comparaisonDate.valueOf()) {
+			delete notificationsData[notificationId];
+		}
+	}
+
+	await chromeStorageArea.set({
+		[NOTIFICATION_STORAGE_ID]: notificationsData
+	});
+
+	return notificationsData;
+}
+chrome.notifications.onButtonClicked.addListener(async function (notificationId, buttonIndex) {
+	const data = await getNotificationData(notificationId);
+	let autoClose = false;
+	if (!!data && typeof data === 'object' && !!data.onButtonClickAutoClose) {
+		autoClose = true;
+		chrome.notifications.clear(notificationId);
+	}
+
+	console.log(`Notification ${notificationId} was clicked (button n°${buttonIndex}${autoClose ? ', auto-close' : ''}).`);
+});
+chrome.notifications.onClicked.addListener(async function (notificationId) {
+	const data = await getNotificationData(notificationId);
+	let autoClose = false;
+	if (!!data && typeof data === 'object' && !!data.onClickAutoClose) {
+		autoClose = true;
+		chrome.notifications.clear(notificationId);
+	}
+
+	console.log(`Notification ${notificationId} was clicked${autoClose ? ' (auto-close)' : ''}.`);
+})
+chrome.notifications.onClosed.addListener(function (notificationId) {
+	console.log(`Notification ${notificationId} has closed.`);
+	getAndClearNotificationData()
+		.catch(console.error)
+	;
+});
+
+
+
+chrome.alarms.onAlarm.addListener(function (alarm) {
+	if (alarm.name === ALARM_NAME) {
+		browser.alarms.clear(ALARM_NAME)
+			.catch(console.error)
+		;
+	}
+});
 
 
 
