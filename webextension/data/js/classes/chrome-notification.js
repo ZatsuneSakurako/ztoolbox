@@ -15,14 +15,10 @@ function clearStorage() {
 	}
 }
 chrome.runtime.onStartup.addListener(function () {
-	clearStorage()
-		.catch(console.error)
-	;
+	clearStorage();
 });
 chrome.runtime.onInstalled.addListener(function () {
-	clearStorage()
-		.catch(console.error)
-	;
+	clearStorage();
 });
 
 
