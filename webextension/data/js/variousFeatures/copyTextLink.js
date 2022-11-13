@@ -2,6 +2,7 @@
 
 import {default as env} from '../env.js';
 import {i18ex} from "../translation-api.js";
+import {sendNotification} from "../classes/chrome-notification.js";
 
 
 async function initMenuCopyTextLink() {
@@ -51,10 +52,12 @@ chrome.contextMenus.onClicked.addListener(function (info, tab) {
 async function onCopyLinkTextReply(responseData) {
 	const clipboardResult = responseData.result;
 	if (!clipboardResult || env !== 'prod') {
-		window.doNotif({
+		sendNotification({
 			'id': 'copy_link_result',
 			"message": (clipboardResult) ? i18ex._("copied_link_text") : i18ex._("error_copying_to_clipboard")
 		})
+			.catch(console.error)
+		;
 	}
 
 	console[(clipboardResult) ? "debug" : "warn"](`Copy to clipboad ${(clipboardResult) ? "success" : "error"}`, responseData);

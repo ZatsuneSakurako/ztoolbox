@@ -7,7 +7,7 @@ import {i18ex} from './translation-api.js';
 
 import './classes/chrome-native.js';
 import {deletePreferences, getPreferences, savePreference} from './classes/chrome-preferences-2.js';
-import {doNotif} from "./doNotif.js";
+import {sendNotification} from "./classes/chrome-notification.js";
 
 import {ChromeUpdateNotification} from './classes/chromeUpdateNotification.js';
 
@@ -54,16 +54,6 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
 						});
 					})
 				;
-				return true;
-			case 'doNotif':
-				const options = message.data.options;
-				const suffixConfirmIfNoButtons = message.data.suffixConfirmIfNoButtons;
-
-				doNotif(options, suffixConfirmIfNoButtons)
-					.then(sendResponse)
-					.catch(sendResponse)
-				;
-
 				return true;
 		}
 	}
@@ -128,7 +118,7 @@ async function onCheckUpdatesInterval() {
 		return;
 	}
 
-	doNotif({
+	sendNotification({
 		'id': 'updateNotification',
 		"title": i18ex._('updateSimple'),
 		"message": i18ex._('updateDetail', {

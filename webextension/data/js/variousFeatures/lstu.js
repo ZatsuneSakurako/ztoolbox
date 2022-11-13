@@ -3,6 +3,7 @@
 import {i18ex} from "../translation-api.js";
 import {getPreference} from "../classes/chrome-preferences-2.js";
 import {throttle} from "../lib/throttle.js";
+import {sendNotification} from "../classes/chrome-notification.js";
 
 
 
@@ -167,7 +168,7 @@ function isRightURL(url) {
 export async function shortener_url__no_api(url) {
 	let api_url = await getPreference('custom_lstu_server');
 	if (!api_url) {
-		await doNotif({
+		await sendNotification({
 			message: i18ex._('Check_your_link_or_page')
 		})
 			.catch(console.error)
@@ -176,7 +177,7 @@ export async function shortener_url__no_api(url) {
 	}
 
 	if (typeof url !== "string" || isRightURL(url) !== true) {
-		await doNotif({
+		await sendNotification({
 			message: i18ex._('Check_your_link_or_page'),
 			isClickable: true
 		});
@@ -207,7 +208,7 @@ export async function shortener_url__no_api(url) {
 		)
 	} catch (e) {
 		console.error(e);
-		doNotif({
+		sendNotification({
 			message: i18ex._('Error_on_request')
 		})
 			.catch(console.error)
@@ -256,7 +257,7 @@ export async function shortener_url__no_api(url) {
 		)
 	} catch (e) {
 		console.error(e);
-		doNotif({
+		sendNotification({
 			message: i18ex._('Error_on_request')
 		})
 			.catch(console.error)
@@ -280,7 +281,7 @@ export async function shortener_url__no_api(url) {
 		error = true;
 	}
 
-	doNotif({
+	sendNotification({
 		message: error ?
 			i18ex._('Error_when_copying_to_clipboard')
 			:

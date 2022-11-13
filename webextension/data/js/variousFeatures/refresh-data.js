@@ -6,8 +6,8 @@ import {i18ex} from "../translation-api.js";
 import {WebsiteData} from "./website-data.js";
 import deviantArt from '../platforms/deviantart.js';
 import freshRss from '../platforms/freshrss.js';
-import {doNotif} from "../doNotif.js";
 import * as ChromeNative from "../classes/chrome-native.js";
+import {sendNotification} from "../classes/chrome-notification.js";
 
 export const ALARM_NAME = 'REFRESH_DATA',
 	refreshDataStorageBase = `_websitesDataStore`
@@ -15,7 +15,7 @@ export const ALARM_NAME = 'REFRESH_DATA',
 
 
 
-async function doNotifyWebsite(website, websiteAPI) {
+async function doNotifyWebsite(website) {
 	let websiteData = websitesData.get(website),
 		foldersList = ''
 	;
@@ -38,34 +38,28 @@ async function doNotifyWebsite(website, websiteAPI) {
 	if (!websiteData.logged) {
 		const oldLoggedState = websiteData.notificationState.logged;
 		if (oldLoggedState === true || oldLoggedState === undefined) {
-			doNotif({
+			sendNotification({
 				"id": "refreshData-"+website,
 				'title': i18ex._('website_notif', {'website': website}),
 				'message': i18ex._('website_not_logged', {'website': website}),
 				'iconUrl': websiteData.websiteIcon
+			}, {
+				onClickAutoClose: false
 			})
-				.then(() => {
-					ZDK.openTabIfNotExist(websiteAPI.getLoginURL(websiteData))
-						.catch(console.error)
-					;
-				})
 				.catch(console.error)
 			;
 		}
 		websiteData.notificationState.logged = websiteData.logged;
 	} else if (typeof websiteData.count === 'number' && !isNaN(websiteData.count) && (websiteData.notificationState.count === null || websiteData.count > websiteData.notificationState.count)) {
 		if (await getPreference('notify_checkedData')) {
-			doNotif({
+			sendNotification({
 				"id": "refreshData-"+website,
 				"title": i18ex._('website_notif', {'website': website}),
 				"message": i18ex._('count_new_notif', {'count': websiteData.count}) + "\n" + foldersList,
 				"iconUrl": websiteData.websiteIcon
+			}, {
+				onClickAutoClose: false
 			})
-				.then(() => {
-					ZDK.openTabIfNotExist(websiteAPI.getViewURL(websiteData))
-						.catch(console.error)
-					;
-				})
 				.catch(console.error)
 			;
 		}
@@ -80,23 +74,35 @@ async function doNotifyWebsite(website, websiteAPI) {
 		}
 
 	} else if (await getPreference('notify_all_viewed') && (typeof websiteData.count === 'number' && websiteData.count === 0) && (typeof websiteData.notificationState.count === 'number' && websiteData.notificationState.count > 0)) {
-		doNotif({
+		sendNotification({
 			"id": "refreshData-"+website,
 			"title": i18ex._('website_notif', {'website': website}),
 			"message": i18ex._('all_viewed'),
 			"iconUrl": websiteData.websiteIcon
+		}, {
+			onClickAutoClose: false
 		})
-			.then(() => {
-				ZDK.openTabIfNotExist(websiteAPI.getViewURL(websiteData))
-					.catch(console.error)
-				;
-			})
 			.catch(console.warn)
 		;
 	}
 
 	websiteData.notificationState.count = websiteData.count;
 }
+chrome.notifications.onClicked.addListener(async function (notificationId) {
+	if (!notificationId.startsWith('refreshData-')) return;
+
+	chrome.notifications.clear(notificationId);
+	const website = notificationId.replace('refreshData-', ''),
+		websitesAPI = await getWebsitesApis(),
+		websiteData = websitesData.get(website)
+	;
+	if (!websiteData || !websitesAPI || typeof websiteData !== 'object' || !(website in websitesAPI)) {
+		return;
+	}
+	ZDK.openTabIfNotExist(websitesAPI[website].getViewURL(websiteData))
+		.catch(console.error)
+	;
+})
 
 
 const isBackgroundProcess = !location.pathname.endsWith('panel.html'),
@@ -136,6 +142,22 @@ export async function loadStoredWebsitesData() {
 		}
 	}
 	return websitesData;
+}
+
+
+/**
+ *
+ * @return {Promise<Map<any, any>>}
+ */
+async function getWebsitesApis() {
+	const websites = {};
+	websites['deviantArt'] = deviantArt;
+	if (!!await getPreference('freshRss_baseUrl')) {
+		websites['freshRss'] = freshRss;
+	} else if (websitesData.has('freshRss')) {
+		websitesData.delete('freshRss');
+	}
+	return websites;
 }
 
 
@@ -191,26 +213,18 @@ export async function refreshWebsitesData() {
 	}
 
 
-	const websites = new Map();
-	websites.set('deviantArt', deviantArt);
-	if (!!await getPreference('freshRss_baseUrl')) {
-		websites.set('freshRss', freshRss);
-	} else if (websitesData.has('freshRss')) {
-		websitesData.delete('freshRss');
-	}
-
-
-
 	console.debug('Refreshing websites data...');
-	const promises = [];
-	const {_notificationGloballyDisabled} = await dataStorageArea.get(['_notificationGloballyDisabled'])
-	for (let [website, websiteAPI] of websites) {
+	const websites = await getWebsitesApis(),
+		promises = [],
+		{_notificationGloballyDisabled} = await dataStorageArea.get(['_notificationGloballyDisabled'])
+	;
+	for (let [website, websiteAPI] of Object.entries(websites)) {
 		const promise = refreshWebsite(website, websiteAPI);
 		promises.push(promise);
 		promise
 			.then(() => {
 				if (!_notificationGloballyDisabled) {
-					doNotifyWebsite(website, websiteAPI)
+					doNotifyWebsite(website)
 						.catch(console.error)
 					;
 				}
