@@ -1,7 +1,7 @@
 'use strict';
 
 import {loadTranslations} from './translation-api.js';
-import {theme_update} from "./backgroundTheme.js";
+import {theme_update} from "./classes/backgroundTheme.js";
 import {loadPreferencesNodes} from "./classes/chrome-preferences-ui.js";
 
 

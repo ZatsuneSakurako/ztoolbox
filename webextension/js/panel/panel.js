@@ -1,6 +1,6 @@
 import {loadTranslations} from '../translation-api.js';
 import {renderTemplate} from '../init-templates.js';
-import {theme_cache_update} from '../backgroundTheme.js';
+import {theme_cache_update} from '../classes/backgroundTheme.js';
 import * as tabPageServerIp from "./tabPageServerIp.js";
 import {getPreference} from "../classes/chrome-preferences.js";
 import "./requestPermission.js";

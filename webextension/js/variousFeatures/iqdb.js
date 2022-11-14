@@ -1,7 +1,7 @@
 'use strict';
 
 import {i18ex} from "../translation-api.js";
-import {contextMenusController} from "../contextMenusController.js";
+import {contextMenusController} from "../classes/contextMenusController.js";
 
 async function launchSearch(tab, imgUrl) {
 	try {
