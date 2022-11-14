@@ -10,7 +10,7 @@ import('../browserDetect.js')
 
 async function baseInit() {
 	if (typeof browser === 'undefined' || browser === null) {
-		await import('../lib/browser-polyfill.js');
+		await import('../../lib/browser-polyfill.js');
 	}
 
 	const {getPreferences} = await import('../classes/chrome-preferences-2.js');
@@ -51,7 +51,7 @@ window.onload = function () {
 	(async () => {
 		await baseInitPromise;
 
-		await import('../lib/throttle.js');
+		await import('../../lib/throttle.js');
 		await import('../panel/browserTabUtils.js');
 		await import('../panel/tabMover.js');
 		await import('../panel/service-worker.js');

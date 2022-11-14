@@ -1,5 +1,5 @@
 import {triggerOnCurrentTab, onTabChange} from './browserTabUtils.js';
-import {throttle} from "../lib/throttle.js";
+import {throttle} from "../../lib/throttle.js";
 
 /**
  *

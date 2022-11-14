@@ -2,7 +2,7 @@
 
 import {i18ex} from "../translation-api.js";
 import {getPreference} from "../classes/chrome-preferences-2.js";
-import {throttle} from "../lib/throttle.js";
+import {throttle} from "../../lib/throttle.js";
 import {sendNotification} from "../classes/chrome-notification.js";
 
 
@@ -202,7 +202,7 @@ export async function shortener_url__no_api(url) {
 			tab.id,
 			{
 				allFrames: false,
-				file: '/data/js/contentscripts/lstu_contentScript.js',
+				file: '/js/contentscripts/lstu_contentScript.js',
 				runAt: 'document_start'
 			}
 		)
@@ -251,7 +251,7 @@ export async function shortener_url__no_api(url) {
 			tab.id,
 			{
 				allFrames: false,
-				file: '/data/js/contentscripts/lstu_contentScript.js',
+				file: '/js/contentscripts/lstu_contentScript.js',
 				runAt: 'document_start'
 			}
 		)

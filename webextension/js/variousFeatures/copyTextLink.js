@@ -20,7 +20,7 @@ async function initMenuCopyTextLink() {
 		{
 			"id": "copyTextLink",
 			"js": [
-				"/data/js/contentscripts/copyTextLink.js"
+				"/js/contentscripts/copyTextLink.js"
 			],
 			"matches": [ "<all_urls>" ],
 			"runAt": "document_idle",

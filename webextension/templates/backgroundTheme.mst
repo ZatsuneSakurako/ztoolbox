@@ -1,6 +1,6 @@
-{{#isDarkTheme}}@import url('css/panel-theme-dark.css');
-@import url('css/panel-text-color-white.css');{{/isDarkTheme}} {{#isLightTheme}}@import url('css/panel-theme-light.css');
-@import url('css/panel-text-color-black.css');{{/isLightTheme}}
+{{#isDarkTheme}}@import url('assets/css/panel-theme-dark.css');
+@import url('assets/css/panel-text-color-white.css');{{/isDarkTheme}} {{#isLightTheme}}@import url('assets/css/panel-theme-light.css');
+@import url('assets/css/panel-text-color-black.css');{{/isLightTheme}}
 
 :root{
 	--bgLight0: hsl({{baseColor_hsl.H}}, {{baseColor_hsl.S}}, {{light0}});

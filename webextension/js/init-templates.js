@@ -1,13 +1,13 @@
 const templatesSource = window.templatesSource = new Map();
-templatesSource.set('backgroundTheme', '/data/template/backgroundTheme.mst');
-templatesSource.set('panelCheckedDataItem', '/data/template/panel/checkedDataItem.mst');
-templatesSource.set('tabMover', '/data/template/panel/tabMover.mst');
-templatesSource.set('tabPageServerIp', '/data/template/panel/tabPageServerIp.mst');
+templatesSource.set('backgroundTheme', '/templates/backgroundTheme.mst');
+templatesSource.set('panelCheckedDataItem', '/templates/panel/checkedDataItem.mst');
+templatesSource.set('tabMover', '/templates/panel/tabMover.mst');
+templatesSource.set('tabPageServerIp', '/templates/panel/tabPageServerIp.mst');
 
 
 export async function getMustache() {
 	if (!window.Mustache) {
-		await import('./lib/mustache.js');
+		await import('../lib/mustache.js');
 	}
 	return window.Mustache;
 }

@@ -1,5 +1,5 @@
 import {getPreference} from "../classes/chrome-preferences-2.js";
-import {hasFetchPermission} from "../../hasFetchPermission.js";
+import {hasFetchPermission} from "../classes/hasFetchPermission.js";
 
 let freshRssBaseUrl;
 const freshRss = {

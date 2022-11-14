@@ -19,7 +19,7 @@
 		"128": "/icon_128.png"
 	},
 	"background": {
-		"service_worker": "/data/js/index.js",
+		"service_worker": "/js/index.js",
 		"type": "module"
 	},
 	"action": {
@@ -30,7 +30,7 @@
 			"96": "/icon_96.png",
 			"128": "/icon_128.png"
 		},
-		"default_popup": "/data/panel.html"
+		"default_popup": "/panel.html"
 	},
 	"content_scripts": [
 		{
@@ -38,7 +38,7 @@
 				"*://ppa.launchpad.net/*/*/*/"
 			],
 			"js": [
-				"/data/js/contentscripts/launchpad-addlink.js"
+				"/js/contentscripts/launchpad-addlink.js"
 			]
 		},
 		{
@@ -46,7 +46,7 @@
 				"https://iqdb.org/"
 			],
 			"js": [
-				"/data/js/contentscripts/iqdb_search.js"
+				"/js/contentscripts/iqdb_search.js"
 			],
 			"run_at": "document_start"
 		}
@@ -70,7 +70,7 @@
 		"https://*/*"
 	],
 	"options_ui": {
-		"page": "data/options.html"
+		"page": "options.html"
 	},
 	"minimum_chrome_version": "92.0"
 }

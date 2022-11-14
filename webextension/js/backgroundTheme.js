@@ -105,7 +105,7 @@ export async function theme_cache_update(colorStylesheetNode) {
 
 
 	if (!window.Mustache) {
-		await import('./lib/mustache.js');
+		await import('../lib/mustache.js');
 	}
 	const {getTemplate} = await import('./init-templates.js');
 	const style = Mustache.render(await getTemplate("backgroundTheme"), {

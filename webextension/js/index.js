@@ -1,7 +1,7 @@
 'use strict';
 
 import {default as env} from './env.js';
-import "./lib/browser-polyfill.js";
+import "../lib/browser-polyfill.js";
 
 import {i18ex} from './translation-api.js';
 

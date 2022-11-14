@@ -1,6 +1,6 @@
 "use strict";
 
-import {hasFetchPermission} from "../../hasFetchPermission.js";
+import {hasFetchPermission} from "./hasFetchPermission.js";
 
 export const VERSION_NUMBERS_REG =  /^(\d+)\.(\d+)\.(\d+)(?:\.(\d+))?$/;
 

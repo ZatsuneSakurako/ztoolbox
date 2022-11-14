@@ -1,5 +1,5 @@
-import {hasFetchPermission} from "../../hasFetchPermission.js";
-import JSON5 from '../lib/json5.js';
+import {hasFetchPermission} from "../classes/hasFetchPermission.js";
+import JSON5 from '../../lib/json5.js';
 
 const deviantArt = {
 	// Old data url dataURL:"http://www.deviantart.com/notifications/watch",

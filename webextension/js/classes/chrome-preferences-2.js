@@ -1,4 +1,4 @@
-import {options as _options} from '/data/js/options-data.js';
+import {options as _options} from '/js/options-data.js';
 
 export function getPreferenceConfig(returnMap=false) {
 	const options = JSON.parse(JSON.stringify(_options)),

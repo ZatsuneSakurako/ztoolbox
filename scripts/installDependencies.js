@@ -5,8 +5,8 @@ import {cp} from "./common/file-operations.js";
 import {info, error} from "./common/custom-console.js";
 import {projectRootDir} from "./projectRootDir.js";
 
-const fontPath = path.join(projectRootDir, './webextension/data/font/'),
-	jsLib = path.join(projectRootDir, './webextension/data/js/lib/')
+const fontPath = path.join(projectRootDir, './webextension/assets/fonts/'),
+	jsLib = path.join(projectRootDir, './webextension/lib/')
 ;
 
 /**

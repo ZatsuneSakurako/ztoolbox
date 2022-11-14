@@ -1,6 +1,6 @@
 'use strict';
-import '../lib/i18next.js';
-import '../lib/i18nextHttpBackend.js';
+import '../../lib/i18next.js';
+import '../../lib/i18nextHttpBackend.js';
 
 
 export class i18extended {
