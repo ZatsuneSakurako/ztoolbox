@@ -13,7 +13,7 @@ export class i18extended {
 					lng: 'en',
 					backend: {
 						// for all available options read the backend's repository readme file
-						loadPath: chrome.runtime.getURL('/data/js/locales/') + '{{lng}}-{{ns}}.json'
+						loadPath: chrome.runtime.getURL('/locales/') + '{{lng}}-{{ns}}.json'
 					}
 				}, async () => {
 					let language;
