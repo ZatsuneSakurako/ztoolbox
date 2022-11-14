@@ -221,21 +221,3 @@ export function getSyncKeys() {
 
 	return keysArray;
 }
-
-export async function restaureFromSync(mergePreferences=false){
-	const items = await browser.storage.sync.get(getSyncKeys());
-	for (let prefId in items) {
-		if(items.hasOwnProperty(prefId)){
-			if(mergePreferences){
-				await savePreference(prefId, items[prefId]);
-			} else {
-				await savePreference(prefId, items[prefId]);
-			}
-		}
-	}
-	return "success";
-}
-
-export async function saveInSync() {
-	return browser.storage.sync.set(await getSyncPreferences());
-}

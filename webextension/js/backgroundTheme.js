@@ -46,13 +46,16 @@ class Color {
 /**
  *
  * @param {HTMLStyleElement|null} [colorStylesheetNode]
+ * @param {string} [currentTheme]
+ * @param {string} [background_color]
  * @return {Promise<HTMLStyleElement|null>}
  */
-export async function theme_cache_update(colorStylesheetNode) {
-	const options = await getPreferences("theme", "background_color"),
-		currentTheme = options.get("theme") ?? 'dark',
+export async function theme_cache_update(colorStylesheetNode, currentTheme, background_color) {
+	if (currentTheme === undefined && background_color === undefined) {
+		const options = await getPreferences("theme", "background_color");
+		currentTheme = options.get("theme") ?? 'dark'
 		background_color = options.get("background_color") ?? '#000000'
-	;
+	}
 
 	const chromeStorageArea = browser.storage.session ?? browser.storage.local;
 	const chromeStorage = await chromeStorageArea.get(['_backgroundPage_theme_cache']);
@@ -138,3 +141,26 @@ export async function theme_cache_update(colorStylesheetNode) {
 	//console.log(baseColor.rgbCode());
 	return styleElement.cloneNode(true);
 }
+
+export async function theme_update() {
+	let panelColorStylesheet = await theme_cache_update(document.querySelector("#generated-color-stylesheet"));
+
+	if (typeof panelColorStylesheet === "object" && panelColorStylesheet !== null) {
+		console.info("Theme update");
+
+		let currentThemeNode = document.querySelector("#generated-color-stylesheet");
+		currentThemeNode.parentNode.removeChild(currentThemeNode);
+
+		document.head.appendChild(panelColorStylesheet);
+	}
+}
+
+browser.storage.onChanged.addListener(async (changes, area) => {
+	if (area !== "local") return;
+
+	if ("theme" in changes || "background_color" in changes) {
+		theme_update()
+			.catch(console.error)
+		;
+	}
+});

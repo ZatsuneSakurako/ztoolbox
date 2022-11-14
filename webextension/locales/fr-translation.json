@@ -89,9 +89,6 @@
 	"showExperimented_title": "Afficher les options pour utilisateur experimenté",
 	"showExperimented_description": "Activé si coché",
 
-	"options_saved": "Options enregistrées.",
-	"options_saved_sync": "Options enregistrées dans la synchronisation.",
-
 	"save": "Enregistrer",
 	"sync_title": "Enregistrer / Restaurer les préférences depuis/vers la synchronisation",
 	"restaure_sync": "Restaurer",

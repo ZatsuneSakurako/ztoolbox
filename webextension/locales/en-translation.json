@@ -86,9 +86,6 @@
 	"showExperimented_title": "Show setting for experimented users",
 	"showExperimented_description": "Enabled when checked",
 
-	"options_saved": "Options saved.",
-	"options_saved_sync": "Options saved in synchronisation.",
-
 	"save": "Save",
 	"sync_title": "Save / Restaure preferences from/to synchronization",
 	"restaure_sync": "Restaure",
