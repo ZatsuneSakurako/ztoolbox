@@ -1,6 +1,6 @@
 'use strict';
 
-import {ChromePreferences, getValueFromNode} from './classes/chrome-preferences.js';
+import {ChromePreferences, getValueFromNode} from './classes/chrome-preferences-ui.js';
 import {
 	getPreference,
 	savePreference,
