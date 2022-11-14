@@ -45,7 +45,6 @@ export const options = {
 		"description": "IP/Name (IP as key)",
 		"type": "json",
 		"value": "{\"127.0.0.1\": \"localhost\"}",
-		"stringList": true,
 		"group": "featurePreference"
 	},
 	/*			Notifications			*/

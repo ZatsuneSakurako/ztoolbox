@@ -1,43 +1,12 @@
 import {ZDK} from './ZDK.js';
 import {
 	getBooleanFromVar,
-	getPreferenceConfig, savePreference, getPreference
+	getPreferenceConfig, savePreference, getPreference, getSyncKeys, getSyncPreferences, importFromJSON
 } from './chrome-preferences-2.js';
 
 
 
 /*		---- get/save preference ----		*/
-function decodeString(string) {
-	if (typeof string !== "string") {
-		console.warn(`encodeString: wrong type (${typeof string})`);
-		return string;
-	} else {
-		// Using a regexp with g flag, in a replace method let it replace all
-		string = string.replace(/%3A/g,":");
-		string = string.replace(/%2C/g,",");
-		string = string.replace(/%25/g,"%");
-	}
-	return string;
-}
-
-export function getFilterListFromPreference(string) {
-	if (typeof string !== "string") {
-		console.warn("Type error");
-		string = "";
-	}
-	let list = string.split(",");
-	for (let i in list) {
-		if(list.hasOwnProperty(i)) {
-			if (list[i].length === 0) {
-				delete list[i];
-				// Keep a null item, but this null is not considered in for..in loops
-			} else {
-				list[i] = decodeString(list[i]);
-			}
-		}
-	}
-	return list;
-}
 
 /**
  *
@@ -57,9 +26,6 @@ export function getValueFromNode(node) {
 			return json;
 		} else if (node.dataset.stringTextarea === "true") {
 			return node.value.replace(/\n/g, "");
-		} else if (node.dataset.stringList === "true") {
-			// Split as list, encode item, then make it back a string
-			return node.value.split("\n").map(encodeString).join(",");
 		} else {
 			return node.value;
 		}
@@ -75,85 +41,6 @@ export function getValueFromNode(node) {
 }
 
 export const ChromePreferences = Object.freeze({
-	async getSyncPreferences() {
-		let obj = {};
-		const options = getPreferenceConfig(true);
-
-		for (const [prefId, option] of options) {
-			if (option.hasOwnProperty("sync") === true && option.sync === false) {
-				continue;
-			} else if(option.type === "control" || option.type === "file") {
-				continue;
-			}
-
-			obj[prefId] = await getPreference(prefId);
-		}
-
-		return obj;
-	},
-
-	getSyncKeys() {
-		const options = getPreferenceConfig(true);
-
-		let keysArray = [];
-		for (const [prefId, ] of options) {
-			if (option.hasOwnProperty("sync") === true && option.sync === true) {
-				keysArray.push(prefId);
-			}
-		}
-
-		return keysArray;
-	},
-
-	/**
-	 *
-	 * @param {JSON} preferences
-	 * @param {Boolean=false} mergePreferences
-	 */
-	async importFromJSON(preferences, mergePreferences=false) {
-		const options = getPreferenceConfig(true);
-
-		for (let prefId in preferences) {
-			if (!preferences.hasOwnProperty(prefId)){
-				continue;
-			}
-
-			const optionConf = options.get(prefId);
-			if (!!optionConf && !['control', 'file', 'json'].includes(optionConf.type) && typeof preferences[prefId] === typeof optionConf.value) {
-				if(mergePreferences) {
-					await savePreference(prefId, preferences[prefId]);
-				} else {
-					await savePreference(prefId, preferences[prefId]);
-				}
-			} else if (!!optionConf && optionConf.type === 'json' && ['string', 'object'].includes(typeof preferences[prefId])) {
-				let jsonValue = preferences[prefId];
-				if (typeof jsonValue === 'string') {
-					jsonValue = JSON.parse(jsonValue);
-				}
-				await savePreference(prefId, jsonValue);
-			} else {
-				console.warn(`Error trying to import ${prefId}`);
-			}
-		}
-	},
-	async saveInSync() {
-		return browser.storage.sync.set(await ChromePreferences.getSyncPreferences());
-	},
-	async restaureFromSync(mergePreferences=false){
-		const items = await browser.storage.sync.get(ChromePreferences.getSyncKeys());
-		for (let prefId in items) {
-			if(items.hasOwnProperty(prefId)){
-				if(mergePreferences){
-					await savePreference(prefId, items[prefId]);
-				} else {
-					await savePreference(prefId, items[prefId]);
-				}
-			}
-		}
-		return "success";
-	},
-
-
 	/**
 	 *
 	 * @param {HTMLElement} container
@@ -262,12 +149,6 @@ export const ChromePreferences = Object.freeze({
 					prefNode = document.createElement("textarea");
 					prefNode.dataset.stringTextarea = true;
 					prefNode.value = await getPreference(id);
-				} else if(typeof prefObj.stringList === "boolean" && prefObj.stringList === true){
-					prefNode = document.createElement("textarea");
-					prefNode.dataset.stringList = true;
-					prefNode.value = getFilterListFromPreference(await getPreference(id)).join("\n");
-
-					node.classList.add("stringList");
 				} else {
 					prefNode = document.createElement("input");
 
@@ -447,7 +328,7 @@ export const ChromePreferences = Object.freeze({
 	 */
 	async exportPrefsToFile(appName) {
 		let exportData = {
-			"preferences": await ChromePreferences.getSyncPreferences()
+			"preferences": await getSyncPreferences()
 		};
 
 		exportData[`${appName}_version`] = browser.runtime.getManifest().version;
@@ -654,7 +535,7 @@ export const ChromePreferences = Object.freeze({
 		}
 		if (file_JSONData !== null) {
 			if (file_JSONData.hasOwnProperty(`${appName}_version`) && file_JSONData.hasOwnProperty("preferences") && typeof file_JSONData.preferences === "object") {
-				await ChromePreferences.importFromJSON(file_JSONData.preferences, (typeof mergePreferences === "boolean") ? mergePreferences : false);
+				await importFromJSON(file_JSONData.preferences, (typeof mergePreferences === "boolean") ? mergePreferences : false);
 				return true;
 			} else {
 				throw `An error occurred when trying to parse file (Check the file you have used)`;

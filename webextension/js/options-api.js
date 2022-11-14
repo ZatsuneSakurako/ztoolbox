@@ -1,11 +1,11 @@
 'use strict';
 
-import {ChromePreferences, getFilterListFromPreference, getValueFromNode} from './classes/chrome-preferences.js';
+import {ChromePreferences, getValueFromNode} from './classes/chrome-preferences.js';
 import {
 	getPreference,
 	savePreference,
 	getBooleanFromVar,
-	getPreferenceConfig
+	getPreferenceConfig, saveInSync, restaureFromSync
 } from './classes/chrome-preferences-2.js';
 import {loadTranslations} from './translation-api.js';
 
@@ -49,11 +49,7 @@ async function refreshSettings(event) {
 		} else {
 			switch (options.get(prefId).type) {
 				case 'string':
-					if (typeof options.get(prefId).stringList === 'boolean' && options.get(prefId).stringList === true) {
-						prefNode.value = getFilterListFromPreference(await getPreference(prefId)).join("\n");
-					} else {
-						prefNode.value = prefValue;
-					}
+					prefNode.value = prefValue;
 					break;
 				case 'color':
 				case 'menulist':
@@ -104,7 +100,7 @@ async function refreshSettings(event) {
  * @param event
  */
 function saveOptionsInSync(event) {
-	ChromePreferences.saveInSync()
+	saveInSync()
 		.then(() => {
 			// Update status to let user know options were saved.
 			let status = document.getElementById('status');
@@ -126,7 +122,7 @@ function saveOptionsInSync(event) {
 async function restoreOptionsFromSync(event) {
 	// Default values
 	let mergePreferences = event.shiftKey;
-	return await ChromePreferences.restaureFromSync((typeof mergePreferences === 'boolean')? mergePreferences : false);
+	return await restaureFromSync((typeof mergePreferences === 'boolean')? mergePreferences : false);
 }
 
 /*		---- Node generation of settings ----		*/

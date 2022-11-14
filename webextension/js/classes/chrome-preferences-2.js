@@ -155,3 +155,87 @@ export async function getPreference(prefId) {
 export function deletePreferences(...prefIds) {
 	return browser.storage.local.remove(prefIds)
 }
+
+/*		    ---- Export/Import preferences ----	    	*/
+
+/**
+ *
+ * @param {JSON} preferences
+ * @param {Boolean=false} mergePreferences
+ */
+export async function importFromJSON(preferences, mergePreferences=false) {
+	const options = getPreferenceConfig(true);
+
+	for (let prefId in preferences) {
+		if (!preferences.hasOwnProperty(prefId)){
+			continue;
+		}
+
+		const optionConf = options.get(prefId);
+		if (!!optionConf && !['control', 'file', 'json'].includes(optionConf.type) && typeof preferences[prefId] === typeof optionConf.value) {
+			if(mergePreferences) {
+				await savePreference(prefId, preferences[prefId]);
+			} else {
+				await savePreference(prefId, preferences[prefId]);
+			}
+		} else if (!!optionConf && optionConf.type === 'json' && ['string', 'object'].includes(typeof preferences[prefId])) {
+			let jsonValue = preferences[prefId];
+			if (typeof jsonValue === 'string') {
+				jsonValue = JSON.parse(jsonValue);
+			}
+			await savePreference(prefId, jsonValue);
+		} else {
+			console.warn(`Error trying to import ${prefId}`);
+		}
+	}
+}
+
+/*		---- Save/Restore preferences from sync ----		*/
+
+export async function getSyncPreferences() {
+	let obj = {};
+	const options = getPreferenceConfig(true);
+
+	for (const [prefId, option] of options) {
+		if (option.hasOwnProperty("sync") === true && option.sync === false) {
+			continue;
+		} else if(option.type === "control" || option.type === "file") {
+			continue;
+		}
+
+		obj[prefId] = await getPreference(prefId);
+	}
+
+	return obj;
+}
+
+export function getSyncKeys() {
+	const options = getPreferenceConfig(true);
+
+	let keysArray = [];
+	for (const [prefId, ] of options) {
+		if (option.hasOwnProperty("sync") === true && option.sync === true) {
+			keysArray.push(prefId);
+		}
+	}
+
+	return keysArray;
+}
+
+export async function restaureFromSync(mergePreferences=false){
+	const items = await browser.storage.sync.get(getSyncKeys());
+	for (let prefId in items) {
+		if(items.hasOwnProperty(prefId)){
+			if(mergePreferences){
+				await savePreference(prefId, items[prefId]);
+			} else {
+				await savePreference(prefId, items[prefId]);
+			}
+		}
+	}
+	return "success";
+}
+
+export async function saveInSync() {
+	return browser.storage.sync.set(await getSyncPreferences());
+}
