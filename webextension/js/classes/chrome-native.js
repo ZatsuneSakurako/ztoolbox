@@ -1,4 +1,4 @@
-import {randomId} from "./randomId.js";
+import {randomId} from "../utils/randomId.js";
 
 const port = chrome.runtime.connectNative('eu.gitlab.zatsunenomokou.chromenativebridge');
 

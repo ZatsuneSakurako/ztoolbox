@@ -1,4 +1,4 @@
-import {hasFetchPermission, requestFetchPermission} from "../classes/hasFetchPermission.js";
+import {hasFetchPermission, requestFetchPermission} from "../utils/hasFetchPermission.js";
 
 const btnSelector = '#requestPermissionItem';
 

@@ -1,6 +1,6 @@
 'use strict';
 
-import('../browserDetect.js')
+import('../utils/browserDetect.js')
 	.then(module => {
 		document.documentElement.classList.toggle('isFirefox', module.isFirefox);
 		document.documentElement.classList.toggle('isChrome', module.isChrome);

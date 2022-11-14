@@ -31,7 +31,7 @@ async function sendDataToMain(id, data) {
 window.sendDataToMain = sendDataToMain;
 
 
-import('./browserDetect.js')
+import('./utils/browserDetect.js')
 	.then(module => {
 		const $html = document.documentElement;
 		$html.classList.toggle('isFirefox', module.isFirefox);

@@ -1,4 +1,4 @@
-import {hasFetchPermission} from "../classes/hasFetchPermission.js";
+import {hasFetchPermission} from "../utils/hasFetchPermission.js";
 import JSON5 from '../../lib/json5.js';
 
 const deviantArt = {

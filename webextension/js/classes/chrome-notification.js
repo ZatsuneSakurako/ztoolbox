@@ -1,6 +1,6 @@
 'use strict';
 
-import {randomId} from "./randomId.js";
+import {randomId} from "../utils/randomId.js";
 
 const ALARM_NAME = 'CHROME_NOTIFICATION_CONTROLLER',
 	NOTIFICATION_STORAGE_ID = '_notification'

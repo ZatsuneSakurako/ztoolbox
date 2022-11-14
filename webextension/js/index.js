@@ -17,7 +17,7 @@ import './variousFeatures/refresh-data.js';
 import './variousFeatures/tabPageServerIp.js';
 import './variousFeatures/youtubePlaylist.js';
 
-import {isFirefox} from "./browserDetect.js";
+import {isFirefox} from "./utils/browserDetect.js";
 if (isFirefox) {
 	import('./variousFeatures/copyTextLink.js')
 		.catch(console.error)

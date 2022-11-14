@@ -65,7 +65,7 @@ async function doNotifyWebsite(website) {
 		}
 
 		if (await getPreference('notify_vocal')) {
-			import('../voiceAPI.js')
+			import('../utils/voiceAPI.js')
 				.then(({voiceReadMessage}) => {
 					voiceReadMessage(i18ex._('language'), i18ex._('count_new_notif', {'count': websiteData.count}));
 				})
