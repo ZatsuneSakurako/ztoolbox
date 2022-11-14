@@ -1,6 +1,6 @@
 import {getCurrentTab} from "./browserTabUtils.js";
 import {renderTemplate} from "../init-templates.js";
-import {getPreference} from "../classes/chrome-preferences-2.js";
+import {getPreference} from "../classes/chrome-preferences.js";
 
 const idTabPageServerIp = 'tabPageServerIp',
 	tabPageServerIpStorage = '_tabPageServerIp'

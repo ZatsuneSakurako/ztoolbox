@@ -13,7 +13,7 @@ async function baseInit() {
 		await import('../../lib/browser-polyfill.js');
 	}
 
-	const {getPreferences} = await import('../classes/chrome-preferences-2.js');
+	const {getPreferences} = await import('../classes/chrome-preferences.js');
 
 	const html = document.documentElement,
 		body = document.body

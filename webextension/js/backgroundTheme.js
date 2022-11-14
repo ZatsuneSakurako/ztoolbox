@@ -1,6 +1,6 @@
 'use strict';
 
-import {getPreferences} from './classes/chrome-preferences-2.js';
+import {getPreferences} from './classes/chrome-preferences.js';
 import {default as env} from './env.js';
 
 class Color {

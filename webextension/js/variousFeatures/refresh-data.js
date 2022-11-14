@@ -1,7 +1,7 @@
 'use strict';
 
 import {ZDK} from "../classes/ZDK.js";
-import {getPreference, getPreferences} from "../classes/chrome-preferences-2.js";
+import {getPreference, getPreferences} from "../classes/chrome-preferences.js";
 import {i18ex} from "../translation-api.js";
 import {WebsiteData} from "./website-data.js";
 import deviantArt from '../platforms/deviantart.js';

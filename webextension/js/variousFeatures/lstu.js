@@ -1,7 +1,7 @@
 'use strict';
 
 import {i18ex} from "../translation-api.js";
-import {getPreference} from "../classes/chrome-preferences-2.js";
+import {getPreference} from "../classes/chrome-preferences.js";
 import {throttle} from "../../lib/throttle.js";
 import {sendNotification} from "../classes/chrome-notification.js";
 

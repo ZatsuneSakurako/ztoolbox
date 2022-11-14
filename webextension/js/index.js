@@ -6,7 +6,7 @@ import "../lib/browser-polyfill.js";
 import {i18ex} from './translation-api.js';
 
 import './classes/chrome-native.js';
-import {deletePreferences, getPreferences, savePreference} from './classes/chrome-preferences-2.js';
+import {deletePreferences, getPreferences, savePreference} from './classes/chrome-preferences.js';
 import {sendNotification} from "./classes/chrome-notification.js";
 
 import {ChromeUpdateNotification} from './classes/chromeUpdateNotification.js';

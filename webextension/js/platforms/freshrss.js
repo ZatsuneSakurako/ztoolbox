@@ -1,4 +1,4 @@
-import {getPreference} from "../classes/chrome-preferences-2.js";
+import {getPreference} from "../classes/chrome-preferences.js";
 import {hasFetchPermission} from "../utils/hasFetchPermission.js";
 
 let freshRssBaseUrl;

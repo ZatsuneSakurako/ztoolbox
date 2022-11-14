@@ -2,7 +2,7 @@ import {ZDK} from './ZDK.js';
 import {
 	getBooleanFromVar,
 	getPreferenceConfig, savePreference, getPreference, getSyncKeys, getSyncPreferences, importFromJSON
-} from './chrome-preferences-2.js';
+} from './chrome-preferences.js';
 
 
 

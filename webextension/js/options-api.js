@@ -6,7 +6,7 @@ import {
 	savePreference,
 	getBooleanFromVar,
 	getPreferenceConfig, saveInSync, restaureFromSync
-} from './classes/chrome-preferences-2.js';
+} from './classes/chrome-preferences.js';
 import {loadTranslations} from './translation-api.js';
 
 export const loadingPromise = loadTranslations();

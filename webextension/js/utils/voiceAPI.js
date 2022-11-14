@@ -1,4 +1,4 @@
-import {getPreference} from '../classes/chrome-preferences-2.js';
+import {getPreference} from '../classes/chrome-preferences.js';
 
 function getVoiceLanguage(langCode) {
 	let findVoice = function (langCode) {
