@@ -1,9 +1,9 @@
 /*
  * https://developer.mozilla.org/en-US/Add-ons/WebExtensions/API/menus/create
  */
-import {i18ex} from "./translation-api.js";
-import {getPreference} from "./classes/chrome-preferences.js";
-import {updateLstuContextMenu} from "./variousFeatures/lstu.js";
+import {i18ex} from "../translation-api.js";
+import {getPreference} from "./chrome-preferences.js";
+import {updateLstuContextMenu} from "../variousFeatures/lstu.js";
 
 export class ContextMenusController extends Map {
 	constructor(){

@@ -1,7 +1,7 @@
 'use strict';
 
-import {getPreferences} from './classes/chrome-preferences.js';
-import {default as env} from './env.js';
+import {getPreferences} from './chrome-preferences.js';
+import {default as env} from '../env.js';
 
 class Color {
 	constructor(hexColorCode){
@@ -108,9 +108,9 @@ export async function theme_cache_update(colorStylesheetNode, currentTheme, back
 
 
 	if (!window.Mustache) {
-		await import('../lib/mustache.js');
+		await import('../../lib/mustache.js');
 	}
-	const {getTemplate} = await import('./init-templates.js');
+	const {getTemplate} = await import('../init-templates.js');
 	const style = Mustache.render(await getTemplate("backgroundTheme"), {
 		"isDarkTheme": (currentTheme === "dark"),
 		"isLightTheme": (currentTheme === "light"),
