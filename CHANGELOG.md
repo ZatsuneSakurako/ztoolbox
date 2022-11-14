@@ -1,5 +1,5 @@
 # WIP
-* i : Move to manifest v3
+* i : Move to manifest v3, folders work (remove data folder)
 * i : WIP native messaging (timeout system, getPreferences result, theme option renaming)
 * i : Move data (deviantArt / FreshRSS, theme cache) to session storage if available
 * \+ : Page IP / Status display

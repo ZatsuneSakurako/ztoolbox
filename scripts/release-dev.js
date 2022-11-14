@@ -104,7 +104,7 @@ async function init() {
 	await errorHandler(fs.mkdir(tmpPath));
 
 	echo("Copying into tmp folder");
-	await errorHandler(exec("cd " + pwd + " && cp -rt tmp ./webextension/_locales ./webextension/assets ./webextension/lib ./webextension/locales ./webextension/templates ./webextension/*.html ./webextension/icon*.png ./webextension/LICENSE ./webextension/manifest.json"));
+	await errorHandler(exec("cd " + pwd + " && cp -rt tmp ./webextension/_locales ./webextension/assets ./webextension/js ./webextension/lib ./webextension/locales ./webextension/templates ./webextension/*.html ./webextension/icon*.png ./webextension/LICENSE ./webextension/manifest.json"));
 
 
 
