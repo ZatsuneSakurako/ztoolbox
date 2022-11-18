@@ -106,7 +106,7 @@ async function updatePanelData() {
 		.catch(console.error)
 	;
 
-	if (await getPreference('simplified_mode')) {
+	if ((await getPreference('mode')) === 'simplified') {
 		return;
 	}
 

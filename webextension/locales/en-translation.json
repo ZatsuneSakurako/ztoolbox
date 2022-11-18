@@ -50,14 +50,8 @@
 
 	"open_optionpage": "Open option page",
 
-	"check_enabled_title": "Data automatic refresh enabled",
-	"check_enabled_description": "Enabled if checked",
-
 	"check_delay_title": "deviantArt/freshRss verification delay",
 	"check_delay_description": "Delay between verifications, in minute",
-
-	"simplified_mode_title": "Extension in simplified mode",
-	"simplified_mode_description": "Enabled if checked",
 
 	"launchpadAddLink_title": "Add link to go Launchpad PPA page from an index page",
 	"launchpadAddLink_description": "Will add link if checked",

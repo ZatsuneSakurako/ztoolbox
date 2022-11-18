@@ -1,14 +1,6 @@
 'use strict';
 
 export const options = {
-	"check_enabled": {
-		"title": "Data automatic refresh enabled",
-		"description": "Enabled if checked",
-		"type": "bool",
-		"value": true,
-		"prefLevel": "advanced",
-		"disabledInSimpleMode": true
-	},
 	"check_delay": {
 		"title": "Streams status delay",
 		"description": "Delay between checks, in minute",
@@ -17,12 +9,6 @@ export const options = {
 		"minValue": 5,
 		"prefLevel": "advanced",
 		"disabledInSimpleMode": true
-	},
-	"simplified_mode": {
-		"title": "Extension in simplified mode",
-		"description": "Enabled if checked",
-		"type": "bool",
-		"value": false,
 	},
 	/*			Features Prefs			*/
 	"launchpadAddLink": {

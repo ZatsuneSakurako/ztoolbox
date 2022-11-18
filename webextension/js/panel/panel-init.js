@@ -18,8 +18,8 @@ async function baseInit() {
 	const html = document.documentElement,
 		body = document.body
 	;
-	const preferences = await getPreferences('simplified_mode', 'panel_height', 'panel_width');
-	body.classList.toggle('simple-version', !!preferences.get('simplified_mode'));
+	const preferences = await getPreferences('mode', 'panel_height', 'panel_width');
+	body.classList.toggle('simple-version', preferences.get('mode') === 'simplified');
 	html.style.height = preferences.get('panel_height') + 'px';
 	body.style.width = preferences.get('panel_width') + 'px';
 

@@ -157,8 +157,8 @@ async function refreshSettings(prefId, oldValue, newValue) {
 	if (prefId === "showExperimented") {
 		body.classList.toggle('showExperimented', !!await getPreference("showExperimented"));
 	}
-	if (prefId === "simplified_mode") {
-		body.classList.toggle('simple-version', !!await getPreference("simplified_mode"));
+	if (prefId === "mode") {
+		body.classList.toggle('simple-version', (await getPreference("mode")) === 'simplified');
 	}
 }
 browser.storage.onChanged.addListener((changes, area) => {
@@ -231,8 +231,8 @@ export async function loadPreferencesNodes(container) {
 		if (id === "showExperimented") {
 			body.classList.toggle('showExperimented', !!await getPreference("showExperimented"));
 		}
-		if (id === "simplified_mode") {
-			body.classList.toggle('simple-version', !!await getPreference("simplified_mode"));
+		if (id === "mode") {
+			body.classList.toggle('simple-version', (await getPreference("mode")) === 'simplified');
 		}
 
 		if(isPanelPage && ((typeof option.prefLevel === "string" && option.prefLevel === "experimented") || (option.hasOwnProperty("showPrefInPanel") && typeof option.showPrefInPanel === "boolean" && option.showPrefInPanel === false))){

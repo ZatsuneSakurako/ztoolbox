@@ -50,14 +50,8 @@
 
 	"open_optionpage": "Ouvrir la page d'option",
 
-	"check_enabled_title": "Rafraichissement des données automatiques activé",
-	"check_enabled_description": "Activé si coché",
-
 	"check_delay_title": "Délais de vérification de deviantArt/freshRss",
 	"check_delay_description": "Délai entre chaque vérification, en minute",
-
-	"simplified_mode_title": "Extension en mode simplifié",
-	"simplified_mode_description": "Enabled if checked",
 
 	"timeout_delay_title": "Délai de timeout des requêtes",
 	"timeout_delay_description": "Délai de timeout des requêtes, en secondes (entre 10 et 30)",

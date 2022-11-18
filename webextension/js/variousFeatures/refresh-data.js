@@ -1,7 +1,7 @@
 'use strict';
 
 import {ZDK} from "../classes/ZDK.js";
-import {getPreference, getPreferences} from "../classes/chrome-preferences.js";
+import {getPreference} from "../classes/chrome-preferences.js";
 import {i18ex} from "../translation-api.js";
 import {WebsiteData} from "./website-data.js";
 import deviantArt from '../platforms/deviantart.js';
@@ -173,35 +173,7 @@ export async function refreshWebsitesData() {
 	const dateStart = new Date();
 
 
-	const preferences = await getPreferences('simplified_mode', 'check_enabled');
-	if (preferences.get('check_enabled') === false) {
-		let data;
-		try {
-			data = await ChromeNative.getWebsitesData()
-		} catch (e) {
-			console.error(e);
-		}
-
-		console.groupCollapsed('Websites check end');
-		console.log('timings:', {
-			dateStart,
-			dateEnd: new Date()
-		});
-		console.log('Data:', data);
-		console.groupEnd();
-
-		await dataStorageArea.set({
-			[refreshDataStorageBase]: data
-		});
-
-		updateCountIndicator()
-			.catch(console.error)
-		;
-
-		isRefreshingData = false;
-		return;
-	}
-	if (preferences.get('simplified_mode') === true) {
+	if ((await getPreference('mode')) === 'simplified') {
 		isRefreshingData = false;
 		console.info('Simplified mode, refresh disabled');
 		return false;
@@ -287,23 +259,32 @@ async function refreshAlarm() {
 		console.error(e);
 	}
 
+	if ((await getPreference('mode')) === 'simplified') {
+		if (!!oldAlarm) {
+			try {
+				await browser.alarms.clear(ALARM_NAME);
+			} catch (e) {
+				console.error(e);
+			}
+		}
+		return;
+	}
+
 	const delayInMinutes = await getPreference('check_delay');
 	if (!oldAlarm || oldAlarm.periodInMinutes !== delayInMinutes) {
 		try {
-			await browser.alarms.clear(ALARM_NAME)
+			await browser.alarms.clear(ALARM_NAME);
 		} catch (e) {
 			console.error(e);
 		}
 
-		if (await getPreference('check_enabled') === true) {
-			await browser.alarms.create(
-				ALARM_NAME,
-				{
-					delayInMinutes,
-					periodInMinutes: delayInMinutes
-				}
-			);
-		}
+		await browser.alarms.create(
+			ALARM_NAME,
+			{
+				delayInMinutes,
+				periodInMinutes: delayInMinutes
+			}
+		);
 	}
 }
 
@@ -419,3 +400,13 @@ async function onStartOrInstall() {
 
 	await refreshWebsitesData();
 }
+browser.storage.onChanged.addListener(async (changes, area) => {
+	if (area !== "local" || !isBackgroundProcess) return;
+
+	if ('mode' in changes || 'check_delay' in changes) {
+		await i18ex.loadingPromise;
+		await refreshAlarm()
+			.catch(console.error)
+		;
+	}
+});
