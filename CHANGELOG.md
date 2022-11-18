@@ -1,25 +1,19 @@
-# WIP
-* i : Move to manifest v3, folders work (remove data folder)
+# 1.0.0
+* i : Move to manifest v3, folders rework (remove data folder)
 * i : WIP native messaging (timeout system, getPreferences result, theme option renaming)
 * i : Move data (deviantArt / FreshRSS, theme cache) to session storage if available
 * \+ : Page IP / Status display
-* \+ : Add enable refresh option
 * \+ : Simplified mode (deviantArt/FreshRSS disabled)
-* fix : Handle `<all_urls>` permission in Firefox
-* fix : Panel sizing
+* fix : Panel : sizing, tab title overflow
 * fix : deviantArt / FreshRSS refresh alarm missing periodic data
+* fix : deviantArt - use watch page as data URL
+* fix : Preferences - load + import of JSON settings
 * \- : Removed features/options :
+  * Amazon share
   * service worker
   * FreshRSS iframe mode
   * Setting sync buttons
-  * The WIP data to support Dropbox sync 
-
-# 
-* fix : panel - tab title overflow
-* fix : deviantArt - use watch page as data URL
-* fix : Preferences - load + import of JSON settings
-* fix : Service worker blocker activation
-* \- : Remove Amazon share
+  * The WIP data to support Dropbox sync
 
 # 0.20.2
 * fix : deviantArt - change login url
