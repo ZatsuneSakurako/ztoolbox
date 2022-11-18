@@ -1,6 +1,22 @@
 'use strict';
 
 export const options = {
+	"mode": {
+		"title": "Extension mode",
+		"description": "Choose extension mode",
+		"type": "menulist",
+		"value": "normal",
+		"options": [
+			{
+				"value": "simplified",
+				"label": "Simplified"
+			},
+			{
+				"value": "normal",
+				"label": "Normal"
+			}
+		]
+	},
 	"check_delay": {
 		"title": "Streams status delay",
 		"description": "Delay between checks, in minute",

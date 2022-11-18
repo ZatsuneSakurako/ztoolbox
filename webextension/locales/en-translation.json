@@ -53,6 +53,11 @@
 	"check_delay_title": "deviantArt/freshRss verification delay",
 	"check_delay_description": "Delay between verifications, in minute",
 
+	"mode_title": "Extension mode",
+	"mode_description": "Choose extension mode",
+	"mode_normal": "Normal",
+	"mode_simplified": "Simplified",
+
 	"launchpadAddLink_title": "Add link to go Launchpad PPA page from an index page",
 	"launchpadAddLink_description": "Will add link if checked",
 
