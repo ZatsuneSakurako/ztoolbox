@@ -1,5 +1,5 @@
 {
-	"applications": {
+	"browser_specific_settings": {
 		"gecko": {
 			"id": "ztoolbox_dev@zatsunenomokou.eu",
 			"update_url": "https://gitlab.com/ZatsuneNoMokou/ztoolbox/raw/master/dist/z_toolbox_dev.update.json",
