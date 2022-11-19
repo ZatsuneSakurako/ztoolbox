@@ -112,9 +112,15 @@ async function updatePanelData() {
 
 	const {_notificationGloballyDisabled} = await browser.storage.local.get(['_notificationGloballyDisabled']);
 
-	let disableNotificationsButton = document.querySelector('#disableNotifications');
-	disableNotificationsButton.classList.toggle('off', !!_notificationGloballyDisabled ?? false);
-	disableNotificationsButton.dataset.translateTitle = !!_notificationGloballyDisabled? 'GloballyDisabledNotifications' : 'GloballyDisableNotifications';
+	/**
+	 *
+	 * @type {HTMLButtonElement|null}
+	 */
+	let disableNotificationsButton = document.querySelector('button#disableNotifications');
+	if (disableNotificationsButton) {
+		disableNotificationsButton.classList.toggle('off', !!_notificationGloballyDisabled ?? false);
+		disableNotificationsButton.dataset.translateTitle = !!_notificationGloballyDisabled? 'GloballyDisabledNotifications' : 'GloballyDisableNotifications';
+	}
 
 	let websiteDataList_Node = document.querySelector("#panelContent #refreshItem");
 	removeAllChildren(websiteDataList_Node);
@@ -123,7 +129,7 @@ async function updatePanelData() {
 	const {loadStoredWebsitesData} = await import('../variousFeatures/refresh-data.js');
 	const websitesData = await loadStoredWebsitesData();
 	for (let [website, websiteData] of websitesData) {
-		let websiteRenderData = {
+		const websiteRenderData = {
 			"logged": websiteData.logged,
 			"count": websiteData.count,
 			"website": website,
@@ -151,7 +157,11 @@ async function updatePanelData() {
 			});
 		}
 
-		let websiteNode = document.createElement("article");
+		/**
+		 *
+		 * @type {HTMLElement}
+		 */
+		const websiteNode = document.createElement("article");
 		websiteDataList_Node.appendChild(websiteNode);
 		websiteNode.outerHTML = await renderTemplate("panelCheckedDataItem", websiteRenderData);
 	}
@@ -160,7 +170,13 @@ async function updatePanelData() {
 
 
 async function current_version(version) {
-	let current_version_node = document.querySelector("#current_version");
+	/**
+	 *
+	 * @type {HTMLSpanElement|null}
+	 */
+	const current_version_node = document.querySelector("span#current_version");
+	if (!current_version_node) return;
+
 	//current_version_node.textContent = version;
 	current_version_node.dataset.currentVersion = version;
 
