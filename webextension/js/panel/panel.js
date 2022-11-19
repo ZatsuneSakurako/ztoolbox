@@ -126,7 +126,7 @@ async function updatePanelData() {
 	removeAllChildren(websiteDataList_Node);
 
 
-	const {loadStoredWebsitesData} = await import('../variousFeatures/refresh-data.js');
+	const {loadStoredWebsitesData} = await import('../variousFeatures/refresh-data-loader.js');
 	const websitesData = await loadStoredWebsitesData();
 	for (let [website, websiteData] of websitesData) {
 		const websiteRenderData = {

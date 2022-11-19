@@ -3,14 +3,18 @@
 import {ZDK} from "../classes/ZDK.js";
 import {getPreference} from "../classes/chrome-preferences.js";
 import {i18ex} from "../translation-api.js";
-import {WebsiteData} from "./website-data.js";
-import deviantArt from '../platforms/deviantart.js';
-import freshRss from '../platforms/freshrss.js';
 import * as ChromeNative from "../classes/chrome-native.js";
 import {sendNotification} from "../classes/chrome-notification.js";
+import {
+	dataStorageArea,
+	getWebsitesApis,
+	loadStoredWebsitesData,
+	refreshDataStorageBase,
+	websitesData
+} from "./refresh-data-loader.js";
 
-export const ALARM_NAME = 'REFRESH_DATA',
-	refreshDataStorageBase = `_websitesDataStore`
+const ALARM_NAME = 'REFRESH_DATA',
+	isBackgroundProcess = !location.pathname.endsWith('panel.html')
 ;
 
 
@@ -105,62 +109,6 @@ chrome.notifications.onClicked.addListener(async function (notificationId) {
 })
 
 
-const isBackgroundProcess = !location.pathname.endsWith('panel.html'),
-	dataStorageArea = browser.storage.session ?? browser.storage.local
-;
-/**
- *
- * @type {Map<string, WebsiteData>}
- */
-let websitesData = new Map();
-export async function loadStoredWebsitesData() {
-	if (websitesData.size === 0) {
-		let raw = (await dataStorageArea.get([refreshDataStorageBase])) ?? {};
-		raw = raw[refreshDataStorageBase] ?? {};
-
-		const deviantArtData = !!raw.deviantArt ? WebsiteData.fromJSON(raw.deviantArt) : new WebsiteData();
-		websitesData.set('deviantArt', deviantArtData);
-		if (!deviantArtData.websiteIcon) {
-			deviantArtData.websiteIcon = deviantArt.defaultFavicon;
-		}
-		if (!deviantArtData.href) {
-			deviantArtData.href = deviantArt.getLoginURL();
-		}
-
-		const freshRss_baseUrl = await getPreference('freshRss_baseUrl');
-		if (!!freshRss_baseUrl) {
-			const freshRssData = !!raw.freshRss ? WebsiteData.fromJSON(raw.freshRss) : new WebsiteData();
-			websitesData.set('freshRss', freshRssData);
-			if (!freshRssData.websiteIcon) {
-				freshRssData.websiteIcon = freshRss.defaultFavicon;
-			}
-			if (!freshRssData.href) {
-				freshRssData.href = freshRss_baseUrl;
-			}
-		} else if (!!raw.freshRss) { // If no value in 'freshRss_baseUrl' but raw.freshRss data present
-			delete raw.freshRss;
-		}
-	}
-	return websitesData;
-}
-
-
-/**
- *
- * @return {Promise<Map<any, any>>}
- */
-async function getWebsitesApis() {
-	const websites = {};
-	websites['deviantArt'] = deviantArt;
-	if (!!await getPreference('freshRss_baseUrl')) {
-		websites['freshRss'] = freshRss;
-	} else if (websitesData.has('freshRss')) {
-		websitesData.delete('freshRss');
-	}
-	return websites;
-}
-
-
 
 let isRefreshingData = false;
 export async function refreshWebsitesData() {
@@ -181,7 +129,7 @@ export async function refreshWebsitesData() {
 
 
 	if (websitesData.size === 0) {
-		websitesData = await loadStoredWebsitesData();
+		await loadStoredWebsitesData();
 	}
 
 
