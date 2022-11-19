@@ -19,7 +19,9 @@ async function baseInit() {
 		body = document.body
 	;
 	const preferences = await getPreferences('mode', 'panel_height', 'panel_width');
+	body.classList.toggle('delegated-version', preferences.get('mode') === 'delegated');
 	body.classList.toggle('simple-version', preferences.get('mode') === 'simplified');
+	body.classList.toggle('normal-version', preferences.get('mode') === 'normal');
 	html.style.height = preferences.get('panel_height') + 'px';
 	body.style.width = preferences.get('panel_width') + 'px';
 

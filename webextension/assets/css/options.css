@@ -61,6 +61,18 @@ body:not(.simple-version) .if-simple-version {
 body.simple-version .if-not-simple-version {
 	display: none;
 }
+body:not(.delegated-version) .if-delegated-version {
+	display: none;
+}
+body.delegated-version .if-not-delegated-version {
+	display: none;
+}
+body:not(.normal-version) .if-normal-version {
+	display: none;
+}
+body.normal-version .if-not-normal-version {
+	display: none;
+}
 .preferenceContainer:not(.flex_input_text) {
 	display: flex;
 	align-items: center;

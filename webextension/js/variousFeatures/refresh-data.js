@@ -68,7 +68,7 @@ async function doNotifyWebsite(website) {
 			;
 		}
 
-		if (await getPreference('notify_vocal')) {
+		if ((await getPreference('mode')) === 'normal' && await getPreference('notify_vocal')) {
 			import('../utils/voiceAPI.js')
 				.then(({voiceReadMessage}) => {
 					voiceReadMessage(i18ex._('language'), i18ex._('count_new_notif', {'count': websiteData.count}));
@@ -121,7 +121,8 @@ export async function refreshWebsitesData() {
 	const dateStart = new Date();
 
 
-	if ((await getPreference('mode')) === 'simplified') {
+	const extensionMode = await getPreference('mode');
+	if (extensionMode === 'simplified') {
 		isRefreshingData = false;
 		console.info('Simplified mode, refresh disabled');
 		return false;
@@ -163,9 +164,11 @@ export async function refreshWebsitesData() {
 		.catch(console.error)
 	;
 
-	updateCountIndicator()
-		.catch(console.error)
-	;
+	if (extensionMode !== 'delegated') {
+		updateCountIndicator()
+			.catch(console.error)
+		;
+	}
 
 	if (await getPreference('showExperimented') === true) {
 		console.groupCollapsed('Websites check end');

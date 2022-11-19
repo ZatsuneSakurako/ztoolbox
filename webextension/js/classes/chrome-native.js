@@ -1,9 +1,12 @@
 import {randomId} from "../utils/randomId.js";
+import {getSyncKeys} from "./chrome-preferences.js";
+import {chromeNativeSettingsStorageKey, getElectronSettings} from "./chrome-native-settings.js";
 
 const port = chrome.runtime.connectNative('eu.gitlab.zatsunenomokou.chromenativebridge');
 
 port.onMessage.addListener(function(msg) {
 	if (location.pathname.endsWith('panel.html') || location.pathname.endsWith('options.html')) {
+		console.debug('Ignoring chromeNative incoming messages');
 		return;
 	}
 	if (!msg && typeof msg !== 'object') {
@@ -21,6 +24,11 @@ port.onMessage.addListener(function(msg) {
 					extensionId: chrome.runtime.id
 				}
 			});
+
+			getSyncAllowedPreferences()
+				.catch(console.error)
+			;
+
 			break;
 		case 'ws close':
 			console.log('[NativeMessaging]', 'ws close', msg);
@@ -35,6 +43,11 @@ port.onMessage.addListener(function(msg) {
 			});
 			break;
 		case 'commandReply':
+			break;
+		case 'onSettingUpdate':
+			updateSyncAllowedPreferences(msg.data)
+				.catch(console.error)
+			;
 			break;
 		default:
 			console.log('[NativeMessaging]', 'Unknown type', msg);
@@ -62,7 +75,7 @@ const timeout = 5000;
  *
  * @see callNative
  * @param {string} command
- * @param {any[]} data
+ * @param {...any[]} data
  * @return {Promise<unknown>}
  */
 function fnNative(command, ...data) {
@@ -129,6 +142,53 @@ export async function getPreferences(ids) {
 	return output;
 }
 
+
+
+async function getSyncAllowedPreferences() {
+	const ids = getSyncKeys(),
+		output = {},
+		newPreferences = await getPreferences(ids)
+	;
+
+	for (let [id, value] of newPreferences) {
+		if (value === undefined) continue;
+		output[id] = value;
+	}
+
+	await browser.storage.local.set({
+		[chromeNativeSettingsStorageKey]: output
+	});
+}
+async function updateSyncAllowedPreferences(data) {
+	const ids = getSyncKeys(),
+		isSync = ids.includes(data.id)
+	;
+
+	if (!data.id) {
+		return;
+	}
+
+	console.log(`[NativeMessaging] onSettingUpdate${isSync ? ' (Sync included)' : ''}`, data);
+	if (!isSync) {
+		return;
+	}
+
+	const {id, newValue} = data,
+		currentPreferences = await getElectronSettings()
+	;
+	if (newValue === undefined) {
+		delete currentPreferences[id];
+	} else {
+		currentPreferences[id] = newValue;
+	}
+
+	await browser.storage.local.set({
+		[chromeNativeSettingsStorageKey]: currentPreferences
+	});
+}
+
+
+
 /**
  *
  * @return {Promise<Dict<WebsiteData>>}
@@ -163,7 +223,7 @@ self.getDefaultValues = getDefaultValues;
 /**
  *
  * @param {string} sectionName
- * @return {Promise<*[]>}
+ * @return {Promise<*>}
  */
 export async function showSection(sectionName) {
 	const {result} = await fnNative('showSection', sectionName);

@@ -4,7 +4,7 @@
 	"short_name": "ZToolBoxDev",
 	"description": "__MSG_extShortDesc__",
 	"author": "Zatsune No Mokou",
-	"version": "0.20.2",
+	"version": "1.0.0",
 	"icons": {
 		"16": "/icon_16.png",
 		"48": "/icon_48.png",
@@ -58,9 +58,7 @@
 		"webRequest"
 	],
 	"host_permissions": [
-		"<all_urls>",
-		"http://*/*",
-		"https://*/*"
+		"<all_urls>"
 	],
 	"options_ui": {
 		"page": "options.html"

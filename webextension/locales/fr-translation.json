@@ -57,6 +57,7 @@
 	"mode_description": "Choix du mode extension",
 	"mode_normal": "Normal",
 	"mode_simplified": "Simplifié",
+	"mode_delegated": "Externe",
 
 	"timeout_delay_title": "Délai de timeout des requêtes",
 	"timeout_delay_description": "Délai de timeout des requêtes, en secondes (entre 10 et 30)",

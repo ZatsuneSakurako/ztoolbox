@@ -57,6 +57,7 @@
 	"mode_description": "Choose extension mode",
 	"mode_normal": "Normal",
 	"mode_simplified": "Simplified",
+	"mode_delegated": "External",
 
 	"launchpadAddLink_title": "Add link to go Launchpad PPA page from an index page",
 	"launchpadAddLink_description": "Will add link if checked",

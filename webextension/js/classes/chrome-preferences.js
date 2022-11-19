@@ -1,4 +1,5 @@
 import {options as _options} from '/js/options-data.js';
+import {chromeNativeSettingsStorageKey} from "./chrome-native-settings.js";
 
 export function getPreferenceConfig(returnMap=false) {
 	const options = JSON.parse(JSON.stringify(_options)),
@@ -64,6 +65,17 @@ export async function savePreference(prefId, value) {
 	;
 }
 
+/**
+ *
+ * @type {string[]}
+ */
+const internalPreferences = Object.freeze([chromeNativeSettingsStorageKey]);
+
+/**
+ *
+ * @param {...string[]} prefIds
+ * @return {Promise<Map<any, any>>}
+ */
 export async function getPreferences(...prefIds) {
 	const options = getPreferenceConfig(true);
 
@@ -71,7 +83,12 @@ export async function getPreferences(...prefIds) {
 		prefIds = [...options.keys()];
 	}
 
-	const values = await browser.storage.local.get(prefIds),
+	const preferenceIdList = new Set(prefIds);
+	preferenceIdList.add(chromeNativeSettingsStorageKey);
+	preferenceIdList.add('mode');
+
+	const values = await browser.storage.local.get([...preferenceIdList]),
+		chromeNativeSettings = values[chromeNativeSettingsStorageKey],
 		output = new Map()
 	;
 
@@ -93,6 +110,23 @@ export async function getPreferences(...prefIds) {
 	}
 
 	for (let [prefId, current_pref] of Object.entries(values)) {
+		/*
+		 * If 'mode' or chromeNativeSettingsStorageKey
+		 * because when internal use, no need to return them
+		 */
+		if (!prefIds.includes(prefId)) {
+			continue;
+		}
+
+		if (internalPreferences.includes(prefId)) {
+			output.set(prefId, current_pref);
+			continue;
+		}
+
+		if (values['mode'] === 'delegated' && prefId in chromeNativeSettings) {
+			current_pref = chromeNativeSettings[prefId];
+		}
+
 		const optionConfig = options.get(prefId);
 		if (!optionConfig) {
 			console.warn(`Unknown preference "${prefId}"`);
@@ -209,14 +243,18 @@ export async function getSyncPreferences() {
 	return obj;
 }
 
+/**
+ *
+ * @return {string[]}
+ */
 export function getSyncKeys() {
 	const options = getPreferenceConfig(true);
 
 	let keysArray = [];
-	for (const [prefId, ] of options) {
-		if (option.hasOwnProperty("sync") === true && option.sync === true) {
-			keysArray.push(prefId);
-		}
+	for (const [prefId, option] of options) {
+		if (!('sync' in option) || option.sync !== true) continue;
+
+		keysArray.push(prefId);
 	}
 
 	return keysArray;

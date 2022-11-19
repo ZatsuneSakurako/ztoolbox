@@ -63,13 +63,20 @@ document.addEventListener('click', async e => {
 	;
 });
 
-document.addEventListener('click', e => {
+document.addEventListener('click', async e => {
 	const elm = e.target.closest('#settings');
 	if (!elm) return;
 
-	browser.runtime.openOptionsPage()
-		.catch(console.error)
-	;
+	const {showSection} = await import("../classes/chrome-native.js");
+	if ((await getPreference('mode')) === 'delegated') {
+		showSection('settings')
+			.catch(console.error)
+		;
+	} else {
+		browser.runtime.openOptionsPage()
+			.catch(console.error)
+		;
+	}
 });
 
 
@@ -106,7 +113,7 @@ async function updatePanelData() {
 		.catch(console.error)
 	;
 
-	if ((await getPreference('mode')) === 'simplified') {
+	if ((await getPreference('mode')) !== 'normal') {
 		return;
 	}
 

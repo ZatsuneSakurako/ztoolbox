@@ -4,6 +4,7 @@
 * i : Move data (deviantArt / FreshRSS, theme cache) to session storage if available
 * \+ : Page IP / Status display
 * \+ : Simplified mode (deviantArt/FreshRSS disabled)
+* \+ : Delegated/External mode (external settings)
 * fix : Panel : sizing, tab title overflow
 * fix : deviantArt / FreshRSS refresh alarm missing periodic data
 * fix : deviantArt - use watch page as data URL

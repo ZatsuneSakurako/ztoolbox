@@ -158,7 +158,9 @@ async function refreshSettings(prefId, oldValue, newValue) {
 		body.classList.toggle('showExperimented', !!await getPreference("showExperimented"));
 	}
 	if (prefId === "mode") {
+		body.classList.toggle('delegated-version', (await getPreference("mode")) === 'delegated');
 		body.classList.toggle('simple-version', (await getPreference("mode")) === 'simplified');
+		body.classList.toggle('normal-version', (await getPreference("mode")) === 'normal');
 	}
 }
 browser.storage.onChanged.addListener((changes, area) => {
@@ -232,7 +234,10 @@ export async function loadPreferencesNodes(container) {
 			body.classList.toggle('showExperimented', !!await getPreference("showExperimented"));
 		}
 		if (id === "mode") {
-			body.classList.toggle('simple-version', (await getPreference("mode")) === 'simplified');
+			const mode = await getPreference("mode");
+			body.classList.toggle('delegated-version', mode === 'delegated');
+			body.classList.toggle('simple-version', mode === 'simplified');
+			body.classList.toggle('normal-version', mode === 'normal');
 		}
 
 		if(isPanelPage && ((typeof option.prefLevel === "string" && option.prefLevel === "experimented") || (option.hasOwnProperty("showPrefInPanel") && typeof option.showPrefInPanel === "boolean" && option.showPrefInPanel === false))){
@@ -280,8 +285,18 @@ async function newPreferenceNode(parent, id){
 	if (typeof prefObj.prefLevel === "string") {
 		node.classList.add(prefObj.prefLevel);
 	}
+
 	if (typeof prefObj.disabledInSimpleMode === "boolean" && !!prefObj.disabledInSimpleMode) {
 		node.classList.add('if-not-simple-version');
+	}
+	if (typeof prefObj.disabledInDelegatedMode === "boolean" && !!prefObj.disabledInDelegatedMode) {
+		node.classList.add('if-not-delegated-version');
+	}
+	if (typeof prefObj.disabledInNormalMode === "boolean" && !!prefObj.disabledInNormalMode) {
+		node.classList.add('if-not-normal-version');
+	}
+	if (typeof prefObj.onlyNormalMode === "boolean" && !!prefObj.onlyNormalMode) {
+		node.classList.add('if-simple-version');
 	}
 
 	let labelNode = document.createElement("label");

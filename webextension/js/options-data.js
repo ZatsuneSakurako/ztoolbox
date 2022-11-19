@@ -8,6 +8,10 @@ export const options = {
 		"value": "normal",
 		"options": [
 			{
+				"value": "delegated",
+				"label": "External"
+			},
+			{
 				"value": "simplified",
 				"label": "Simplified"
 			},
@@ -40,7 +44,7 @@ export const options = {
 		"type": "string",
 		"value": "",
 		"group": "featurePreference",
-		"disabledInSimpleMode": true
+		"onlyNormalMode": true
 	},
 	"tabPageServerIp_alias": {
 		"title": "IP aliases",
@@ -84,7 +88,7 @@ export const options = {
 		"value": false,
 		"group": "notifications",
 		"prefLevel": "basic",
-		"disabledInSimpleMode": true
+		"onlyNormalMode": true
 	},
 	"vocal_volume": {
 		"title": "Volume of vocal notifications",
@@ -97,7 +101,7 @@ export const options = {
 		"rangeInput": true,
 		"rangeOutputUnit": "%",
 		"prefLevel": "basic",
-		"disabledInSimpleMode": true
+		"onlyNormalMode": true
 	},
 	/*				Panel size					*/
 	"panel_height": {
@@ -141,7 +145,9 @@ export const options = {
 				}
 			],
 		"group": "theme",
-		"prefLevel": "basic"
+		"prefLevel": "basic",
+		"sync": true,
+		"disabledInDelegatedMode": true
 	},
 	"background_color": {
 		"title": "Panel background color",
@@ -149,7 +155,9 @@ export const options = {
 		"type": "color",
 		"value": "#000000",
 		"group": "theme",
-		"prefLevel": "basic"
+		"prefLevel": "basic",
+		"sync": true,
+		"disabledInDelegatedMode": true
 	},
 	/*			Import/Export Prefs			*/
 	"export_preferences": {
@@ -157,14 +165,16 @@ export const options = {
 		"label": "Export preferences",
 		"type": "control",
 		"group": "importexport_prefs",
-		"prefLevel": "basic"
+		"prefLevel": "basic",
+		"disabledInDelegatedMode": true
 	},
 	"import_preferences": {
 		"title": "Import preferences from a file",
 		"label": "Import preferences",
 		"type": "control",
 		"group": "importexport_prefs",
-		"prefLevel": "basic"
+		"prefLevel": "basic",
+		"disabledInDelegatedMode": true
 	},
 	/*			Settings level			*/
 	"showAdvanced": {
