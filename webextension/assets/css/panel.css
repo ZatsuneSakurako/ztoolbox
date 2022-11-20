@@ -23,7 +23,6 @@ figure canvas,
 figure img {
 	max-height: 100%;
 	max-width: 100%;
-	-o-object-fit: contain;
 	object-fit: contain;
 }
 
@@ -166,6 +165,9 @@ section .buttonItem .ellipse {
 	-webkit-box-orient: vertical;
 }
 section .buttonItem.tabPageServerIp .title {
+	-webkit-line-clamp: 1;
+}
+section .buttonItem.tabMover .data {
 	-webkit-line-clamp: 1;
 }
 

@@ -14,8 +14,6 @@ textarea {
 }
 
 input[type="number"] {
-	-webkit-appearance: textfield;
-	-moz-appearance: textfield;
 	appearance: textfield;
 	width: 3em;
 }
@@ -25,9 +23,6 @@ input[type='number']::-webkit-outer-spin-button {
 }
 [data-input-number-control] {
 	cursor: pointer;
-	-webkit-user-select: none;
-	-moz-user-select: none;
-	-ms-user-select: none;
 	user-select: none;
 }
 
