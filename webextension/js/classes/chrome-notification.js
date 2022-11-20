@@ -9,9 +9,9 @@ const ALARM_NAME = 'CHROME_NOTIFICATION_CONTROLLER',
 
 
 const chromeStorageArea = chrome.storage.session ?? chrome.storage.local;
-function clearStorage() {
+async function clearStorage() {
 	if (!chrome.storage.session) {
-		return chromeStorageArea.remove(NOTIFICATION_STORAGE_ID);
+		return await chromeStorageArea.remove(NOTIFICATION_STORAGE_ID);
 	}
 }
 chrome.runtime.onStartup.addListener(function () {
@@ -98,7 +98,7 @@ async function sendNotification(options, data) {
 	}
 
 	if (!error) {
-		return result;
+		return id;
 	}
 
 	if (error && typeof error.message === 'string' && (error.message === 'Adding buttons to notifications is not supported.' || error.message.indexOf("\"buttons\"") !== -1)) {
@@ -108,7 +108,8 @@ async function sendNotification(options, data) {
 			delete options.buttons;
 		}
 
-		return await chrome.notifications.create(id, options);
+		await chrome.notifications.create(id, options);
+		return id;
 	} else {
 		throw new Error(error);
 	}
