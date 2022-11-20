@@ -296,7 +296,7 @@ async function newPreferenceNode(parent, id){
 		node.classList.add('if-not-normal-version');
 	}
 	if (typeof prefObj.onlyNormalMode === "boolean" && !!prefObj.onlyNormalMode) {
-		node.classList.add('if-simple-version');
+		node.classList.add('if-normal-version');
 	}
 
 	let labelNode = document.createElement("label");
