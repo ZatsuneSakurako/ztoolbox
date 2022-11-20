@@ -99,7 +99,8 @@ export const options = {
 		"rangeInput": true,
 		"rangeOutputUnit": "px",
 		"group": "panelSize",
-		"prefLevel": "basic"
+		"prefLevel": "basic",
+		"onlyNormalMode": true
 	},
 	"panel_width": {
 		"title": "Panel's width",
@@ -111,7 +112,8 @@ export const options = {
 		"group": "panelSize",
 		"rangeInput": true,
 		"rangeOutputUnit": "px",
-		"prefLevel": "basic"
+		"prefLevel": "basic",
+		"onlyNormalMode": true
 	},
 	/*			Theme			*/
 	"theme": {

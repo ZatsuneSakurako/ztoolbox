@@ -22,8 +22,12 @@ async function baseInit() {
 	body.classList.toggle('delegated-version', preferences.get('mode') === 'delegated');
 	body.classList.toggle('simple-version', preferences.get('mode') === 'simplified');
 	body.classList.toggle('normal-version', preferences.get('mode') === 'normal');
-	html.style.height = preferences.get('panel_height') + 'px';
-	body.style.width = preferences.get('panel_width') + 'px';
+
+	const panel_height = (preferences.get('mode') !== 'normal') ? 215 : preferences.get('panel_height'),
+		panel_width = (preferences.get('mode') !== 'normal') ? 250 : preferences.get('panel_width')
+	;
+	html.style.height = panel_height + 'px';
+	body.style.width = panel_width + 'px';
 
 	const {loadTranslations} = await import('../translation-api.js');
 	await loadTranslations;
