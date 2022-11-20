@@ -38,8 +38,6 @@ export class ZDK {
 	 * @return {Promise<boolean>}
 	 */
 	static async openTabIfNotExist(url) {
-		console.log(url);
-
 		const tabs = await chrome.tabs.query({});
 
 		let custom_url = url.toLowerCase().replace(/https?:\/\/(?:www\.)?/i,'');
