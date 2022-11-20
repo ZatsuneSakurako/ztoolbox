@@ -1,7 +1,6 @@
 'use strict';
 
 import {default as env} from './env.js';
-import "../lib/browser-polyfill.js";
 
 import {i18ex} from './translation-api.js';
 
@@ -181,9 +180,9 @@ async function onStart_deleteOldPreferences() {
 		}
 	}
 
-	const alarm = await browser.alarms.get('hourlyAlarm');
+	const alarm = await chrome.alarms.get('hourlyAlarm');
 	if (alarm) {
-		await browser.alarms.clear(alarm.name)
+		await chrome.alarms.clear(alarm.name)
 			.catch(console.error)
 		;
 	}

@@ -19,14 +19,14 @@ export class i18extended {
 					let language;
 					if (chrome.i18n.getMessage) {
 						try {
-							language = browser.i18n.getMessage('language');
+							language = chrome.i18n.getMessage('language');
 						} catch (e) {
 							console.error(e);
 						}
 					}
-					if (!language && browser.i18n.getUILanguage) {
+					if (!language && chrome.i18n.getUILanguage) {
 						try {
-							language = browser.i18n.getUILanguage();
+							language = chrome.i18n.getUILanguage();
 						} catch (e) {
 							console.error(e);
 						}
@@ -37,7 +37,7 @@ export class i18extended {
 							[language]
 							:
 							[
-								...await browser.i18n.getAcceptLanguages()
+								...await chrome.i18n.getAcceptLanguages()
 							]
 								.map(lang => {
 									const mainLang = lang.toLowerCase().split('-')[0];

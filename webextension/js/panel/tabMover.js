@@ -4,16 +4,16 @@ import {ZDK} from "../classes/ZDK.js";
 const tabMover = document.querySelector('#tabMover');
 /**
  *
- * @type {browser.windows.Window[]}
+ * @type {chrome.windows.Window[]}
  */
 let browserWindows;
 const TAB_MOVER_TEMPLATE = 'tabMover';
 async function update() {
-	const currentBrowserWindow = await browser.windows.getCurrent({
+	const currentBrowserWindow = await chrome.windows.getCurrent({
 		populate: false,
 		windowTypes: ["normal"]
 	});
-	browserWindows = await browser.windows.getAll({
+	browserWindows = await chrome.windows.getAll({
 		populate: true,
 		windowTypes: ["normal"]
 	});
@@ -71,7 +71,7 @@ document.addEventListener('click', e => {
 	const elm = e.target.closest('.tabMover[data-window-id]');
 	if (!elm) return;
 
-	browser.tabs.query({
+	chrome.tabs.query({
 		currentWindow: true,
 		active: true
 	})
@@ -83,13 +83,13 @@ document.addEventListener('click', e => {
 
 			const winId = parseInt(elm.dataset.windowId);
 			if (!winId || isNaN(winId)) {
-				await browser.windows.create({
+				await chrome.windows.create({
 					"tabId": activeTab.id
 				})
 					.catch(console.error)
 				;
 			} else {
-				await browser.tabs.move(activeTab.id, {
+				await chrome.tabs.move(activeTab.id, {
 					"windowId": winId,
 					"index": -1
 				})
@@ -97,7 +97,7 @@ document.addEventListener('click', e => {
 				;
 			}
 
-			await browser.tabs.update(activeTab.id, {
+			await chrome.tabs.update(activeTab.id, {
 				"active": activeTab.active
 			})
 				.catch(console.error)
@@ -115,10 +115,10 @@ update()
 	.catch(console.error)
 ;
 
-browser.windows.onCreated.addListener(update);
-browser.windows.onRemoved.addListener(update);
-browser.windows.onFocusChanged.addListener(update);
-browser.tabs.onUpdated.addListener(function (info, changeInfo, tab) {
+chrome.windows.onCreated.addListener(update);
+chrome.windows.onRemoved.addListener(update);
+chrome.windows.onFocusChanged.addListener(update);
+chrome.tabs.onUpdated.addListener(function (info, changeInfo, tab) {
 	if (tab.active === true && ((changeInfo.hasOwnProperty("status") && changeInfo.status === "complete") || changeInfo.hasOwnProperty("title"))) {
 		// Only update context menu if the active tab have a "complete" load
 		update()

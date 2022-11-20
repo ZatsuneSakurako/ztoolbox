@@ -155,7 +155,7 @@ async function getSyncAllowedPreferences() {
 		output[id] = value;
 	}
 
-	await browser.storage.local.set({
+	await chrome.storage.local.set({
 		[chromeNativeSettingsStorageKey]: output
 	});
 }
@@ -182,7 +182,7 @@ async function updateSyncAllowedPreferences(data) {
 		currentPreferences[id] = newValue;
 	}
 
-	await browser.storage.local.set({
+	await chrome.storage.local.set({
 		[chromeNativeSettingsStorageKey]: currentPreferences
 	});
 }

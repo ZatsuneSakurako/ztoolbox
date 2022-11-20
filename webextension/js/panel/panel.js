@@ -21,9 +21,9 @@ document.addEventListener('click', e => {
 	const elm = e.target.closest('#disableNotifications');
 	if (!elm) return;
 
-	browser.storage.local.get(['_notificationGloballyDisabled'])
+	chrome.storage.local.get(['_notificationGloballyDisabled'])
 		.then(async ({_notificationGloballyDisabled}) => {
-			await browser.storage.local.set({
+			await chrome.storage.local.set({
 				_notificationGloballyDisabled: !_notificationGloballyDisabled
 			});
 
@@ -73,9 +73,7 @@ document.addEventListener('click', async e => {
 			.catch(console.error)
 		;
 	} else {
-		browser.runtime.openOptionsPage()
-			.catch(console.error)
-		;
+		await chrome.runtime.openOptionsPage();
 	}
 });
 
@@ -117,7 +115,7 @@ async function updatePanelData() {
 		return;
 	}
 
-	const {_notificationGloballyDisabled} = await browser.storage.local.get(['_notificationGloballyDisabled']);
+	const {_notificationGloballyDisabled} = await chrome.storage.local.get(['_notificationGloballyDisabled']);
 
 	/**
 	 *
@@ -187,14 +185,14 @@ async function current_version(version) {
 	//current_version_node.textContent = version;
 	current_version_node.dataset.currentVersion = version;
 
-	const lastCheck = (await browser.storage.local.get(['_checkUpdate']))?._checkUpdate ?? {};
+	const lastCheck = (await chrome.storage.local.get(['_checkUpdate']))?._checkUpdate ?? {};
 	current_version_node.dataset.hasUpdate = (lastCheck.hasUpdate ?? false).toString();
 	if (!lastCheck.hasUpdate ?? false) {
 		// if no update, no text
 		current_version_node.dataset.translateTitle = '';
 	}
 }
-current_version(browser.runtime.getManifest().version)
+current_version(chrome.runtime.getManifest().version)
 	.catch(console.error)
 ;
 

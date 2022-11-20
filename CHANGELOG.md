@@ -9,6 +9,7 @@
 * fix : deviantArt / FreshRSS refresh alarm missing periodic data
 * fix : deviantArt - use watch page as data URL
 * fix : Preferences - load + import of JSON settings
+* \- : Delete browser polyfill
 * \- : Delete features :
   * Amazon share
   * FreshRSS iframe mode

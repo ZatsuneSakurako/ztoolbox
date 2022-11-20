@@ -28,10 +28,6 @@ if (!exist_jsLib) {
 	info("Copying mustache...");
 	_cp("./node_modules/mustache/mustache.js", jsLib);
 
-	info("Copying webextension-polyfill...");
-	_cp("./node_modules/webextension-polyfill/dist/browser-polyfill.js", jsLib);
-	_cp("./node_modules/webextension-polyfill/dist/browser-polyfill.js.map", jsLib);
-
 	info("Copying i18next...");
 	_cp("./node_modules/i18next/i18next.js", jsLib);
 

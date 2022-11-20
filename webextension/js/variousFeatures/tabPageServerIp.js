@@ -28,7 +28,7 @@ chrome.webRequest.onBeforeRequest.addListener(function (details) {
 	;
 }, {'urls' : ["<all_urls>"], 'types' : ['main_frame']});
 
-browser.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
+chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
 	const url = !!tab.url && new URL(tab.url);
 	if (url && 'status' in changeInfo && changeInfo.status === 'loading' && !/^https?:$/i.test(url.protocol)) {
 		updateData({
@@ -54,12 +54,12 @@ browser.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
  * @return {Promise<Dict<TabPageServerIdData>>}
  */
 async function updateData(newData={}) {
-	const storageArea = browser.storage.session ?? browser.storage.local,
+	const storageArea = chrome.storage.session ?? chrome.storage.local,
 		raw = (await storageArea.get([tabPageServerIpStorage])),
 		data = Object.assign({}, raw[tabPageServerIpStorage], newData)
 	;
 
-	const tabs = new Set((await browser.tabs.query({
+	const tabs = new Set((await chrome.tabs.query({
 			windowType: "normal"
 		}))
 			.map(tab => `${tab.id}`))
@@ -83,10 +83,10 @@ async function init() {
 		.catch(console.error)
 	;
 
-	if (!!browser.storage.session) {
-		const data = await browser.storage.local.get([tabPageServerIpStorage]);
+	if (!!chrome.storage.session) {
+		const data = await chrome.storage.local.get([tabPageServerIpStorage]);
 		if (data[tabPageServerIpStorage]) {
-			await browser.storage.local.remove([tabPageServerIpStorage]);
+			await chrome.storage.local.remove([tabPageServerIpStorage]);
 		}
 	}
 }
@@ -106,14 +106,14 @@ chrome.runtime.onInstalled.addListener(function () {
 });
 
 // noinspection JSUnusedLocalSymbols
-browser.windows.onRemoved.addListener(function (info, changeInfo, tab) {
+chrome.windows.onRemoved.addListener(function (info, changeInfo, tab) {
 	init()
 		.catch(console.error)
 	;
 });
 
 // noinspection JSUnusedLocalSymbols
-browser.tabs.onRemoved.addListener(function (info, changeInfo, tab) {
+chrome.tabs.onRemoved.addListener(function (info, changeInfo, tab) {
 	init()
 		.catch(console.error)
 	;

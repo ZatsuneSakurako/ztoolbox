@@ -8,11 +8,11 @@ import {sendNotification} from "../classes/chrome-notification.js";
 async function initMenuCopyTextLink() {
 	await i18ex.loadingPromise;
 
-	const currentContentScript = (await browser.scripting.getRegisteredContentScripts())
+	const currentContentScript = (await chrome.permissions.request.scripting.getRegisteredContentScripts())
 		.find(item => item.id === 'copyTextLink')
 	;
 	if (!!currentContentScript) {
-		await browser.scripting.unregisterContentScripts({
+		await chrome.permissions.request.scripting.unregisterContentScripts({
 			ids: ['copyTextLink']
 		});
 	}

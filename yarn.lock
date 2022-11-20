@@ -483,13 +483,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/chrome@npm:^0.0.179":
-  version: 0.0.179
-  resolution: "@types/chrome@npm:0.0.179"
+"@types/chrome@npm:^0.0.202":
+  version: 0.0.202
+  resolution: "@types/chrome@npm:0.0.202"
   dependencies:
     "@types/filesystem": "*"
     "@types/har-format": "*"
-  checksum: 2a50cd71c522e16137d05ab1ed8d5f9e94e5e296e9b5f4044d3cc1a51c62fa462d0d3cff62810e9396324d41ddf84fdfbc2919b17727b72523b5893470d7a239
+  checksum: 729f283a3e4a250b20e58eb2f529938d8e87ffb98704c95c782d3e92bffb483c9f107501238cb211c96e2c449684a923a4d38e91d0d914fbfc6ce4973ea3dd6a
   languageName: node
   linkType: hard
 
@@ -6808,13 +6808,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"webextension-polyfill@npm:^0.8.0":
-  version: 0.8.0
-  resolution: "webextension-polyfill@npm:0.8.0"
-  checksum: 56286e6216e15834fdcdc3dcf611000d96b49c9d925de3d657eb5f1e294074180dd3efe78a0966223eb311ac3a0ac5fdf71d324b836bf05724455ffd6c7c98c3
-  languageName: node
-  linkType: hard
-
 "webidl-conversions@npm:^3.0.0":
   version: 3.0.1
   resolution: "webidl-conversions@npm:3.0.1"
@@ -7081,7 +7074,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "ztoolbox@workspace:."
   dependencies:
-    "@types/chrome": ^0.0.179
+    "@types/chrome": ^0.0.202
     "@types/fs-extra": ^9.0.13
     "@types/klaw-sync": ^6.0.1
     "@types/node-fetch": ^3.0.3
@@ -7101,7 +7094,6 @@ __metadata:
     stylelint-config-recommended: ^3.0.0
     web-ext: ^7.2.0
     web-ext-types: ^3.2.1
-    webextension-polyfill: ^0.8.0
     yargs: ^16.2.0
   languageName: unknown
   linkType: soft

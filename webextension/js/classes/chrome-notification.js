@@ -8,17 +8,21 @@ const ALARM_NAME = 'CHROME_NOTIFICATION_CONTROLLER',
 
 
 
-const chromeStorageArea = browser.storage.session ?? browser.storage.local;
+const chromeStorageArea = chrome.storage.session ?? chrome.storage.local;
 function clearStorage() {
-	if (!browser.storage.session) {
+	if (!chrome.storage.session) {
 		return chromeStorageArea.remove(NOTIFICATION_STORAGE_ID);
 	}
 }
 chrome.runtime.onStartup.addListener(function () {
-	clearStorage();
+	clearStorage()
+		.catch(console.error)
+	;
 });
 chrome.runtime.onInstalled.addListener(function () {
-	clearStorage();
+	clearStorage()
+		.catch(console.error)
+	;
 });
 
 
@@ -40,10 +44,10 @@ async function sendNotification(options, data) {
 		options.type = 'basic';
 	}
 	if (!options.title || typeof options.title !== 'string') {
-		options.title = browser.runtime.getManifest().name;
+		options.title = chrome.runtime.getManifest().name;
 	}
 	if (!options.iconUrl || typeof options.iconUrl !== "string" || options.iconUrl === "") {
-		const manifestIcons = browser.runtime.getManifest().icons;
+		const manifestIcons = chrome.runtime.getManifest().icons;
 		let iconSize;
 		if (manifestIcons.hasOwnProperty("128")) {
 			iconSize = "128";
@@ -62,7 +66,7 @@ async function sendNotification(options, data) {
 		}
 	}
 	if (!options.contextMessage || typeof options.contextMessage !== 'string') {
-		options.contextMessage = browser.runtime.getManifest().name;
+		options.contextMessage = chrome.runtime.getManifest().name;
 	}
 	if (!options.isClickable || typeof options.isClickable !== 'boolean') {
 		options.isClickable = true;
@@ -86,18 +90,14 @@ async function sendNotification(options, data) {
 		}
 	});
 
-	/**
-	 * @type {string|undefined}
-	 */
-	let result;
 	let error;
 	try {
-		result = await browser.notifications.create(id, options);
+		await chrome.notifications.create(id, options);
 	} catch (e) {
 		error = e;
 	}
 
-	if (!error && !!result) {
+	if (!error) {
 		return result;
 	}
 
@@ -108,7 +108,7 @@ async function sendNotification(options, data) {
 			delete options.buttons;
 		}
 
-		return await browser.notifications.create(id, options);
+		return await chrome.notifications.create(id, options);
 	} else {
 		throw new Error(error);
 	}
@@ -180,7 +180,7 @@ chrome.notifications.onClosed.addListener(function (notificationId) {
 
 chrome.alarms.onAlarm.addListener(function (alarm) {
 	if (alarm.name === ALARM_NAME) {
-		browser.alarms.clear(ALARM_NAME)
+		chrome.alarms.clear(ALARM_NAME)
 			.catch(console.error)
 		;
 	}

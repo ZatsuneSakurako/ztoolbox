@@ -5,7 +5,7 @@
  */
 export async function hasFetchPermission(...hostList) {
 	try {
-		return await browser.permissions.contains({
+		return await chrome.permissions.contains({
 			origins: hostList.length ? hostList : ['<all_urls>'],
 			permissions: [
 				'webRequest'
@@ -24,10 +24,10 @@ export async function hasFetchPermission(...hostList) {
  */
 export async function requestFetchPermission(...hostList) {
 	try {
-		return await browser.permissions.request({
+		return await chrome.permissions.request({
 			origins: hostList.length ? hostList : ['<all_urls>'],
 			permissions: []
-		})
+		});
 	} catch (e) {
 		console.error(e);
 		return false

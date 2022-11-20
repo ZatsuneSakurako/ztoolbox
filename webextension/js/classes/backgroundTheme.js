@@ -57,13 +57,13 @@ export async function theme_cache_update(colorStylesheetNode, currentTheme, back
 		background_color = options.get("background_color") ?? '#000000'
 	}
 
-	const chromeStorageArea = browser.storage.session ?? browser.storage.local;
+	const chromeStorageArea = chrome.storage.session ?? chrome.storage.local;
 	const chromeStorage = await chromeStorageArea.get(['_backgroundPage_theme_cache']);
 	let _cache = chromeStorage._backgroundPage_theme_cache ?? null;
 	if (!_cache || typeof _cache !== 'object') {
 		_cache = null;
 	} else {
-		if (_cache.version !== browser.runtime.getManifest().version) {
+		if (_cache.version !== chrome.runtime.getManifest().version) {
 			_cache = null;
 		} else if (env === 'local' && new Date().toLocaleDateString() !== new Date(_cache._createdAt).toLocaleDateString()) {
 			_cache = null;
@@ -129,7 +129,7 @@ export async function theme_cache_update(colorStylesheetNode, currentTheme, back
 			theme: currentTheme,
 			background_color: background_color,
 			style: style,
-			version: browser.runtime.getManifest().version
+			version: chrome.runtime.getManifest().version
 		}
 	});
 
@@ -155,7 +155,7 @@ export async function theme_update() {
 	}
 }
 
-browser.storage.onChanged.addListener(async (changes, area) => {
+chrome.storage.onChanged.addListener(async (changes, area) => {
 	if (area !== "local") return;
 
 	if ("theme" in changes || "background_color" in changes) {

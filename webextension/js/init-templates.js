@@ -26,7 +26,7 @@ export async function getTemplate(templateId) {
 		}
 
 		try {
-			const response = await fetch(browser.runtime.getURL(templatePath));
+			const response = await fetch(chrome.runtime.getURL(templatePath));
 			const loadText = new Promise((resolve, reject) => {
 				response.text()
 					.then(resolve)

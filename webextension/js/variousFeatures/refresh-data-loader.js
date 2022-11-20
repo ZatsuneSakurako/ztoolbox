@@ -3,7 +3,7 @@ import freshRss from "../platforms/freshrss.js";
 import {WebsiteData} from "./website-data.js";
 import {getPreference} from "../classes/chrome-preferences.js";
 
-export const dataStorageArea = browser.storage.session ?? browser.storage.local,
+export const dataStorageArea = chrome.storage.session ?? chrome.storage.local,
 	refreshDataStorageBase = `_websitesDataStore`
 ;
 

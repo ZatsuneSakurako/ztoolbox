@@ -58,7 +58,7 @@ export async function savePreference(prefId, value) {
 		}
 	}
 
-	return await browser.storage.local.set({
+	return await chrome.storage.local.set({
 		[prefId]: value
 	})
 		.catch(console.error)
@@ -87,7 +87,7 @@ export async function getPreferences(...prefIds) {
 	preferenceIdList.add(chromeNativeSettingsStorageKey);
 	preferenceIdList.add('mode');
 
-	const values = await browser.storage.local.get([...preferenceIdList]),
+	const values = await chrome.storage.local.get([...preferenceIdList]),
 		chromeNativeSettings = values[chromeNativeSettingsStorageKey],
 		output = new Map()
 	;
@@ -187,7 +187,7 @@ export async function getPreference(prefId) {
  * @returns {Promise<void>}
  */
 export function deletePreferences(...prefIds) {
-	return browser.storage.local.remove(prefIds)
+	return chrome.storage.local.remove(prefIds)
 }
 
 /*		    ---- Export/Import preferences ----	    	*/

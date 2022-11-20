@@ -11,7 +11,7 @@ import {
 
 
 async function sendDataToMain(id, data) {
-	browser.runtime.sendMessage({
+	chrome.runtime.sendMessage({
 		id,
 		data: data ?? null
 	})
@@ -163,7 +163,7 @@ async function refreshSettings(prefId, oldValue, newValue) {
 		body.classList.toggle('normal-version', (await getPreference("mode")) === 'normal');
 	}
 }
-browser.storage.onChanged.addListener((changes, area) => {
+chrome.storage.onChanged.addListener((changes, area) => {
 	if (area !== "local") return;
 
 	for (let prefId in changes) {
@@ -512,7 +512,7 @@ async function exportPreferencesToFile(appName="ztoolbox") {
 		"preferences": await getSyncPreferences()
 	};
 
-	exportData[`${appName}_version`] = browser.runtime.getManifest().version;
+	exportData[`${appName}_version`] = chrome.runtime.getManifest().version;
 
 
 

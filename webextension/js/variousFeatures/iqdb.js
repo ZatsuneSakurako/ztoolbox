@@ -5,7 +5,7 @@ import {contextMenusController} from "../classes/contextMenusController.js";
 
 async function launchSearch(tab, imgUrl) {
 	try {
-		const response = await browser.tabs.sendMessage(
+		const response = await chrome.tabs.sendMessage(
 			tab.id,
 			{
 				name: 'ztoolbox_iqdb_launch_search',
@@ -34,7 +34,7 @@ async function onIqdbMenuClick(info) {
 
 
 	const unloadEvent = () => {
-		browser.tabs.onUpdated.removeListener(onTabLoad);
+		chrome.tabs.onUpdated.removeListener(onTabLoad);
 		clearTimeout(timeout);
 	};
 	const onTabLoad = function onTabLoad(tabId, changeInfo, tab) {
@@ -50,7 +50,7 @@ async function onIqdbMenuClick(info) {
 		}
 	};
 
-	browser.tabs.onUpdated.addListener(onTabLoad);
+	chrome.tabs.onUpdated.addListener(onTabLoad);
 
 	let timeout = setTimeout(() => {
 		unloadEvent();
@@ -59,7 +59,7 @@ async function onIqdbMenuClick(info) {
 
 
 	try {
-		createdTab = await browser.tabs.create({
+		createdTab = await chrome.tabs.create({
 			url: 'https://iqdb.org/'
 		});
 	} catch (e) {

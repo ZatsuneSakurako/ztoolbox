@@ -8,7 +8,7 @@ const idTabPageServerIp = 'tabPageServerIp',
 
 export async function updateData() {
 	const $tabPageServerIp = document.querySelector(`#${idTabPageServerIp}`),
-		storageArea = browser.storage.session ?? browser.storage.local,
+		storageArea = chrome.storage.session ?? chrome.storage.local,
 		raw = (await storageArea.get([tabPageServerIpStorage])),
 		data = Object.assign({}, raw[tabPageServerIpStorage])
 	;

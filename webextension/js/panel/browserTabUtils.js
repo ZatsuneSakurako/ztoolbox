@@ -2,10 +2,10 @@ import {throttle} from "../../lib/throttle.js";
 
 /**
  *
- * @return {Promise<browser.tabs.Tab|undefined>}
+ * @return {Promise<chrome.tabs.Tab|undefined>}
  */
 export async function getCurrentTab() {
-	const win = await browser.windows.getCurrent({
+	const win = await chrome.windows.getCurrent({
 		'populate': true,
 		'windowTypes': ['normal']
 	});
@@ -22,7 +22,7 @@ async function triggerOnCurrentTab(name) {
 		return;
 	}
 
-	const tabPort = browser.tabs.connect(activeTab.id, {
+	const tabPort = chrome.tabs.connect(activeTab.id, {
 		'name': name
 	});
 	const promise = new Promise((resolve, reject) => {
@@ -53,8 +53,8 @@ async function triggerOnCurrentTab(name) {
  * @param callback
  */
 function onTabChange(callback) {
-	browser.windows.onFocusChanged.addListener(callback);
-	browser.tabs.onActivated.addListener(callback);
+	chrome.windows.onFocusChanged.addListener(callback);
+	chrome.tabs.onActivated.addListener(callback);
 	callback();
 }
 
@@ -62,7 +62,7 @@ function onTabChange(callback) {
 
 /**
  *
- * @type {browser.runtime.Port|null}
+ * @type {chrome.runtime.Port|null}
  */
 let currTabPort = null;
 async function updateServiceWorker() {

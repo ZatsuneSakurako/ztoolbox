@@ -9,7 +9,7 @@ document.addEventListener('click', async function (ev) {
 	await requestFetchPermission()
 		.catch(console.error)
 	;
-	browser.runtime.reload();
+	chrome.runtime.reload();
 });
 
 async function updateBtnState() {

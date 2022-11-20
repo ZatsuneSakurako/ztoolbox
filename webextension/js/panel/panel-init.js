@@ -9,10 +9,6 @@ import('../utils/browserDetect.js')
 ;
 
 async function baseInit() {
-	if (typeof browser === 'undefined' || browser === null) {
-		await import('../../lib/browser-polyfill.js');
-	}
-
 	const {getPreferences} = await import('../classes/chrome-preferences.js');
 
 	const html = document.documentElement,

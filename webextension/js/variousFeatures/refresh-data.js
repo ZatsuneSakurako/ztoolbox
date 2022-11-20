@@ -205,7 +205,7 @@ export async function refreshWebsitesData() {
 async function refreshAlarm() {
 	let oldAlarm = null;
 	try {
-		oldAlarm = await browser.alarms.get(ALARM_NAME);
+		oldAlarm = await chrome.alarms.get(ALARM_NAME);
 	} catch (e) {
 		console.error(e);
 	}
@@ -213,7 +213,7 @@ async function refreshAlarm() {
 	if ((await getPreference('mode')) === 'simplified') {
 		if (!!oldAlarm) {
 			try {
-				await browser.alarms.clear(ALARM_NAME);
+				await chrome.alarms.clear(ALARM_NAME);
 			} catch (e) {
 				console.error(e);
 			}
@@ -224,12 +224,12 @@ async function refreshAlarm() {
 	const delayInMinutes = await getPreference('check_delay');
 	if (!oldAlarm || oldAlarm.periodInMinutes !== delayInMinutes) {
 		try {
-			await browser.alarms.clear(ALARM_NAME);
+			await chrome.alarms.clear(ALARM_NAME);
 		} catch (e) {
 			console.error(e);
 		}
 
-		await browser.alarms.create(
+		await chrome.alarms.create(
 			ALARM_NAME,
 			{
 				delayInMinutes,
@@ -240,7 +240,7 @@ async function refreshAlarm() {
 }
 
 export async function updateCountIndicator() {
-	if (typeof browser.action.setBadgeText !== 'function') {
+	if (typeof chrome.action.setBadgeText !== 'function') {
 		return;
 	}
 
@@ -266,11 +266,11 @@ export async function updateCountIndicator() {
 		displayedCount = count.toString();
 	}
 
-	await browser.action.setBadgeText({text: displayedCount});
-	await browser.action.setBadgeBackgroundColor({color: (count !== null && count > 0) ? "#FF0000" : "#424242"});
+	await chrome.action.setBadgeText({text: displayedCount});
+	await chrome.action.setBadgeBackgroundColor({color: (count !== null && count > 0) ? "#FF0000" : "#424242"});
 }
 
-browser.alarms.onAlarm.addListener(function (alarm) {
+chrome.alarms.onAlarm.addListener(function (alarm) {
 	if (!isBackgroundProcess) return;
 
 	if (alarm.name === ALARM_NAME) {
@@ -351,7 +351,7 @@ async function onStartOrInstall() {
 
 	await refreshWebsitesData();
 }
-browser.storage.onChanged.addListener(async (changes, area) => {
+chrome.storage.onChanged.addListener(async (changes, area) => {
 	if (area !== "local" || !isBackgroundProcess) return;
 
 	if ('mode' in changes || 'check_delay' in changes) {

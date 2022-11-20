@@ -111,7 +111,7 @@ export class Version extends Array {
  * @return {Promise<string[]>}
  */
 async function getVersions() {
-	const geckoManifest = browser.runtime.getManifest().applications.gecko;
+	const geckoManifest = chrome.runtime.getManifest().applications.gecko;
 	if (typeof geckoManifest !== 'object' || geckoManifest === null || typeof geckoManifest.id !== 'string' || typeof geckoManifest.update_url !== 'string') {
 		throw 'ConfigMissing';
 	}
@@ -161,7 +161,7 @@ async function checkHasUpdate() {
 		return false;
 	}
 
-	const currentVersion = new Version(browser.runtime.getManifest().version),
+	const currentVersion = new Version(chrome.runtime.getManifest().version),
 		versions = await getVersions()
 	;
 
