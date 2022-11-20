@@ -1,6 +1,6 @@
 'use strict';
 
-import {ZDK} from "../classes/ZDK.js";
+import {openTabIfNotExist} from "../utils/openTabIfNotExist.js";
 import {getPreference} from "../classes/chrome-preferences.js";
 import {i18ex} from "../translation-api.js";
 import * as ChromeNative from "../classes/chrome-native.js";
@@ -103,7 +103,7 @@ chrome.notifications.onClicked.addListener(async function (notificationId) {
 	if (!websiteData || !websitesAPI || typeof websiteData !== 'object' || !(website in websitesAPI)) {
 		return;
 	}
-	ZDK.openTabIfNotExist(websitesAPI[website].getViewURL(websiteData))
+	openTabIfNotExist(websitesAPI[website].getViewURL(websiteData))
 		.catch(console.error)
 	;
 })

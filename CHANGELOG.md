@@ -10,6 +10,7 @@
 * fix : deviantArt - use watch page as data URL
 * fix : Preferences - load + import of JSON settings
 * \- : Delete browser polyfill
+* \- : Delete ZDK
 * \- : Delete features :
   * Amazon share
   * FreshRSS iframe mode

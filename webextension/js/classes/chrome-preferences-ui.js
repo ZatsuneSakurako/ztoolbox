@@ -1,4 +1,3 @@
-import {ZDK} from './ZDK.js';
 import {
 	getBooleanFromVar,
 	getPreferenceConfig,
@@ -503,6 +502,11 @@ async function newPreferenceNode(parent, id){
 	return node;
 }
 
+function sleep(millisecond) {
+	return new Promise(resolve => {
+		setTimeout(resolve, millisecond);
+	})
+}
 /**
  *
  * @param {string} appName
@@ -529,16 +533,53 @@ async function exportPreferencesToFile(appName="ztoolbox") {
 
 	link.href = url;
 
-	await ZDK.setTimeout();
+	await sleep();
 	link = iframe.contentDocument.importNode(link, true);
 	iframe.contentDocument.body.appendChild(link);
 
-	await ZDK.setTimeout();
+	await sleep();
 	link.dispatchEvent(new MouseEvent('click'));
 
-	await ZDK.setTimeout(1000);
+	await sleep(1000);
 	URL.revokeObjectURL(url);
 	iframe.remove();
+}
+
+/**
+ *
+ * @param {Blob} blob
+ * @param {boolean} readType
+ * @return {Promise<string | ArrayBuffer>}
+ */
+function loadBlob(blob, readType=null) {
+	return new Promise((resolve, reject) => {
+		const reader = new FileReader();
+		reader.addEventListener("loadend", function() {
+			resolve(reader.result);
+		});
+		reader.addEventListener("error", reject);
+
+		if (readType === "text") {
+			reader.readAsText(blob);
+		} else {
+			reader.readAsDataURL(blob);
+		}
+	})
+}
+
+/**
+ *
+ * @param {HTMLElement} node
+ * @return {boolean}
+ */
+function simulateClick(node) {
+	let evt = new MouseEvent("click", {
+		bubbles: true,
+		cancelable: true,
+		view: window,
+	});
+	// Return true is the event haven't been canceled
+	return node.dispatchEvent(evt);
 }
 
 /**
@@ -592,9 +633,9 @@ function importDataFormFiles(opts=null) {
 						});
 					} else {
 						if (opts.readType !== null) {
-							promiseList.push(ZDK.loadBlob(file, opts.readType));
+							promiseList.push(loadBlob(file, opts.readType));
 						} else {
-							promiseList.push(ZDK.loadBlob(file));
+							promiseList.push(loadBlob(file));
 						}
 					}
 				}
@@ -624,7 +665,7 @@ function importDataFormFiles(opts=null) {
 		});
 
 		document.head.appendChild(node);
-		ZDK.simulateClick(node);
+		simulateClick(node);
 	});
 }
 

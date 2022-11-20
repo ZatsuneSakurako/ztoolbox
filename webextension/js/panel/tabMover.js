@@ -1,5 +1,5 @@
 import {renderTemplate} from '../init-templates.js';
-import {ZDK} from "../classes/ZDK.js";
+import {appendTo} from "../utils/appendTo.js";
 
 const tabMover = document.querySelector('#tabMover');
 /**
@@ -39,7 +39,7 @@ async function update() {
 	}
 	if (browserWindows.length) {
 		for (const win of browserWindows) {
-			ZDK.appendTo(
+			appendTo(
 				tabMover,
 				await renderTemplate(TAB_MOVER_TEMPLATE, {
 					'title': i18ex._("windowId", {
@@ -53,7 +53,7 @@ async function update() {
 			);
 		}
 	} else {
-		ZDK.appendTo(
+		appendTo(
 			tabMover,
 			await renderTemplate(TAB_MOVER_TEMPLATE, {
 				'title': i18ex._("newWindow"),
