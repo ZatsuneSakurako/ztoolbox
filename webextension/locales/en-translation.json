@@ -59,9 +59,6 @@
 	"mode_simplified": "Simplified",
 	"mode_delegated": "External",
 
-	"launchpadAddLink_title": "Add link to go Launchpad PPA page from an index page",
-	"launchpadAddLink_description": "Will add link if checked",
-
 	"panel_height_title": "Panel's height",
 	"panel_height_description": "Size in pixels",
 

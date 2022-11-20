@@ -62,9 +62,6 @@
 	"timeout_delay_title": "Délai de timeout des requêtes",
 	"timeout_delay_description": "Délai de timeout des requêtes, en secondes (entre 10 et 30)",
 
-	"launchpadAddLink_title": "Ajoute un lien pour aller sur la page du PPA de Launchpad depuis une page d'index",
-	"launchpadAddLink_description": "Ajoutera le lien si coché",
-
 	"panel_height_title": "Hauteur du panel",
 	"panel_height_description": "Taille en pixels",
 

@@ -28,14 +28,6 @@
 	"content_scripts": [
 		{
 			"matches": [
-				"*://ppa.launchpad.net/*/*/*/"
-			],
-			"js": [
-				"/js/contentscripts/launchpad-addlink.js"
-			]
-		},
-		{
-			"matches": [
 				"https://iqdb.org/"
 			],
 			"js": [

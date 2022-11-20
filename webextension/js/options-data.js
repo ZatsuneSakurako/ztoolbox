@@ -31,13 +31,6 @@ export const options = {
 		"disabledInSimpleMode": true
 	},
 	/*			Features Prefs			*/
-	"launchpadAddLink": {
-		"title": "Add link to go back to PPA page from index page",
-		"description": "Will link if checked",
-		"type": "bool",
-		"value": false,
-		"group": "featurePreference"
-	},
 	"custom_lstu_server": {
 		"title": "Custom LSTU server",
 		"description": "LSTU server, for example https://lstu.fr/",
