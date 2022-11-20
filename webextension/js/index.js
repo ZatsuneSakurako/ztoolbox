@@ -11,7 +11,6 @@ import {sendNotification} from "./classes/chrome-notification.js";
 
 import {ChromeUpdateNotification} from './classes/chromeUpdateNotification.js';
 
-import './variousFeatures/clear-old-hourly-alarm.js';
 import './variousFeatures/iqdb.js';
 import './variousFeatures/refresh-data.js';
 import './variousFeatures/tabPageServerIp.js';
@@ -180,6 +179,13 @@ async function onStart_deleteOldPreferences() {
 		if (!!hasPreference) {
 			await deletePreferences(prefId);
 		}
+	}
+
+	const alarm = await browser.alarms.get('hourlyAlarm');
+	if (alarm) {
+		await browser.alarms.clear(alarm.name)
+			.catch(console.error)
+		;
 	}
 }
 chrome.runtime.onStartup.addListener(function () {
