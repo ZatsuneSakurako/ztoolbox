@@ -29,7 +29,7 @@ if (!exist_jsLib) {
 	_cp("./node_modules/mustache/mustache.js", jsLib);
 
 	info("Copying i18next...");
-	_cp("./node_modules/i18next/i18next.js", jsLib);
+	_cp("./node_modules/i18next/i18next.min.js", jsLib);
 
 	info("Copying i18next-http-backend...");
 	_cp("./node_modules/i18next-http-backend/i18nextHttpBackend.js", jsLib);

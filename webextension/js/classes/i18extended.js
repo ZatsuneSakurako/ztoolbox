@@ -1,5 +1,5 @@
 'use strict';
-import '../../lib/i18next.js';
+import '../../lib/i18next.min.js';
 import '../../lib/i18nextHttpBackend.js';
 
 
