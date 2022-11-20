@@ -31,14 +31,6 @@ export const options = {
 		"disabledInSimpleMode": true
 	},
 	/*			Features Prefs			*/
-	"custom_lstu_server": {
-		"title": "Custom LSTU server",
-		"description": "LSTU server, for example https://lstu.fr/",
-		"type": "string",
-		"value": "",
-		"group": "featurePreference",
-		"onlyNormalMode": true
-	},
 	"tabPageServerIp_alias": {
 		"title": "IP aliases",
 		"description": "IP/Name (IP as key)",

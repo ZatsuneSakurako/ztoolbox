@@ -14,6 +14,7 @@
   * service worker
   * FreshRSS iframe mode
   * Launchpad add link
+  * Lstu
   * Setting sync buttons
   * The WIP data to support Dropbox sync
 

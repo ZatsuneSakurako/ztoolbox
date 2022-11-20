@@ -154,7 +154,7 @@ async function onStart_deleteOldPreferences() {
 	 *
 	 * @type {Set<string>}
 	 */
-	const preferences = new Set(['serviceWorkerWhitelist', 'freshRss_showInPanel', 'panel_theme', 'check_enabled', 'launchpadAddLink']);
+	const preferences = new Set(['serviceWorkerWhitelist', 'freshRss_showInPanel', 'panel_theme', 'check_enabled', 'launchpadAddLink', 'custom_lstu_server']);
 	if (chrome.storage.session) {
 		preferences
 			.add('_backgroundPage_theme_cache')

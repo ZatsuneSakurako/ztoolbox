@@ -2,8 +2,6 @@
  * https://developer.mozilla.org/en-US/Add-ons/WebExtensions/API/menus/create
  */
 import {i18ex} from "../translation-api.js";
-import {getPreference} from "./chrome-preferences.js";
-import {updateLstuContextMenu} from "../variousFeatures/lstu.js";
 
 export class ContextMenusController extends Map {
 	constructor(){
@@ -179,27 +177,10 @@ chrome.contextMenus.onClicked.addListener(function (info, tab) {
 	}
 });
 
-
-chrome.storage.onChanged.addListener(async (changes, area) => {
-	if (area !== "local") return;
-
-	if (changes.custom_lstu_server) {
-		/**
-		 *
-		 * @type {string|undefined}
-		 */
-		const api_url = await getPreference('custom_lstu_server');
-		if (api_url && /https?:\/\/.+/.test(api_url)) {
-			updateLstuContextMenu();
-		}
-	}
-});
 async function onStart_contextMenus() {
 	await chrome.contextMenus.removeAll();
 	await i18ex.loadingPromise;
 	await contextMenusController._createAll();
-
-	updateLstuContextMenu();
 }
 chrome.runtime.onStartup.addListener(function () {
 	onStart_contextMenus()
