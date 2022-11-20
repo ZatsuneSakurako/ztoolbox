@@ -9,14 +9,13 @@
 * fix : deviantArt / FreshRSS refresh alarm missing periodic data
 * fix : deviantArt - use watch page as data URL
 * fix : Preferences - load + import of JSON settings
-* \- : Removed features/options :
+* \- : Delete features :
   * Amazon share
-  * service worker
   * FreshRSS iframe mode
   * Launchpad add link
   * Lstu
-  * Setting sync buttons
-  * The WIP data to support Dropbox sync
+  * Service worker
+  * Setting sync buttons / WIP support Dropbox sync
 
 # 0.20.2
 * fix : deviantArt - change login url
