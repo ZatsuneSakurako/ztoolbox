@@ -80,8 +80,6 @@
 
 	"showAdvanced_title": "Show advanced settings",
 	"showAdvanced_description": "Enabled when checked",
-	"showExperimented_title": "Show setting for experimented users",
-	"showExperimented_description": "Enabled when checked",
 
 	"save": "Save",
 	"sync_title": "Save / Restaure preferences from/to synchronization",

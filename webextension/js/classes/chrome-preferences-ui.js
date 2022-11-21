@@ -153,9 +153,6 @@ async function refreshSettings(prefId, oldValue, newValue) {
 	if (prefId === "showAdvanced") {
 		body.classList.toggle('showAdvanced', !!await getPreference("showAdvanced"));
 	}
-	if (prefId === "showExperimented") {
-		body.classList.toggle('showExperimented', !!await getPreference("showExperimented"));
-	}
 	if (prefId === "mode") {
 		body.classList.toggle('delegated-version', (await getPreference("mode")) === 'delegated');
 		body.classList.toggle('simple-version', (await getPreference("mode")) === 'simplified');
@@ -228,9 +225,6 @@ export async function loadPreferencesNodes(container) {
 
 		if (id === "showAdvanced") {
 			body.classList.toggle('showAdvanced', !!await getPreference("showAdvanced"));
-		}
-		if (id === "showExperimented") {
-			body.classList.toggle('showExperimented', !!await getPreference("showExperimented"));
 		}
 		if (id === "mode") {
 			const mode = await getPreference("mode");

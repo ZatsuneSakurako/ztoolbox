@@ -36,7 +36,8 @@ export const options = {
 		"description": "IP/Name (IP as key)",
 		"type": "json",
 		"value": "{\"127.0.0.1\": \"localhost\"}",
-		"group": "featurePreference"
+		"group": "featurePreference",
+		"prefLevel": "advanced",
 	},
 	/*			Notifications			*/
 	"freshRss_baseUrl": {
@@ -63,7 +64,7 @@ export const options = {
 		"type": "bool",
 		"value": false,
 		"group": "notifications",
-		"prefLevel": "advanced",
+		"prefLevel": "basic",
 		"disabledInSimpleMode": true
 	},
 	"notify_vocal": {
@@ -72,7 +73,7 @@ export const options = {
 		"type": "bool",
 		"value": false,
 		"group": "notifications",
-		"prefLevel": "basic",
+		"prefLevel": "advanced",
 		"onlyNormalMode": true
 	},
 	"vocal_volume": {
@@ -85,7 +86,7 @@ export const options = {
 		"maxValue": 100,
 		"rangeInput": true,
 		"rangeOutputUnit": "%",
-		"prefLevel": "basic",
+		"prefLevel": "advanced",
 		"onlyNormalMode": true
 	},
 	/*				Panel size					*/
@@ -99,7 +100,7 @@ export const options = {
 		"rangeInput": true,
 		"rangeOutputUnit": "px",
 		"group": "panelSize",
-		"prefLevel": "basic",
+		"prefLevel": "advanced",
 		"onlyNormalMode": true
 	},
 	"panel_width": {
@@ -112,7 +113,7 @@ export const options = {
 		"group": "panelSize",
 		"rangeInput": true,
 		"rangeOutputUnit": "px",
-		"prefLevel": "basic",
+		"prefLevel": "advanced",
 		"onlyNormalMode": true
 	},
 	/*			Theme			*/
@@ -171,14 +172,5 @@ export const options = {
 		"value": false,
 		"group": "settingsLevel",
 		"prefLevel": "basic"
-	},
-	"showExperimented": {
-		"title": "Show setting for experimented users",
-		"description": "Enabled when checked",
-		"type": "bool",
-		"value": false,
-		"group": "settingsLevel",
-		"showPrefInPanel": false,
-		"prefLevel": "advanced"
 	}
 };

@@ -170,7 +170,7 @@ export async function refreshWebsitesData() {
 		;
 	}
 
-	if (await getPreference('showExperimented') === true) {
+	if (await getPreference('showAdvanced') === true) {
 		console.groupCollapsed('Websites check end');
 		console.log('timings:', {
 			dateStart,

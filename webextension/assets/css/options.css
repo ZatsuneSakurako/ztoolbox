@@ -46,12 +46,7 @@ button,
 	margin-top: 14px;
 	margin-bottom: 14px;
 }
-body:not(.showAdvanced) .preferenceContainer.experimented,
 body:not(.showAdvanced) .preferenceContainer.advanced {
-	display: none;
-	visibility: hidden;
-}
-body:not(.showExperimented) .preferenceContainer.experimented {
 	display: none;
 	visibility: hidden;
 }
