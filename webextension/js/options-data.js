@@ -36,6 +36,7 @@ export const options = {
 		"value": 5,
 		"minValue": 5,
 		"prefLevel": "advanced",
+		"sync": true,
 		"onlyNormalMode": true
 	},
 	/*			Features Prefs			*/
@@ -55,6 +56,7 @@ export const options = {
 		"value": '',
 		"group": "notifications",
 		"prefLevel": "basic",
+		"sync": true,
 		"onlyNormalMode": true
 	},
 	"notify_checkedData": {
@@ -64,6 +66,7 @@ export const options = {
 		"value": true,
 		"group": "notifications",
 		"prefLevel": "basic",
+		"sync": true,
 		"onlyNormalMode": true
 	},
 	"notify_all_viewed": {
@@ -73,6 +76,7 @@ export const options = {
 		"value": false,
 		"group": "notifications",
 		"prefLevel": "basic",
+		"sync": true,
 		"onlyNormalMode": true
 	},
 	"notify_vocal": {

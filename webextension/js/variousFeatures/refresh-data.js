@@ -173,7 +173,7 @@ export async function refreshWebsitesData() {
 		.catch(console.error)
 	;
 
-	if (extensionMode !== 'delegated') {
+	if (preferences.get('mode') !== 'delegated') {
 		updateCountIndicator()
 			.catch(console.error)
 		;
