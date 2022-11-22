@@ -1,7 +1,7 @@
 'use strict';
 
 import {openTabIfNotExist} from "../utils/openTabIfNotExist.js";
-import {getPreference} from "../classes/chrome-preferences.js";
+import {getPreference, getPreferences} from "../classes/chrome-preferences.js";
 import {i18ex} from "../translation-api.js";
 import * as ChromeNative from "../classes/chrome-native.js";
 import {sendNotification} from "../classes/chrome-notification.js";
@@ -121,10 +121,19 @@ export async function refreshWebsitesData() {
 	const dateStart = new Date();
 
 
-	const extensionMode = await getPreference('mode');
-	if (extensionMode === 'simplified') {
+	const preferences = await getPreferences('mode', 'check_enabled');
+	if (preferences.get('mode') === 'simplified' || !preferences.get('check_enabled')) {
 		isRefreshingData = false;
-		console.info('Simplified mode, refresh disabled');
+
+		const logs = [];
+		if (preferences.get('mode') === 'simplified') {
+			logs.push('simplified mode');
+		}
+		if (!preferences.get('check_enabled')) {
+			logs.push('check_enable false');
+		}
+		console.info(`Refresh disabled (${logs.join(', ')})`);
+
 		return false;
 	}
 
@@ -210,7 +219,8 @@ async function refreshAlarm() {
 		console.error(e);
 	}
 
-	if ((await getPreference('mode')) === 'simplified') {
+	const preferences = await getPreferences('mode', 'check_enabled');
+	if (preferences.get('mode') === 'simplified' || !preferences.get('check_enabled')) {
 		if (!!oldAlarm) {
 			try {
 				await chrome.alarms.clear(ALARM_NAME);
@@ -354,7 +364,7 @@ async function onStartOrInstall() {
 chrome.storage.onChanged.addListener(async (changes, area) => {
 	if (area !== "local" || !isBackgroundProcess) return;
 
-	if ('mode' in changes || 'check_delay' in changes) {
+	if ('mode' in changes || 'check_enabled' in changes || 'check_delay' in changes) {
 		await i18ex.loadingPromise;
 		await refreshAlarm()
 			.catch(console.error)

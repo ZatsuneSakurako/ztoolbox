@@ -21,6 +21,14 @@ export const options = {
 			}
 		]
 	},
+	"check_enabled": {
+		"title": "Data automatic refresh enabled",
+		"description": "Enabled if checked",
+		"type": "bool",
+		"value": true,
+		"prefLevel": "basic",
+		"disabledInSimpleMode": true
+	},
 	"check_delay": {
 		"title": "Streams status delay",
 		"description": "Delay between checks, in minute",
