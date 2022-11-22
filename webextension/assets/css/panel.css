@@ -77,15 +77,18 @@ header button:last-child,
 header [role="button"]:last-child {
 	margin-right: 5px;
 }
-#disableNotifications::before {
-	content: "notifications_active";
+#check_enabled i {
+	display: none;
+}
+#check_enabled::before {
+	content: "auto_mode";
 	/*noinspection CssNoGenericFontName*/
 	font-family: "Material Icons"; /* stylelint-disable-line fonts-family-no-missing-generic-family-keyword */
 	font-size: 24px;
 	font-weight: normal;
 }
-#disableNotifications.off::before {
-	content: "notifications_off";
+#check_enabled.off::before {
+	content: "update_disabled";
 }
 #vide,
 .vide {

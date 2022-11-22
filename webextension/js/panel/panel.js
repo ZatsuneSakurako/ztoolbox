@@ -2,7 +2,7 @@ import {loadTranslations} from '../translation-api.js';
 import {renderTemplate} from '../init-templates.js';
 import {theme_cache_update} from '../classes/backgroundTheme.js';
 import * as tabPageServerIp from "./tabPageServerIp.js";
-import {getPreference} from "../classes/chrome-preferences.js";
+import {getPreference, savePreference} from "../classes/chrome-preferences.js";
 import "./requestPermission.js";
 
 
@@ -75,6 +75,26 @@ document.addEventListener('click', async e => {
 	} else {
 		await chrome.runtime.openOptionsPage();
 	}
+});
+
+
+chrome.storage.onChanged.addListener(async (changes, area) => {
+	if (area !== "local") return;
+
+	if ('check_enabled' in changes) {
+		const current = changes.check_enabled.newValue,
+			button = document.querySelector('#check_enabled')
+		;
+		button.dataset.translateTitle = `checkEnabled${current ? '' : '_off'}`;
+		button?.classList.toggle('off', !current);
+	}
+});
+document.addEventListener('click', async e => {
+	const elm = e.target.closest('#check_enabled');
+	if (!elm) return;
+
+	const current = await getPreference('check_enabled');
+	await savePreference('check_enabled', !current);
 });
 
 

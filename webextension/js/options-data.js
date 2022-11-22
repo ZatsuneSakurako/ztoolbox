@@ -27,7 +27,7 @@ export const options = {
 		"type": "bool",
 		"value": true,
 		"prefLevel": "basic",
-		"disabledInSimpleMode": true
+		"onlyNormalMode": true
 	},
 	"check_delay": {
 		"title": "Streams status delay",

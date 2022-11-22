@@ -14,6 +14,8 @@
 	"GloballyDisabledNotifications": "Toutes les notifications sont désactivées",
 	"GloballyDisableNotifications": "Désactiver temporairement les notifications",
 
+	"checkEnabled": "Rafraichissement activé",
+	"checkEnabled_off": "Rafraichissement désactivé",
 	"Refresh": "Rafraîchir",
 	"No data": "Pas encore de donnée",
 

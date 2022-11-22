@@ -14,7 +14,7 @@ async function baseInit() {
 	const html = document.documentElement,
 		body = document.body
 	;
-	const preferences = await getPreferences('mode', 'panel_height', 'panel_width');
+	const preferences = await getPreferences('mode', 'panel_height', 'panel_width', 'check_enabled');
 	body.classList.toggle('delegated-version', preferences.get('mode') === 'delegated');
 	body.classList.toggle('simple-version', preferences.get('mode') === 'simplified');
 	body.classList.toggle('normal-version', preferences.get('mode') === 'normal');
@@ -24,6 +24,12 @@ async function baseInit() {
 	;
 	html.style.height = panel_height + 'px';
 	body.style.width = panel_width + 'px';
+
+	const checkEnabled = document.querySelector('#check_enabled');
+	if (checkEnabled) {
+		checkEnabled.dataset.translateTitle = `checkEnabled${preferences.get('check_enabled') ? '' : '_off'}`;
+		checkEnabled.classList.toggle('off', !preferences.get('check_enabled'));
+	}
 
 	const {loadTranslations} = await import('../translation-api.js');
 	await loadTranslations;
