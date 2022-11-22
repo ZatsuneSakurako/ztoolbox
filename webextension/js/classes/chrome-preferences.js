@@ -52,10 +52,6 @@ export async function savePreference(prefId, value) {
 				value = configOption.maxValue;
 			}
 		}
-
-		if (typeof configOption.value === "boolean" || typeof configOption.value === "number") {
-			value = value.toString();
-		}
 	}
 
 	return await chrome.storage.local.set({
