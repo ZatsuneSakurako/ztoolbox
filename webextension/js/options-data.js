@@ -36,7 +36,7 @@ export const options = {
 		"value": 5,
 		"minValue": 5,
 		"prefLevel": "advanced",
-		"disabledInSimpleMode": true
+		"onlyNormalMode": true
 	},
 	/*			Features Prefs			*/
 	"tabPageServerIp_alias": {
@@ -55,7 +55,7 @@ export const options = {
 		"value": '',
 		"group": "notifications",
 		"prefLevel": "basic",
-		"disabledInSimpleMode": true
+		"onlyNormalMode": true
 	},
 	"notify_checkedData": {
 		"title": "Show a notification for deviantArt",
@@ -64,7 +64,7 @@ export const options = {
 		"value": true,
 		"group": "notifications",
 		"prefLevel": "basic",
-		"disabledInSimpleMode": true
+		"onlyNormalMode": true
 	},
 	"notify_all_viewed": {
 		"title": "Show a notification when all view in website(s)",
@@ -73,7 +73,7 @@ export const options = {
 		"value": false,
 		"group": "notifications",
 		"prefLevel": "basic",
-		"disabledInSimpleMode": true
+		"onlyNormalMode": true
 	},
 	"notify_vocal": {
 		"title": "Read a vocal notifications",
