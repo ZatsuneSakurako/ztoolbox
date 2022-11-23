@@ -47,6 +47,8 @@ export const options = {
 		"value": "{\"127.0.0.1\": \"localhost\"}",
 		"group": "featurePreference",
 		"prefLevel": "advanced",
+		"sync": true,
+		"disabledInDelegatedMode": true
 	},
 	/*			Notifications			*/
 	"freshRss_baseUrl": {
@@ -183,6 +185,7 @@ export const options = {
 		"type": "bool",
 		"value": false,
 		"group": "settingsLevel",
-		"prefLevel": "basic"
+		"prefLevel": "basic",
+		"disabledInDelegatedMode": true
 	}
 };

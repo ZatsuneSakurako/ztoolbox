@@ -1,10 +1,23 @@
-import {getCurrentTab} from "./browserTabUtils.js";
 import {renderTemplate} from "../init-templates.js";
 import {getPreference} from "../classes/chrome-preferences.js";
 
 const idTabPageServerIp = 'tabPageServerIp',
 	tabPageServerIpStorage = '_tabPageServerIp'
 ;
+
+/**
+ *
+ * @return {Promise<chrome.tabs.Tab|undefined>}
+ */
+async function getCurrentTab() {
+	const win = await chrome.windows.getCurrent({
+		'populate': true,
+		'windowTypes': ['normal']
+	});
+	return win.tabs.find(tab => {
+		return tab.hasOwnProperty('active') && tab.active === true;
+	});
+}
 
 export async function updateData() {
 	const $tabPageServerIp = document.querySelector(`#${idTabPageServerIp}`),

@@ -60,7 +60,6 @@ window.onload = function () {
 		await baseInitPromise;
 
 		await import('../../lib/throttle.js');
-		await import('../panel/browserTabUtils.js');
 		await import('../panel/tabMover.js');
 		await import('../variousFeatures/website-data.js');
 		await import('../panel/panel.js');
