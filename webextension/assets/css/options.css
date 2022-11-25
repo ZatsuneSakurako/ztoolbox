@@ -5,13 +5,16 @@ body {
 	min-width: 777px;
 	font-family: Ubuntu, Tahoma, sans-serif;
 }
-/*html {
-	min-height: 666px;
-	height: 100vh;
+
+html.isFirefox body {
+	overflow-x: hidden;
 }
-body {
-	height: 100%;
-}*/
+/* Fill blank */
+html.isFirefox body.delegated-version {
+	height: 300px;
+	overflow: hidden;
+}
+
 #contentContainer {
 	height: 100%;
 	overflow: hidden;
