@@ -131,10 +131,6 @@ async function updatePanelData() {
 		.catch(console.error)
 	;
 
-	if ((await getPreference('mode')) !== 'normal') {
-		return;
-	}
-
 	const {_notificationGloballyDisabled} = await chrome.storage.local.get(['_notificationGloballyDisabled']);
 
 	/**
@@ -146,6 +142,14 @@ async function updatePanelData() {
 		disableNotificationsButton.classList.toggle('off', !!_notificationGloballyDisabled ?? false);
 		disableNotificationsButton.dataset.translateTitle = !!_notificationGloballyDisabled? 'GloballyDisabledNotifications' : 'GloballyDisableNotifications';
 	}
+
+
+
+	if ((await getPreference('mode')) !== 'normal') {
+		return;
+	}
+
+
 
 	let websiteDataList_Node = document.querySelector("#panelContent #refreshItem");
 	removeAllChildren(websiteDataList_Node);

@@ -80,16 +80,26 @@ header [role="button"]:last-child {
 #check_enabled i {
 	display: none;
 }
-#check_enabled::before {
-	content: "auto_mode";
+#check_enabled::before,
+#disableNotifications::before {
 	/*noinspection CssNoGenericFontName*/
 	font-family: "Material Icons"; /* stylelint-disable-line fonts-family-no-missing-generic-family-keyword */
 	font-size: 24px;
 	font-weight: normal;
 }
+#check_enabled::before {
+	content: "auto_mode";
+}
 #check_enabled.off::before {
 	content: "update_disabled";
 }
+#disableNotifications::before {
+	content: "notifications_active";
+}
+#disableNotifications.off::before {
+	content: "notifications_off";
+}
+
 #vide,
 .vide {
 	flex: 1;
