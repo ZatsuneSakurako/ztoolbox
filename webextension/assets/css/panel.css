@@ -180,6 +180,9 @@ section .buttonItem .ellipse {
 section .buttonItem.tabPageServerIp .title {
 	-webkit-line-clamp: 1;
 }
+section .buttonItem.tabPageServerIp.no-ip .title {
+	-webkit-line-clamp: 2;
+}
 section .buttonItem.tabMover .data {
 	-webkit-line-clamp: 1;
 }
