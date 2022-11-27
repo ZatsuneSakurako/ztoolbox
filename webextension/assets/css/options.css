@@ -6,15 +6,6 @@ body {
 	font-family: Ubuntu, Tahoma, sans-serif;
 }
 
-html.isFirefox body {
-	overflow-x: hidden;
-}
-/* Fill blank */
-html.isFirefox body.delegated-version {
-	height: 300px;
-	overflow: hidden;
-}
-
 #contentContainer {
 	height: 100%;
 	overflow: hidden;

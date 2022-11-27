@@ -14,6 +14,7 @@
 	"GloballyDisabledNotifications": "All notifications are disabled",
 	"GloballyDisableNotifications": "Temporarly disable notifications",
 
+	"leaveDelegated": "Go in normal mode",
 	"checkEnabled": "Refresh Refresh",
 	"checkEnabled_off": "Refresh disable",
 	"Refresh": "Refresh",

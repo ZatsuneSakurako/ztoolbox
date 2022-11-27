@@ -53,6 +53,7 @@
 		"<all_urls>"
 	],
 	"options_ui": {
+		"open_in_tab": true,
 		"page": "options.html"
 	},
 	"minimum_chrome_version": "92.0"

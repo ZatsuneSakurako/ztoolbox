@@ -88,10 +88,10 @@ header [role="button"]:last-child {
 	font-weight: normal;
 }
 #check_enabled::before {
-	content: "auto_mode";
+	content: "alarm_on";
 }
 #check_enabled.off::before {
-	content: "update_disabled";
+	content: "alarm_off";
 }
 #disableNotifications::before {
 	content: "notifications_active";
