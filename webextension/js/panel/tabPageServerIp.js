@@ -39,29 +39,32 @@ export async function updateData() {
 	 * @type {undefined|TabPageServerIdData}
 	 */
 	const tabData = data[`${activeTab.id}`];
-	if (!tabData) {
-		return;
-	}
+	let renderData = {
+		tabName: activeTab.title,
+		favIconUrl: activeTab.favIconUrl,
+	};
+	if (tabData) {
+		const tabPageServerIp_alias = await getPreference('tabPageServerIp_alias');
 
-	const tabPageServerIp_alias = await getPreference('tabPageServerIp_alias');
+		let ipMore = false;
+		if (tabData.ip in tabPageServerIp_alias) {
+			ipMore = tabPageServerIp_alias[tabData.ip];
+		}
 
-	let ipMore = false;
-	if (tabData.ip in tabPageServerIp_alias) {
-		ipMore = tabPageServerIp_alias[tabData.ip];
+		renderData = {
+			...renderData,
+			...tabData,
+			ipMore,
+			description: [
+				ipMore ? ipMore : undefined,
+				tabData.statusCode !== 200 ? tabData.statusCode : undefined
+			].filter(s => !!s).join(', ')
+		};
 	}
 
 	let newElementNode = document.createElement("article");
 	$tabPageServerIp.appendChild(newElementNode);
-	newElementNode.outerHTML = await renderTemplate("tabPageServerIp", {
-		...tabData,
-		tabName: activeTab.title,
-		favIconUrl: activeTab.favIconUrl,
-		ipMore,
-		description: [
-			ipMore ? ipMore : undefined,
-			tabData.statusCode !== 200 ? tabData.statusCode : undefined
-		].filter(s => !!s).join(', ')
-	});
+	newElementNode.outerHTML = await renderTemplate("tabPageServerIp", renderData);
 }
 
 
