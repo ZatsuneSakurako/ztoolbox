@@ -174,13 +174,6 @@ async function init() {
 	}));
 
 	echo('Firefox manifest v3 overrides...');
-	manifestJson.browser_specific_settings = {
-		"gecko": {
-			"id": "ztoolbox_dev@zatsunenomokou.eu",
-				"update_url": "https://gitlab.com/ZatsuneNoMokou/ztoolbox/raw/master/dist/z_toolbox_dev.update.json",
-				"strict_min_version": "108.0"
-		}
-	};
 	manifestJson.background = {
 		"page": "/index.html"
 	};

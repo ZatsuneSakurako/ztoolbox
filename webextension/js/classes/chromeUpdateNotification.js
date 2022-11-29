@@ -111,7 +111,7 @@ export class Version extends Array {
  * @return {Promise<string[]>}
  */
 async function getVersions() {
-	const geckoManifest = chrome.runtime.getManifest().applications.gecko;
+	const geckoManifest = chrome.runtime.getManifest().browser_specific_settings.gecko;
 	if (typeof geckoManifest !== 'object' || geckoManifest === null || typeof geckoManifest.id !== 'string' || typeof geckoManifest.update_url !== 'string') {
 		throw 'ConfigMissing';
 	}
