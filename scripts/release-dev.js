@@ -4,40 +4,38 @@ import webExt from "web-ext";
 import chromeWebStoreUpload from "chrome-webstore-upload";
 import {exec as _exec} from "child_process";
 import klawSync from "klaw-sync";
-import dotenv from "dotenv";
+import "dotenv/config";
 import _yargs from "yargs";
-import {fsReadFile} from "./common/file-operations.js";
 import {error, info, success, warning} from "./common/custom-console.js";
 import {projectRootDir as pwd} from "./projectRootDir.js";
 
-const pjson = JSON.parse(fs.readFileSync(pwd + '/package.json', {encoding: 'utf-8'})),
-	echo = console.log,
-
-	yargs = _yargs(process.argv.slice(2))
-		.usage('Usage: $0 [options]')
-
-		.option('p', {
-			"alias": ['prod','production'],
-			"description": 'Do stable release',
-			"type": "boolean"
-		})
-		.fail(function (msg, err, yargs) {
-			if (msg==="yargs error") {
-				console.error(yargs.help());
-			}
-
-			/*if(err){// preserve stack
-				throw err;
-			}*/
-
-			process.exit(1)
-		})
-
-		.help('h')
-		.alias('h', 'help')
-		.argv
+const pJson = JSON.parse(fs.readFileSync(pwd + '/package.json', {encoding: 'utf-8'})),
+	echo = console.log
 ;
-dotenv.config();
+const yargs = _yargs(process.argv.slice(2))
+	.usage('Usage: $0 [options]')
+
+	.option('p', {
+		"alias": ['prod','production'],
+		"description": 'Do stable release',
+		"type": "boolean"
+	})
+	.fail(function (msg, err, yargs) {
+		if (msg==="yargs error") {
+			console.error(yargs.help());
+		}
+
+		/*if(err){// preserve stack
+			throw err;
+		}*/
+
+		process.exit(1)
+	})
+
+	.help('h')
+	.alias('h', 'help')
+	.argv
+;
 
 
 
@@ -48,6 +46,7 @@ dotenv.config();
  */
 function exec(cmd) {
 	return new Promise((resolve, reject)=>{
+		// noinspection JSUnusedLocalSymbols
 		_exec(cmd, (err, stdout, stderr) => {
 			if(err) {
 				reject(err);
@@ -80,40 +79,32 @@ function errorHandler(promise) {
 
 
 async function init() {
-	const fileTarget = `./z-toolbox_dev_-${pjson.version}.zip`;
-	if(await fs.pathExists(path.join(pwd, fileTarget))){
-		throwException(`Zip package already exist for version ${pjson.version}!`);
+	const fileTarget = `./z-toolbox_dev-${pJson.version}.zip`;
+	if (await fs.pathExists(path.join(pwd, fileTarget))) {
+		throwException(`Zip package already exist for version ${pJson.version}!`);
 	}
 
-	const webExtManifestJsonPath = path.join(pwd, "./webextension/manifest.json"),
-		data = await fsReadFile(webExtManifestJsonPath),
-
-		versionReg = /([ \t]"version": *")(\d+\.\d+\.\d+)(",?)/gi
+	const webExtManifestJsonPath = path.join(pwd, './webextension/manifest.json'),
+		manifestJson = fs.readJsonSync(webExtManifestJsonPath, {encoding: 'utf8'})
 	;
 
-	let replacedCount = 0;
-	data.replace(versionReg, (match, p1, p2, p3)=>{
-		replacedCount++;
-		return p1 + pjson.version + p3;
+	manifestJson.version = pJson.version;
+	fs.writeJsonSync(webExtManifestJsonPath, manifestJson, {
+		encoding: 'utf8',
+		spaces: "\t",
+		EOL: "\n"
 	});
-	if(replacedCount!==1){
-		throwException("Error updating version");
-	}
-
-	errorHandler(fs.writeFile(webExtManifestJsonPath, data, {
-		encoding: 'utf-8'
-	}));
 
 
 	const tmpPath = path.join(pwd, "./tmp");
-	if(await fs.pathExists(tmpPath)){
+	if (await fs.pathExists(tmpPath)) {
 		warning("Temporary folder already exist, deleting...");
 		await errorHandler(fs.remove(tmpPath));
 	}
 	await errorHandler(fs.mkdir(tmpPath));
 
 	echo("Copying into tmp folder");
-	await errorHandler(exec("cd " + pwd + " && cp -rt tmp ./webextension/data ./webextension/_locales ./webextension/icon*.png ./webextension/LICENSE ./webextension/manifest.json"));
+	await errorHandler(exec("cd " + pwd + " && cp -rt tmp ./webextension/_locales ./webextension/assets ./webextension/js ./webextension/lib ./webextension/locales ./webextension/templates ./webextension/*.html ./webextension/icon*.png ./webextension/LICENSE ./webextension/manifest.json"));
 
 
 
@@ -172,16 +163,32 @@ async function init() {
 		console.error(e);
 	}
 
-	/*let ignoredFilesArgument = '';
-	if (ignoredFiles.length > 0) {
-		info('Ignored files : \n' + ignoredFiles.join('\n'));
-		ignoredFilesArgument = ` --ignore-files ${(ignoredFiles.join(' '))}`;
-	}*/
+	await errorHandler(webExt.cmd.build({
+		sourceDir: path.resolve(pwd, './tmp'),
+		artifactsDir: '.',
+		ignoreFiles: ignoredFiles,
+		filename: `z-toolbox_dev-${pJson.version}.zip`,
+		overwriteDest: true
+	}, {
+		shouldExitProgram: false,
+	}));
+
+	echo('Firefox manifest v3 overrides...');
+	manifestJson.background = {
+		"page": "/index.html"
+	};
+	fs.writeJsonSync(path.join(pwd, './tmp/manifest.json'), manifestJson, {
+		encoding: 'utf-8',
+		spaces: "\t",
+		EOL: "\n"
+	});
 
 	await errorHandler(webExt.cmd.build({
 		sourceDir: path.resolve(pwd, './tmp'),
 		artifactsDir: '.',
-		ignoreFiles: ignoredFiles
+		ignoreFiles: ignoredFiles,
+		filename: `z-toolbox_dev-firefox-${pJson.version}.zip`,
+		overwriteDest: true
 	}, {
 		shouldExitProgram: false,
 	}));
@@ -233,7 +240,7 @@ async function init() {
 		}
 
 		if (!signedXpi) {
-			// Exemple file name : z_toolbox_dev-0.17.1-an+fx.xpi
+			// Example file name : z_toolbox_dev-0.17.1-an+fx.xpi
 			const xpiFiles = fs.readdirSync(pwd, {
 					encoding: "utf8",
 					withFileTypes: true
@@ -258,4 +265,4 @@ async function init() {
 	await errorHandler(fs.remove(tmpPath));
 }
 
-init();
+await init();

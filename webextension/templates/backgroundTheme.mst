@@ -1,0 +1,12 @@
+{{#isDarkTheme}}@import url('assets/css/panel-theme-dark.css');
+@import url('assets/css/panel-text-color-white.css');{{/isDarkTheme}} {{#isLightTheme}}@import url('assets/css/panel-theme-light.css');
+@import url('assets/css/panel-text-color-black.css');{{/isLightTheme}}
+
+:root{
+	--bgLight0: hsl({{baseColor_hsl.H}}, {{baseColor_hsl.S}}, {{light0}});
+	--bgLight1: hsl({{baseColor_hsl.H}}, {{baseColor_hsl.S}}, {{light1}});
+	--bgLight2: hsl({{baseColor_hsl.H}}, {{baseColor_hsl.S}}, {{light2}});
+	--bgLight2_Opacity: hsla({{baseColor_hsl.H}}, {{baseColor_hsl.S}}, {{light2}}, 0.95);
+	--bgLight3: hsl({{baseColor_hsl.H}}, {{baseColor_hsl.S}}, {{light3}});
+	--InvColor: hsl({{invBaseColor_hue}}, {{baseColor_hsl.S}}, {{invBaseColor_light}});
+}

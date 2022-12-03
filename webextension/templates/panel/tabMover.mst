@@ -1,0 +1,5 @@
+<div class="buttonItem cursor tabMover" data-window-id="{{windowId}}" data-translate-title="move_tab_of_window">
+	<span class="icon material-icons">swap_horiz</span>
+	<div class="title" {{#tabsCount}}data-count="{{tabsCount}}"{{/tabsCount}}>{{title}}</div>
+	<div class="data ellipse">{{tabName}}</div>
+</div>

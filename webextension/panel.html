@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+	<title>Z-Toolbox - Panel</title>
+
+	<link rel="stylesheet" type="text/css" media="all" href="assets/css/inputs.css" />
+	<link rel="stylesheet" type="text/css" media="all" href="assets/css/panel.css" />
+	<style id="search-cssSelector">/* Will be loaded later */</style>
+	<link id="generated-color-stylesheet" rel="stylesheet" type="text/css" media="all" data-theme="dark" data-background_color="#000000" href="assets/css/panel-theme-dark.css" />
+	
+	<!-- 		Google Material Design - Icon fonts 		-->
+	<link rel="stylesheet" type="text/css" media="all" href="assets/css/fonts.css" />
+
+	<link rel="stylesheet" href="assets/css/custom-scrollbar.css" type="text/css" />
+</head>
+<body>
+	<header>
+		<div id="vide" class="vide if-simple-version"></div>
+		<button id="disableNotifications" class="if-normal-version"></button>
+		<button id="leave_delegated" class="if-delegated-version" data-translate-title="leaveDelegated"><span class="material-icons">transit_enterexit</span></button>
+		<button id="check_enabled" class="if-not-simple-version" data-translate-title="checkEnabled"><i class="material-icons">auto_mode</i></button>
+		<button id="refreshData" class="if-not-simple-version" data-translate-title="Refresh"><i class="material-icons">refresh</i></button>
+		<button id="settings" data-translate-title="Settings"><i class="material-icons">settings</i></button>
+	</header>
+
+	<section id="panelContent">
+		<div id="requestPermissionItem" class="if-not-simple-version buttonItem cursor hide">
+			<span class="icon"><i class="material-icons">download</i></span>
+			<div class="title" data-translate-id="request-all-url-permission">Grant permission to retrieve data</div>
+		</div>
+		<div id="refreshItem" class="if-not-simple-version"></div>
+		<div id="tabMover"></div>
+		<div id="tabPageServerIp"></div>
+	</section>
+
+	<footer>
+		<div>
+			<span data-translate-id="footer_title">Addon under GPL v3 licence</span>
+			<div>
+				<span data-translate-id="footer_by">By</span><!--
+				--> <a href="https://gitlab.com/u/ZatsuneNoMokou/" target="_blank">ZatsuneNoMokou</a><!--
+				--> <span id="current_version" data-translate-title="updateSimple"></span>
+			</div>
+		</div>
+	</footer>
+
+	<script id="panelInit" src="js/panel/panel-init.js"></script>
+</body>
+</html>

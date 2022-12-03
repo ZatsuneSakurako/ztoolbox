@@ -1,10 +1,6 @@
 import fs from "fs-extra";
 import path from "path";
 
-export function fsReadFile(filePath) {
-	return fs.readFileSync(filePath, {encoding: 'utf-8'})
-}
-
 /**
  * Copy `src` to `dest`, in Promise way.
  * @param {string} src
@@ -12,7 +8,7 @@ export function fsReadFile(filePath) {
  * @return {void}
  */
 export function cp(src, dest) {
-	if(fs.lstatSync(dest).isDirectory()){
+	if(fs.existsSync(dest) && fs.lstatSync(dest).isDirectory()){
 		dest = path.resolve(dest, "./" + path.basename(src));
 	}
 

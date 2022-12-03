@@ -1,17 +1,10 @@
 {
-	"applications": {
-		"gecko": {
-			"id": "ztoolbox_dev@zatsunenomokou.eu",
-			"update_url": "https://gitlab.com/ZatsuneNoMokou/ztoolbox/raw/master/dist/z_toolbox_dev.update.json",
-			"strict_min_version": "91.0"
-		}
-	},
-	"manifest_version": 2,
+	"manifest_version": 3,
 	"name": "Z-ToolBox (Dev)",
 	"short_name": "ZToolBoxDev",
 	"description": "__MSG_extShortDesc__",
 	"author": "Zatsune No Mokou",
-	"version": "0.20.2",
+	"version": "1.0.0",
 	"icons": {
 		"16": "/icon_16.png",
 		"48": "/icon_48.png",
@@ -19,10 +12,10 @@
 		"128": "/icon_128.png"
 	},
 	"background": {
-		"persistent": false,
-		"page": "/data/init.html"
+		"service_worker": "/js/index.js",
+		"type": "module"
 	},
-	"browser_action": {
+	"action": {
 		"browser_style": false,
 		"default_icon": {
 			"16": "/icon_16.png",
@@ -30,49 +23,45 @@
 			"96": "/icon_96.png",
 			"128": "/icon_128.png"
 		},
-		"default_popup": "/data/panel.html"
+		"default_popup": "/panel.html"
 	},
 	"content_scripts": [
 		{
-			"matches": ["*://ppa.launchpad.net/*/*/*/"],
-			"js": ["/data/js/contentscripts/launchpad-addlink.js"]
-		},
-		{
-			"matches": ["https://iqdb.org/"],
-			"js": ["/data/js/contentscripts/iqdb_search.js"],
-			"run_at": "document_start"
-		},
-		{
 			"matches": [
-				"https://www.amazon.fr/gp/product/*",
-				"https://www.amazon.fr/dp/*",
-				"https://www.amazon.fr/*/dp/*"
+				"https://iqdb.org/"
 			],
-			"js": ["/data/js/contentscripts/amazonShare.js"],
-			"run_at": "document_idle"
+			"js": [
+				"/js/contentscripts/iqdb_search.js"
+			],
+			"run_at": "document_start"
 		}
 	],
 	"default_locale": "en",
 	"permissions": [
 		"alarms",
+		"clipboardWrite",
 		"contextMenus",
 		"notifications",
+		"scripting",
 		"storage",
 		"tabs",
 		"activeTab",
 		"nativeMessaging",
-		"<all_urls>",
-		"http://*/*",
-		"https://*/*"
+		"webRequest"
 	],
-	"optional_permissions": [
-		"clipboardWrite",
-		"webRequest",
-		"webRequestBlocking"
+	"host_permissions": [
+		"<all_urls>"
 	],
 	"options_ui": {
-		"page": "data/options.html",
-		"chrome_style": false
+		"open_in_tab": true,
+		"page": "options.html"
 	},
-	"minimum_chrome_version": "90.0"
+	"browser_specific_settings": {
+		"gecko": {
+			"id": "ztoolbox_dev@zatsunenomokou.eu",
+			"update_url": "https://gitlab.com/ZatsuneNoMokou/ztoolbox/raw/master/dist/z_toolbox_dev.update.json",
+			"strict_min_version": "108.0"
+		}
+	},
+	"minimum_chrome_version": "92.0"
 }

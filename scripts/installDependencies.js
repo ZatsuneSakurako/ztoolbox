@@ -5,8 +5,8 @@ import {cp} from "./common/file-operations.js";
 import {info, error} from "./common/custom-console.js";
 import {projectRootDir} from "./projectRootDir.js";
 
-const fontPath = path.join(projectRootDir, './webextension/data/font/'),
-	jsLib = path.join(projectRootDir, './webextension/data/js/lib/')
+const fontPath = path.join(projectRootDir, './webextension/assets/fonts/'),
+	jsLib = path.join(projectRootDir, './webextension/lib/')
 ;
 
 /**
@@ -28,16 +28,15 @@ if (!exist_jsLib) {
 	info("Copying mustache...");
 	_cp("./node_modules/mustache/mustache.js", jsLib);
 
-	info("Copying webextension-polyfill...");
-	_cp("./node_modules/webextension-polyfill/dist/browser-polyfill.js", jsLib);
-	_cp("./node_modules/webextension-polyfill/dist/browser-polyfill.js.map", jsLib);
-
 	info("Copying i18next...");
-	_cp("./node_modules/i18next/i18next.js", jsLib);
+	_cp("./node_modules/i18next/i18next.min.js", jsLib);
 
 	info("Copying i18next-http-backend...");
 	_cp("./node_modules/i18next-http-backend/i18nextHttpBackend.js", jsLib);
 
 	info("Copying MaterialIcons (marella/material-icons)...");
 	_cp("./node_modules/material-icons/iconfont/material-icons.woff2", path.normalize(`${fontPath}/MaterialIcons-Regular.woff2`));
+
+	info("Copying JSON5...");
+	_cp("./node_modules/json5/dist/index.mjs", path.normalize(`${jsLib}/json5.js`));
 }

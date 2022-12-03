@@ -1,0 +1,5 @@
+<div class="buttonItem tabPageServerIp{{^ip}} no-ip{{/ip}}">
+	<img class="icon" src="{{favIconUrl}}" alt="" />
+	<div class="title ellipse">{{tabName}}</div>
+	{{#ip}}<div class="data ellipse">{{ip}}{{#description}} ({{description}}){{/description}}</div>{{/ip}}
+</div>

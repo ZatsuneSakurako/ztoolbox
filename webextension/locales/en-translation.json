@@ -1,0 +1,157 @@
+{
+	"language": "en",
+
+	"Open_in_browser": "Open in browser",
+	"Close": "Close",
+	"Add": "Add",
+	"Delete": "Delete",
+	"DeleteIgnore": "Delete / Ignore",
+	"Cancel": "Cancel",
+	"Yes": "Yes",
+	"No": "No",
+	"Ok": "Ok",
+
+	"GloballyDisabledNotifications": "All notifications are disabled",
+	"GloballyDisableNotifications": "Temporarly disable notifications",
+
+	"leaveDelegated": "Go in normal mode",
+	"checkEnabled": "Refresh Refresh",
+	"checkEnabled_off": "Refresh disable",
+	"Refresh": "Refresh",
+	"No data": "No data yet",
+
+	"Settings": "Settings",
+
+	"request-all-url-permission": "Grant permission to retrieve data",
+
+	"OpenWithoutPlaylist": "Open without playlist",
+
+	"clipboard_success": "Copied into the clipboad.",
+	"clipboard_failed": "Failed to copy to clipboad.\nIt is not supported or the permission is missing",
+
+	"Addon_have_been_updated": "Addon have been updated (version {{version}})",
+
+	"blacklist_title": "Blacklist",
+	"whitelist_title": "Whitelist",
+
+
+	"freshRss_baseUrl_title": "URL of your FreshRss instance (should end with /i/)",
+	"freshRss_baseUrl_description": "Data refresh with url provided",
+
+	"notify_checkedData_title": "Show a notification for deviantArt/freshRss",
+	"notify_checkedData_description": "Notification when checked",
+
+	"notify_all_viewed_title": "Show a notification when all view in website(s)",
+	"notify_all_viewed_description": "Notification when checked",
+
+	"notify_vocal_title": "Play a vocal notifications",
+	"notify_vocal_description": "Notification when checked",
+
+	"vocal_volume_title": "Volume of vocal notifications",
+	"vocal_volume_description": "In percent",
+
+
+	"open_optionpage": "Open option page",
+
+	"check_enabled_title": "Automatic deviantArt/freshRss data refresh enabled",
+	"check_enabled_description": "Enabled if checked",
+
+	"check_delay_title": "deviantArt/freshRss verification delay",
+	"check_delay_description": "Delay between verifications, in minute",
+
+	"mode_title": "Extension mode",
+	"mode_description": "Choose extension mode",
+	"mode_normal": "Normal",
+	"mode_simplified": "Simplified",
+	"mode_delegated": "External",
+
+	"panel_height_title": "Panel's height",
+	"panel_height_description": "Size in pixels",
+
+	"panel_width_title": "Panel's width",
+	"panel_width_description": "Size in pixels",
+
+	"theme_title": "Panel theme",
+	"theme_description": "Choose the theme of the panel",
+	"theme_dark": "Dark",
+	"theme_light": "Light",
+
+	"background_color_title": "Panel color",
+	"background_color_description": "Choose base color of the panel",
+
+	"export_preferences_title": "Export preferences in a file",
+	"export_preferences": "Export",
+	"import_preferences_title": "Import preferences from a file",
+	"import_preferences": "Import",
+
+	"showAdvanced_title": "Show advanced settings",
+	"showAdvanced_description": "Enabled when checked",
+
+	"save": "Save",
+	"sync_title": "Save / Restaure preferences from/to synchronization",
+	"restaure_sync": "Restaure",
+	"save_sync": "Save",
+	"debugInfo": "",
+	"debugDataLabel": "Error(s):",
+	"noErrorToShow": "No error to show.",
+	"debug_checkingLivesState": "State of the stream refresh",
+	"footer_title": "Addon under GPL v3 licence.",
+	"footer_by": "by",
+
+
+
+	"copy_link_text": "Copy text of link",
+	"copied_link_text": "Text of link copied",
+	"copied_title_text": "Title copied",
+	"error_copying_to_clipboard": "Error when copying into clipboad",
+
+
+
+	"SearchOnIqdb": "Search on IQDB",
+
+
+
+	"Shorten_this_link": "Shorten this link",
+	"Shorten_this_picture": "Shorten this picture",
+	"Shorten_this_page_URL": "Shorten this page URL",
+	"Shortened_link_copied_in_the_clipboard": "Shortened link copied in the clipboard",
+	"Error_when_copying_to_clipboard": "Error when copying into clipboad",
+	"Error_on_request": "Error when generating the link",
+	"Check_your_link_or_page": "Check your link or page",
+	"tabPageServerIp_alias_title": "IP aliases",
+	"tabPageServerIp_alias_description": "IP/Alias (IP as key)",
+
+
+
+	"website_notif": "{{website}} notification",
+	"website_notif_plural": "{{website}} notifications",
+	"website_not_logged": "No {{website}} account logged",
+
+	"not_logged": "Not logged",
+	"no_website_logged": "No account logged",
+	"inbox": "Inbox",
+	"spam": "Spam",
+
+	"open_folder": "Open folder",
+
+	"count_new_notif": "{{count}} new notification",
+	"count_new_notif_plural": "{{count}} new notifications",
+
+	"all_viewed": "Everything viewed",
+
+
+	"no_other_window": "No other window",
+	"move_tab_of_window": "Move tab of window",
+	"open_link_to_window": "Open link to another window",
+	"windowId": "Window {{windowId}}",
+	"newWindow": "New window",
+	"window_windowId": "Window {{windowId}} \"{{window}}\"",
+
+
+	"FileTooBig": "File is too big",
+	"WrongFileType": "Wrong file type",
+	"timeIsNow": "It is now {{currentTime}}",
+
+	"updateSimple": "Update available",
+	"updateDetail": "An update of {{name}} is available, update the local repository"
+}

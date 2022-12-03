@@ -1,3 +1,24 @@
+# 1.0.0
+* i : Move to manifest v3, folders rework (remove data folder)
+* i : WIP native messaging (timeout system, getPreferences result, theme option renaming)
+* i : Move data (deviantArt / FreshRSS, theme cache) to session storage if available
+* \+ : Page IP / Status display
+* \+ : Simplified mode (deviantArt/FreshRSS disabled)
+* \+ : Delegated/External mode (external settings)
+* fix : Panel : sizing, tab title overflow
+* fix : deviantArt / FreshRSS refresh alarm missing periodic data
+* fix : deviantArt - use watch page as data URL
+* fix : Preferences - load + import of JSON settings
+* \- : Delete browser polyfill
+* \- : Delete ZDK
+* \- : Delete features :
+  * Amazon share
+  * FreshRSS iframe mode
+  * Launchpad add link
+  * Lstu
+  * Service worker
+  * Setting sync buttons / WIP support Dropbox sync
+
 # 0.20.2
 * fix : deviantArt - change login url
 
@@ -26,6 +47,7 @@
   * Hourly Alarm
 * i : Copy text link now for Firefox only
 * i : Less message dependencies between panel and main
+* i : WIP native messaging
 * fix : Fix badge refresh
 
 # 0.17.3
@@ -79,7 +101,7 @@
 
 # 0.11.2
 * \- : "Not logged" notification with deviantArt launched every checked
-* \- : Twitch channel created will stop working after 13rd of September, avoid unnecessary errors
+* \- : Twitch channel created will stop working after 13th of September, avoid unnecessary errors
 
 # 0.11.1
 * Fix : New deviantArt support (no folder url yet)
@@ -107,7 +129,7 @@
 
 # 0.7.2
 * \+ : RSS Feeds refresh
-* \+ : RSS Feeds messsages
+* \+ : RSS Feeds messages
 * Fix : Panel - Keep display order between deviantArt and RSS Feed
 
 # 0.7.1
@@ -118,7 +140,7 @@
 * \+ : Translation fix
 
 # 0.6.8
-* Fix : deviantArt profil url
+* Fix : deviantArt profile url
 
 # 0.6.7
 * Fix : Translations
@@ -139,7 +161,7 @@
 * Fix : deviantArt if incorrect request answer
 
 # 0.6.2
-* Fix : Page context menu wrongly showing Youtube Playlist one
+* Fix : Page context menu wrongly showing YouTube Playlist one
 * Fix : Reworked Twitch content script, now supporting channel currently hosting on page load
 
 # 0.6.1
@@ -154,12 +176,12 @@
 # 0.5.4
 * i : ZDK update
 	* \+ : \[ZDK] Promise based setTimeout
-	* \+ : \[ZDK] getPageSize to get the page actuel size
+	* \+ : \[ZDK] getPageSize to get the current page size
 	* \+ : \[ZDK] hasTouch to detect pages with touch screen
 * Fix : openTabIfNotExist using wrong arguments on [browser.tabs.query()](https://developer.mozilla.org//Add-ons/WebExtensions/API/tabs/query)
 
 # 0.5.3
-* i : Use Moment.js to get next hour instead of self made function
+* i : Use Moment.js to get next hour instead of self-made function
 
 # 0.5.2
 * Fix : Hourly alarm - Hour formats and definition
@@ -184,15 +206,15 @@
 	* \+ : Vocal notifications
 	* Fix : Cleaning hourly alarms before enabling it
 	* Fix : Risk of several onAlarm listeners
-	* Fix : Respect the globaly disabled notifications state
+	* Fix : Respect the globally disabled notifications state
 * Fix : Missing setting to enable vocal notifications
 * Fix : Localization of vocal notification language of refresh-data
 
 # 0.3.2
-* Fix : Hourly alarm, debug that was not supposed to be commited
+* Fix : Hourly alarm, debug that was not supposed to be committed
 
 # 0.3.1
-* Fix : Hourly alarm, Firefox sending undefined with [alarms.get()](https://developer.mozilla.org//Add-ons/WebExtensions/API/alarms/get) if nothing to return
+* Fix : Hourly alarm, Firefox sending undefined with [`alarms.get()`](https://developer.mozilla.org//Add-ons/WebExtensions/API/alarms/get) if nothing to return
 
 # 0.3.0
 * i : Moved "feature" script to a dedicated folder
@@ -239,7 +261,7 @@
 * Fix : Addon auto updater
 
 # 0.0.3
-* Fix : Disabled Tooptip, causing strange Firefox behaviour
+* Fix : Disabled Tooltip, causing strange Firefox behaviour
 	* Not shown correctly
 	* Other panels from others addons not showing correctly
 
