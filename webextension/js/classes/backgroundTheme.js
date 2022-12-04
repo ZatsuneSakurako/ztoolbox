@@ -110,8 +110,8 @@ export async function theme_cache_update(colorStylesheetNode, currentTheme, back
 	if (!window.Mustache) {
 		await import('../../lib/mustache.js');
 	}
-	const {getTemplate} = await import('../init-templates.js');
-	const style = Mustache.render(await getTemplate("backgroundTheme"), {
+	const {renderTemplate} = await import('../init-templates.js');
+	const style = await renderTemplate('backgroundTheme', {
 		"isDarkTheme": (currentTheme === "dark"),
 		"isLightTheme": (currentTheme === "light"),
 		"baseColor_hsl": baseColor_hsl,

@@ -232,6 +232,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@babel/runtime@npm:^7.8.4":
+  version: 7.20.6
+  resolution: "@babel/runtime@npm:7.20.6"
+  dependencies:
+    regenerator-runtime: ^0.13.11
+  checksum: 42a8504db21031b1859fbc0f52d698a3d2f5ada9519eb76c6f96a7e657d8d555732a18fe71ef428a67cc9fc81ca0d3562fb7afdc70549c5fec343190cbaa9b03
+  languageName: node
+  linkType: hard
+
 "@babel/template@npm:^7.12.13":
   version: 7.12.13
   resolution: "@babel/template@npm:7.12.13"
@@ -609,6 +618,13 @@ __metadata:
   dependencies:
     "@types/node": "*"
   checksum: e99fc7cc6265407987b30deda54c1c24bb1478803faf6037557a774b2f034c5b097ffd65847daa87e82a61a250d919f35c3588654b0fdaa816906650f596d1b0
+  languageName: node
+  linkType: hard
+
+"@types/twig@npm:^1.12.9":
+  version: 1.12.9
+  resolution: "@types/twig@npm:1.12.9"
+  checksum: 0f00dad00d84e60c100748bf898f6d0ded9329e90a4d145d21c58ff4f09f1adb0dab05c28d5f948406809f5df4c86d7b9bb8f5ce2f412bf4d607039f416d7198
   languageName: node
   linkType: hard
 
@@ -2595,6 +2611,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"foreachasync@npm:^3.0.0":
+  version: 3.0.0
+  resolution: "foreachasync@npm:3.0.0"
+  checksum: 4791f64b539b06c751b14adb2881173c780d41ce37d881715a5e5787fa4a08961f2c6a6cf3bccdfa48e56fb91d8676d867fdc63c008cdb576bd33261716e8381
+  languageName: node
+  linkType: hard
+
 "forever-agent@npm:~0.6.1":
   version: 0.6.1
   resolution: "forever-agent@npm:0.6.1"
@@ -3958,6 +3981,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"locutus@npm:^2.0.11":
+  version: 2.0.16
+  resolution: "locutus@npm:2.0.16"
+  checksum: 69eaaf119462d54fd55d1f23c15df8365a36c610520a30d7a456046369dae7530ece938783cda7f5e051a0c15655bb2c15110b3ef725fb46a762975be3b50d07
+  languageName: node
+  linkType: hard
+
 "lodash.includes@npm:^4.3.0":
   version: 4.3.0
   resolution: "lodash.includes@npm:4.3.0"
@@ -4304,6 +4334,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"minimatch@npm:3.0.x":
+  version: 3.0.8
+  resolution: "minimatch@npm:3.0.8"
+  dependencies:
+    brace-expansion: ^1.1.7
+  checksum: 850cca179cad715133132693e6963b0db64ab0988c4d211415b087fc23a3e46321e2c5376a01bf5623d8782aba8bdf43c571e2e902e51fdce7175c7215c29f8b
+  languageName: node
+  linkType: hard
+
 "minimatch@npm:^3.1.1, minimatch@npm:^3.1.2":
   version: 3.1.2
   resolution: "minimatch@npm:3.1.2"
@@ -4467,15 +4506,6 @@ __metadata:
     array-union: ^3.0.1
     minimatch: ^3.0.4
   checksum: c04233765f664f556af12309cdad1a11c137655f756674b853a981f287984a49f3916955b57d306ed36bba3d2d6d5b6fbba4b48f483f11bd24e3c124a09e05b5
-  languageName: node
-  linkType: hard
-
-"mustache@npm:^4.2.0":
-  version: 4.2.0
-  resolution: "mustache@npm:4.2.0"
-  bin:
-    mustache: bin/mustache
-  checksum: 928fcb63e3aa44a562bfe9b59ba202cccbe40a46da50be6f0dd831b495be1dd7e38ca4657f0ecab2c1a89dc7bccba0885eab7ee7c1b215830da765758c7e0506
   languageName: node
   linkType: hard
 
@@ -5421,6 +5451,13 @@ __metadata:
     indent-string: ^4.0.0
     strip-indent: ^3.0.0
   checksum: fa1ef20404a2d399235e83cc80bd55a956642e37dd197b4b612ba7327bf87fa32745aeb4a1634b2bab25467164ab4ed9c15be2c307923dd08b0fe7c52431ae6b
+  languageName: node
+  linkType: hard
+
+"regenerator-runtime@npm:^0.13.11":
+  version: 0.13.11
+  resolution: "regenerator-runtime@npm:0.13.11"
+  checksum: 27481628d22a1c4e3ff551096a683b424242a216fee44685467307f14d58020af1e19660bf2e26064de946bad7eff28950eae9f8209d55723e2d9351e632bbb4
   languageName: node
   linkType: hard
 
@@ -6445,6 +6482,20 @@ __metadata:
   languageName: node
   linkType: hard
 
+"twig@npm:^1.15.4":
+  version: 1.15.4
+  resolution: "twig@npm:1.15.4"
+  dependencies:
+    "@babel/runtime": ^7.8.4
+    locutus: ^2.0.11
+    minimatch: 3.0.x
+    walk: 2.3.x
+  bin:
+    twigjs: ./bin/twigjs
+  checksum: 99165227a1466e8f5ec479748aedf72fd0ccb85c3ada4c9c15936b7e253ce50d5da9d6654b42197b9e46d5d1970ee413d2bef3ca79f552b4c238acef74dc61bc
+  languageName: node
+  linkType: hard
+
 "type-check@npm:^0.4.0, type-check@npm:~0.4.0":
   version: 0.4.0
   resolution: "type-check@npm:0.4.0"
@@ -6732,6 +6783,15 @@ __metadata:
     unist-util-stringify-position: ^2.0.0
     vfile-message: ^2.0.0
   checksum: ee5726e10d170472cde778fc22e0f7499caa096eb85babea5d0ce0941455b721037ee1c9e6ae506ca2803250acd313d0f464328ead0b55cfe7cb6315f1b462d6
+  languageName: node
+  linkType: hard
+
+"walk@npm:2.3.x":
+  version: 2.3.15
+  resolution: "walk@npm:2.3.15"
+  dependencies:
+    foreachasync: ^3.0.0
+  checksum: d494df1924656cc4881ff8f70474f80be10d07d0c899620e02ff8627e4f339f37e74d1b30b70e7a714d0b873b0dc8b20129a619c4b407b39949c756637ebe3a6
   languageName: node
   linkType: hard
 
@@ -7078,6 +7138,7 @@ __metadata:
     "@types/fs-extra": ^9.0.13
     "@types/klaw-sync": ^6.0.1
     "@types/node-fetch": ^3.0.3
+    "@types/twig": ^1.12.9
     "@types/yargs": ^16.0.4
     chalk: ^4.1.0
     chrome-webstore-upload: ^0.2.2
@@ -7088,10 +7149,10 @@ __metadata:
     json5: ^2.2.1
     klaw-sync: ^6.0.0
     material-icons: ^1.10.7
-    mustache: ^4.2.0
     node-fetch: ^3.2.0
     stylelint: ^13.10.0
     stylelint-config-recommended: ^3.0.0
+    twig: ^1.15.4
     web-ext: ^7.2.0
     web-ext-types: ^3.2.1
     yargs: ^16.2.0

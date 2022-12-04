@@ -9,13 +9,14 @@
 		"i18next-http-backend": "^1.3.2",
 		"json5": "^2.2.1",
 		"material-icons": "^1.10.7",
-		"mustache": "^4.2.0"
+		"twig": "^1.15.4"
 	},
 	"devDependencies": {
 		"@types/chrome": "^0.0.202",
 		"@types/fs-extra": "^9.0.13",
 		"@types/klaw-sync": "^6.0.1",
 		"@types/node-fetch": "^3.0.3",
+		"@types/twig": "^1.12.9",
 		"@types/yargs": "^16.0.4",
 		"chalk": "^4.1.0",
 		"chrome-webstore-upload": "^0.2.2",
