@@ -1,3 +1,6 @@
+# WIP
+* i : Move from Mustache templates to Twig using [twig.js](https://github.com/twigjs/twig.js)
+
 # 1.0.0
 * i : Move to manifest v3, folders rework (remove data folder)
 * i : WIP native messaging (timeout system, getPreferences result, theme option renaming)
