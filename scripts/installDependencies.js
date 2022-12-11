@@ -25,8 +25,9 @@ if (!exist_jsLib) {
 	error("JS lib folder not found!");
 	process.exit(1);
 } else {
-	info("Copying mustache...");
-	_cp("./node_modules/mustache/mustache.js", jsLib);
+	info("Copying twing...");
+	_cp("./node_modules/twig/twig.min.js", jsLib);
+	_cp("./node_modules/twig/twig.min.js.map", jsLib);
 
 	info("Copying i18next...");
 	_cp("./node_modules/i18next/i18next.min.js", jsLib);

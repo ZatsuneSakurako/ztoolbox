@@ -1,0 +1,27 @@
+<a class="buttonItem websiteItem cursor"{% if href %} href="{{{href}}}" target="_blank" {% endif %}
+   data-logged="{{logged}}" data-website="{{website}}">
+
+	<img class="icon" src="{{websiteIcon}}" alt="" />
+
+	<div class="title" {% if logged %}data-count="{{count}}"{% endif %}>{{website}}</div>
+	<div class="websiteData">
+		{% if logged %}
+			{% if folders %}
+				{% if folderHaveUrl %}
+					<a class="folder" href="{{folderUrl}}" target="_blank"
+					   data-translate-title="open_folder"
+					   data-folder-title="{{folderTitle}}"
+					   data-folder-count="{{folderCount}}"></a>
+				{% else %}
+					<span class="folder" data-folder-count="{{folderCount}}">{% if logged %}{{folderTitle}}{% endif %}</span>
+				{% endif %}
+			{% endif %}
+		{% else %}
+			{% if noData %}
+				<span class="folder" data-translate-id="No data"></span>
+			{% else %}
+				<span class="folder" data-translate-id="not_logged"></span>
+			{% endif %}
+		{% endif %}
+	</div>
+</a>

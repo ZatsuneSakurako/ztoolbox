@@ -1,22 +1,40 @@
 const templatesSource = window.templatesSource = new Map();
-templatesSource.set('backgroundTheme', '/templates/backgroundTheme.mst');
-templatesSource.set('panelCheckedDataItem', '/templates/panel/checkedDataItem.mst');
-templatesSource.set('tabMover', '/templates/panel/tabMover.mst');
-templatesSource.set('tabPageServerIp', '/templates/panel/tabPageServerIp.mst');
+templatesSource.set('backgroundTheme', '/templates/backgroundTheme');
+templatesSource.set('panelCheckedDataItem', '/templates/panel/checkedDataItem');
+templatesSource.set('tabMover', '/templates/panel/tabMover');
+templatesSource.set('tabPageServerIp', '/templates/panel/tabPageServerIp');
 
 
-export async function getMustache() {
-	if (!window.Mustache) {
-		await import('../lib/mustache.js');
+
+/**
+ *
+ * @return {Promise<twig.Twig>}
+ */
+export async function getTwig() {
+	if (!window.Twig) {
+		await import('../lib/twig.min.js');
 	}
-	return window.Mustache;
+	return window.Twig;
 }
 
-export async function renderTemplate(templateId, context) {
-	return (await getMustache()).render(await getTemplate(templateId), context);
+/**
+ *
+ * @param {string} templateId
+ * @param {Dict<*>} data
+ * @return {Promise<string>}
+ */
+export async function renderTemplate(templateId, data) {
+	const twigTemplate = await getTemplate(templateId);
+	return await twigTemplate.render(data);
 }
 
 const loadMap = new Map();
+
+/**
+ *
+ * @param {string} templateId
+ * @return {Promise<Twig>}
+ */
 export async function getTemplate(templateId) {
 	let loadedTemplate = loadMap.get(templateId);
 	if (!loadedTemplate) {
@@ -26,7 +44,7 @@ export async function getTemplate(templateId) {
 		}
 
 		try {
-			const response = await fetch(chrome.runtime.getURL(templatePath));
+			const response = await fetch(chrome.runtime.getURL(templatePath + '.twig'));
 			const loadText = new Promise((resolve, reject) => {
 				response.text()
 					.then(resolve)
@@ -47,29 +65,7 @@ export async function getTemplate(templateId) {
 	}
 
 	const template = await loadedTemplate.response;
-	(await getMustache()).parse(template);
-
-	return template;
-}
-
-export async function getTemplates(...templates) {
-	let templatePromises = [],
-		templateMap = new Map()
-	;
-
-	for (const id of templates) {
-		templatePromises.push(getTemplate(id));
-	}
-
-	const templatesData = await Promise.allSettled(templatePromises);
-	for (let [i, settledData] of templatesData.entries()) {
-		if (settledData.status === 'rejected') {
-			console.error(settledData.reason);
-			continue;
-		}
-
-		templateMap.set(templates[i], settledData.value);
-
-	}
-	return templateMap;
+	return (await getTwig()).twig({
+		data: template
+	})
 }

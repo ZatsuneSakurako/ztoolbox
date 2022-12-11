@@ -1,0 +1,10 @@
+<div class="buttonItem tabPageServerIp{% if not ip %} no-ip{% endif %}">
+	<img class="icon" src="{{favIconUrl}}" alt="" />
+	<div class="title ellipse">{{tabName}}</div>
+	{% if ip %}
+		<div class="data ellipse">
+			{{ip}}{%- if description %} ({{description}}){% endif -%}
+			&nbsp;<a href="https://dnslytics.com/ip/{{ ip }}" title="DNSlytics" target="_blank"><img src="https://dnslytics.com/favicon.ico" alt=""></a>
+		</div>
+	{% endif %}
+</div>
