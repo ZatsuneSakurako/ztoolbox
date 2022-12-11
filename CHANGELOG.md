@@ -1,4 +1,4 @@
-# WIP
+# 1.1.0
 * i : Move from Mustache templates to Twig using [twig.js](https://github.com/twigjs/twig.js)
 * i : Add DNSlytics link with Page IP / Status display
 * \+ : Native messaging - accept showing notifications from native messaging
