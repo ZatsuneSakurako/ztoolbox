@@ -1,5 +1,6 @@
 # WIP
 * i : Move from Mustache templates to Twig using [twig.js](https://github.com/twigjs/twig.js)
+* i : Add DNSlytics link with Page IP / Status display
 
 # 1.0.0
 * i : Move to manifest v3, folders rework (remove data folder)
