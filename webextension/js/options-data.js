@@ -21,6 +21,14 @@ export const options = {
 			}
 		]
 	},
+	"notification_support": {
+		"title": "Accept notifications from chrome native messaging (external mode only)",
+		"description": "Enabled if checked",
+		"type": "bool",
+		"value": true,
+		"prefLevel": "basic",
+		"onlyDelegatedMode": true
+	},
 	"check_enabled": {
 		"title": "Data automatic refresh enabled",
 		"description": "Enabled if checked",

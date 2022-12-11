@@ -1,6 +1,8 @@
 import {randomId} from "../utils/randomId.js";
 import {getSyncKeys} from "./chrome-preferences.js";
 import {chromeNativeSettingsStorageKey, getElectronSettings} from "./chrome-native-settings.js";
+import {sendNotification} from "./chrome-notification.js";
+import {theme_update} from "./backgroundTheme.js";
 
 const port = chrome.runtime.connectNative('eu.gitlab.zatsunenomokou.chromenativebridge');
 
@@ -17,13 +19,9 @@ port.onMessage.addListener(function(msg) {
 	switch (msg.type ?? null) {
 		case 'ws open':
 			console.log('[NativeMessaging]', 'ws open', msg);
-			port.postMessage({
-				type: 'extensionName',
-				data: {
-					userAgent: navigator.userAgent,
-					extensionId: chrome.runtime.id
-				}
-			});
+			sendSocketData()
+				.catch(console.error)
+			;
 
 			getSyncAllowedPreferences()
 				.catch(console.error)
@@ -42,6 +40,11 @@ port.onMessage.addListener(function(msg) {
 				_id: msg._id
 			});
 			break;
+		case 'sendNotification':
+			handleSendNotification(msg._id, msg.opts)
+				.catch(console.error)
+			;
+			break;
 		case 'commandReply':
 			break;
 		case 'onSettingUpdate':
@@ -52,6 +55,80 @@ port.onMessage.addListener(function(msg) {
 		default:
 			console.log('[NativeMessaging]', 'Unknown type', msg);
 	}
+});
+
+
+chrome.storage.onChanged.addListener(async (changes, area) => {
+	if (area !== "local") return;
+
+	if ("mode" in changes || "notification_support" in changes) {
+		sendSocketData()
+			.catch(console.error)
+		;
+	}
+});
+
+async function sendSocketData() {
+	const values = await chrome.storage.local.get(['notification_support', 'mode']);
+	port.postMessage({
+		type: 'updateSocketData',
+		data: {
+			notificationSupport: values.mode === 'delegated' && values.notification_support === true,
+			userAgent: navigator.userAgent,
+			extensionId: chrome.runtime.id
+		}
+	});
+}
+
+async function handleSendNotification(id, opts) {
+	await sendNotification({
+		...opts,
+		id: 'chromeNative-' + id
+	}, {
+		onClickAutoClose: false,
+		onButtonClickAutoClose: false
+	});
+}
+chrome.notifications.onClosed.addListener(function (notificationId, byUser) {
+	if (!notificationId.startsWith('chromeNative-')) return;
+
+	chrome.notifications.clear(notificationId);
+	const _id = notificationId.replace('chromeNative-', '');
+	port.postMessage({
+		type: 'commandReply',
+		_id,
+		data: {
+			response: 'close',
+			byUser
+		}
+	});
+});
+chrome.notifications.onButtonClicked.addListener(function (notificationId, buttonIndex) {
+	if (!notificationId.startsWith('chromeNative-')) return;
+
+	chrome.notifications.clear(notificationId);
+	const _id = notificationId.replace('chromeNative-', '');
+	port.postMessage({
+		type: 'commandReply',
+		_id,
+		data: {
+			response: 'action',
+			index: buttonIndex
+		}
+	});
+});
+chrome.notifications.onClicked.addListener(async function (notificationId) {
+	if (!notificationId.startsWith('chromeNative-')) return;
+
+	chrome.notifications.clear(notificationId);
+	const _id = notificationId.replace('chromeNative-', '');
+	port.postMessage({
+		type: 'commandReply',
+		_id,
+		data: {
+			response: 'click'
+		}
+	});
 });
 
 /**

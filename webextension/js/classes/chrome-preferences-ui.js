@@ -291,6 +291,9 @@ async function newPreferenceNode(parent, id){
 	if (typeof prefObj.onlyNormalMode === "boolean" && !!prefObj.onlyNormalMode) {
 		node.classList.add('if-normal-version');
 	}
+	if (typeof prefObj.onlyDelegatedMode === "boolean" && !!prefObj.onlyDelegatedMode) {
+		node.classList.add('if-delegated-version');
+	}
 
 	let labelNode = document.createElement("label");
 	labelNode.classList.add("preference");
