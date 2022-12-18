@@ -4,7 +4,7 @@ import {chromeNativeSettingsStorageKey, getElectronSettings} from "./chrome-nati
 import {sendNotification} from "./chrome-notification.js";
 import {theme_update} from "./backgroundTheme.js";
 
-const port = chrome.runtime.connectNative('eu.gitlab.zatsunenomokou.chromenativebridge');
+const port = chrome.runtime.connectNative('eu.zatsunenomokou.chromenativebridge');
 
 port.onMessage.addListener(function(msg) {
 	if (location.pathname.endsWith('panel.html') || location.pathname.endsWith('options.html')) {
