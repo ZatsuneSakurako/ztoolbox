@@ -268,23 +268,11 @@ async function updateSyncAllowedPreferences(data) {
 
 /**
  *
- * @return {Promise<Dict<WebsiteData>>}
- */
-export async function getWebsitesData() {
-	const {error, result} = await fnNative('getWebsitesData');
-	if (!!error) {
-		throw new Error(error ?? 'UNKNOWN_ERROR');
-	}
-	return result;
-}
-
-/**
- *
  * @param {Dict<WebsiteData>} websitesData
  * @return {Promise<void>}
  */
 export async function sendWebsitesData(websitesData) {
-	return await callNative('sendWebsitesData', websitesData);
+	return callNative('sendWebsitesData', websitesData);
 }
 
 /**
