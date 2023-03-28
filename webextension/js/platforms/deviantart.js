@@ -3,7 +3,7 @@ import JSON5 from '../../lib/json5.js';
 
 const deviantArt = {
 	// Old data url dataURL:"http://www.deviantart.com/notifications/watch",
-	dataURL:"https://www.deviantart.com/watch/deviations",
+	dataURL: 'https://www.deviantart.com/watch/deviations',
 	defaultFavicon: 'https://www.deviantart.com/favicon.ico',
 	// defaultFavicon: 'https://icons.duckduckgo.com/ip2/www.deviantart.com.ico',
 	getViewURL: function(websiteState) {
