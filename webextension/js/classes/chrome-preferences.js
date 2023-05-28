@@ -143,7 +143,7 @@ export async function getPreferences(...prefIds) {
 			case "integer":
 				if (typeof current_pref === 'string' && isNaN(parseInt(current_pref))) {
 					console.warn(`${prefId} is not a number (${current_pref})`);
-					current_pref = this.defaultSettings.get(prefId);
+					current_pref = optionConfig.value;
 				}
 
 				if (typeof optionConfig.minValue === "number" && parseInt(current_pref) < optionConfig.minValue) {
