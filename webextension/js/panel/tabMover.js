@@ -1,6 +1,7 @@
 import {renderTemplate} from '../init-templates.js';
 import {appendTo} from "../utils/appendTo.js";
-import {getBrowserName, getWsClientNames, openUrl} from "../classes/chrome-native.js";
+import {getBrowserName, getWsClientNames} from "../classes/chrome-native.js";
+import {throttle} from "../../lib/throttle.js";
 
 const tabMover = document.querySelector('#tabMover');
 /**
@@ -161,17 +162,19 @@ document.addEventListener('click', async e => {
 
 
 
-update()
-	.catch(console.error)
-;
+const _update = throttle(() => {
+	update()
+		.catch(console.error)
+	;
+}, 50);
 
-chrome.windows.onCreated.addListener(update);
-chrome.windows.onRemoved.addListener(update);
-chrome.windows.onFocusChanged.addListener(update);
+chrome.windows.onCreated.addListener(_update);
+chrome.windows.onRemoved.addListener(_update);
+chrome.windows.onFocusChanged.addListener(_update);
 chrome.tabs.onUpdated.addListener(function (info, changeInfo, tab) {
 	if (tab.active === true && ((changeInfo.hasOwnProperty("status") && changeInfo.status === "complete") || changeInfo.hasOwnProperty("title"))) {
 		// Only update context menu if the active tab have a "complete" load
-		update()
+		_update()
 			.catch(console.error)
 		;
 	}
