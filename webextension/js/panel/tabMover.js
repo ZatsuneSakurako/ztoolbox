@@ -2,6 +2,7 @@ import {renderTemplate} from '../init-templates.js';
 import {appendTo} from "../utils/appendTo.js";
 import {getBrowserName, getWsClientNames} from "../classes/chrome-native.js";
 import {throttle} from "../../lib/throttle.js";
+import {isFirefox} from "../utils/browserDetect.js";
 
 const tabMover = document.querySelector('#tabMover');
 /**
@@ -168,6 +169,8 @@ const _update = throttle(() => {
 		.catch(console.error)
 	;
 }, 50);
+
+_update();
 
 chrome.windows.onCreated.addListener(_update);
 chrome.windows.onRemoved.addListener(_update);
