@@ -1,4 +1,7 @@
-# WIP
+# 1.3.2
+* Fix : tabMover - Fix duplicate items
+
+# 1.3.1
 * Fix : Native messaging - Open url in another browser (check error)
 
 # 1.3.0
