@@ -67,21 +67,24 @@ async function update() {
 		);
 	}
 
-	const wsClientNames = await getWsClientNames(),
+	const wsClientNames = await getWsClientNames()
+			.catch(console.error),
 		browserName = await getBrowserName()
 	;
-	for (const wsClientName of wsClientNames) {
-		if (!wsClientName.browserName || wsClientName.browserName.toLowerCase() === 'unknown') continue;
-		if (browserName === wsClientName.browserName) continue;
-		appendTo(
-			tabMover,
-			await renderTemplate(TAB_MOVER_NATIVE_TEMPLATE, {
-				'title': wsClientName.browserName,
-				'browserName': wsClientName.browserName,
-				'tabName': wsClientName.userAgent ?? ''
-			}),
-			document
-		);
+	if (wsClientNames) {
+		for (const wsClientName of wsClientNames) {
+			if (!wsClientName.browserName || wsClientName.browserName.toLowerCase() === 'unknown') continue;
+			if (browserName === wsClientName.browserName) continue;
+			appendTo(
+				tabMover,
+				await renderTemplate(TAB_MOVER_NATIVE_TEMPLATE, {
+					'title': wsClientName.browserName,
+					'browserName': wsClientName.browserName,
+					'tabName': wsClientName.userAgent ?? ''
+				}),
+				document
+			);
+		}
 	}
 
 	return true;

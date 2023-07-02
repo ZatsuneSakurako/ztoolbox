@@ -1,3 +1,6 @@
+# WIP
+* Fix : Native messaging - Open url in another browser (check error)
+
 # 1.3.0
 * \+ : deviantArt - Ignore "tier" notification
 * \+ : Native messaging - Open url in another browser
