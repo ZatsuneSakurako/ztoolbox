@@ -1,4 +1,4 @@
-# WIP
+# 1.3.2
 * Fix : tabMover - Fix duplicate items
 
 # 1.3.1

@@ -1,7 +1,6 @@
 import fs from "fs-extra";
 import path from "path";
 import webExt from "web-ext";
-import chromeWebStoreUpload from "chrome-webstore-upload";
 import {exec as _exec} from "child_process";
 import klawSync from "klaw-sync";
 import "dotenv/config";
@@ -192,22 +191,6 @@ async function init() {
 	}, {
 		shouldExitProgram: false,
 	}));
-
-	if (!!process.env.CHROME_EXTENSION_ID && !!process.env.CHROME_CLIENT_ID && !!process.env.CHROME_CLIENT_SECRET && !!process.env.CHROME_REFRESH_TOKEN) {
-		const webStore = chromeWebStoreUpload({
-			extensionId: process.env.CHROME_EXTENSION_ID,
-			clientId: process.env.CHROME_CLIENT_ID,
-			clientSecret: process.env.CHROME_CLIENT_SECRET,
-			refreshToken: process.env.CHROME_REFRESH_TOKEN
-		});
-
-		/*
-		 * Response is a Resource Representation
-		 * https://developer.chrome.com/webstore/webstore_api/items#resource
-		 */
-		const response = await errorHandler(webStore.uploadExisting(fileTarget/*, token*/));
-		await errorHandler(await webStore.publish('trustedTesters'/*, token*/))
-	}
 
 	if (!!process.env.FIREFOX_API_KEY && !!process.env.FIREFOX_API_SECRET) {
 		info('Firefox signing...');
