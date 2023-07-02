@@ -1,6 +1,6 @@
 # WIP
 * i : Update librairies
-* Fix : tabMover - update on load
+* Fix : tabMover - update on load on Chrome browsers
 
 # 1.3.3
 * Fix : tabMover - Auto-close popup with openurl
