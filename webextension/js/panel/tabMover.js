@@ -156,6 +156,7 @@ document.addEventListener('click', async e => {
 			chrome.tabs.remove(activeTab.id)
 				.catch(console.error)
 			;
+			window.close();
 		}
 	});
 });
