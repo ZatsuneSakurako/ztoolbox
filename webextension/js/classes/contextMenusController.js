@@ -3,6 +3,46 @@
  */
 import {i18ex} from "../translation-api.js";
 
+/**
+ *
+ * @return {Map<string, string>}
+ */
+function getBrowserSrcSupportedContexts() {
+	/**
+	 *
+	 * @type {Map<string, string>}
+	 */
+	const srcContexts = new Map();
+	for (const type of ['AUDIO', 'IMAGE', 'VIDEO']) {
+		if (type in chrome.contextMenus.ContextType) {
+			srcContexts.set(type, chrome.contextMenus.ContextType[type]);
+		}
+	}
+	return srcContexts;
+}
+export const BROWSER_SRC_SUPPORTED_CONTEXTS = Object.freeze(getBrowserSrcSupportedContexts());
+
+/**
+ *
+ * @return {Map<string, string>}
+ */
+function getBrowserDocumentSupportedContexts() {
+	/**
+	 *
+	 * @type {Map<string, string>}
+	 */
+	const documentContexts = new Map();
+	for (const type of ['PAGE', 'TAB']) {
+		if (type in chrome.contextMenus.ContextType) {
+			documentContexts.set(type, chrome.contextMenus.ContextType[type]);
+		}
+	}
+	return documentContexts;
+}
+export const BROWSER_DOCUMENT_SUPPORTED_CONTEXTS = Object.freeze(getBrowserDocumentSupportedContexts());
+
+
+
 export class ContextMenusController extends Map {
 	constructor(){
 		super();
@@ -28,6 +68,7 @@ export class ContextMenusController extends Map {
 				if (/https?:\/\/.*/.test(url)) {
 					targetUrlPatterns_processed.push(url);
 				} else {
+					// noinspection HttpUrlsUsage
 					targetUrlPatterns_processed.push('http://' + url);
 					targetUrlPatterns_processed.push('https://' + url);
 				}
@@ -49,34 +90,34 @@ export class ContextMenusController extends Map {
 		if (!opts || !opts.contexts || !Array.isArray(opts.contexts)) {
 			throw 'MissingContext';
 		}
-		const contexts = opts.contexts.map(item => item.toUpperCase());
 
-		const srcContexts = [];
-		for (const type of ['AUDIO', 'IMAGE', 'VIDEO']) {
-			const index = contexts.indexOf(type);
-			if (chrome.contextMenus.ContextType.hasOwnProperty(type) && index !== -1) {
-				srcContexts.push(chrome.contextMenus.ContextType[type]);
-				contexts.splice(index, 1);
+		const contexts = new Set(opts.contexts.map(item => item.toUpperCase()));
+
+		let hasContext = false;
+		for (let [type,] of BROWSER_SRC_SUPPORTED_CONTEXTS) {
+			if (contexts.has(type)) {
+				hasContext = true;
+				contexts.delete(type);
 			}
 		}
-
-		if (srcContexts.length > 0) {
+		if (hasContext) {
 			this.set(id + '_src_context', contextData);
 		}
 
 
-
-		const documentContexts = [];
-		for (const type of ['PAGE', 'TAB']) {
-			const index = contexts.indexOf(type);
-			if (chrome.contextMenus.ContextType.hasOwnProperty(type) && index !== -1) {
-				documentContexts.push(chrome.contextMenus.ContextType[type]);
-				contexts.splice(index, 1);
+		hasContext = false;
+		for (let [type,] of BROWSER_DOCUMENT_SUPPORTED_CONTEXTS) {
+			if (contexts.has(type)) {
+				hasContext = true;
+				contexts.delete(type);
 			}
 		}
-
-		if (documentContexts.length > 0) {
+		if (hasContext) {
 			this.set(id + '_doc_context', contextData);
+		}
+
+		if (contexts.size > 0) {
+			console.warn(`UnsupportedContexts : ${[...contexts].join(', ')}`);
 		}
 	}
 
@@ -88,16 +129,15 @@ export class ContextMenusController extends Map {
 	async _createAll() {
 		for (let [contextId, data] of contextMenusController) {
 			const {id, opts, title, targetUrlPatterns_processed} = data,
-				contexts = opts.contexts.map(item => item.toUpperCase())
+				contexts = new Set(opts.contexts.map(item => item.toUpperCase()))
 			;
 
 			if (contextId.endsWith('_src_context')) {
 				const srcContexts = [];
-				for (const type of ['AUDIO', 'IMAGE', 'VIDEO']) {
-					const index = contexts.indexOf(type);
-					if (chrome.contextMenus.ContextType.hasOwnProperty(type) && index !== -1) {
-						srcContexts.push(chrome.contextMenus.ContextType[type]);
-						contexts.splice(index, 1);
+				for (let [type, contextName] of BROWSER_SRC_SUPPORTED_CONTEXTS) {
+					if (contexts.has(type)) {
+						srcContexts.push(contextName);
+						contexts.delete(type);
 					}
 				}
 
@@ -112,11 +152,11 @@ export class ContextMenusController extends Map {
 				await chrome.contextMenus.create(contextMenuOpts);
 			} else if (contextId.endsWith('_doc_context')) {
 				const documentContexts = [];
-				for (const type of ['PAGE', 'TAB']) {
-					const index = contexts.indexOf(type);
-					if (chrome.contextMenus.ContextType.hasOwnProperty(type) && index !== -1) {
-						documentContexts.push(chrome.contextMenus.ContextType[type]);
-						contexts.splice(index, 1);
+
+				for (let [type, contextName] of BROWSER_DOCUMENT_SUPPORTED_CONTEXTS) {
+					if (contexts.has(type)) {
+						documentContexts.push(contextName);
+						contexts.delete(type);
 					}
 				}
 
@@ -135,21 +175,14 @@ export class ContextMenusController extends Map {
 				throw new Error('UnexpectedId');
 			}
 
-			if (contexts.length > 0) {
-				console.warn(`UnsupportedContexts : ${contexts.join(', ')}`);
+			if (contexts.size > 0) {
+				console.warn(`UnsupportedContexts : ${[...contexts].join(', ')}`);
 			}
 		}
 	}
 
 	create(id, title, targetUrlPatterns, onClick) {
-		const pageTypeContexts = [];
-		if (chrome.contextMenus.ContextType.hasOwnProperty("PAGE")) {
-			pageTypeContexts.push(chrome.contextMenus.ContextType.PAGE)
-		}
-		if (chrome.contextMenus.ContextType.hasOwnProperty("TAB")) {
-			pageTypeContexts.push(chrome.contextMenus.ContextType.TAB)
-		}
-
+		const pageTypeContexts = [...BROWSER_DOCUMENT_SUPPORTED_CONTEXTS.keys()];
 		return this._create(id, title, targetUrlPatterns, onClick, {
 			'contexts': pageTypeContexts
 		});

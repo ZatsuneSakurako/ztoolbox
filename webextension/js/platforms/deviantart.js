@@ -3,8 +3,8 @@ import JSON5 from '../../lib/json5.js';
 
 const deviantArt = {
 	// Old data url dataURL:"http://www.deviantart.com/notifications/watch",
-	dataURL:"https://www.deviantart.com/watch/deviations",
-	defaultFavicon: 'https://icons.duckduckgo.com/ip2/www.deviantart.com.ico',
+	dataURL: 'https://www.deviantart.com/watch/deviations',
+	defaultFavicon: 'https://www.deviantart.com/favicon.ico',
 	getViewURL: function(websiteState) {
 		if (websiteState.count > 0) {
 			return this.dataURL;
@@ -74,7 +74,7 @@ const deviantArt = {
 			console.error(e);
 			return output;
 		}
-		console.dir(initialData)
+		console.debug('initialData', initialData)
 
 		if (initialData.hasOwnProperty('@@publicSession') === false) {
 			return output;
@@ -96,17 +96,34 @@ const deviantArt = {
 		result.set("websiteIcon", this.defaultFavicon);
 
 
+		/**
+		 * @type {number|null}
+		 */
+		let deviationCount = null;
+		if ('@@entities' in initialData && 'deviation' in initialData['@@entities']) {
+			deviationCount = 0;
+
+			// noinspection JSUnusedLocalSymbols
+			for (const [id, data] of Object.entries(initialData['@@entities'].deviation)) {
+				if (data.type === 'tier') continue;
+				deviationCount += 1;
+			}
+		}
 
 		if (initialData.hasOwnProperty('@@streams') === false) {
 			for (let folderName in data.counts) {
 				if (data.counts.hasOwnProperty(folderName)) {
-					const folderCount = data.counts[folderName];
+					let folderCount = data.counts[folderName];
 					if (Number.isNaN(folderCount)) {
 						continue;
 					}
 
 					if (['points', 'cart'].includes(folderName)) {
 						continue;
+					}
+
+					if (deviationCount !== null && folderName === 'watch') {
+						folderCount = deviationCount;
 					}
 
 					count += folderCount;
@@ -122,9 +139,13 @@ const deviantArt = {
 			for (let [name, item] of Object.entries(streams)) {
 				if (['NETWORKBAR_RECOMMENDED_GROUPS', 'NETWORKBAR_WATCHED_GROUPS'].includes(name.toUpperCase())) continue;
 
-				const folderCount = item.items.length,
-					folderName = item?.streamParams?.notificationType ?? item?.streamParams?.requestEndpoint
-				;
+				const folderName = item?.streamParams?.notificationType ?? item?.streamParams?.requestEndpoint;
+				let folderCount = item.items.length;
+
+				if (deviationCount !== null && folderName === 'dyw/deviations') {
+					folderCount = deviationCount;
+				}
+
 				console.info(folderName, folderCount);
 
 				count += folderCount;

@@ -2,19 +2,43 @@ import {randomId} from "../utils/randomId.js";
 import {getSyncKeys} from "./chrome-preferences.js";
 import {chromeNativeSettingsStorageKey, getElectronSettings} from "./chrome-native-settings.js";
 import {sendNotification} from "./chrome-notification.js";
-import {theme_update} from "./backgroundTheme.js";
+import {isFirefox} from "../utils/browserDetect.js";
 
 const port = chrome.runtime.connectNative('eu.zatsunenomokou.chromenativebridge');
 
-port.onMessage.addListener(function(msg) {
-	if (location.pathname.endsWith('panel.html') || location.pathname.endsWith('options.html')) {
-		console.debug('Ignoring chromeNative incoming messages');
-		return;
+port.onMessage.addListener(async function(msg) {
+	let haveBackgroundPage = false;
+	if (typeof chrome.runtime.getBackgroundPage === 'function') {
+		try {
+			await chrome.runtime.getBackgroundPage();
+			haveBackgroundPage = true;
+		} catch (e) {
+			console.debug(e)
+		}
 	}
+	if (haveBackgroundPage) {
+		/*
+		 * TODO clean when Firefox support real manifest v3
+		 * If background page present, then running in Firefox without full manifest v3 support
+		 */
+		if (location.pathname.endsWith('panel.html') || location.pathname.endsWith('options.html')) {
+			console.debug('Ignoring chromeNative incoming messages');
+			return;
+		}
+	} else {
+		// If "background" extension is running with service worker, self should be a serviceworker object
+		if (!isFirefox && !self.toString().toLowerCase().includes('serviceworker')) {
+			console.debug('Ignoring chromeNative incoming messages (not service worker)');
+			return;
+		}
+	}
+
 	if (!msg && typeof msg !== 'object') {
 		console.warn('UnexpectedMessage', msg);
 		return;
 	}
+
+
 
 	switch (msg.type ?? null) {
 		case 'ws open':
@@ -45,6 +69,23 @@ port.onMessage.addListener(function(msg) {
 				.catch(console.error)
 			;
 			break;
+		case 'openUrl':
+			if (msg.url) {
+				const tab = await chrome.tabs.create({
+					url: msg.url,
+					active: true
+				})
+					.catch(console.error)
+				;
+				port.postMessage({
+					type: 'commandReply',
+					_id: msg._id,
+					data: {
+						response: !!tab
+					}
+				});
+			}
+			break;
 		case 'commandReply':
 			break;
 		case 'onSettingUpdate':
@@ -68,6 +109,60 @@ chrome.storage.onChanged.addListener(async (changes, area) => {
 	}
 });
 
+chrome.tabs.onActivated.addListener(async function onActivatedListener(activeInfo) {
+	const tabs = await chrome.tabs.query({
+		windowType: 'normal'
+	});
+	if (!tabs.length) {
+		return;
+	}
+	chrome.tabs.onActivated.removeListener(onActivatedListener);
+
+
+	let isVivaldi = false
+	for (let tab of tabs) {
+		if (tab.vivExtData) {
+			isVivaldi = true;
+			break;
+		}
+	}
+
+	await chrome.storage.local.set({
+		'_isVivaldi': isVivaldi
+	});
+	await sendSocketData()
+		.catch(console.error)
+	;
+});
+
+export async function getBrowserName() {
+	const isVivaldi = (await chrome.storage.local.get('_isVivaldi'))?._isVivaldi;
+	let browserName;
+	if (isVivaldi) {
+		browserName = 'Vivaldi';
+	} else {
+		const firefox = navigator.userAgent.split(' ')
+			.find(str => str.toLowerCase().startsWith('firefox'))
+		;
+		if (firefox) {
+			browserName = firefox.replace('/', ' ')
+		} else {
+			const chrome = navigator.userAgentData.brands
+				.find(data => data.brand.toLowerCase() === 'chromium')
+			;
+			const edge = navigator.userAgentData.brands
+				.find(data => data.brand.toLowerCase() === 'microsoft edge')
+			;
+			if (edge) {
+				browserName = `MS Edge ${edge?.version ?? ''}`.trim();
+			} else {
+				browserName = `Chrome ${chrome?.version ?? ''}`.trim();
+			}
+		}
+	}
+	return browserName;
+}
+
 async function sendSocketData() {
 	const values = await chrome.storage.local.get(['notification_support', 'mode']);
 	port.postMessage({
@@ -75,6 +170,7 @@ async function sendSocketData() {
 		data: {
 			notificationSupport: values.mode === 'delegated' && values.notification_support === true,
 			userAgent: navigator.userAgent,
+			browserName: await getBrowserName(),
 			extensionId: chrome.runtime.id
 		}
 	});
@@ -294,3 +390,46 @@ export async function showSection(sectionName) {
 	const {result} = await fnNative('showSection', sectionName);
 	return result;
 }
+
+
+
+export async function getWsClientNames() {
+	const {result} = await fnNative('getWsClientNames');
+	return result;
+}
+
+/**
+ *
+ * @param {string} browserName
+ * @param {string} url
+ * @return {Promise<void>}
+ */
+export async function openUrl(browserName, url) {
+	const {result} = await fnNative('openUrl', browserName, url);
+	console.dir(result)
+	return result;
+}
+
+chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
+	if (sender.id === chrome.runtime.id && message.id === 'ztoolbox_nativeOpenUrl') {
+		const {data} = message;
+		console.dir(data)
+
+		openUrl(data.browserName, data.url)
+			.then(response => {
+				sendResponse({
+					response: response?.response ?? false,
+					isError: false
+				});
+			})
+			.catch(e => {
+				console.error(e);
+				sendResponse({
+					response: e,
+					isError: true
+				});
+			})
+		;
+		return true;
+	}
+});

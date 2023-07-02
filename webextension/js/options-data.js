@@ -89,28 +89,6 @@ export const options = {
 		"sync": true,
 		"onlyNormalMode": true
 	},
-	"notify_vocal": {
-		"title": "Read a vocal notifications",
-		"description": "Notification when checked",
-		"type": "bool",
-		"value": false,
-		"group": "notifications",
-		"prefLevel": "advanced",
-		"onlyNormalMode": true
-	},
-	"vocal_volume": {
-		"title": "Volume of vocal notifications",
-		"description": "In percent",
-		"type": "integer",
-		"value": 70,
-		"group": "notifications",
-		"minValue": 0,
-		"maxValue": 100,
-		"rangeInput": true,
-		"rangeOutputUnit": "%",
-		"prefLevel": "advanced",
-		"onlyNormalMode": true
-	},
 	/*				Panel size					*/
 	"panel_height": {
 		"title": "Panel's height",
