@@ -1,5 +1,6 @@
 import {renderTemplate} from '../init-templates.js';
 import {appendTo} from "../utils/appendTo.js";
+import {getBrowserName, getWsClientNames, openUrl} from "../classes/chrome-native.js";
 
 const tabMover = document.querySelector('#tabMover');
 /**
@@ -7,7 +8,9 @@ const tabMover = document.querySelector('#tabMover');
  * @type {chrome.windows.Window[]}
  */
 let browserWindows;
-const TAB_MOVER_TEMPLATE = 'tabMover';
+const TAB_MOVER_TEMPLATE = 'tabMover',
+	TAB_MOVER_NATIVE_TEMPLATE = 'tabMoverNative'
+;
 async function update() {
 	const currentBrowserWindow = await chrome.windows.getCurrent({
 		populate: false,
@@ -64,6 +67,23 @@ async function update() {
 		);
 	}
 
+	const wsClientNames = await getWsClientNames(),
+		browserName = await getBrowserName()
+	;
+	for (const wsClientName of wsClientNames) {
+		if (!wsClientName.browserName || wsClientName.browserName.toLowerCase() === 'unknown') continue;
+		if (browserName === wsClientName.browserName) continue;
+		appendTo(
+			tabMover,
+			await renderTemplate(TAB_MOVER_NATIVE_TEMPLATE, {
+				'title': wsClientName.browserName,
+				'browserName': wsClientName.browserName,
+				'tabName': wsClientName.userAgent ?? ''
+			}),
+			document
+		);
+	}
+
 	return true;
 }
 
@@ -107,6 +127,33 @@ document.addEventListener('click', e => {
 		})
 		.catch(console.error)
 	;
+});
+
+document.addEventListener('click', async e => {
+	const elm = e.target.closest('.tabMover[data-browser-name]');
+	if (!elm || !elm.dataset.browserName) return;
+
+	const [activeTab] = await chrome.tabs.query({
+		currentWindow: true,
+		active: true,
+		windowType: 'normal'
+	});
+	if (!activeTab) return;
+
+	chrome.runtime.sendMessage(chrome.runtime.id, {
+		id: 'ztoolbox_nativeOpenUrl',
+		data: {
+			browserName: elm.dataset.browserName,
+			url: activeTab.url
+		}
+	}, function (result) {
+		console.log('[nativeOpenUrl]', result);
+		if (!result.isError && !!result.response) {
+			chrome.tabs.remove(activeTab.id)
+				.catch(console.error)
+			;
+		}
+	});
 });
 
 

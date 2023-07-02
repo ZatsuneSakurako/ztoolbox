@@ -1,5 +1,6 @@
 # WIP
 * \+ : deviantArt - Ignore "tier" notification
+* \+ : Native messaging - Open url in another browser
 * Fix : Change deviantArt favicon url 
 
 # 1.2.0
