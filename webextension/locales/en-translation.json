@@ -44,13 +44,6 @@
 	"notify_all_viewed_title": "Show a notification when all view in website(s)",
 	"notify_all_viewed_description": "Notification when checked",
 
-	"notify_vocal_title": "Play a vocal notifications",
-	"notify_vocal_description": "Notification when checked",
-
-	"vocal_volume_title": "Volume of vocal notifications",
-	"vocal_volume_description": "In percent",
-
-
 	"open_optionpage": "Open option page",
 
 	"check_enabled_title": "Automatic deviantArt/freshRss data refresh enabled",

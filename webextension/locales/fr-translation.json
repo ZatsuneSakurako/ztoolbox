@@ -44,13 +44,6 @@
 	"notify_all_viewed_title": "Affiche une notification quand tout est vu pour un/des site(s)",
 	"notify_all_viewed_description": "Notification quand cochée",
 
-	"notify_vocal_title": "Lit des notifications vocales",
-	"notify_vocal_description": "Notification quand cochée",
-
-	"vocal_volume_title": "Volume des notifications vocales",
-	"vocal_volume_description": "En pourcent",
-
-
 	"open_optionpage": "Ouvrir la page d'option",
 
 	"check_enabled_title": "Rafraichissement des données deviantArt/freshRss automatiques activé",
