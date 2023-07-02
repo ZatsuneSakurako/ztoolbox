@@ -1,3 +1,6 @@
+# WIP
+* Fix : tabMover - Auto-close popup with openurl
+
 # 1.3.2
 * Fix : tabMover - Fix duplicate items
 
