@@ -1,4 +1,4 @@
-# WIP
+# 1.3.3
 * Fix : tabMover - Auto-close popup with openurl
 
 # 1.3.2
