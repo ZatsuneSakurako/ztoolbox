@@ -2,7 +2,6 @@ import {renderTemplate} from '../init-templates.js';
 import {appendTo} from "../utils/appendTo.js";
 import {getBrowserName, getWsClientNames} from "../classes/chrome-native.js";
 import {throttle} from "../../lib/throttle.js";
-import {isFirefox} from "../utils/browserDetect.js";
 
 const tabMover = document.querySelector('#tabMover');
 /**
