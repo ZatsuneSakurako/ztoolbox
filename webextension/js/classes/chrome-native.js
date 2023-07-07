@@ -109,14 +109,14 @@ chrome.storage.onChanged.addListener(async (changes, area) => {
 	}
 });
 
-chrome.tabs.onActivated.addListener(async function onActivatedListener(activeInfo) {
+chrome.windows.onFocusChanged.addListener(async function onFocusChanged(windowId) {
 	const tabs = await chrome.tabs.query({
-		windowType: 'normal'
+		windowId
 	});
 	if (!tabs.length) {
 		return;
 	}
-	chrome.tabs.onActivated.removeListener(onActivatedListener);
+	chrome.tabs.onFocusChanged.removeListener(onFocusChanged);
 
 
 	let isVivaldi = false
@@ -133,6 +133,8 @@ chrome.tabs.onActivated.addListener(async function onActivatedListener(activeInf
 	await sendSocketData()
 		.catch(console.error)
 	;
+}, {
+	windowTypes: ["normal"]
 });
 
 export async function getBrowserName() {
