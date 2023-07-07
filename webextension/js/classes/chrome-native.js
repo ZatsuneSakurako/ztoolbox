@@ -116,7 +116,7 @@ chrome.windows.onFocusChanged.addListener(async function onFocusChanged(windowId
 	if (!tabs.length) {
 		return;
 	}
-	chrome.tabs.onFocusChanged.removeListener(onFocusChanged);
+	chrome.windows.onFocusChanged.removeListener(onFocusChanged);
 
 
 	let isVivaldi = false
