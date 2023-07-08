@@ -113,7 +113,7 @@ port.onMessage.addListener(async function(msg) {
 chrome.storage.onChanged.addListener(async (changes, area) => {
 	if (area !== "local") return;
 
-	if ("mode" in changes || "notification_support" in changes) {
+	if ("mode" in changes || "notification_support" in changes || "check_enabled" in changes) {
 		sendSocketData()
 			.catch(console.error)
 		;
