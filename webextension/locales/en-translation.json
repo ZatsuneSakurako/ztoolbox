@@ -11,8 +11,8 @@
 	"No": "No",
 	"Ok": "Ok",
 
-	"GloballyDisabledNotifications": "All notifications are disabled",
-	"GloballyDisableNotifications": "Temporarly disable notifications",
+	"ExternalNotifications": "External notification enabled",
+	"ExternalNotificationsDisabled": "External notification disabled",
 
 	"leaveDelegated": "Go in normal mode",
 	"checkEnabled": "Refresh Refresh",
@@ -59,9 +59,6 @@
 
 	"notification_support_title": "Accept notifications from chrome native messaging (external mode only)",
 	"notification_support_description": "Enabled if checked",
-
-	"sending_websites_data_support_title": "Accept sending deviantArt/FreshRss data to \"chrome native messaging\" (external mode only)",
-	"sending_websites_data_support_description": "Enabled if checked",
 
 	"panel_height_title": "Panel's height",
 	"panel_height_description": "Size in pixels",

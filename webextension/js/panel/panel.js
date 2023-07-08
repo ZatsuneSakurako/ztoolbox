@@ -21,10 +21,10 @@ document.addEventListener('click', e => {
 	const elm = e.target.closest('#disableNotifications');
 	if (!elm) return;
 
-	chrome.storage.local.get(['_notificationGloballyDisabled'])
-		.then(async ({_notificationGloballyDisabled}) => {
+	chrome.storage.local.get(['notification_support'])
+		.then(async ({notification_support}) => {
 			await chrome.storage.local.set({
-				_notificationGloballyDisabled: !_notificationGloballyDisabled
+				notification_support: !notification_support
 			});
 
 			updatePanelData()
@@ -141,7 +141,7 @@ async function updatePanelData() {
 		.catch(console.error)
 	;
 
-	const {_notificationGloballyDisabled} = await chrome.storage.local.get(['_notificationGloballyDisabled']);
+	const {notification_support} = await chrome.storage.local.get(['notification_support']);
 
 	/**
 	 *
@@ -149,8 +149,8 @@ async function updatePanelData() {
 	 */
 	let disableNotificationsButton = document.querySelector('button#disableNotifications');
 	if (disableNotificationsButton) {
-		disableNotificationsButton.classList.toggle('off', !!_notificationGloballyDisabled ?? false);
-		disableNotificationsButton.dataset.translateTitle = !!_notificationGloballyDisabled? 'GloballyDisabledNotifications' : 'GloballyDisableNotifications';
+		disableNotificationsButton.classList.toggle('off', !notification_support ?? false);
+		disableNotificationsButton.dataset.translateTitle = !!notification_support? 'ExternalNotifications' : 'ExternalNotificationsDisabled';
 	}
 
 

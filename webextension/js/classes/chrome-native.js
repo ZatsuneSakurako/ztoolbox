@@ -179,14 +179,14 @@ export async function getBrowserName() {
 async function sendSocketData() {
 	const values = await chrome.storage.local.get([
 		'notification_support',
-		'sending_websites_data_support',
+		'check_enabled',
 		'mode'
 	]);
 	port.postMessage({
 		type: 'updateSocketData',
 		data: {
 			notificationSupport: values.mode === 'delegated' && values.notification_support === true,
-			sendingWebsitesDataSupport: values.mode === 'delegated' && values.sending_websites_data_support === true,
+			sendingWebsitesDataSupport: values.mode === 'delegated' && values.check_enabled === true,
 			userAgent: navigator.userAgent,
 			browserName: await getBrowserName(),
 			extensionId: chrome.runtime.id

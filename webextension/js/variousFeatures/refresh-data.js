@@ -110,16 +110,13 @@ export async function refreshWebsitesData() {
 	const dateStart = new Date();
 
 
-	const preferences = await getPreferences('mode', 'check_enabled', 'sending_websites_data_support');
+	const preferences = await getPreferences('mode', 'check_enabled');
 	if (!preferences.get('check_enabled')) {
 		isRefreshingData = false;
 
 		const logs = [];
 		if (!preferences.get('check_enabled')) {
 			logs.push('check_enable false');
-		}
-		if (preferences.get('sending_websites_data_support')) {
-			logs.push('sending_websites_data_support');
 		}
 		console.info(`Refresh disabled (${logs.join(', ')})`);
 
@@ -134,19 +131,16 @@ export async function refreshWebsitesData() {
 
 	console.debug('Refreshing websites data...');
 	const websites = await getWebsitesApis(),
-		promises = [],
-		{_notificationGloballyDisabled} = await dataStorageArea.get(['_notificationGloballyDisabled'])
+		promises = []
 	;
 	for (let [website, websiteAPI] of Object.entries(websites)) {
 		const promise = refreshWebsite(website, websiteAPI);
 		promises.push(promise);
 		promise
 			.then(() => {
-				if (!_notificationGloballyDisabled) {
-					doNotifyWebsite(website)
-						.catch(console.error)
-					;
-				}
+				doNotifyWebsite(website)
+					.catch(console.error)
+				;
 			})
 			.catch((data) => {
 				console.log('refreshWebsitesData', data);
@@ -203,12 +197,8 @@ async function refreshAlarm() {
 		console.error(e);
 	}
 
-	const preferences = await getPreferences('mode', 'check_enabled', 'sending_websites_data_support');
-	if (
-		!preferences.get('check_enabled')
-		||
-		(preferences.get('mode') === 'delegated' && preferences.get('sending_websites_data_support'))
-	) {
+	const preferences = await getPreferences('mode', 'check_enabled');
+	if (!preferences.get('check_enabled')) {
 		if (!!oldAlarm) {
 			try {
 				await chrome.alarms.clear(ALARM_NAME);
@@ -347,8 +337,8 @@ async function onStartOrInstall() {
 		.catch(console.error)
 	;
 
-	const preferences = await getPreferences('mode', 'sending_websites_data_support');
-	if (preferences.get('mode') === 'delegated' && preferences.get('sending_websites_data_support')) {
+	const preferences = await getPreferences('mode', 'check_enabled');
+	if (preferences.get('mode') === 'delegated' && !preferences.get('check_enabled')) {
 		return;
 	}
 	await refreshWebsitesData();

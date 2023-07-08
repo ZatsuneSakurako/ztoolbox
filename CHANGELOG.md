@@ -1,7 +1,9 @@
 # WIP
 * i : Update librairies
-* \+ : Let external request websites refresh (deviantArt/FreshRSS)
+* i : Panel height with delegated mode
+* \+ : Let external request websites refresh (deviantArt/FreshRSS), using existing "check enable" preference
 * \- : Simplified mode (deviantArt/FreshRSS disabled)
+* \- : Delete disable notification mode, replace with external notification support
 * Fix : tabMover - update on load on Chrome browsers
 
 # 1.3.3

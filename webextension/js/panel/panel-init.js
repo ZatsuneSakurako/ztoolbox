@@ -18,7 +18,7 @@ async function baseInit() {
 	body.classList.toggle('delegated-version', preferences.get('mode') === 'delegated');
 	body.classList.toggle('normal-version', preferences.get('mode') === 'normal');
 
-	const panel_height = (preferences.get('mode') !== 'normal') ? 215 : preferences.get('panel_height'),
+	const panel_height = (preferences.get('mode') !== 'normal') ? 275 : preferences.get('panel_height'),
 		panel_width = (preferences.get('mode') !== 'normal') ? 250 : preferences.get('panel_width')
 	;
 	html.style.height = panel_height + 'px';
