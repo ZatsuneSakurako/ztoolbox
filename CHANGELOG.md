@@ -1,4 +1,4 @@
-# WIP
+# 1.4.0
 * i : Update librairies
 * i : Panel height with delegated mode
 * \+ : Let external request websites refresh (deviantArt/FreshRSS), using existing "check enable" preference
