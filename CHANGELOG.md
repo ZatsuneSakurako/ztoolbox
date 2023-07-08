@@ -1,3 +1,11 @@
+# 1.4.0
+* i : Update librairies
+* i : Panel height with delegated mode
+* \+ : Let external request websites refresh (deviantArt/FreshRSS), using existing "check enable" preference
+* \- : Simplified mode (deviantArt/FreshRSS disabled)
+* \- : Delete disable notification mode, replace with external notification support
+* Fix : tabMover - update on load on Chrome browsers
+
 # 1.3.3
 * Fix : tabMover - Auto-close popup with openurl
 

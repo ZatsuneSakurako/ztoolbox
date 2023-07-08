@@ -169,6 +169,8 @@ const _update = throttle(() => {
 	;
 }, 50);
 
+_update();
+
 chrome.windows.onCreated.addListener(_update);
 chrome.windows.onRemoved.addListener(_update);
 chrome.windows.onFocusChanged.addListener(_update);

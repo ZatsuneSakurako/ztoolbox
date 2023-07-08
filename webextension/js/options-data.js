@@ -12,10 +12,6 @@ export const options = {
 				"label": "External"
 			},
 			{
-				"value": "simplified",
-				"label": "Simplified"
-			},
-			{
 				"value": "normal",
 				"label": "Normal"
 			}
@@ -34,8 +30,7 @@ export const options = {
 		"description": "Enabled if checked",
 		"type": "bool",
 		"value": true,
-		"prefLevel": "basic",
-		"onlyNormalMode": true
+		"prefLevel": "basic"
 	},
 	"check_delay": {
 		"title": "Streams status delay",

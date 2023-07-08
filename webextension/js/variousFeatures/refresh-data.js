@@ -3,7 +3,6 @@
 import {openTabIfNotExist} from "../utils/openTabIfNotExist.js";
 import {getPreference, getPreferences} from "../classes/chrome-preferences.js";
 import {i18ex} from "../translation-api.js";
-import * as ChromeNative from "../classes/chrome-native.js";
 import {sendNotification} from "../classes/chrome-notification.js";
 import {
 	dataStorageArea,
@@ -112,13 +111,10 @@ export async function refreshWebsitesData() {
 
 
 	const preferences = await getPreferences('mode', 'check_enabled');
-	if (preferences.get('mode') === 'simplified' || !preferences.get('check_enabled')) {
+	if (!preferences.get('check_enabled')) {
 		isRefreshingData = false;
 
 		const logs = [];
-		if (preferences.get('mode') === 'simplified') {
-			logs.push('simplified mode');
-		}
 		if (!preferences.get('check_enabled')) {
 			logs.push('check_enable false');
 		}
@@ -135,19 +131,16 @@ export async function refreshWebsitesData() {
 
 	console.debug('Refreshing websites data...');
 	const websites = await getWebsitesApis(),
-		promises = [],
-		{_notificationGloballyDisabled} = await dataStorageArea.get(['_notificationGloballyDisabled'])
+		promises = []
 	;
 	for (let [website, websiteAPI] of Object.entries(websites)) {
 		const promise = refreshWebsite(website, websiteAPI);
 		promises.push(promise);
 		promise
 			.then(() => {
-				if (!_notificationGloballyDisabled) {
-					doNotifyWebsite(website)
-						.catch(console.error)
-					;
-				}
+				doNotifyWebsite(website)
+					.catch(console.error)
+				;
 			})
 			.catch((data) => {
 				console.log('refreshWebsitesData', data);
@@ -171,6 +164,7 @@ export async function refreshWebsitesData() {
 
 	if (await getPreference('showAdvanced') === true) {
 		console.groupCollapsed('Websites check end');
+		console.info(new Date().toLocaleString());
 		console.log('timings:', {
 			dateStart,
 			dateEnd: new Date()
@@ -191,12 +185,6 @@ export async function refreshWebsitesData() {
 		[refreshDataStorageBase]: output
 	});
 
-	await ChromeNative.sendWebsitesData(output)
-		.catch(console.error)
-	;
-
-
-
 	isRefreshingData = false;
 	return data;
 }
@@ -210,7 +198,7 @@ async function refreshAlarm() {
 	}
 
 	const preferences = await getPreferences('mode', 'check_enabled');
-	if (preferences.get('mode') === 'simplified' || !preferences.get('check_enabled')) {
+	if (!preferences.get('check_enabled')) {
 		if (!!oldAlarm) {
 			try {
 				await chrome.alarms.clear(ALARM_NAME);
@@ -349,6 +337,10 @@ async function onStartOrInstall() {
 		.catch(console.error)
 	;
 
+	const preferences = await getPreferences('mode', 'check_enabled');
+	if (preferences.get('mode') === 'delegated' && !preferences.get('check_enabled')) {
+		return;
+	}
 	await refreshWebsitesData();
 }
 chrome.storage.onChanged.addListener(async (changes, area) => {

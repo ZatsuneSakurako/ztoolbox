@@ -3,6 +3,8 @@ import {getSyncKeys} from "./chrome-preferences.js";
 import {chromeNativeSettingsStorageKey, getElectronSettings} from "./chrome-native-settings.js";
 import {sendNotification} from "./chrome-notification.js";
 import {isFirefox} from "../utils/browserDetect.js";
+import {refreshWebsitesData} from "../variousFeatures/refresh-data.js";
+import {dataStorageArea, refreshDataStorageBase} from "../variousFeatures/refresh-data-loader.js";
 
 const port = chrome.runtime.connectNative('eu.zatsunenomokou.chromenativebridge');
 
@@ -69,6 +71,15 @@ port.onMessage.addListener(async function(msg) {
 				.catch(console.error)
 			;
 			break;
+		case 'getWebsitesData':
+			await refreshWebsitesData();
+			const refreshData = await dataStorageArea.get([refreshDataStorageBase]);
+			port.postMessage({
+				type: 'commandReply',
+				_id: msg._id,
+				data: refreshData[refreshDataStorageBase]
+			});
+			break;
 		case 'openUrl':
 			if (msg.url) {
 				const tab = await chrome.tabs.create({
@@ -109,14 +120,14 @@ chrome.storage.onChanged.addListener(async (changes, area) => {
 	}
 });
 
-chrome.tabs.onActivated.addListener(async function onActivatedListener(activeInfo) {
+chrome.windows.onFocusChanged.addListener(async function onFocusChanged(windowId) {
 	const tabs = await chrome.tabs.query({
-		windowType: 'normal'
+		windowId
 	});
 	if (!tabs.length) {
 		return;
 	}
-	chrome.tabs.onActivated.removeListener(onActivatedListener);
+	chrome.windows.onFocusChanged.removeListener(onFocusChanged);
 
 
 	let isVivaldi = false
@@ -133,6 +144,8 @@ chrome.tabs.onActivated.addListener(async function onActivatedListener(activeInf
 	await sendSocketData()
 		.catch(console.error)
 	;
+}, {
+	windowTypes: ["normal"]
 });
 
 export async function getBrowserName() {
@@ -164,11 +177,16 @@ export async function getBrowserName() {
 }
 
 async function sendSocketData() {
-	const values = await chrome.storage.local.get(['notification_support', 'mode']);
+	const values = await chrome.storage.local.get([
+		'notification_support',
+		'check_enabled',
+		'mode'
+	]);
 	port.postMessage({
 		type: 'updateSocketData',
 		data: {
 			notificationSupport: values.mode === 'delegated' && values.notification_support === true,
+			sendingWebsitesDataSupport: values.mode === 'delegated' && values.check_enabled === true,
 			userAgent: navigator.userAgent,
 			browserName: await getBrowserName(),
 			extensionId: chrome.runtime.id
@@ -361,15 +379,6 @@ async function updateSyncAllowedPreferences(data) {
 }
 
 
-
-/**
- *
- * @param {Dict<WebsiteData>} websitesData
- * @return {Promise<void>}
- */
-export async function sendWebsitesData(websitesData) {
-	return callNative('sendWebsitesData', websitesData);
-}
 
 /**
  *

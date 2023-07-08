@@ -11,8 +11,8 @@
 	"No": "No",
 	"Ok": "Ok",
 
-	"GloballyDisabledNotifications": "All notifications are disabled",
-	"GloballyDisableNotifications": "Temporarly disable notifications",
+	"ExternalNotifications": "External notification enabled",
+	"ExternalNotificationsDisabled": "External notification disabled",
 
 	"leaveDelegated": "Go in normal mode",
 	"checkEnabled": "Refresh Refresh",
@@ -46,7 +46,7 @@
 
 	"open_optionpage": "Open option page",
 
-	"check_enabled_title": "Automatic deviantArt/freshRss data refresh enabled",
+	"check_enabled_title": "Automatic deviantArt/freshRss data refresh enabled (external trigger in external mode)",
 	"check_enabled_description": "Enabled if checked",
 
 	"check_delay_title": "deviantArt/freshRss verification delay",
@@ -55,7 +55,6 @@
 	"mode_title": "Extension mode",
 	"mode_description": "Choose extension mode",
 	"mode_normal": "Normal",
-	"mode_simplified": "Simplified",
 	"mode_delegated": "External",
 
 	"notification_support_title": "Accept notifications from chrome native messaging (external mode only)",
