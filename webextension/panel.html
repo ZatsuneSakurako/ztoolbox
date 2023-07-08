@@ -18,20 +18,22 @@
 </head>
 <body>
 	<header>
-		<div id="vide" class="vide if-simple-version"></div>
 		<button id="disableNotifications" class="if-normal-version"></button>
 		<button id="leave_delegated" class="if-delegated-version" data-translate-title="leaveDelegated"><span class="material-icons">transit_enterexit</span></button>
-		<button id="check_enabled" class="if-not-simple-version" data-translate-title="checkEnabled"><i class="material-icons">auto_mode</i></button>
-		<button id="refreshData" class="if-not-simple-version" data-translate-title="Refresh"><i class="material-icons">refresh</i></button>
+
+		<div id="vide" class="vide if-delegated-version"></div>
+
+		<button id="check_enabled" class="if-not-delegated-version" data-translate-title="checkEnabled"><i class="material-icons">auto_mode</i></button>
+		<button id="refreshData" class="if-not-delegated-version" data-translate-title="Refresh"><i class="material-icons">refresh</i></button>
 		<button id="settings" data-translate-title="Settings"><i class="material-icons">settings</i></button>
 	</header>
 
 	<section id="panelContent">
-		<div id="requestPermissionItem" class="if-not-simple-version buttonItem cursor hide">
+		<div id="requestPermissionItem" class="buttonItem cursor hide">
 			<span class="icon"><i class="material-icons">download</i></span>
 			<div class="title" data-translate-id="request-all-url-permission">Grant permission to retrieve data</div>
 		</div>
-		<div id="refreshItem" class="if-not-simple-version"></div>
+		<div id="refreshItem"></div>
 		<div id="tabMover"></div>
 		<div id="tabPageServerIp"></div>
 	</section>

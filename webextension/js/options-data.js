@@ -12,10 +12,6 @@ export const options = {
 				"label": "External"
 			},
 			{
-				"value": "simplified",
-				"label": "Simplified"
-			},
-			{
 				"value": "normal",
 				"label": "Normal"
 			}

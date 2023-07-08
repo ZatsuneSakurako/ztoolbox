@@ -1,5 +1,7 @@
 # WIP
 * i : Update librairies
+* \+ : Let external request websites refresh (deviantArt/FreshRSS)
+* \- : Simplified mode (deviantArt/FreshRSS disabled)
 * Fix : tabMover - update on load on Chrome browsers
 
 # 1.3.3

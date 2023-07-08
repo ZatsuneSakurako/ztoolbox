@@ -3,7 +3,6 @@
 import {openTabIfNotExist} from "../utils/openTabIfNotExist.js";
 import {getPreference, getPreferences} from "../classes/chrome-preferences.js";
 import {i18ex} from "../translation-api.js";
-import * as ChromeNative from "../classes/chrome-native.js";
 import {sendNotification} from "../classes/chrome-notification.js";
 import {
 	dataStorageArea,
@@ -111,16 +110,16 @@ export async function refreshWebsitesData() {
 	const dateStart = new Date();
 
 
-	const preferences = await getPreferences('mode', 'check_enabled');
-	if (preferences.get('mode') === 'simplified' || !preferences.get('check_enabled')) {
+	const preferences = await getPreferences('mode', 'check_enabled', 'sending_websites_data_support');
+	if (!preferences.get('check_enabled')) {
 		isRefreshingData = false;
 
 		const logs = [];
-		if (preferences.get('mode') === 'simplified') {
-			logs.push('simplified mode');
-		}
 		if (!preferences.get('check_enabled')) {
 			logs.push('check_enable false');
+		}
+		if (preferences.get('sending_websites_data_support')) {
+			logs.push('sending_websites_data_support');
 		}
 		console.info(`Refresh disabled (${logs.join(', ')})`);
 
@@ -206,8 +205,6 @@ async function refreshAlarm() {
 
 	const preferences = await getPreferences('mode', 'check_enabled', 'sending_websites_data_support');
 	if (
-		preferences.get('mode') === 'simplified'
-		||
 		!preferences.get('check_enabled')
 		||
 		(preferences.get('mode') === 'delegated' && preferences.get('sending_websites_data_support'))
@@ -351,11 +348,7 @@ async function onStartOrInstall() {
 	;
 
 	const preferences = await getPreferences('mode', 'sending_websites_data_support');
-	if (
-		preferences.get('mode') === 'simplified'
-		||
-		(preferences.get('mode') === 'delegated' && preferences.get('sending_websites_data_support'))
-	) {
+	if (preferences.get('mode') === 'delegated' && preferences.get('sending_websites_data_support')) {
 		return;
 	}
 	await refreshWebsitesData();

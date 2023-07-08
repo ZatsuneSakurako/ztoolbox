@@ -44,12 +44,6 @@ body:not(.showAdvanced) .preferenceContainer.advanced {
 	display: none;
 	visibility: hidden;
 }
-body:not(.simple-version) .if-simple-version {
-	display: none;
-}
-body.simple-version .if-not-simple-version {
-	display: none;
-}
 body:not(.delegated-version) .if-delegated-version {
 	display: none;
 }

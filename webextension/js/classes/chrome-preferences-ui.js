@@ -155,7 +155,6 @@ async function refreshSettings(prefId, oldValue, newValue) {
 	}
 	if (prefId === "mode") {
 		body.classList.toggle('delegated-version', (await getPreference("mode")) === 'delegated');
-		body.classList.toggle('simple-version', (await getPreference("mode")) === 'simplified');
 		body.classList.toggle('normal-version', (await getPreference("mode")) === 'normal');
 	}
 }
@@ -229,7 +228,6 @@ export async function loadPreferencesNodes(container) {
 		if (id === "mode") {
 			const mode = await getPreference("mode");
 			body.classList.toggle('delegated-version', mode === 'delegated');
-			body.classList.toggle('simple-version', mode === 'simplified');
 			body.classList.toggle('normal-version', mode === 'normal');
 		}
 
@@ -279,9 +277,6 @@ async function newPreferenceNode(parent, id){
 		node.classList.add(prefObj.prefLevel);
 	}
 
-	if (typeof prefObj.disabledInSimpleMode === "boolean" && !!prefObj.disabledInSimpleMode) {
-		node.classList.add('if-not-simple-version');
-	}
 	if (typeof prefObj.disabledInDelegatedMode === "boolean" && !!prefObj.disabledInDelegatedMode) {
 		node.classList.add('if-not-delegated-version');
 	}

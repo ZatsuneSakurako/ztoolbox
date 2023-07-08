@@ -55,7 +55,6 @@
 	"mode_title": "Extension mode",
 	"mode_description": "Choose extension mode",
 	"mode_normal": "Normal",
-	"mode_simplified": "Simplified",
 	"mode_delegated": "External",
 
 	"notification_support_title": "Accept notifications from chrome native messaging (external mode only)",

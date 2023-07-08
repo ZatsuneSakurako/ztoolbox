@@ -5,7 +5,7 @@ import {default as env} from './env.js';
 import {i18ex} from './translation-api.js';
 
 import './classes/chrome-native.js';
-import {deletePreferences, getPreferences, savePreference} from './classes/chrome-preferences.js';
+import {deletePreferences, getPreferences, getPreference, savePreference} from './classes/chrome-preferences.js';
 import {sendNotification} from "./classes/chrome-notification.js";
 
 import {ChromeUpdateNotification} from './classes/chromeUpdateNotification.js';
@@ -178,6 +178,11 @@ async function onStart_deleteOldPreferences() {
 		if (!!hasPreference) {
 			await deletePreferences(prefId);
 		}
+	}
+
+	const mode = await getPreference('mode');
+	if (mode === 'simplified') {
+		await savePreference('mode', 'normal');
 	}
 
 	const alarm = await chrome.alarms.get('hourlyAlarm');
