@@ -171,6 +171,7 @@ export async function refreshWebsitesData() {
 
 	if (await getPreference('showAdvanced') === true) {
 		console.groupCollapsed('Websites check end');
+		console.info(new Date().toLocaleString());
 		console.log('timings:', {
 			dateStart,
 			dateEnd: new Date()
@@ -191,12 +192,6 @@ export async function refreshWebsitesData() {
 		[refreshDataStorageBase]: output
 	});
 
-	await ChromeNative.sendWebsitesData(output)
-		.catch(console.error)
-	;
-
-
-
 	isRefreshingData = false;
 	return data;
 }
@@ -209,8 +204,14 @@ async function refreshAlarm() {
 		console.error(e);
 	}
 
-	const preferences = await getPreferences('mode', 'check_enabled');
-	if (preferences.get('mode') === 'simplified' || !preferences.get('check_enabled')) {
+	const preferences = await getPreferences('mode', 'check_enabled', 'sending_websites_data_support');
+	if (
+		preferences.get('mode') === 'simplified'
+		||
+		!preferences.get('check_enabled')
+		||
+		(preferences.get('mode') === 'delegated' && preferences.get('sending_websites_data_support'))
+	) {
 		if (!!oldAlarm) {
 			try {
 				await chrome.alarms.clear(ALARM_NAME);
@@ -349,6 +350,14 @@ async function onStartOrInstall() {
 		.catch(console.error)
 	;
 
+	const preferences = await getPreferences('mode', 'sending_websites_data_support');
+	if (
+		preferences.get('mode') === 'simplified'
+		||
+		(preferences.get('mode') === 'delegated' && preferences.get('sending_websites_data_support'))
+	) {
+		return;
+	}
 	await refreshWebsitesData();
 }
 chrome.storage.onChanged.addListener(async (changes, area) => {

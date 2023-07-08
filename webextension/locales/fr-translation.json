@@ -61,6 +61,9 @@
 	"notification_support_title": "Accepter les notifications venant du \"chrome native messaging\" (mode externe seulement)",
 	"notification_support_description": "Activé si coché",
 
+	"sending_websites_data_support_title": "Accepter d'envoyer les données deviantArt/FreshRss au \"chrome native messaging\" (mode externe seulement)",
+	"sending_websites_data_support_description": "Activé si coché",
+
 	"timeout_delay_title": "Délai de timeout des requêtes",
 	"timeout_delay_description": "Délai de timeout des requêtes, en secondes (entre 10 et 30)",
 

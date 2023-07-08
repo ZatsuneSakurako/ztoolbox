@@ -3,6 +3,8 @@ import {getSyncKeys} from "./chrome-preferences.js";
 import {chromeNativeSettingsStorageKey, getElectronSettings} from "./chrome-native-settings.js";
 import {sendNotification} from "./chrome-notification.js";
 import {isFirefox} from "../utils/browserDetect.js";
+import {refreshWebsitesData} from "../variousFeatures/refresh-data.js";
+import {dataStorageArea, refreshDataStorageBase} from "../variousFeatures/refresh-data-loader.js";
 
 const port = chrome.runtime.connectNative('eu.zatsunenomokou.chromenativebridge');
 
@@ -68,6 +70,15 @@ port.onMessage.addListener(async function(msg) {
 			handleSendNotification(msg._id, msg.opts)
 				.catch(console.error)
 			;
+			break;
+		case 'getWebsitesData':
+			await refreshWebsitesData();
+			const refreshData = await dataStorageArea.get([refreshDataStorageBase]);
+			port.postMessage({
+				type: 'commandReply',
+				_id: msg._id,
+				data: refreshData[refreshDataStorageBase]
+			});
 			break;
 		case 'openUrl':
 			if (msg.url) {
@@ -166,11 +177,16 @@ export async function getBrowserName() {
 }
 
 async function sendSocketData() {
-	const values = await chrome.storage.local.get(['notification_support', 'mode']);
+	const values = await chrome.storage.local.get([
+		'notification_support',
+		'sending_websites_data_support',
+		'mode'
+	]);
 	port.postMessage({
 		type: 'updateSocketData',
 		data: {
 			notificationSupport: values.mode === 'delegated' && values.notification_support === true,
+			sendingWebsitesDataSupport: values.mode === 'delegated' && values.sending_websites_data_support === true,
 			userAgent: navigator.userAgent,
 			browserName: await getBrowserName(),
 			extensionId: chrome.runtime.id
@@ -363,15 +379,6 @@ async function updateSyncAllowedPreferences(data) {
 }
 
 
-
-/**
- *
- * @param {Dict<WebsiteData>} websitesData
- * @return {Promise<void>}
- */
-export async function sendWebsitesData(websitesData) {
-	return callNative('sendWebsitesData', websitesData);
-}
 
 /**
  *
