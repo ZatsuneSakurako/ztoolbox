@@ -121,6 +121,11 @@ chrome.storage.onChanged.addListener(async (changes, area) => {
 });
 
 chrome.windows.onFocusChanged.addListener(async function onFocusChanged(windowId) {
+	const window = await chrome.windows.get(windowId);
+	if (window.type !== 'normal') {
+		return;
+	}
+
 	const tabs = await chrome.tabs.query({
 		windowId
 	});
@@ -144,8 +149,6 @@ chrome.windows.onFocusChanged.addListener(async function onFocusChanged(windowId
 	await sendSocketData()
 		.catch(console.error)
 	;
-}, {
-	windowTypes: ["normal"]
 });
 
 export async function getBrowserName() {

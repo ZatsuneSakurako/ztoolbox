@@ -1,3 +1,6 @@
+# WIP
+* Fix : Syntax error with Firefox
+
 # 1.4.0
 * i : Update librairies
 * i : Panel height with delegated mode
