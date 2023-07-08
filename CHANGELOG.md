@@ -1,4 +1,4 @@
-# WIP
+# 1.4.2
 * Fix : Update external state when changing "check enable"
 
 # 1.4.1
