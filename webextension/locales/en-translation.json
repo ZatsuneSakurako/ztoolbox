@@ -46,7 +46,7 @@
 
 	"open_optionpage": "Open option page",
 
-	"check_enabled_title": "Automatic deviantArt/freshRss data refresh enabled",
+	"check_enabled_title": "Automatic deviantArt/freshRss data refresh enabled (external trigger in external mode)",
 	"check_enabled_description": "Enabled if checked",
 
 	"check_delay_title": "deviantArt/freshRss verification delay",

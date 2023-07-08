@@ -46,7 +46,7 @@
 
 	"open_optionpage": "Ouvrir la page d'option",
 
-	"check_enabled_title": "Rafraichissement des données deviantArt/freshRss automatiques activé",
+	"check_enabled_title": "Rafraichissement des données deviantArt/freshRss automatiques activé (déclenchement externe en mode externe)",
 	"check_enabled_description": "Activé si coché",
 
 	"check_delay_title": "Délais de vérification de deviantArt/freshRss",
