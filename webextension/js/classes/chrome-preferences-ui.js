@@ -88,13 +88,6 @@ document.addEventListener('click', function (event) {
 	console.warn("Merge: " + mergePreferences);
 
 	importPreferencesFromFile("ztoolbox", mergePreferences)
-		.then(async () => {
-			try {
-				await sendDataToMain("refreshData", "");
-			} catch (e) {
-				console.error(e);
-			}
-		})
 		.catch(console.error)
 	;
 });

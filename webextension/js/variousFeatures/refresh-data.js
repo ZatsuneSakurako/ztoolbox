@@ -1,103 +1,10 @@
 'use strict';
 
-import {openTabIfNotExist} from "../utils/openTabIfNotExist.js";
 import {getPreference, getPreferences} from "../classes/chrome-preferences.js";
-import {i18ex} from "../translation-api.js";
-import {sendNotification} from "../classes/chrome-notification.js";
 import {
-	dataStorageArea,
 	getWebsitesApis,
-	loadStoredWebsitesData,
-	refreshDataStorageBase,
-	websitesData
+	loadStoredWebsitesData
 } from "./refresh-data-loader.js";
-
-const ALARM_NAME = 'REFRESH_DATA',
-	isBackgroundProcess = !location.pathname.endsWith('panel.html')
-;
-
-
-
-async function doNotifyWebsite(website) {
-	let websiteData = websitesData.get(website),
-		foldersList = ''
-	;
-
-	const labelArray = [];
-	if (websiteData.logged && websiteData.hasOwnProperty('folders')) {
-		for (let [name, folderData] of websiteData.folders) {
-			let count = folderData.folderCount;
-			if (typeof count === "number" && !isNaN(count) && count > 0) {
-				let suffix = '';
-				if (websiteData.notificationState.count !== null && websiteData.count > websiteData.notificationState.count) {
-					suffix = ` (+${websiteData.count - websiteData.notificationState.count})`;
-				}
-				labelArray.push(`${name}: ${count}${suffix}`);
-			}
-		}
-		foldersList += labelArray.join("\n");
-	}
-
-	if (!websiteData.logged) {
-		const oldLoggedState = websiteData.notificationState.logged;
-		if (oldLoggedState === true || oldLoggedState === undefined) {
-			sendNotification({
-				"id": "refreshData-"+website,
-				'title': i18ex._('website_notif', {'website': website}),
-				'message': i18ex._('website_not_logged', {'website': website}),
-				'iconUrl': websiteData.websiteIcon
-			}, {
-				onClickAutoClose: false
-			})
-				.catch(console.error)
-			;
-		}
-		websiteData.notificationState.logged = websiteData.logged;
-	} else if (typeof websiteData.count === 'number' && !isNaN(websiteData.count) && (websiteData.notificationState.count === null || websiteData.count > websiteData.notificationState.count)) {
-		if (await getPreference('notify_checkedData')) {
-			sendNotification({
-				"id": "refreshData-"+website,
-				"title": i18ex._('website_notif', {'website': website}),
-				"message": i18ex._('count_new_notif', {'count': websiteData.count}) + "\n" + foldersList,
-				"iconUrl": websiteData.websiteIcon
-			}, {
-				onClickAutoClose: false
-			})
-				.catch(console.error)
-			;
-		}
-	} else if (await getPreference('notify_all_viewed') && (typeof websiteData.count === 'number' && websiteData.count === 0) && (typeof websiteData.notificationState.count === 'number' && websiteData.notificationState.count > 0)) {
-		sendNotification({
-			"id": "refreshData-"+website,
-			"title": i18ex._('website_notif', {'website': website}),
-			"message": i18ex._('all_viewed'),
-			"iconUrl": websiteData.websiteIcon
-		}, {
-			onClickAutoClose: false
-		})
-			.catch(console.warn)
-		;
-	}
-
-	websiteData.notificationState.count = websiteData.count;
-}
-chrome.notifications.onClicked.addListener(async function (notificationId) {
-	if (!notificationId.startsWith('refreshData-')) return;
-
-	chrome.notifications.clear(notificationId);
-	const website = notificationId.replace('refreshData-', ''),
-		websitesAPI = await getWebsitesApis(),
-		websiteData = websitesData.get(website)
-	;
-	if (!websiteData || !websitesAPI || typeof websiteData !== 'object' || !(website in websitesAPI)) {
-		return;
-	}
-	openTabIfNotExist(websitesAPI[website].getViewURL(websiteData))
-		.catch(console.error)
-	;
-})
-
-
 
 let isRefreshingData = false;
 export async function refreshWebsitesData() {
@@ -124,9 +31,7 @@ export async function refreshWebsitesData() {
 	}
 
 
-	if (websitesData.size === 0) {
-		await loadStoredWebsitesData();
-	}
+	const websitesData = await loadStoredWebsitesData();
 
 
 	console.debug('Refreshing websites data...');
@@ -134,14 +39,9 @@ export async function refreshWebsitesData() {
 		promises = []
 	;
 	for (let [website, websiteAPI] of Object.entries(websites)) {
-		const promise = refreshWebsite(website, websiteAPI);
+		const promise = refreshWebsite(website, websiteAPI, websitesData.get(website));
 		promises.push(promise);
 		promise
-			.then(() => {
-				doNotifyWebsite(website)
-					.catch(console.error)
-				;
-			})
 			.catch((data) => {
 				console.log('refreshWebsitesData', data);
 			})
@@ -152,28 +52,14 @@ export async function refreshWebsitesData() {
 		.catch(console.error)
 	;
 
-	await refreshAlarm()
-		.catch(console.error)
-	;
-
-	if (preferences.get('mode') !== 'delegated') {
-		updateCountIndicator()
-			.catch(console.error)
-		;
-	}
-
 	if (await getPreference('showAdvanced') === true) {
 		console.groupCollapsed('Websites check end');
-		console.info(new Date().toLocaleString());
-		console.log('timings:', {
-			dateStart,
-			dateEnd: new Date()
-		});
+		console.info('Start :', dateStart.toLocaleString());
+		console.info('End :', new Date());
 		console.log('fetchResponses:', data);
 		console.log('Data:', websitesData);
 		console.groupEnd();
 	}
-
 
 
 	const output = {};
@@ -181,95 +67,28 @@ export async function refreshWebsitesData() {
 		output[website] = data.toJSON();
 	}
 
-	await dataStorageArea.set({
-		[refreshDataStorageBase]: output
-	});
-
 	isRefreshingData = false;
-	return data;
+	return output;
 }
 
-async function refreshAlarm() {
-	let oldAlarm = null;
-	try {
-		oldAlarm = await chrome.alarms.get(ALARM_NAME);
-	} catch (e) {
-		console.error(e);
-	}
-
-	const preferences = await getPreferences('mode', 'check_enabled');
-	if (!preferences.get('check_enabled')) {
-		if (!!oldAlarm) {
-			try {
-				await chrome.alarms.clear(ALARM_NAME);
-			} catch (e) {
-				console.error(e);
-			}
-		}
-		return;
-	}
-
-	const delayInMinutes = await getPreference('check_delay');
-	if (!oldAlarm || oldAlarm.periodInMinutes !== delayInMinutes) {
-		try {
-			await chrome.alarms.clear(ALARM_NAME);
-		} catch (e) {
-			console.error(e);
-		}
-
-		await chrome.alarms.create(
-			ALARM_NAME,
-			{
-				delayInMinutes,
-				periodInMinutes: delayInMinutes
-			}
-		);
-	}
-}
-
-export async function updateCountIndicator() {
-	if (typeof chrome.action.setBadgeText !== 'function') {
-		return;
-	}
-
-	let count = null;
-	for (let [, websiteData] of websitesData) {
-		if (websiteData.logged && websiteData.count !== null) {
-			if (count === null) {
-				count = 0;
-			}
-			const _nb = parseInt(websiteData.count);
-			count += isNaN(_nb) ? 0 : _nb;
-		}
-	}
-
-	let displayedCount;
-	if (count === null) {
-		displayedCount = '';
-	} else if (count >= 1000000) {
-		displayedCount = `${parseInt(count / 1000000)}M`;
-	} else if (count >= 10000) {
-		displayedCount = `${parseInt(count / 1000)}k`;
-	} else {
-		displayedCount = count.toString();
-	}
-
-	await chrome.action.setBadgeText({text: displayedCount});
-	await chrome.action.setBadgeBackgroundColor({color: (count !== null && count > 0) ? "#FF0000" : "#424242"});
-}
 
 chrome.alarms.onAlarm.addListener(function (alarm) {
-	if (!isBackgroundProcess) return;
-
-	if (alarm.name === ALARM_NAME) {
-		refreshWebsitesData()
+	if (alarm.name === 'REFRESH_DATA') {
+		chrome.alarms.clear(alarm.name)
 			.catch(console.error)
 		;
 	}
 });
 
 
-async function refreshWebsite(website, websiteAPI) {
+/**
+ *
+ * @param {string} website
+ * @param websiteAPI
+ * @param {WebsiteData} websiteData
+ * @return {Promise<null>}
+ */
+async function refreshWebsite(website, websiteAPI, websiteData) {
 	let data = null, request = null;
 
 	if (!websiteAPI || typeof websiteAPI.getData !== 'function') {
@@ -286,8 +105,6 @@ async function refreshWebsite(website, websiteAPI) {
 
 
 	if (data !== null) {
-		let websiteData = websitesData.get(website);
-
 		websiteData.count = data.get("count");
 		websiteData.logged = data.get("logged");
 		websiteData.loginId = data.get("loginId");
@@ -304,52 +121,3 @@ async function refreshWebsite(website, websiteAPI) {
 		return request;
 	}
 }
-
-
-if (isBackgroundProcess) {
-	self.websitesData = websitesData;
-}
-chrome.runtime.onStartup.addListener(function () {
-	if (!isBackgroundProcess) {
-		return;
-	}
-
-	onStartOrInstall()
-		.catch(console.error)
-	;
-});
-chrome.runtime.onInstalled.addListener(function () {
-	if (!isBackgroundProcess) {
-		return;
-	}
-
-	onStartOrInstall()
-		.catch(console.error)
-	;
-});
-async function onStartOrInstall() {
-	if (!isBackgroundProcess) {
-		return;
-	}
-
-	await i18ex.loadingPromise;
-	await refreshAlarm()
-		.catch(console.error)
-	;
-
-	const preferences = await getPreferences('mode', 'check_enabled');
-	if (preferences.get('mode') === 'delegated' && !preferences.get('check_enabled')) {
-		return;
-	}
-	await refreshWebsitesData();
-}
-chrome.storage.onChanged.addListener(async (changes, area) => {
-	if (area !== "local" || !isBackgroundProcess) return;
-
-	if ('mode' in changes || 'check_enabled' in changes || 'check_delay' in changes) {
-		await i18ex.loadingPromise;
-		await refreshAlarm()
-			.catch(console.error)
-		;
-	}
-});

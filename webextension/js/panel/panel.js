@@ -1,5 +1,4 @@
 import {loadTranslations} from '../translation-api.js';
-import {renderTemplate} from '../init-templates.js';
 import {theme_cache_update} from '../classes/backgroundTheme.js';
 import * as tabPageServerIp from "./tabPageServerIp.js";
 import {getPreference, savePreference} from "../classes/chrome-preferences.js";
@@ -32,34 +31,6 @@ document.addEventListener('click', e => {
 			;
 		})
 		.catch(console.error)
-	;
-});
-
-document.addEventListener('click', async e => {
-	const elm = e.target.closest('#refreshData');
-	if (!elm) return;
-
-	elm.dataset.translateTitle = '';
-	elm.disabled = true;
-	const triggered = Date.now();
-
-	const {refreshWebsitesData} = await import('../variousFeatures/refresh-data.js');
-	refreshWebsitesData()
-		.finally(() => {
-			if (Date.now() - triggered > 2500) {
-				elm.dataset.translateTitle = "Refresh";
-				elm.disabled = false;
-			} else {
-				setTimeout(() => {
-					elm.dataset.translateTitle = "Refresh";
-					elm.disabled = false;
-				}, 3000);
-			}
-
-			updatePanelData()
-				.catch(console.error)
-			;
-		})
 	;
 });
 
@@ -123,17 +94,6 @@ window.theme_update = async function theme_update() {
 	}
 };
 
-/**
- *
- * @param {Node} node
- */
-function removeAllChildren(node) {
-	// Taken from https://stackoverflow.com/questions/683366/remove-all-the-children-dom-elements-in-div
-	while (node.hasChildNodes()) {
-		node.removeChild(node.lastChild);
-	}
-}
-
 async function updatePanelData() {
 	console.log("Updating panel data");
 
@@ -151,58 +111,6 @@ async function updatePanelData() {
 	if (disableNotificationsButton) {
 		disableNotificationsButton.classList.toggle('off', !notification_support ?? false);
 		disableNotificationsButton.dataset.translateTitle = !!notification_support? 'ExternalNotifications' : 'ExternalNotificationsDisabled';
-	}
-
-
-
-	if ((await getPreference('mode')) !== 'normal') {
-		return;
-	}
-
-
-
-	let websiteDataList_Node = document.querySelector("#panelContent #refreshItem");
-	removeAllChildren(websiteDataList_Node);
-
-
-	const {loadStoredWebsitesData} = await import('../variousFeatures/refresh-data-loader.js');
-	const websitesData = await loadStoredWebsitesData();
-	for (let [website, websiteData] of websitesData) {
-		const websiteRenderData = {
-			"logged": websiteData.logged,
-			"count": websiteData.count,
-			"website": website,
-			"websiteIcon": websiteData.websiteIcon,
-			"folders": [],
-			"href": websiteData.href,
-			"noData": websiteData.logged === null
-		};
-
-		if (websiteData.logged) {
-			websiteData.folders.forEach((folderData, folderName) => {
-				let count = folderData.folderCount;
-				if (typeof count === "number" && !isNaN(count) && count > 0) {
-					let folderRenderData = {
-						"folderCount": count,
-						"folderTitle": (typeof folderData.folderName === "string") ? folderData.folderName : folderName
-					};
-
-					if (typeof folderData.folderUrl === "string" && folderData.folderUrl !== "") {
-						folderRenderData.folderHaveUrl = true;
-						folderRenderData.folderUrl = folderData.folderUrl;
-					}
-					websiteRenderData.folders.push(folderRenderData);
-				}
-			});
-		}
-
-		/**
-		 *
-		 * @type {HTMLElement}
-		 */
-		const websiteNode = document.createElement("article");
-		websiteDataList_Node.appendChild(websiteNode);
-		websiteNode.outerHTML = await renderTemplate("panelCheckedDataItem", websiteRenderData);
 	}
 }
 

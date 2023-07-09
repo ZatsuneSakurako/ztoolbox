@@ -38,19 +38,10 @@
 	"freshRss_baseUrl_title": "URL of your FreshRss instance (should end with /i/)",
 	"freshRss_baseUrl_description": "Data refresh with url provided",
 
-	"notify_checkedData_title": "Show a notification for deviantArt/freshRss",
-	"notify_checkedData_description": "Notification when checked",
-
-	"notify_all_viewed_title": "Show a notification when all view in website(s)",
-	"notify_all_viewed_description": "Notification when checked",
-
 	"open_optionpage": "Open option page",
 
 	"check_enabled_title": "Automatic deviantArt/freshRss data refresh enabled (external trigger in external mode)",
 	"check_enabled_description": "Enabled if checked",
-
-	"check_delay_title": "deviantArt/freshRss verification delay",
-	"check_delay_description": "Delay between verifications, in minute",
 
 	"mode_title": "Extension mode",
 	"mode_description": "Choose extension mode",
@@ -115,24 +106,6 @@
 	"Check_your_link_or_page": "Check your link or page",
 	"tabPageServerIp_alias_title": "IP aliases",
 	"tabPageServerIp_alias_description": "IP/Alias (IP as key)",
-
-
-
-	"website_notif": "{{website}} notification",
-	"website_notif_plural": "{{website}} notifications",
-	"website_not_logged": "No {{website}} account logged",
-
-	"not_logged": "Not logged",
-	"no_website_logged": "No account logged",
-	"inbox": "Inbox",
-	"spam": "Spam",
-
-	"open_folder": "Open folder",
-
-	"count_new_notif": "{{count}} new notification",
-	"count_new_notif_plural": "{{count}} new notifications",
-
-	"all_viewed": "Everything viewed",
 
 
 	"no_other_window": "No other window",
