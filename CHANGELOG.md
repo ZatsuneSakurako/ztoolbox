@@ -1,3 +1,6 @@
+# WIP
+* Fix : Avoid native port connexion in panel
+
 # 1.5.0
 * \- : Refresh data : Remove websites data (remove display and extension storage) and notification from extension (now external management only)
 
