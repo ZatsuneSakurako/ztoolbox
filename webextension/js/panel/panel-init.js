@@ -8,6 +8,21 @@ import('../utils/browserDetect.js')
 	.catch(console.error)
 ;
 
+self.sendToMain = function sendToMain(id, ...args) {
+	return new Promise((resolve, reject) => {
+		chrome.runtime.sendMessage(chrome.runtime.id, {
+			id,
+			data: [...args]
+		}, function (result) {
+			if (result.isError) {
+				reject();
+			} else {
+				resolve(result.response);
+			}
+		});
+	});
+}
+
 async function baseInit() {
 	const {getPreferences} = await import('../classes/chrome-preferences.js');
 

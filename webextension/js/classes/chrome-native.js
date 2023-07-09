@@ -2,7 +2,6 @@ import {randomId} from "../utils/randomId.js";
 import {getSyncKeys} from "./chrome-preferences.js";
 import {chromeNativeSettingsStorageKey, getElectronSettings} from "./chrome-native-settings.js";
 import {sendNotification} from "./chrome-notification.js";
-import {isFirefox} from "../utils/browserDetect.js";
 import {refreshWebsitesData} from "../variousFeatures/refresh-data.js";
 
 const port = chrome.runtime.connectNative('eu.zatsunenomokou.chromenativebridge');
@@ -24,12 +23,6 @@ port.onMessage.addListener(async function(msg) {
 		 */
 		if (location.pathname.endsWith('panel.html') || location.pathname.endsWith('options.html')) {
 			console.debug('Ignoring chromeNative incoming messages');
-			return;
-		}
-	} else {
-		// If "background" extension is running with service worker, self should be a serviceworker object
-		if (!isFirefox && !self.toString().toLowerCase().includes('serviceworker')) {
-			console.debug('Ignoring chromeNative incoming messages (not service worker)');
 			return;
 		}
 	}
@@ -81,10 +74,10 @@ port.onMessage.addListener(async function(msg) {
 		case 'openUrl':
 			if (msg.url) {
 				const tab = await chrome.tabs.create({
-					url: msg.url,
-					active: true
-				})
-					.catch(console.error)
+						url: msg.url,
+						active: true
+					})
+						.catch(console.error)
 				;
 				port.postMessage({
 					type: 'commandReply',
@@ -421,9 +414,12 @@ export async function openUrl(browserName, url) {
 }
 
 chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
-	if (sender.id === chrome.runtime.id && message.id === 'ztoolbox_nativeOpenUrl') {
+	if (sender.id !== chrome.runtime.id) {
+		return;
+	}
+
+	if (message.id === 'ztoolbox_nativeOpenUrl') {
 		const {data} = message;
-		console.dir(data)
 
 		openUrl(data.browserName, data.url)
 			.then(response => {
@@ -436,6 +432,53 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
 				console.error(e);
 				sendResponse({
 					response: e,
+					isError: true
+				});
+			})
+		;
+		return true;
+	} else if (message.id === 'getWsClientNames') {
+		getWsClientNames()
+			.then(result => {
+				sendResponse({
+					response: result,
+					isError: false
+				});
+			})
+			.catch(err => {
+				console.error(err);
+				sendResponse({
+					isError: true
+				});
+			})
+		;
+		return true;
+	} else if (message.id === 'getBrowserName') {
+		getBrowserName()
+			.then(result => {
+				sendResponse({
+					response: result,
+					isError: false
+				});
+			})
+			.catch(err => {
+				console.error(err);
+				sendResponse({
+					isError: true
+				});
+			})
+		;
+		return true;
+	} else if (message.id === 'showSection') {
+		showSection(...message.data)
+			.then(() => {
+				sendResponse({
+					isError: false
+				});
+			})
+			.catch(err => {
+				console.error(err);
+				sendResponse({
 					isError: true
 				});
 			})

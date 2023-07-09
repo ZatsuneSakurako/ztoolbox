@@ -38,9 +38,8 @@ document.addEventListener('click', async e => {
 	const elm = e.target.closest('#settings');
 	if (!elm) return;
 
-	const {showSection} = await import("../classes/chrome-native.js");
 	if ((await getPreference('mode')) === 'delegated' && !e.shiftKey) {
-		showSection('settings')
+		sendToMain('showSection', 'settings')
 			.catch(console.error)
 		;
 	} else {

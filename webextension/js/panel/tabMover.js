@@ -1,7 +1,8 @@
 import {renderTemplate} from '../init-templates.js';
 import {appendTo} from "../utils/appendTo.js";
-import {getBrowserName, getWsClientNames} from "../classes/chrome-native.js";
 import {throttle} from "../../lib/throttle.js";
+
+
 
 const tabMover = document.querySelector('#tabMover');
 /**
@@ -68,9 +69,11 @@ async function update() {
 		);
 	}
 
-	const wsClientNames = await getWsClientNames()
-			.catch(console.error),
-		browserName = await getBrowserName()
+
+
+
+	const wsClientNames = await sendToMain('getWsClientNames').catch(console.error),
+		browserName = await sendToMain('getBrowserName').catch(console.error)
 	;
 	if (wsClientNames) {
 		for (const wsClientName of wsClientNames) {

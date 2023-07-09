@@ -9,10 +9,10 @@ import {
 
 
 
-async function sendDataToMain(id, data) {
+async function sendDataToMain(id, ...args) {
 	chrome.runtime.sendMessage({
 		id,
-		data: data ?? null
+		data: [...args]
 	})
 		.catch(console.error)
 	;
