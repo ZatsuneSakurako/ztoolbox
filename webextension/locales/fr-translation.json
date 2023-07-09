@@ -38,19 +38,10 @@
 	"freshRss_baseUrl_title": "URL de votre instance FreshRss (devrait finir par un /i/)",
 	"freshRss_baseUrl_description": "Rafraîchissement de donnée quand URL fournie",
 
-	"notify_checkedData_title": "Affiche une notification pour deviantArt/freshRss",
-	"notify_checkedData_description": "Notification quand cochée",
-
-	"notify_all_viewed_title": "Affiche une notification quand tout est vu pour un/des site(s)",
-	"notify_all_viewed_description": "Notification quand cochée",
-
 	"open_optionpage": "Ouvrir la page d'option",
 
 	"check_enabled_title": "Rafraichissement des données deviantArt/freshRss automatiques activé (déclenchement externe en mode externe)",
 	"check_enabled_description": "Activé si coché",
-
-	"check_delay_title": "Délais de vérification de deviantArt/freshRss",
-	"check_delay_description": "Délai entre chaque vérification, en minute",
 
 	"mode_title": "Mode de l'extension",
 	"mode_description": "Choix du mode extension",
@@ -59,9 +50,6 @@
 
 	"notification_support_title": "Accepter les notifications venant du \"chrome native messaging\" (mode externe seulement)",
 	"notification_support_description": "Activé si coché",
-
-	"timeout_delay_title": "Délai de timeout des requêtes",
-	"timeout_delay_description": "Délai de timeout des requêtes, en secondes (entre 10 et 30)",
 
 	"panel_height_title": "Hauteur du panel",
 	"panel_height_description": "Taille en pixels",
@@ -118,24 +106,6 @@
 	"Check_your_link_or_page": "Vérifiez le lien ou page",
 	"tabPageServerIp_alias_title": "Alias d'IP",
 	"tabPageServerIp_alias_description": "IP/Alias (IP comme clé)",
-
-
-
-	"website_notif": "Notification {{website}}",
-	"website_notif_plural": "Notifications {{website}}",
-	"website_not_logged": "Aucun compte {{website}} connecté",
-
-	"not_logged": "Non connecté",
-	"no_website_logged": "Aucun compte connecté",
-	"inbox": "Boîte de réception",
-	"spam": "Pourriel",
-
-	"open_folder": "Ouvrir le dossier",
-
-	"count_new_notif": "{{count}} nouvelle notification",
-	"count_new_notif_plural": "{{count}} nouvelles notifications",
-
-	"all_viewed": "Tout est vu",
 
 
 	"no_other_window": "Aucune autre fenêtre",

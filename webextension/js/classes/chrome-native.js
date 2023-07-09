@@ -4,7 +4,6 @@ import {chromeNativeSettingsStorageKey, getElectronSettings} from "./chrome-nati
 import {sendNotification} from "./chrome-notification.js";
 import {isFirefox} from "../utils/browserDetect.js";
 import {refreshWebsitesData} from "../variousFeatures/refresh-data.js";
-import {dataStorageArea, refreshDataStorageBase} from "../variousFeatures/refresh-data-loader.js";
 
 const port = chrome.runtime.connectNative('eu.zatsunenomokou.chromenativebridge');
 
@@ -72,12 +71,11 @@ port.onMessage.addListener(async function(msg) {
 			;
 			break;
 		case 'getWebsitesData':
-			await refreshWebsitesData();
-			const refreshData = await dataStorageArea.get([refreshDataStorageBase]);
+			const refreshData = await refreshWebsitesData();
 			port.postMessage({
 				type: 'commandReply',
 				_id: msg._id,
-				data: refreshData[refreshDataStorageBase]
+				data: refreshData
 			});
 			break;
 		case 'openUrl':

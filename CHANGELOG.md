@@ -1,3 +1,6 @@
+# WIP
+* \- : Refresh data : Remove websites data (remove display and extension storage) and notification from extension (now external management only)
+
 # 1.4.2
 * Fix : Update external state when changing "check enable"
 

@@ -30,17 +30,8 @@ export const options = {
 		"description": "Enabled if checked",
 		"type": "bool",
 		"value": true,
-		"prefLevel": "basic"
-	},
-	"check_delay": {
-		"title": "Streams status delay",
-		"description": "Delay between checks, in minute",
-		"type": "integer",
-		"value": 5,
-		"minValue": 5,
-		"prefLevel": "advanced",
-		"sync": true,
-		"onlyNormalMode": true
+		"prefLevel": "basic",
+		"onlyDelegatedMode": true
 	},
 	/*			Features Prefs			*/
 	"tabPageServerIp_alias": {
@@ -59,26 +50,6 @@ export const options = {
 		"description": "Data refresh with url provided",
 		"type": "string",
 		"value": '',
-		"group": "notifications",
-		"prefLevel": "basic",
-		"sync": true,
-		"onlyNormalMode": true
-	},
-	"notify_checkedData": {
-		"title": "Show a notification for deviantArt",
-		"description": "Notification when checked",
-		"type": "bool",
-		"value": true,
-		"group": "notifications",
-		"prefLevel": "basic",
-		"sync": true,
-		"onlyNormalMode": true
-	},
-	"notify_all_viewed": {
-		"title": "Show a notification when all view in website(s)",
-		"description": "Notification when checked",
-		"type": "bool",
-		"value": false,
 		"group": "notifications",
 		"prefLevel": "basic",
 		"sync": true,
