@@ -53,8 +53,7 @@ async function update() {
 					'windowId': win.id,
 					'tabName': win.currentTabTitle ?? '',
 					'tabsCount': win.tabs.length
-				}),
-				document
+				})
 			);
 		}
 	} else {
@@ -64,8 +63,7 @@ async function update() {
 				'title': i18ex._("newWindow"),
 				'windowId': '',
 				'tabName': ''
-			}),
-			document
+			})
 		);
 	}
 
@@ -85,8 +83,7 @@ async function update() {
 					'title': wsClientName.browserName,
 					'browserName': wsClientName.browserName,
 					'tabName': wsClientName.userAgent ?? ''
-				}),
-				document
+				})
 			);
 		}
 	}
