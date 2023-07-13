@@ -1,5 +1,5 @@
 # WIP
-* \i : Fix Firefox validator warning "Unsafe assignment to outerHTML"
+* i : Fix Firefox validator warning "Unsafe assignment to outerHTML"
 * \- : Remove `appendTo` last argument `document`, not needed anymore
 * Fix : Avoid native port connexion in panel
 
