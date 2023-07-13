@@ -1,5 +1,6 @@
 import {renderTemplate} from "../init-templates.js";
 import {getPreference} from "../classes/chrome-preferences.js";
+import {appendTo} from "../utils/appendTo.js";
 
 const idTabPageServerIp = 'tabPageServerIp',
 	tabPageServerIpStorage = '_tabPageServerIp'
@@ -62,9 +63,7 @@ export async function updateData() {
 		};
 	}
 
-	let newElementNode = document.createElement("article");
-	$tabPageServerIp.appendChild(newElementNode);
-	newElementNode.outerHTML = await renderTemplate("tabPageServerIp", renderData);
+	appendTo($tabPageServerIp, await renderTemplate("tabPageServerIp", renderData));
 }
 
 
