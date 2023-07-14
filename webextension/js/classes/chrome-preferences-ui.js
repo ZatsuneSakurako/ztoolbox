@@ -175,12 +175,6 @@ async function newPreferenceNode(parent, id){
 	if (typeof prefObj.disabledInDelegatedMode === "boolean" && !!prefObj.disabledInDelegatedMode) {
 		node.classList.add('if-not-delegated-version');
 	}
-	if (typeof prefObj.disabledInNormalMode === "boolean" && !!prefObj.disabledInNormalMode) {
-		node.classList.add('if-not-normal-version');
-	}
-	if (typeof prefObj.onlyNormalMode === "boolean" && !!prefObj.onlyNormalMode) {
-		node.classList.add('if-normal-version');
-	}
 	if (typeof prefObj.onlyDelegatedMode === "boolean" && !!prefObj.onlyDelegatedMode) {
 		node.classList.add('if-delegated-version');
 	}

@@ -32,7 +32,7 @@ export const options = {
 		"value": "{\"127.0.0.1\": \"localhost\"}",
 		"group": "featurePreference",
 		"sync": true,
-		"disabledInDelegatedMode": true
+		"onlyNormalMode": true
 	},
 	/*			Theme			*/
 	"theme": {
@@ -52,7 +52,7 @@ export const options = {
 			],
 		"group": "theme",
 		"sync": true,
-		"disabledInDelegatedMode": true
+		"onlyNormalMode": true
 	},
 	"background_color": {
 		"title": "Panel background color",
@@ -61,6 +61,6 @@ export const options = {
 		"value": "#000000",
 		"group": "theme",
 		"sync": true,
-		"disabledInDelegatedMode": true
+		"onlyNormalMode": true
 	}
 };
