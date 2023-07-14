@@ -34,10 +34,6 @@
 	"blacklist_title": "Blacklist",
 	"whitelist_title": "Whitelist",
 
-
-	"freshRss_baseUrl_title": "URL of your FreshRss instance (should end with /i/)",
-	"freshRss_baseUrl_description": "Data refresh with url provided",
-
 	"open_optionpage": "Open option page",
 
 	"mode_title": "Extension mode",

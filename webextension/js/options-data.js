@@ -36,17 +36,6 @@ export const options = {
 		"sync": true,
 		"disabledInDelegatedMode": true
 	},
-	/*			Notifications			*/
-	"freshRss_baseUrl": {
-		"title": "Base url of your FreshRss instance",
-		"description": "Data refresh with url provided",
-		"type": "string",
-		"value": '',
-		"group": "notifications",
-		"prefLevel": "basic",
-		"sync": true,
-		"onlyNormalMode": true
-	},
 	/*				Panel size					*/
 	"panel_height": {
 		"title": "Panel's height",
