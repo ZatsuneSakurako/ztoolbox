@@ -23,25 +23,13 @@ export async function loadStoredWebsitesData() {
 	 */
 	const websitesData = new Map();
 
-	const deviantArtData = new WebsiteData();
+	const deviantArtData = new WebsiteData(deviantArt);
 	websitesData.set('deviantArt', deviantArtData);
-	if (!deviantArtData.websiteIcon) {
-		deviantArtData.websiteIcon = deviantArt.defaultFavicon;
-	}
-	if (!deviantArtData.href) {
-		deviantArtData.href = deviantArt.getLoginURL();
-	}
 
 	const freshRss_baseUrl = await getPreference('freshRss_baseUrl');
 	if (!!freshRss_baseUrl) {
-		const freshRssData = new WebsiteData();
+		const freshRssData = new WebsiteData(freshRss);
 		websitesData.set('freshRss', freshRssData);
-		if (!freshRssData.websiteIcon) {
-			freshRssData.websiteIcon = freshRss.defaultFavicon;
-		}
-		if (!freshRssData.href) {
-			freshRssData.href = freshRss_baseUrl;
-		}
 	}
 
 	return websitesData;

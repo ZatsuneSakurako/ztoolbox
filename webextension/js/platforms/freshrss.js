@@ -15,12 +15,7 @@ const freshRss = {
 	getViewURL(websiteState) {
 		return freshRssBaseUrl;
 	},
-	/**
-	 *
-	 * @param {string} [websiteState]
-	 * @return {string}
-	 */
-	getLoginURL(websiteState) {
+	get getLoginURL() {
 		return this.dataURL;
 	},
 

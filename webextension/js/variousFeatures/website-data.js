@@ -1,11 +1,17 @@
 export class WebsiteData {
-	constructor() {
+	#websiteAPI;
+	constructor(websiteApi) {
+		this.#websiteAPI = websiteApi;
+
 		this.count = 0;
 		this.folders = new Map();
-		this.websiteIcon = '';
+		this.websiteIcon = websiteApi.defaultFavicon ?? '';
 		this.logged = null;
 		this.loginId = '';
-		this.href = '';
+	}
+
+	get href() {
+		return !!this.logged ? this.#websiteAPI.getViewURL(this) : this.#websiteAPI.getLoginURL
 	}
 
 	toJSON() {

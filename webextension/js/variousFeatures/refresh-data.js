@@ -7,6 +7,7 @@ import {
 } from "./refresh-data-loader.js";
 
 let isRefreshingData = false;
+self.refreshWebsitesData = refreshWebsitesData;
 export async function refreshWebsitesData() {
 	if (isRefreshingData === true) {
 		console.warn('Already refreshing...');
@@ -112,7 +113,6 @@ async function refreshWebsite(website, websiteAPI, websiteData) {
 		if (data.has("folders")) {
 			websiteData.folders = data.get("folders");
 		}
-		websiteData.href = websiteAPI[(websiteData.logged) ? "getViewURL" : "getLoginURL"](websiteData)
 		return request;
 	} else {
 		console.warn(`Error retrieving page for "${website}"`);

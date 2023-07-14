@@ -11,14 +11,12 @@ const deviantArt = {
 		} else if (websiteState.logged !== null && websiteState.logged && websiteState.loginId !== "") {
 			return `http://www.deviantart.com/${websiteState.loginId}`;
 		} else if (websiteState.logged !== null && websiteState.logged === false) {
-			return this.getLoginURL(websiteState); // dA will redirect it to https://www.deviantart.com/users/login?ref=*
+			return this.getLoginURL; // dA will redirect it to https://www.deviantart.com/users/login?ref=*
 		} else {
 			return "http://www.deviantart.com/";
 		}
 	},
-	getLoginURL: function(websiteState) {
-		return "https://www.deviantart.com/watch/deviations"; // dA will redirect it to https://www.deviantart.com/users/login?ref=*
-	},
+	getLoginURL: "https://www.deviantart.com/watch/deviations", // dA will redirect it to https://www.deviantart.com/users/login?ref=*,
 
 	/**
 	 *
