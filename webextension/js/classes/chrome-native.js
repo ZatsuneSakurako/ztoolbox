@@ -2,7 +2,6 @@ import {randomId} from "../utils/randomId.js";
 import {getSyncKeys} from "./chrome-preferences.js";
 import {chromeNativeSettingsStorageKey, getElectronSettings} from "./chrome-native-settings.js";
 import {sendNotification} from "./chrome-notification.js";
-import {refreshWebsitesData} from "../variousFeatures/refresh-data.js";
 
 const port = chrome.runtime.connectNative('eu.zatsunenomokou.chromenativebridge');
 
@@ -62,14 +61,6 @@ port.onMessage.addListener(async function(msg) {
 			handleSendNotification(msg._id, msg.opts)
 				.catch(console.error)
 			;
-			break;
-		case 'getWebsitesData':
-			const refreshData = await refreshWebsitesData();
-			port.postMessage({
-				type: 'commandReply',
-				_id: msg._id,
-				data: refreshData
-			});
 			break;
 		case 'openUrl':
 			if (msg.url) {

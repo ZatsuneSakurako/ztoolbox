@@ -11,7 +11,6 @@ import {sendNotification} from "./classes/chrome-notification.js";
 import {ChromeUpdateNotification} from './classes/chromeUpdateNotification.js';
 
 import './variousFeatures/iqdb.js';
-import './variousFeatures/refresh-data.js';
 import './variousFeatures/tabPageServerIp.js';
 import './variousFeatures/youtubePlaylist.js';
 
@@ -185,11 +184,16 @@ async function onStart_deleteOldPreferences() {
 		await savePreference('mode', 'normal');
 	}
 
-	const alarm = await chrome.alarms.get('hourlyAlarm');
-	if (alarm) {
-		await chrome.alarms.clear(alarm.name)
-			.catch(console.error)
-		;
+	const oldAlarms = new Set(['REFRESH_DATA', 'hourlyAlarm']),
+		alarms = await chrome.alarms.getAll()
+	;
+	for (let alarm of alarms) {
+		if (oldAlarms.has(alarm.name)) {
+			console.warn(`Deleting old alarm "${alarm.name}"`)
+			await chrome.alarms.clear(alarm.name)
+				.catch(console.error)
+			;
+		}
 	}
 }
 chrome.runtime.onStartup.addListener(function () {
