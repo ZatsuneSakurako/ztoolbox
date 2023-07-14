@@ -20,7 +20,7 @@ export const options = {
 	"notification_support": {
 		"title": "Accept notifications from chrome native messaging (external mode only)",
 		"description": "Enabled if checked",
-		"type": "bool",
+		"type": "checkbox",
 		"value": true,
 		"onlyDelegatedMode": true
 	},

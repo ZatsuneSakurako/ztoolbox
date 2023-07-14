@@ -153,7 +153,7 @@ export async function getPreferences(...prefIds) {
 					current_pref = parseInt(current_pref);
 					break;
 				}
-			case "bool":
+			case "checkbox":
 				current_pref = getBooleanFromVar(current_pref);
 				break;
 			default:

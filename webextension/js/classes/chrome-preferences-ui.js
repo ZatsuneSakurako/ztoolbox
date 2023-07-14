@@ -28,7 +28,7 @@ document.addEventListener('input', function (e) {
 	settingNode_onChange.apply(input, [e, input]);
 });
 document.addEventListener('change', function (e) {
-	const input = e.target.closest("[data-setting-type='number'],[data-setting-type='bool'],[data-setting-type='color'],select[data-setting-type='menulist']");
+	const input = e.target.closest("[data-setting-type='number'],[data-setting-type='checkbox'],[data-setting-type='color'],select[data-setting-type='menulist']");
 	if (!input) return;
 
 	settingNode_onChange.apply(input, [e, input]);
@@ -64,7 +64,7 @@ async function refreshSettings(prefId, oldValue, newValue) {
 		case 'number':
 			prefNode.value = parseInt(newValue);
 			break;
-		case 'bool':
+		case 'checkbox':
 			prefNode.checked = getBooleanFromVar(newValue);
 			break;
 	}
@@ -194,12 +194,12 @@ async function newPreferenceNode(parent, id){
 
 	let prefNode = null;
 	const prefValue = await getPreference(id);
-	if (prefObj.type === "text" || prefObj.type === "bool" || prefObj.type === "color" || prefObj.type === "number") {
+	if (prefObj.type === "text" || prefObj.type === "checkbox" || prefObj.type === "color" || prefObj.type === "number") {
 		prefNode = document.createElement("input");
 		prefNode.type = prefObj.type;
-		prefNode.required = true;
+		prefNode.required = prefObj.type !== "checkbox";
 
-		if (prefObj.type === "bool") {
+		if (prefObj.type === "checkbox") {
 			prefNode.checked = getBooleanFromVar(prefValue);
 		} else if (prefObj.type === "number") {
 			if (typeof prefObj.minValue === "number") {
@@ -238,7 +238,7 @@ async function newPreferenceNode(parent, id){
 	prefNode.id = id;
 	prefNode.dataset.settingType = prefObj.type;
 
-	if (prefObj.type === "bool") {
+	if (prefObj.type === "checkbox") {
 		node.appendChild(prefNode);
 		node.appendChild(labelNode);
 	} else {
