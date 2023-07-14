@@ -55,20 +55,6 @@ chrome.storage.onChanged.addListener(async (changes, area) => {
 		location.reload();
 		return;
 	}
-	if ('check_enabled' in changes) {
-		const current = changes.check_enabled.newValue,
-			button = document.querySelector('#check_enabled')
-		;
-		button.dataset.translateTitle = `checkEnabled${current ? '' : '_off'}`;
-		button?.classList.toggle('off', !current);
-	}
-});
-document.addEventListener('click', async e => {
-	const elm = e.target.closest('#check_enabled');
-	if (!elm) return;
-
-	const current = await getPreference('check_enabled');
-	await savePreference('check_enabled', !current);
 });
 document.addEventListener('click', async e => {
 	const elm = e.target.closest('#leave_delegated');

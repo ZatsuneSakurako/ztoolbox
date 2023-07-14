@@ -151,7 +151,7 @@ async function onStart_deleteOldPreferences() {
 	 *
 	 * @type {Set<string>}
 	 */
-	const preferences = new Set(['serviceWorkerWhitelist', 'freshRss_showInPanel', 'panel_theme', 'launchpadAddLink', 'custom_lstu_server', '_notificationGloballyDisabled', 'showExperimented']);
+	const preferences = new Set(['serviceWorkerWhitelist', 'freshRss_showInPanel', 'panel_theme', 'launchpadAddLink', 'custom_lstu_server', '_notificationGloballyDisabled', 'showExperimented', 'check_enabled']);
 	if (chrome.storage.session) {
 		preferences
 			.add('_backgroundPage_theme_cache')
@@ -175,6 +175,7 @@ async function onStart_deleteOldPreferences() {
 			console.error(e);
 		}
 		if (!!hasPreference) {
+			console.warn(`Deleting old preference "${prefId}"`);
 			await deletePreferences(prefId);
 		}
 	}

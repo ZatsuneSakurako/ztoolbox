@@ -25,14 +25,6 @@ export const options = {
 		"prefLevel": "basic",
 		"onlyDelegatedMode": true
 	},
-	"check_enabled": {
-		"title": "Data automatic refresh enabled",
-		"description": "Enabled if checked",
-		"type": "bool",
-		"value": true,
-		"prefLevel": "basic",
-		"onlyDelegatedMode": true
-	},
 	/*			Features Prefs			*/
 	"tabPageServerIp_alias": {
 		"title": "IP aliases",

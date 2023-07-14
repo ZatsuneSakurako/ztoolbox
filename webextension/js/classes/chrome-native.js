@@ -95,7 +95,7 @@ port.onMessage.addListener(async function(msg) {
 chrome.storage.onChanged.addListener(async (changes, area) => {
 	if (area !== "local") return;
 
-	if ("mode" in changes || "notification_support" in changes || "check_enabled" in changes) {
+	if ("mode" in changes || "notification_support" in changes) {
 		sendSocketData()
 			.catch(console.error)
 		;
@@ -164,14 +164,12 @@ export async function getBrowserName() {
 async function sendSocketData() {
 	const values = await chrome.storage.local.get([
 		'notification_support',
-		'check_enabled',
 		'mode'
 	]);
 	port.postMessage({
 		type: 'updateSocketData',
 		data: {
 			notificationSupport: values.mode === 'delegated' && values.notification_support === true,
-			sendingWebsitesDataSupport: values.mode === 'delegated' && values.check_enabled === true,
 			userAgent: navigator.userAgent,
 			browserName: await getBrowserName(),
 			extensionId: chrome.runtime.id

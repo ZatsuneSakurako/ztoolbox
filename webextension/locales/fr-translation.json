@@ -40,9 +40,6 @@
 
 	"open_optionpage": "Ouvrir la page d'option",
 
-	"check_enabled_title": "Rafraichissement des données deviantArt/freshRss automatiques activé (déclenchement externe en mode externe)",
-	"check_enabled_description": "Activé si coché",
-
 	"mode_title": "Mode de l'extension",
 	"mode_description": "Choix du mode extension",
 	"mode_normal": "Normal",
