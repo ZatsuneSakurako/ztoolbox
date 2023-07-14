@@ -4,36 +4,11 @@ import webExt from "web-ext";
 import {exec as _exec} from "child_process";
 import klawSync from "klaw-sync";
 import "dotenv/config";
-import _yargs from "yargs";
 import {error, info, success, warning} from "./common/custom-console.js";
 import {projectRootDir as pwd} from "./projectRootDir.js";
 
 const pJson = JSON.parse(fs.readFileSync(pwd + '/package.json', {encoding: 'utf-8'})),
 	echo = console.log
-;
-const yargs = _yargs(process.argv.slice(2))
-	.usage('Usage: $0 [options]')
-
-	.option('p', {
-		"alias": ['prod','production'],
-		"description": 'Do stable release',
-		"type": "boolean"
-	})
-	.fail(function (msg, err, yargs) {
-		if (msg==="yargs error") {
-			console.error(yargs.help());
-		}
-
-		/*if(err){// preserve stack
-			throw err;
-		}*/
-
-		process.exit(1)
-	})
-
-	.help('h')
-	.alias('h', 'help')
-	.argv
 ;
 
 
@@ -107,18 +82,10 @@ async function init() {
 
 
 
-	echo('Handling **/*.prod.* and **/*.dev.* files...');
+	echo('Handling **/*.prod.* files...');
 
-	const devFilePathRegex = /\.dev(\..+)$/,
-		prodFilePathRegex = /\.prod(\..+)$/
-	;
+	const prodFilePathRegex = /\.prod(\..+)$/;
 
-	const devFiles = klawSync(tmpPath, {
-		nodir: true,
-		filter: item => {
-			return item.stats.isDirectory() || devFilePathRegex.test(item.path)
-		}
-	});
 	const prodFiles = klawSync(tmpPath, {
 		nodir: true,
 		filter: item => {
@@ -126,25 +93,10 @@ async function init() {
 		}
 	});
 
-	const devPromises = devFiles.map(fileObj => {
-		if (yargs.prod === true) {
-			return fs.remove(fileObj.path);
-		} else {
-			return fs.move(fileObj.path, fileObj.path.replace(devFilePathRegex, '$1'), {
-				overwrite: true
-			});
-		}
-	});
-	await Promise.all(devPromises);
-
 	const prodPromises = prodFiles.map(fileObj => {
-		if (yargs.prod === false) {
-			return fs.remove(fileObj.path);
-		} else {
-			return fs.move(fileObj.path, fileObj.path.replace(prodFilePathRegex, '$1'), {
-				overwrite: true
-			});
-		}
+		return fs.move(fileObj.path, fileObj.path.replace(prodFilePathRegex, '$1'), {
+			overwrite: true
+		});
 	});
 
 	await Promise.all(prodPromises);

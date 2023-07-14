@@ -40,10 +40,6 @@ button,
 	margin-top: 14px;
 	margin-bottom: 14px;
 }
-body:not(.showAdvanced) .preferenceContainer.advanced {
-	display: none;
-	visibility: hidden;
-}
 body:not(.delegated-version) .if-delegated-version {
 	display: none;
 }

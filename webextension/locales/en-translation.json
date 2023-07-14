@@ -44,12 +44,6 @@
 	"notification_support_title": "Accept notifications from chrome native messaging (external mode only)",
 	"notification_support_description": "Enabled if checked",
 
-	"panel_height_title": "Panel's height",
-	"panel_height_description": "Size in pixels",
-
-	"panel_width_title": "Panel's width",
-	"panel_width_description": "Size in pixels",
-
 	"theme_title": "Panel theme",
 	"theme_description": "Choose the theme of the panel",
 	"theme_dark": "Dark",
@@ -57,14 +51,6 @@
 
 	"background_color_title": "Panel color",
 	"background_color_description": "Choose base color of the panel",
-
-	"export_preferences_title": "Export preferences in a file",
-	"export_preferences": "Export",
-	"import_preferences_title": "Import preferences from a file",
-	"import_preferences": "Import",
-
-	"showAdvanced_title": "Show advanced settings",
-	"showAdvanced_description": "Enabled when checked",
 
 	"save": "Save",
 	"sync_title": "Save / Restaure preferences from/to synchronization",

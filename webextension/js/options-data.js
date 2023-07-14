@@ -22,7 +22,6 @@ export const options = {
 		"description": "Enabled if checked",
 		"type": "bool",
 		"value": true,
-		"prefLevel": "basic",
 		"onlyDelegatedMode": true
 	},
 	/*			Features Prefs			*/
@@ -32,36 +31,8 @@ export const options = {
 		"type": "json",
 		"value": "{\"127.0.0.1\": \"localhost\"}",
 		"group": "featurePreference",
-		"prefLevel": "advanced",
 		"sync": true,
 		"disabledInDelegatedMode": true
-	},
-	/*				Panel size					*/
-	"panel_height": {
-		"title": "Panel's height",
-		"description": "Size in pixels",
-		"type": "integer",
-		"value": 350,
-		"minValue": 350,
-		"maxValue": 600,
-		"rangeInput": true,
-		"rangeOutputUnit": "px",
-		"group": "panelSize",
-		"prefLevel": "advanced",
-		"onlyNormalMode": true
-	},
-	"panel_width": {
-		"title": "Panel's width",
-		"description": "Size in pixels",
-		"type": "integer",
-		"value": 290,
-		"minValue": 290,
-		"maxValue": 700,
-		"group": "panelSize",
-		"rangeInput": true,
-		"rangeOutputUnit": "px",
-		"prefLevel": "advanced",
-		"onlyNormalMode": true
 	},
 	/*			Theme			*/
 	"theme": {
@@ -80,7 +51,6 @@ export const options = {
 				}
 			],
 		"group": "theme",
-		"prefLevel": "basic",
 		"sync": true,
 		"disabledInDelegatedMode": true
 	},
@@ -90,35 +60,7 @@ export const options = {
 		"type": "color",
 		"value": "#000000",
 		"group": "theme",
-		"prefLevel": "basic",
 		"sync": true,
-		"disabledInDelegatedMode": true
-	},
-	/*			Import/Export Prefs			*/
-	"export_preferences": {
-		"title": "Export preferences from a file",
-		"label": "Export preferences",
-		"type": "control",
-		"group": "importexport_prefs",
-		"prefLevel": "basic",
-		"disabledInDelegatedMode": true
-	},
-	"import_preferences": {
-		"title": "Import preferences from a file",
-		"label": "Import preferences",
-		"type": "control",
-		"group": "importexport_prefs",
-		"prefLevel": "basic",
-		"disabledInDelegatedMode": true
-	},
-	/*			Settings level			*/
-	"showAdvanced": {
-		"title": "Show advanced settings",
-		"description": "Enabled when checked",
-		"type": "bool",
-		"value": false,
-		"group": "settingsLevel",
-		"prefLevel": "basic",
 		"disabledInDelegatedMode": true
 	}
 };
