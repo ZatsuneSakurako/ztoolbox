@@ -54,8 +54,7 @@ chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
  * @return {Promise<Dict<TabPageServerIdData>>}
  */
 async function updateData(newData={}) {
-	const storageArea = chrome.storage.session ?? chrome.storage.local,
-		raw = (await storageArea.get([tabPageServerIpStorage])),
+	const raw = (await chrome.storage.session.get([tabPageServerIpStorage])),
 		data = Object.assign({}, raw[tabPageServerIpStorage], newData)
 	;
 
@@ -71,7 +70,7 @@ async function updateData(newData={}) {
 		}
 	}
 
-	await storageArea.set({
+	await chrome.storage.session.set({
 		[tabPageServerIpStorage]: data
 	});
 

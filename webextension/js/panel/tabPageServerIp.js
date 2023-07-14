@@ -22,8 +22,7 @@ async function getCurrentTab() {
 
 export async function updateData() {
 	const $tabPageServerIp = document.querySelector(`#${idTabPageServerIp}`),
-		storageArea = chrome.storage.session ?? chrome.storage.local,
-		raw = (await storageArea.get([tabPageServerIpStorage])),
+		raw = (await chrome.storage.session.get([tabPageServerIpStorage])),
 		data = Object.assign({}, raw[tabPageServerIpStorage])
 	;
 

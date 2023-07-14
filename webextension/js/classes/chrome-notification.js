@@ -8,25 +8,6 @@ const ALARM_NAME = 'CHROME_NOTIFICATION_CONTROLLER',
 
 
 
-const chromeStorageArea = chrome.storage.session ?? chrome.storage.local;
-async function clearStorage() {
-	if (!chrome.storage.session) {
-		return await chromeStorageArea.remove(NOTIFICATION_STORAGE_ID);
-	}
-}
-chrome.runtime.onStartup.addListener(function () {
-	clearStorage()
-		.catch(console.error)
-	;
-});
-chrome.runtime.onInstalled.addListener(function () {
-	clearStorage()
-		.catch(console.error)
-	;
-});
-
-
-
 let chromeAPI_button_availability = true;
 
 /**
@@ -81,7 +62,7 @@ async function sendNotification(options, data) {
 		delete options.id;
 	}
 
-	await chromeStorageArea.set({
+	await chrome.storage.session.set({
 		[NOTIFICATION_STORAGE_ID]: {
 			...data,
 			onButtonClickAutoClose: data.onButtonClickAutoClose ?? true,
@@ -133,7 +114,7 @@ export async function getNotificationData(id) {
 
 
 async function getAndClearNotificationData() {
-	const notificationsData = (await chromeStorageArea.get(NOTIFICATION_STORAGE_ID) ?? {})[NOTIFICATION_STORAGE_ID];
+	const notificationsData = (await chrome.storage.session.get(NOTIFICATION_STORAGE_ID) ?? {})[NOTIFICATION_STORAGE_ID];
 
 	for (let [notificationId, data] of Object.entries(notificationsData)) {
 		const comparaisonDate = new Date(data.createdAt);
@@ -144,7 +125,7 @@ async function getAndClearNotificationData() {
 		}
 	}
 
-	await chromeStorageArea.set({
+	await chrome.storage.session.set({
 		[NOTIFICATION_STORAGE_ID]: notificationsData
 	});
 
