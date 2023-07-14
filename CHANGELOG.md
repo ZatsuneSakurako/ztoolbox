@@ -1,7 +1,7 @@
 # WIP
 * i : Fix Firefox validator warning "Unsafe assignment to outerHTML"
 * \- : Remove `appendTo` last argument `document`, not needed anymore
-* \- : Remove website data loading
+* \- : Remove website data loading (remove JSON5 lib, not needed anymore)
 * Fix : Avoid native port connexion in panel
 
 # 1.5.0
