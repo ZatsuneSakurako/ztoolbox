@@ -122,7 +122,7 @@ input[type='radio']::before {
 input[type='radio']:checked::before {
 	content: "radio_button_checked";
 }
-input[type='radio'] + label:not(.preference)::after {
+input[type='radio'] + label::after {
 	content: "\A";
 	white-space: pre;
 }

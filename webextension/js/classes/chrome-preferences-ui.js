@@ -1,34 +1,24 @@
-import {
-	getBooleanFromVar,
-	getPreferenceConfig,
-	savePreference,
-	getPreference
-} from './chrome-preferences.js';
-
+import {getBooleanFromVar, getPreference, getPreferenceConfig, savePreference} from './chrome-preferences.js';
 
 
 /*		---- events handling ----		*/
 
 function settingNode_onChange() {
-	const node = this,
-		settingName = (node.tagName.toLowerCase()==="input"&&typeof node.type==="string"&&node.type.toLowerCase()==="radio")? node.name : node.id
-	;
-
+	const node = this;
 	if (node.validity.valid) {
-		console.dir(getValueFromNode(node))
-		savePreference(settingName, getValueFromNode(node))
+		savePreference(node.id, getValueFromNode(node))
 			.catch(console.error)
 		;
 	}
 }
 document.addEventListener('input', function (e) {
-	const input = e.target.closest("[data-setting-type='text'],[data-setting-type='json']");
+	const input = e.target.closest("input[type='text'],textarea[type='json']");
 	if (!input) return;
 
 	settingNode_onChange.apply(input, [e, input]);
 });
 document.addEventListener('change', function (e) {
-	const input = e.target.closest("[data-setting-type='number'],[data-setting-type='checkbox'],[data-setting-type='color'],select[data-setting-type='menulist']");
+	const input = e.target.closest("input[type='number'],input[type='checkbox'],input[type='color'],select");
 	if (!input) return;
 
 	settingNode_onChange.apply(input, [e, input]);
@@ -38,7 +28,7 @@ document.addEventListener('change', function (e) {
 
 /*		---- refresh pref input ----		*/
 
-async function refreshSettings(prefId, oldValue, newValue) {
+async function refreshSettings(prefId, newValue) {
 	const options = getPreferenceConfig(true),
 		prefNode = document.querySelector(`#preferences #${prefId}`)
 	;
@@ -56,6 +46,9 @@ async function refreshSettings(prefId, oldValue, newValue) {
 	switch (options.get(prefId).type) {
 		case 'text':
 			prefNode.value = newValue;
+			break;
+		case 'json':
+			prefNode.value = typeof newValue === 'string' ? newValue : JSON.stringify(newValue);
 			break;
 		case 'color':
 		case 'menulist':
@@ -80,7 +73,7 @@ chrome.storage.onChanged.addListener((changes, area) => {
 	for (let prefId in changes) {
 		if (!changes.hasOwnProperty(prefId)) continue;
 
-		refreshSettings(prefId, changes[prefId].oldValue, changes[prefId].newValue)
+		refreshSettings(prefId, changes[prefId].newValue)
 			.catch(console.error)
 		;
 	}
@@ -94,8 +87,16 @@ chrome.storage.onChanged.addListener((changes, area) => {
  * @return {void|string|boolean|number}
  */
 function getValueFromNode(node) {
+	const options = getPreferenceConfig(true),
+		prefObj = options.get(node.id)
+	;
+
+	if (!prefObj) {
+		throw new Error('UNKNOWN_PREFERENCE');
+	}
+
 	const tagName = node.tagName.toLowerCase();
-	if (tagName === "textarea" && node.dataset.settingType === "json") {
+	if (tagName === "textarea" && prefObj.type === "json") {
 		let json;
 		try {
 			json = JSON.parse(node.value);
@@ -114,11 +115,7 @@ function getValueFromNode(node) {
 	}
 }
 
-/**
- *
- * @param {HTMLElement} container
- */
-export async function loadPreferencesNodes(container) {
+export async function loadPreferencesNodes() {
 	const body = document.body;
 
 	const options = getPreferenceConfig(true);
@@ -136,115 +133,29 @@ export async function loadPreferencesNodes(container) {
 			body.classList.toggle('normal-version', mode === 'normal');
 		}
 
-		let groupNode = null;
-		if (typeof option.group === "string" && option.group !== "") {
-			const groupId = option.group;
-			groupNode = document.querySelector(`#${groupId}.pref_group`);
 
-			if (groupNode === null) {
-				groupNode = document.createElement("div");
-				groupNode.id = groupId;
-				groupNode.classList.add("pref_group");
-				container.appendChild(groupNode);
+		const labelNode = document.querySelector(`label[for="${id}"]`);
+		if (!labelNode) throw new Error(`LABEL_NOT_FOUND "${id}"`);
+		labelNode.dataset.translateId = `${id}_title`;
+
+		const prefNode = document.querySelector(`[id="${id}"]`);
+		if (!prefNode) throw new Error(`INPUT_NOT_FOUND "${id}"`);
+		if (option.type === "number") {
+			if (typeof option.minValue === "number") {
+				prefNode.min = option.minValue;
+			}
+			if (typeof option.maxValue === "number") {
+				prefNode.max = option.maxValue;
+			}
+		} else if (option.type === "menulist") {
+			for (let optionNode of prefNode.options) {
+				optionNode.dataset.translateId = `${id}_${optionNode.value}`;
 			}
 		}
 
-		if (groupNode === null) {
-			groupNode = container;
-		}
-
-		groupNode.appendChild(await newPreferenceNode(groupNode, id));
+		refreshSettings(id, await getPreference(id))
+			.catch(console.error)
+		;
 	}
 }
 
-/**
- *
- * @param {HTMLElement} parent
- * @param {String} id
- * @return {HTMLDivElement}
- */
-async function newPreferenceNode(parent, id){
-	const options = getPreferenceConfig(true),
-		prefObj = options.get(id)
-	;
-
-	const node = document.createElement("div");
-	node.classList.add("preferenceContainer");
-	node.classList.add("preferenceContainer--" + id);
-
-	if (typeof prefObj.disabledInDelegatedMode === "boolean" && !!prefObj.disabledInDelegatedMode) {
-		node.classList.add('if-not-delegated-version');
-	}
-	if (typeof prefObj.onlyDelegatedMode === "boolean" && !!prefObj.onlyDelegatedMode) {
-		node.classList.add('if-delegated-version');
-	}
-
-	const labelNode = document.createElement("label");
-	labelNode.classList.add("preference");
-	if (typeof prefObj.description === "string") {
-		labelNode.title = prefObj.description;
-	}
-	labelNode.htmlFor = id;
-
-	const title = document.createElement("span");
-	title.id = `${id}_title`;
-	title.textContent = prefObj.title;
-	title.dataset.translateId = `${id}_title`;
-	labelNode.appendChild(title);
-
-	let prefNode = null;
-	const prefValue = await getPreference(id);
-	if (prefObj.type === "text" || prefObj.type === "checkbox" || prefObj.type === "color" || prefObj.type === "number") {
-		prefNode = document.createElement("input");
-		prefNode.type = prefObj.type;
-		prefNode.required = prefObj.type !== "checkbox";
-
-		if (prefObj.type === "checkbox") {
-			prefNode.checked = getBooleanFromVar(prefValue);
-		} else if (prefObj.type === "number") {
-			if (typeof prefObj.minValue === "number") {
-				prefNode.min = prefObj.minValue;
-			}
-			if (typeof prefObj.maxValue === "number") {
-				prefNode.max = prefObj.maxValue;
-			}
-			prefNode.value = parseInt(prefValue);
-		} else {
-			prefNode.value = prefValue;
-		}
-	} else if (prefObj.type === "json") {
-		prefNode = document.createElement("textarea");
-		prefNode.value = JSON.stringify(prefValue);
-	} else if (prefObj.type === "menulist") {
-		prefNode = document.createElement("select");
-		prefNode.size = Array.isArray(prefObj.options) && prefObj.options.length <= 5 ? prefObj.options.length : 1;
-
-		for (let option of Object.values(prefObj.options)) {
-			let optionNode = document.createElement("option");
-			optionNode.text = option.label;
-			optionNode.value = option.value;
-			optionNode.dataset.translateId = `${id}_${option.value}`;
-
-			prefNode.add(optionNode);
-		}
-
-		prefNode.value = prefValue;
-	}
-
-	if (!prefNode) {
-		throw new Error('UNKNOWN_TYPE');
-	}
-
-	prefNode.id = id;
-	prefNode.dataset.settingType = prefObj.type;
-
-	if (prefObj.type === "checkbox") {
-		node.appendChild(prefNode);
-		node.appendChild(labelNode);
-	} else {
-		node.appendChild(labelNode);
-		node.appendChild(prefNode);
-	}
-
-	return node;
-}

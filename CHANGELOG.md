@@ -1,6 +1,6 @@
 # WIP
 * i : Fix Firefox validator warning "Unsafe assignment to outerHTML"
-* i : Setting cleanup
+* i : Setting cleanup, and avoid JavaScript rendering
 * \- : Remove `appendTo` last argument `document`, not needed anymore
 * \- : Remove website data loading
 * \- : `JSON5` and `openTabIfNotExist` not needed anymore
