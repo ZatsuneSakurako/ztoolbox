@@ -1,6 +1,7 @@
 # WIP
 * i : Fix Firefox validator warning "Unsafe assignment to outerHTML"
 * i : Setting cleanup, and avoid JavaScript rendering
+* i : Load `iqdb` only in Firefox
 * \- : Remove `appendTo` last argument `document`, not needed anymore
 * \- : Remove website data loading
 * \- : `JSON5` and `openTabIfNotExist` not needed anymore
