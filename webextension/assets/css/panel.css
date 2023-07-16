@@ -1,14 +1,14 @@
 html {
 	margin: 0;
 	padding: 0;
-	height: 350px;
+	height: 270px;
 	overflow: hidden;
 	font-weight: 300;
 }
 body {
 	margin: 0;
 	height: 100%;
-	width: 290px;
+	width: 250px;
 	/*width: 100%;*/
 	display: flex;
 	flex-direction: column;
@@ -77,23 +77,12 @@ header button:last-child,
 header [role="button"]:last-child {
 	margin-right: 5px;
 }
-#check_enabled i {
-	display: none;
-}
-#check_enabled::before,
 #disableNotifications::before {
 	/*noinspection CssNoGenericFontName*/
 	font-family: "Material Icons"; /* stylelint-disable-line fonts-family-no-missing-generic-family-keyword */
 	font-size: 24px;
 	font-weight: normal;
-}
-#check_enabled::before {
-	content: "alarm_on";
-}
-#check_enabled.off::before {
-	content: "alarm_off";
-}
-#disableNotifications::before {
+
 	content: "notifications_active";
 }
 #disableNotifications.off::before {

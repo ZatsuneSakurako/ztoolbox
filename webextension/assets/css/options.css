@@ -40,20 +40,10 @@ button,
 	margin-top: 14px;
 	margin-bottom: 14px;
 }
-body:not(.showAdvanced) .preferenceContainer.advanced {
-	display: none;
-	visibility: hidden;
-}
 body:not(.delegated-version) .if-delegated-version {
 	display: none;
 }
 body.delegated-version .if-not-delegated-version {
-	display: none;
-}
-body:not(.normal-version) .if-normal-version {
-	display: none;
-}
-body.normal-version .if-not-normal-version {
 	display: none;
 }
 .preferenceContainer:not(.flex_input_text) {
@@ -72,17 +62,19 @@ body.normal-version .if-not-normal-version {
 	flex-grow: 5;
 	max-width: 90%;
 }
-.preference {
+.preferenceContainer label[for] {
 	display: inline;
 	margin-top: 3px;
 	margin-bottom: 3px;
 }
-.preference > span:after {
-	content: ": ";
+
+.preferenceContainer.checkbox input[type="checkbox"] {
+	order: 1;
 }
-input[type='checkbox'] + label.preference > span::after {
-	content: none;
+.preferenceContainer.checkbox label[for] {
+	order: 2;
 }
+
 label:not(.flex_input_text) {
 	display: inline;
 	padding-right: 3px;

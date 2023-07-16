@@ -1,5 +1,6 @@
 import {renderTemplate} from "../init-templates.js";
 import {getPreference} from "../classes/chrome-preferences.js";
+import {appendTo} from "../utils/appendTo.js";
 
 const idTabPageServerIp = 'tabPageServerIp',
 	tabPageServerIpStorage = '_tabPageServerIp'
@@ -21,8 +22,7 @@ async function getCurrentTab() {
 
 export async function updateData() {
 	const $tabPageServerIp = document.querySelector(`#${idTabPageServerIp}`),
-		storageArea = chrome.storage.session ?? chrome.storage.local,
-		raw = (await storageArea.get([tabPageServerIpStorage])),
+		raw = (await chrome.storage.session.get([tabPageServerIpStorage])),
 		data = Object.assign({}, raw[tabPageServerIpStorage])
 	;
 
@@ -62,9 +62,7 @@ export async function updateData() {
 		};
 	}
 
-	let newElementNode = document.createElement("article");
-	$tabPageServerIp.appendChild(newElementNode);
-	newElementNode.outerHTML = await renderTemplate("tabPageServerIp", renderData);
+	appendTo($tabPageServerIp, await renderTemplate("tabPageServerIp", renderData));
 }
 
 

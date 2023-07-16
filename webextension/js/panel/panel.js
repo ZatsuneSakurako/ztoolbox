@@ -38,9 +38,8 @@ document.addEventListener('click', async e => {
 	const elm = e.target.closest('#settings');
 	if (!elm) return;
 
-	const {showSection} = await import("../classes/chrome-native.js");
 	if ((await getPreference('mode')) === 'delegated' && !e.shiftKey) {
-		showSection('settings')
+		sendToMain('showSection', 'settings')
 			.catch(console.error)
 		;
 	} else {
@@ -56,20 +55,6 @@ chrome.storage.onChanged.addListener(async (changes, area) => {
 		location.reload();
 		return;
 	}
-	if ('check_enabled' in changes) {
-		const current = changes.check_enabled.newValue,
-			button = document.querySelector('#check_enabled')
-		;
-		button.dataset.translateTitle = `checkEnabled${current ? '' : '_off'}`;
-		button?.classList.toggle('off', !current);
-	}
-});
-document.addEventListener('click', async e => {
-	const elm = e.target.closest('#check_enabled');
-	if (!elm) return;
-
-	const current = await getPreference('check_enabled');
-	await savePreference('check_enabled', !current);
 });
 document.addEventListener('click', async e => {
 	const elm = e.target.closest('#leave_delegated');

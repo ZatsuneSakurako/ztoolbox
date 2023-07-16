@@ -3,12 +3,11 @@
 /**
  * @param {Element|string} selector
  * @param {Element|string} html
- * @param {HTMLDocument|Document} doc
  * @returns {null | HTMLElement[]}
  */
-export function appendTo(selector, html, doc=document) {
+export function appendTo(selector, html) {
 	const nodes = (typeof html === 'object')? [html] : new DOMParser().parseFromString(html, 'text/html').body.childNodes,
-		target = (typeof selector === 'object')? selector : doc.querySelector(selector),
+		target = (typeof selector === 'object')? selector : document.querySelector(selector),
 		output = []
 	;
 

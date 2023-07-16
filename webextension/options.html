@@ -22,7 +22,45 @@
 </head>
 <body>
 	<div id="contentContainer">
-		<section id="preferences"></section>
+		<section id="preferences">
+			<div class="pref_group">
+				<div class="preferenceContainer">
+					<label for="mode"></label>
+					<select id="mode" required>
+						<option value="delegated"></option>
+						<option value="normal"></option>
+					</select>
+				</div>
+			</div>
+
+			<div class="pref_group if-delegated-version">
+				<div class="preferenceContainer checkbox">
+					<label for="notification_support"></label>
+					<input type="checkbox" id="notification_support">
+				</div>
+			</div>
+
+			<div class="pref_group if-not-delegated-version">
+				<div class="preferenceContainer">
+					<label for="tabPageServerIp_alias"></label>
+					<textarea id="tabPageServerIp_alias" required></textarea>
+				</div>
+			</div>
+
+			<div class="pref_group if-not-delegated-version">
+				<div class="preferenceContainer">
+					<label for="theme"></label>
+					<select id="theme" required>
+						<option value="dark"></option>
+						<option value="light"></option>
+					</select>
+				</div>
+				<div class="preferenceContainer">
+					<label for="background_color"></label>
+					<input type="color" id="background_color" required>
+				</div>
+			</div>
+		</section>
 	</div>
 	<script src="js/options.js" type="module"></script>
 </body>

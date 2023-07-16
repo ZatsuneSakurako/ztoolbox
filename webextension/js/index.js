@@ -10,14 +10,15 @@ import {sendNotification} from "./classes/chrome-notification.js";
 
 import {ChromeUpdateNotification} from './classes/chromeUpdateNotification.js';
 
-import './variousFeatures/iqdb.js';
-import './variousFeatures/refresh-data.js';
 import './variousFeatures/tabPageServerIp.js';
 import './variousFeatures/youtubePlaylist.js';
 
 import {isFirefox} from "./utils/browserDetect.js";
 if (isFirefox) {
 	import('./variousFeatures/copyTextLink.js')
+		.catch(console.error)
+	;
+	import('./variousFeatures/iqdb.js')
 		.catch(console.error)
 	;
 }
@@ -152,14 +153,7 @@ async function onStart_deleteOldPreferences() {
 	 *
 	 * @type {Set<string>}
 	 */
-	const preferences = new Set(['serviceWorkerWhitelist', 'freshRss_showInPanel', 'panel_theme', 'launchpadAddLink', 'custom_lstu_server', '_notificationGloballyDisabled', 'showExperimented']);
-	if (chrome.storage.session) {
-		preferences
-			.add('_backgroundPage_theme_cache')
-			.add('_updated')
-			.add('_websitesDataStore')
-		;
-	}
+	const preferences = new Set(['serviceWorkerWhitelist', 'freshRss_showInPanel', 'panel_theme', 'launchpadAddLink', 'custom_lstu_server', '_notificationGloballyDisabled', 'showExperimented', 'showAdvanced', 'check_enabled', 'panel_height', 'panel_width', '_backgroundPage_theme_cache', '_updated', '_websitesDataStore', '_notification']);
 
 	await i18ex.loadingPromise;
 
@@ -176,6 +170,7 @@ async function onStart_deleteOldPreferences() {
 			console.error(e);
 		}
 		if (!!hasPreference) {
+			console.warn(`Deleting old preference "${prefId}"`);
 			await deletePreferences(prefId);
 		}
 	}
@@ -185,11 +180,16 @@ async function onStart_deleteOldPreferences() {
 		await savePreference('mode', 'normal');
 	}
 
-	const alarm = await chrome.alarms.get('hourlyAlarm');
-	if (alarm) {
-		await chrome.alarms.clear(alarm.name)
-			.catch(console.error)
-		;
+	const oldAlarms = new Set(['REFRESH_DATA', 'hourlyAlarm']),
+		alarms = await chrome.alarms.getAll()
+	;
+	for (let alarm of alarms) {
+		if (oldAlarms.has(alarm.name)) {
+			console.warn(`Deleting old alarm "${alarm.name}"`)
+			await chrome.alarms.clear(alarm.name)
+				.catch(console.error)
+			;
+		}
 	}
 }
 chrome.runtime.onStartup.addListener(function () {

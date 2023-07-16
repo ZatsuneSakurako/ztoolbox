@@ -34,14 +34,7 @@
 	"blacklist_title": "Liste noire",
 	"whitelist_title": "Liste blanche",
 
-
-	"freshRss_baseUrl_title": "URL de votre instance FreshRss (devrait finir par un /i/)",
-	"freshRss_baseUrl_description": "Rafraîchissement de donnée quand URL fournie",
-
 	"open_optionpage": "Ouvrir la page d'option",
-
-	"check_enabled_title": "Rafraichissement des données deviantArt/freshRss automatiques activé (déclenchement externe en mode externe)",
-	"check_enabled_description": "Activé si coché",
 
 	"mode_title": "Mode de l'extension",
 	"mode_description": "Choix du mode extension",
@@ -51,12 +44,6 @@
 	"notification_support_title": "Accepter les notifications venant du \"chrome native messaging\" (mode externe seulement)",
 	"notification_support_description": "Activé si coché",
 
-	"panel_height_title": "Hauteur du panel",
-	"panel_height_description": "Taille en pixels",
-
-	"panel_width_title": "Largeur du panel",
-	"panel_width_description": "Taille en pixels",
-
 	"theme_title": "Thème du panel",
 	"theme_description": "Choix du thème pour le panel",
 	"theme_dark": "Sombre",
@@ -64,14 +51,6 @@
 
 	"background_color_title": "Couleur du panel",
 	"background_color_description": "Choix de la couleur de base du panel",
-
-	"export_preferences_title": "Exporter les préférences dans un fichier",
-	"export_preferences": "Exporter",
-	"import_preferences_title": "Importer les préférences depuis un fichier",
-	"import_preferences": "Importer",
-
-	"showAdvanced_title": "Afficher les options avancées",
-	"showAdvanced_description": "Activé si coché",
 
 	"save": "Enregistrer",
 	"sync_title": "Enregistrer / Restaurer les préférences depuis/vers la synchronisation",

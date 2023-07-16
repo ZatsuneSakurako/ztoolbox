@@ -18,7 +18,7 @@ import('./utils/browserDetect.js')
 
 async function init() {
 	await loadTranslations();
-	loadPreferencesNodes(document.querySelector('section#preferences'))
+	loadPreferencesNodes()
 		.then(() => {
 			theme_update()
 				.catch(console.error)

@@ -2,8 +2,6 @@ import {randomId} from "../utils/randomId.js";
 import {getSyncKeys} from "./chrome-preferences.js";
 import {chromeNativeSettingsStorageKey, getElectronSettings} from "./chrome-native-settings.js";
 import {sendNotification} from "./chrome-notification.js";
-import {isFirefox} from "../utils/browserDetect.js";
-import {refreshWebsitesData} from "../variousFeatures/refresh-data.js";
 
 const port = chrome.runtime.connectNative('eu.zatsunenomokou.chromenativebridge');
 
@@ -24,12 +22,6 @@ port.onMessage.addListener(async function(msg) {
 		 */
 		if (location.pathname.endsWith('panel.html') || location.pathname.endsWith('options.html')) {
 			console.debug('Ignoring chromeNative incoming messages');
-			return;
-		}
-	} else {
-		// If "background" extension is running with service worker, self should be a serviceworker object
-		if (!isFirefox && !self.toString().toLowerCase().includes('serviceworker')) {
-			console.debug('Ignoring chromeNative incoming messages (not service worker)');
 			return;
 		}
 	}
@@ -70,21 +62,13 @@ port.onMessage.addListener(async function(msg) {
 				.catch(console.error)
 			;
 			break;
-		case 'getWebsitesData':
-			const refreshData = await refreshWebsitesData();
-			port.postMessage({
-				type: 'commandReply',
-				_id: msg._id,
-				data: refreshData
-			});
-			break;
 		case 'openUrl':
 			if (msg.url) {
 				const tab = await chrome.tabs.create({
-					url: msg.url,
-					active: true
-				})
-					.catch(console.error)
+						url: msg.url,
+						active: true
+					})
+						.catch(console.error)
 				;
 				port.postMessage({
 					type: 'commandReply',
@@ -111,7 +95,7 @@ port.onMessage.addListener(async function(msg) {
 chrome.storage.onChanged.addListener(async (changes, area) => {
 	if (area !== "local") return;
 
-	if ("mode" in changes || "notification_support" in changes || "check_enabled" in changes) {
+	if ("mode" in changes || "notification_support" in changes) {
 		sendSocketData()
 			.catch(console.error)
 		;
@@ -180,14 +164,12 @@ export async function getBrowserName() {
 async function sendSocketData() {
 	const values = await chrome.storage.local.get([
 		'notification_support',
-		'check_enabled',
 		'mode'
 	]);
 	port.postMessage({
 		type: 'updateSocketData',
 		data: {
 			notificationSupport: values.mode === 'delegated' && values.notification_support === true,
-			sendingWebsitesDataSupport: values.mode === 'delegated' && values.check_enabled === true,
 			userAgent: navigator.userAgent,
 			browserName: await getBrowserName(),
 			extensionId: chrome.runtime.id
@@ -421,9 +403,12 @@ export async function openUrl(browserName, url) {
 }
 
 chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
-	if (sender.id === chrome.runtime.id && message.id === 'ztoolbox_nativeOpenUrl') {
+	if (sender.id !== chrome.runtime.id) {
+		return;
+	}
+
+	if (message.id === 'ztoolbox_nativeOpenUrl') {
 		const {data} = message;
-		console.dir(data)
 
 		openUrl(data.browserName, data.url)
 			.then(response => {
@@ -436,6 +421,53 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
 				console.error(e);
 				sendResponse({
 					response: e,
+					isError: true
+				});
+			})
+		;
+		return true;
+	} else if (message.id === 'getWsClientNames') {
+		getWsClientNames()
+			.then(result => {
+				sendResponse({
+					response: result,
+					isError: false
+				});
+			})
+			.catch(err => {
+				console.error(err);
+				sendResponse({
+					isError: true
+				});
+			})
+		;
+		return true;
+	} else if (message.id === 'getBrowserName') {
+		getBrowserName()
+			.then(result => {
+				sendResponse({
+					response: result,
+					isError: false
+				});
+			})
+			.catch(err => {
+				console.error(err);
+				sendResponse({
+					isError: true
+				});
+			})
+		;
+		return true;
+	} else if (message.id === 'showSection') {
+		showSection(...message.data)
+			.then(() => {
+				sendResponse({
+					isError: false
+				});
+			})
+			.catch(err => {
+				console.error(err);
+				sendResponse({
 					isError: true
 				});
 			})

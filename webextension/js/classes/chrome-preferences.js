@@ -45,7 +45,7 @@ export async function savePreference(prefId, value) {
 	;
 
 	if (!!configOption) {
-		if (configOption.type === 'integer') {
+		if (configOption.type === 'number') {
 			if (typeof configOption.minValue === "number" && parseInt(value) < configOption.minValue) {
 				value = configOption.minValue;
 			} else if (typeof configOption.maxValue === "number" && parseInt(value) > configOption.maxValue) {
@@ -91,17 +91,14 @@ export async function getPreferences(...prefIds) {
 	for (let prefId of prefIds) {
 		if (!values.hasOwnProperty(prefId)) {
 			const optionConfig = options.get(prefId);
-			if (optionConfig && (optionConfig.type === "control" || optionConfig.type === "file")) {
+			if (!optionConfig) {
+				console.warn(`Preference ${prefId} not found, and no default`);
 				continue;
 			}
 
-			if (optionConfig) {
-				output.set(prefId, optionConfig.value);
-				await savePreference(prefId, optionConfig.value);
-				console.warn(`Preference ${prefId} not found, using default`);
-			} else {
-				console.warn(`Preference ${prefId} not found, and no default`);
-			}
+			output.set(prefId, optionConfig.value);
+			await savePreference(prefId, optionConfig.value);
+			console.warn(`Preference ${prefId} not found, using default`);
 		}
 	}
 
@@ -130,7 +127,7 @@ export async function getPreferences(...prefIds) {
 		}
 
 		switch (optionConfig.type) {
-			case "string":
+			case "text":
 			case "color":
 			case "menulist":
 				// No internal process to the value
@@ -140,7 +137,7 @@ export async function getPreferences(...prefIds) {
 					current_pref = JSON.parse(current_pref);
 				}
 				break;
-			case "integer":
+			case "number":
 				if (typeof current_pref === 'string' && isNaN(parseInt(current_pref))) {
 					console.warn(`${prefId} is not a number (${current_pref})`);
 					current_pref = optionConfig.value;
@@ -156,11 +153,8 @@ export async function getPreferences(...prefIds) {
 					current_pref = parseInt(current_pref);
 					break;
 				}
-			case "bool":
+			case "checkbox":
 				current_pref = getBooleanFromVar(current_pref);
-				break;
-			case "file":
-				// No internal process to the value
 				break;
 			default:
 				console.warn(`Unknown type for preference ${prefId} : "${optionConfig.type}"`);
@@ -184,59 +178,6 @@ export async function getPreference(prefId) {
  */
 export function deletePreferences(...prefIds) {
 	return chrome.storage.local.remove(prefIds)
-}
-
-/*		    ---- Export/Import preferences ----	    	*/
-
-/**
- *
- * @param {JSON} preferences
- * @param {Boolean=false} mergePreferences
- */
-export async function importFromJSON(preferences, mergePreferences=false) {
-	const options = getPreferenceConfig(true);
-
-	for (let prefId in preferences) {
-		if (!preferences.hasOwnProperty(prefId)){
-			continue;
-		}
-
-		const optionConf = options.get(prefId);
-		if (!!optionConf && !['control', 'file', 'json'].includes(optionConf.type) && typeof preferences[prefId] === typeof optionConf.value) {
-			if(mergePreferences) {
-				await savePreference(prefId, preferences[prefId]);
-			} else {
-				await savePreference(prefId, preferences[prefId]);
-			}
-		} else if (!!optionConf && optionConf.type === 'json' && ['string', 'object'].includes(typeof preferences[prefId])) {
-			let jsonValue = preferences[prefId];
-			if (typeof jsonValue === 'string') {
-				jsonValue = JSON.parse(jsonValue);
-			}
-			await savePreference(prefId, jsonValue);
-		} else {
-			console.warn(`Error trying to import ${prefId}`);
-		}
-	}
-}
-
-/*		---- Save/Restore preferences from sync ----		*/
-
-export async function getSyncPreferences() {
-	let obj = {};
-	const options = getPreferenceConfig(true);
-
-	for (const [prefId, option] of options) {
-		if (option.hasOwnProperty("sync") === true && option.sync === false) {
-			continue;
-		} else if(option.type === "control" || option.type === "file") {
-			continue;
-		}
-
-		obj[prefId] = await getPreference(prefId);
-	}
-
-	return obj;
 }
 
 /**
