@@ -1,4 +1,4 @@
-# WIP
+# 1.6.0
 * i : Fix Firefox validator warning "Unsafe assignment to outerHTML"
 * i : Setting cleanup, and avoid JavaScript rendering
 * i : Load `iqdb` only in Firefox
