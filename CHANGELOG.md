@@ -1,4 +1,4 @@
-# WIP
+# 1.6.1
 * \+ : Chrome native - clear notification
 
 # 1.6.0
