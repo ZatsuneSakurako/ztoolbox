@@ -62,6 +62,11 @@ port.onMessage.addListener(async function(msg) {
 				.catch(console.error)
 			;
 			break;
+		case 'clearNotification':
+			clearNotification(msg._id)
+				.catch(console.error)
+			;
+			break;
 		case 'openUrl':
 			if (msg.url) {
 				const tab = await chrome.tabs.create({
@@ -177,7 +182,12 @@ async function sendSocketData() {
 	});
 }
 
+async function clearNotification(id) {
+	console.info('clear notification : ' + id)
+	await chrome.notifications.clear('chromeNative-' + id)
+}
 async function handleSendNotification(id, opts) {
+	if (opts.timeoutType) delete opts.timeoutType;
 	await sendNotification({
 		...opts,
 		id: 'chromeNative-' + id

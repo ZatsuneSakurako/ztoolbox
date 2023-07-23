@@ -1,3 +1,6 @@
+# WIP
+* \+ : Chrome native - clear notification
+
 # 1.6.0
 * i : Fix Firefox validator warning "Unsafe assignment to outerHTML"
 * i : Setting cleanup, and avoid JavaScript rendering
