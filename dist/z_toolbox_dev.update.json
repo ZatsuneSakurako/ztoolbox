@@ -5,7 +5,10 @@
 				{ "version": "1.6.1",
 					"update_link": "https://github.com/ZatsuneNoMokou/ztoolbox/raw/master/dist/z_toolbox_dev.xpi",
 					"applications": {
-						"gecko": { "strict_min_version": "115" } } }
+						"gecko": { "strict_min_version": "115" },
+						"gecko_android": {}
+					}
+				}
 			]
 		}
 	}
