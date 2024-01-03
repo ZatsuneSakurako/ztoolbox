@@ -1,3 +1,6 @@
+# 1.6.2
+* i : Panel size
+ 
 # 1.6.1
 * \+ : Chrome native - clear notification
 
