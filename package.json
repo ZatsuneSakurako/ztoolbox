@@ -1,6 +1,6 @@
 {
 	"name": "ztoolbox",
-	"version": "1.6.2",
+	"version": "1.7.0",
 	"private": true,
 	"description": "Web Extension to test various things.",
 	"type": "module",
