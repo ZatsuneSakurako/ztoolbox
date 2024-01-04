@@ -1,3 +1,6 @@
+# WIP
+* \+ : Add DNS Checker link with Page IP / Status display
+
 # 1.6.2
 * i : Panel size
  

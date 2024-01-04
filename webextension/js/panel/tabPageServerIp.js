@@ -39,6 +39,12 @@ export async function updateData() {
 	 * @type {undefined|TabPageServerIdData}
 	 */
 	const tabData = data[`${activeTab.id}`];
+	let url;
+	try {
+		url = new URL(activeTab.url);
+	} catch (e) {
+		console.error(e);
+	}
 	let renderData = {
 		tabName: activeTab.title,
 		favIconUrl: activeTab.favIconUrl,
@@ -55,6 +61,7 @@ export async function updateData() {
 			...renderData,
 			...tabData,
 			ipMore,
+			url,
 			description: [
 				ipMore ? ipMore : undefined,
 				tabData.statusCode !== 200 ? tabData.statusCode : undefined

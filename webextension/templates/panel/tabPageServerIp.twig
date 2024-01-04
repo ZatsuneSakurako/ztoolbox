@@ -4,7 +4,7 @@
 	{% if ip %}
 		<div class="data ellipse">
 			{{ip}}{%- if description %} ({{description}}){% endif -%}
-			&nbsp;<a href="https://dnslytics.com/ip/{{ ip }}" title="DNSlytics" target="_blank"><img src="https://dnslytics.com/favicon.ico" alt=""></a>
+			&nbsp;<a href="https://dnslytics.com/ip/{{ ip }}" title="DNSlytics" target="_blank"><img src="https://dnslytics.com/favicon.ico" alt="" height="16" width="16"></a>{% if url %}&nbsp;<a href="https://dnschecker.org/#A/{{ url.hostname }}" title="DNSlytics" target="_blank"><img src="https://dnschecker.org/themes/common/images/general/favicon-32.png" alt="" height="16" width="16"></a>{% endif %}
 		</div>
 	{% endif %}
 </div>
