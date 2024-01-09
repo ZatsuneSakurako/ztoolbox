@@ -1,3 +1,6 @@
+# WIP
+* \+ : Add DNS Checker link on errored pages
+
 # 1.7.0
 * \+ : Add DNS Checker link with Page IP / Status display
 

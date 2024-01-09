@@ -62,6 +62,7 @@ export async function updateData() {
 			...tabData,
 			ipMore,
 			url,
+			error: tabData.error ? tabData.error : undefined,
 			description: [
 				ipMore ? ipMore : undefined,
 				tabData.statusCode !== 200 ? tabData.statusCode : undefined

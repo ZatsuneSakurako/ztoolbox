@@ -17,6 +17,22 @@ chrome.webRequest.onCompleted.addListener(function (details) {
 
 }, {'urls' : ["<all_urls>"], 'types' : ['main_frame']});
 
+chrome.webRequest.onErrorOccurred.addListener(function (details) {
+	if (!details.url || details.tabId < 0) {
+		return;
+	}
+
+	updateData({
+		[details.tabId]: {
+			url: details.url,
+			error: details.error
+		}
+	})
+		.catch(console.error)
+	;
+
+}, {'urls' : ["<all_urls>"], 'types' : ['main_frame']});
+
 chrome.webRequest.onBeforeRequest.addListener(function (details) {
 	updateData({
 		[details.tabId]: {
