@@ -1,4 +1,4 @@
-# WIP
+# 1.7.1
 * \+ : Add DNS Checker link on errored pages
 
 # 1.7.0
