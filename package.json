@@ -1,12 +1,13 @@
 {
 	"name": "ztoolbox",
-	"version": "1.7.1",
+	"version": "1.7.2",
 	"private": true,
 	"description": "Web Extension to test various things.",
 	"type": "module",
 	"dependencies": {
 		"i18next": "^23.2.6",
 		"i18next-http-backend": "^2.2.1",
+		"ip-regex": "^5.0.0",
 		"material-icons": "^1.13.8",
 		"twig": "^1.16.0"
 	},

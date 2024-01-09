@@ -1,6 +1,7 @@
 import {renderTemplate} from "../init-templates.js";
 import {getPreference} from "../classes/chrome-preferences.js";
 import {appendTo} from "../utils/appendTo.js";
+import ipRegex from '../../lib/ip-regex.js';
 
 const idTabPageServerIp = 'tabPageServerIp',
 	tabPageServerIpStorage = '_tabPageServerIp'
@@ -39,9 +40,10 @@ export async function updateData() {
 	 * @type {undefined|TabPageServerIdData}
 	 */
 	const tabData = data[`${activeTab.id}`];
-	let url;
+	let url, domain;
 	try {
 		url = new URL(activeTab.url);
+		domain = url.hostname;
 	} catch (e) {
 		console.error(e);
 	}
@@ -55,6 +57,9 @@ export async function updateData() {
 		let ipMore = false;
 		if (tabData.ip in tabPageServerIp_alias) {
 			ipMore = tabPageServerIp_alias[tabData.ip];
+		} else if (url && ipRegex({exact: true}).test(url.hostname)) {
+			ipMore = url.hostname;
+			domain = undefined;
 		}
 
 		renderData = {

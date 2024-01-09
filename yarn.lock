@@ -2882,6 +2882,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"ip-regex@npm:^5.0.0":
+  version: 5.0.0
+  resolution: "ip-regex@npm:5.0.0"
+  checksum: 4098b2df89c015f1484a5946e733ec126af8c1828719d90e09f04af23ce487e1a852670e4d3f51b0dc6dfbaf7d8bfab23fd7893ca60e69833da99b7b1ee3623b
+  languageName: node
+  linkType: hard
+
 "ip@npm:^2.0.0":
   version: 2.0.0
   resolution: "ip@npm:2.0.0"
@@ -6213,6 +6220,7 @@ __metadata:
     fs-extra: ^11.1.1
     i18next: ^23.2.6
     i18next-http-backend: ^2.2.1
+    ip-regex: ^5.0.0
     klaw-sync: ^6.0.0
     material-icons: ^1.13.8
     stylelint: ^15.9.0

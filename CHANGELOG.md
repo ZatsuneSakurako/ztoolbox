@@ -1,3 +1,6 @@
+# 1.7.2
+* Fix : Detect if tab url hostname is an ip
+
 # 1.7.1
 * \+ : Add DNS Checker link on errored pages
 

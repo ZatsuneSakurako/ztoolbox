@@ -37,4 +37,7 @@ if (!exist_jsLib) {
 
 	info("Copying MaterialIcons (marella/material-icons)...");
 	_cp("./node_modules/material-icons/iconfont/material-icons.woff2", path.normalize(`${fontPath}/MaterialIcons-Regular.woff2`));
+
+	info("Copying ip-regex...");
+	_cp("./node_modules/ip-regex/index.js", path.normalize(`${jsLib}/ip-regex.js`));
 }
