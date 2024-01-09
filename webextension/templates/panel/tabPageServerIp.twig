@@ -5,7 +5,7 @@
 		<div class="data ellipse">
 			{{ error }}
 			{{ip}}{%- if description %} ({{description}}){% endif -%}
-			&nbsp;{% if ip %}<a href="https://dnslytics.com/ip/{{ ip }}" title="DNSlytics" target="_blank"><img src="https://dnslytics.com/favicon.ico" alt="" height="16" width="16"></a>{% endif %}{% if url %}&nbsp;<a href="https://dnschecker.org/#A/{{ url.hostname }}" title="DNSlytics" target="_blank"><img src="https://dnschecker.org/themes/common/images/general/favicon-32.png" alt="" height="16" width="16"></a>{% endif %}
+			&nbsp;{% if ip %}<a href="https://dnslytics.com/ip/{{ ip }}" title="DNSlytics" target="_blank"><img src="https://dnslytics.com/favicon.ico" alt="" height="16" width="16"></a>{% endif %}{% if url %}&nbsp;<a href="https://dnschecker.org/#A/{{ domain }}" title="DNSlytics" target="_blank"><img src="https://dnschecker.org/themes/common/images/general/favicon-32.png" alt="" height="16" width="16"></a>{% endif %}
 		</div>
 	{% endif %}
 </div>
