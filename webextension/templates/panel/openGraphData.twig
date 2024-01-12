@@ -1,0 +1,9 @@
+<div class="buttonItem cursor openGraphData">
+	<img class="icon" src="{{ data.image }}" alt="" loading="lazy" />
+	<div class="title ellipse">{% if data.title %}{{ data.title }}{% else %}⚠️ (No title) {% endif %}</div>
+	<div class="data ellipse">
+		<p>{% if data.description %}{{ data.description }}{% else %}⚠️ (No description) {% endif %}</p>
+		<h4>{% if data.url %}{{ data.url }}{% else %}⚠️ (No url) {% endif %}</h4>
+		<pre>{{ code }}</pre>
+	</div>
+</div>
