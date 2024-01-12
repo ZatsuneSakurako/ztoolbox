@@ -1,4 +1,4 @@
-# WIP
+# 1.8.0
 * \+ : Get and display main OpenGraph data
 
 # 1.7.3
