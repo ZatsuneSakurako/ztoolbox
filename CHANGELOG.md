@@ -1,3 +1,6 @@
+# WIP
+* \+ : Get and display main OpenGraph data
+
 # 1.7.3
 * Fix : Detect if tab url hostname is an ip
 

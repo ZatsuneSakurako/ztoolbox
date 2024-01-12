@@ -3,6 +3,7 @@ templatesSource.set('backgroundTheme', '/templates/backgroundTheme');
 templatesSource.set('tabMover', '/templates/panel/tabMover');
 templatesSource.set('tabMoverNative', '/templates/panel/tabMoverNative');
 templatesSource.set('tabPageServerIp', '/templates/panel/tabPageServerIp');
+templatesSource.set('openGraphData', '/templates/panel/openGraphData');
 
 
 
