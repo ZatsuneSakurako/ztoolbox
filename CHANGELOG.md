@@ -1,4 +1,4 @@
-# WIP
+# 1.9.0
 * \- : Display of main OpenGraph data (now external management only)
 
 # 1.8.0
