@@ -2,7 +2,7 @@ import {renderTemplate} from "../init-templates.js";
 import {getPreference} from "../classes/chrome-preferences.js";
 import {appendTo} from "../utils/appendTo.js";
 import ipRegex from '../../lib/ip-regex.js';
-import {getCurrentTab} from "./getCurrentTab.js";
+import {getCurrentTab} from "../utils/getCurrentTab.js";
 
 const idTabPageServerIp = 'tabPageServerIp',
 	tabPageServerIpStorage = '_tabPageServerIp'

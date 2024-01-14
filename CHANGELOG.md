@@ -1,3 +1,6 @@
+# WIP
+* \- : Display of main OpenGraph data (now external management only)
+
 # 1.8.0
 * \+ : Get and display main OpenGraph data
 

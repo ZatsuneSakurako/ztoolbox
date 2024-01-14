@@ -1,3 +1,5 @@
+import {loadTabOpenGraph} from "./openGraphData.js";
+
 export const tabPageServerIpStorage = '_tabPageServerIp';
 
 chrome.webRequest.onCompleted.addListener(function (details) {
@@ -5,16 +7,26 @@ chrome.webRequest.onCompleted.addListener(function (details) {
 		return;
 	}
 
-	updateData({
-		[details.tabId]: {
-			url: details.url,
-			ip: details.ip,
-			statusCode: details.statusCode
+	(async () => {
+		let tabOpenGraphData = await loadTabOpenGraph(details.tabId)
+			.catch(console.error)
+		;
+		if (!tabOpenGraphData || !Array.isArray(tabOpenGraphData) || !tabOpenGraphData.at(0)) {
+			tabOpenGraphData = null
 		}
-	})
+		updateData({
+			[details.tabId]: {
+				url: details.url,
+				ip: details.ip,
+				statusCode: details.statusCode,
+				tabOpenGraphData: tabOpenGraphData ? tabOpenGraphData.at(0)?.result : undefined
+			}
+		})
+			.catch(console.error)
+		;
+	})()
 		.catch(console.error)
 	;
-
 }, {'urls' : ["<all_urls>"], 'types' : ['main_frame']});
 
 chrome.webRequest.onErrorOccurred.addListener(function (details) {

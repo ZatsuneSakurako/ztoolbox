@@ -2,6 +2,9 @@ import {randomId} from "../utils/randomId.js";
 import {getSyncKeys} from "./chrome-preferences.js";
 import {chromeNativeSettingsStorageKey, getElectronSettings} from "./chrome-native-settings.js";
 import {sendNotification} from "./chrome-notification.js";
+import {getCurrentTab} from "../utils/getCurrentTab.js";
+import {tabPageServerIpStorage} from "../variousFeatures/tabPageServerIp.js";
+import ipRegex from "../../lib/ip-regex.js";
 
 const port = chrome.runtime.connectNative('eu.zatsunenomokou.chromenativebridge');
 
@@ -98,6 +101,13 @@ port.onMessage.addListener(async function(msg) {
 
 
 chrome.storage.onChanged.addListener(async (changes, area) => {
+	if (area === 'session' && tabPageServerIpStorage in changes) {
+		sendSocketData()
+			.catch(console.error)
+		;
+		return;
+	}
+
 	if (area !== "local") return;
 
 	if ("mode" in changes || "notification_support" in changes) {
@@ -119,7 +129,7 @@ chrome.windows.onFocusChanged.addListener(async function onFocusChanged(windowId
 	if (!tabs.length) {
 		return;
 	}
-	chrome.windows.onFocusChanged.removeListener(onFocusChanged);
+	// chrome.windows.onFocusChanged.removeListener(onFocusChanged);
 
 
 	let isVivaldi = false
@@ -133,6 +143,11 @@ chrome.windows.onFocusChanged.addListener(async function onFocusChanged(windowId
 	await chrome.storage.local.set({
 		'_isVivaldi': isVivaldi
 	});
+	await sendSocketData()
+		.catch(console.error)
+	;
+});
+chrome.tabs.onActivated.addListener(async function onFocusChanged(windowId) {
 	await sendSocketData()
 		.catch(console.error)
 	;
@@ -171,13 +186,55 @@ async function sendSocketData() {
 		'notification_support',
 		'mode'
 	]);
+
+	let tabData;
+	const activeTab = await getCurrentTab()
+		.catch(console.error)
+	;
+	if (activeTab) {
+		const raw = (await chrome.storage.session.get([tabPageServerIpStorage])),
+			data = Object.assign({}, raw[tabPageServerIpStorage])
+		;
+
+		/**
+		 * @type {undefined|TabPageServerIdData}
+		 */
+		const _tabData = data[`${activeTab.id}`];
+		let url, domain;
+		try {
+			url = new URL(activeTab.url);
+			domain = url.hostname;
+		} catch (e) {
+			console.error(e);
+		}
+
+		let ipMore = false;
+		if (url && ipRegex({exact: true}).test(url.hostname)) {
+			ipMore = url.hostname;
+			domain = undefined;
+		}
+
+		tabData = {
+			name: activeTab.title,
+			faviconUrl: activeTab.favIconUrl,
+			error: _tabData?.error ?? undefined,
+			statusCode: _tabData?.statusCode,
+			url: activeTab.url,
+			domain,
+			ip: _tabData?.ip,
+			ipMore,
+			openGraph: _tabData?.tabOpenGraphData ?? undefined,
+		}
+	}
+
 	port.postMessage({
 		type: 'updateSocketData',
 		data: {
 			notificationSupport: values.mode === 'delegated' && values.notification_support === true,
 			userAgent: navigator.userAgent,
 			browserName: await getBrowserName(),
-			extensionId: chrome.runtime.id
+			extensionId: chrome.runtime.id,
+			tabData,
 		}
 	});
 }
