@@ -172,28 +172,6 @@ section .buttonItem.tabPageServerIp.error {
 section .buttonItem.tabMover .data {
 	-webkit-line-clamp: 1;
 }
-section .buttonItem.openGraphData.extended {
-	padding-left: 14px;
-}
-section .buttonItem.openGraphData .data {
-	-webkit-line-clamp: 6;
-}
-section .buttonItem.openGraphData:not(.extended) pre {
-	display: none;
-}
-section .buttonItem.openGraphData p,
-section .buttonItem.openGraphData h4 {
-	margin-bottom: 0.2em;
-	margin-top: 0.2em;
-}
-section .buttonItem.openGraphData pre {
-	white-space: pre-wrap;
-}
-section .buttonItem.openGraphData.extended .icon {
-	position: static;
-	transform: none;
-	width: 100%;
-}
 
 section .buttonItem .icon {
 	font-size: 32px;

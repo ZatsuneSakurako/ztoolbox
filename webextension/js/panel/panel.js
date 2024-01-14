@@ -1,7 +1,6 @@
 import {loadTranslations} from '../translation-api.js';
 import {theme_cache_update} from '../classes/backgroundTheme.js';
 import * as tabPageServerIp from "./tabPageServerIp.js";
-import * as openGraphData from "./openGraphData.js";
 import {getPreference, savePreference} from "../classes/chrome-preferences.js";
 import "./requestPermission.js";
 
