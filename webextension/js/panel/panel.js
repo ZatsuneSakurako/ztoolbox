@@ -89,10 +89,6 @@ async function updatePanelData() {
 		.catch(console.error)
 	;
 
-	openGraphData.updateData()
-		.catch(console.error)
-	;
-
 	const {notification_support} = await chrome.storage.local.get(['notification_support']);
 
 	/**
