@@ -118,14 +118,25 @@ chrome.storage.onChanged.addListener(async (changes, area) => {
 });
 
 chrome.windows.onFocusChanged.addListener(async function onFocusChanged(windowId) {
-	const window = await chrome.windows.get(windowId);
+	const window = await chrome.windows.get(windowId)
+		.catch(console.error)
+	;
+	if (!window) {
+		console.warn('[sendSocketData] UNREACHABLE_ACTIVE_TAB')
+		await sendSocketData()
+			.catch(console.error)
+		;
+		return;
+	}
 	if (window.type !== 'normal') {
 		return;
 	}
 
 	const tabs = await chrome.tabs.query({
 		windowId
-	});
+	})
+		.catch(console.error)
+	;
 	if (!tabs.length) {
 		return;
 	}
@@ -187,7 +198,7 @@ async function sendSocketData() {
 		'mode'
 	]);
 
-	let tabData;
+	let tabData = null;
 	const activeTab = await getCurrentTab()
 		.catch(console.error)
 	;

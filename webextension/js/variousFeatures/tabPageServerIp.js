@@ -87,9 +87,9 @@ async function updateData(newData={}) {
 	;
 
 	const tabs = new Set((await chrome.tabs.query({
-			windowType: "normal"
-		}))
-			.map(tab => `${tab.id}`))
+		windowType: "normal"
+	}))
+		.map(tab => `${tab.id}`))
 	;
 
 	for (let [tabId, ] of Object.entries(data)) {
@@ -100,7 +100,9 @@ async function updateData(newData={}) {
 
 	await chrome.storage.session.set({
 		[tabPageServerIpStorage]: data
-	});
+	})
+		.catch(console.error)
+	;
 
 	return data;
 }
