@@ -15,6 +15,7 @@
 	"ExternalNotificationsDisabled": "External notification disabled",
 
 	"leaveDelegated": "Go in normal mode",
+	"enterDelegated": "Go in external mode",
 	"checkEnabled": "Refresh Refresh",
 	"checkEnabled_off": "Refresh disable",
 	"Refresh": "Refresh",

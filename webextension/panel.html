@@ -19,8 +19,9 @@
 <body>
 	<header>
 		<button id="leave_delegated" class="if-delegated-version" data-translate-title="leaveDelegated"><span class="material-icons">transit_enterexit</span></button>
+		<button id="enter_delegated" class="if-not-delegated-version" data-translate-title="enterDelegated"><span class="material-icons">output</span></button>
 		<button id="disableNotifications" class="if-delegated-version"></button>
-		<button id="settings" data-translate-title="Settings"><i class="material-icons">settings</i></button>
+		<button id="settings" class="if-not-delegated-version" data-translate-title="Settings" ><i class="material-icons">settings</i></button>
 	</header>
 
 	<section id="panelContent">
@@ -30,7 +31,22 @@
 		</div>
 		<div id="tabMover"></div>
 		<div id="tabPageServerIp"></div>
-		<div id="openGraphData"></div>
+
+		<section id="preferences">
+			<div class="pref_group if-not-delegated-version">
+				<div class="preferenceContainer">
+					<label for="theme"></label>
+					<select id="theme" required>
+						<option value="dark"></option>
+						<option value="light"></option>
+					</select>
+				</div>
+				<div class="preferenceContainer">
+					<label for="background_color"></label>
+					<input type="color" id="background_color" required>
+				</div>
+			</div>
+		</section>
 	</section>
 
 	<footer>

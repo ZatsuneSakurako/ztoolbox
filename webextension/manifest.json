@@ -52,10 +52,6 @@
 	"host_permissions": [
 		"<all_urls>"
 	],
-	"options_ui": {
-		"open_in_tab": true,
-		"page": "options.html"
-	},
 	"browser_specific_settings": {
 		"gecko": {
 			"id": "ztoolbox_dev@zatsunenomokou.eu",

@@ -38,12 +38,10 @@ document.addEventListener('click', async e => {
 	const elm = e.target.closest('#settings');
 	if (!elm) return;
 
-	if ((await getPreference('mode')) === 'delegated' && !e.shiftKey) {
+	if ((await getPreference('mode')) === 'delegated') {
 		sendToMain('showSection', 'settings')
 			.catch(console.error)
 		;
-	} else {
-		await chrome.runtime.openOptionsPage();
 	}
 });
 
@@ -53,7 +51,6 @@ chrome.storage.onChanged.addListener(async (changes, area) => {
 
 	if ('mode' in changes) {
 		location.reload();
-		return;
 	}
 });
 document.addEventListener('click', async e => {
@@ -61,6 +58,12 @@ document.addEventListener('click', async e => {
 	if (!elm) return;
 
 	await savePreference('mode', 'normal');
+});
+document.addEventListener('click', async e => {
+	const elm = e.target.closest('#enter_delegated');
+	if (!elm) return;
+
+	await savePreference('mode', 'delegated');
 });
 
 

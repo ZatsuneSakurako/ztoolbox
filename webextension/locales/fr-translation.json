@@ -15,6 +15,7 @@
 	"ExternalNotificationsDisabled": "Notification externes désactivées",
 
 	"leaveDelegated": "Aller en mode normal",
+	"enterDelegated": "Aller en mode externe",
 	"checkEnabled": "Rafraichissement activé",
 	"checkEnabled_off": "Rafraichissement désactivé",
 	"Refresh": "Rafraîchir",

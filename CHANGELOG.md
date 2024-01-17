@@ -1,5 +1,6 @@
 # WIP
 * \- : Remove `tabPageServerIp_alias` setting
+* \- : Remove option page
 
 # 1.9.0
 * \- : Display of main OpenGraph data (now external management only)

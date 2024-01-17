@@ -32,6 +32,21 @@ async function baseInit() {
 
 	const {loadTranslations} = await import('../translation-api.js');
 	await loadTranslations;
+
+
+	if (preferences.get('mode') === 'normal') {
+		const {loadPreferencesNodes} = await import("../classes/chrome-preferences-ui.js"),
+			{theme_update} = await import("../classes/backgroundTheme.js")
+		;
+		loadPreferencesNodes()
+			.then(() => {
+				theme_update()
+					.catch(console.error)
+				;
+			})
+			.catch(console.error)
+		;
+	}
 }
 const baseInitPromise = baseInit();
 baseInitPromise.then(async () => {
