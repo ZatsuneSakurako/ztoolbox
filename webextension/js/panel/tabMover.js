@@ -1,6 +1,7 @@
 import {renderTemplate} from '../init-templates.js';
 import {appendTo} from "../utils/appendTo.js";
 import {throttle} from "../../lib/throttle.js";
+import {getPreference} from "../classes/chrome-preferences.js";
 
 
 
@@ -70,21 +71,23 @@ async function update() {
 
 
 
-	const wsClientNames = await sendToMain('getWsClientNames').catch(console.error),
-		browserName = await sendToMain('getBrowserName').catch(console.error)
-	;
-	if (wsClientNames) {
-		for (const wsClientName of wsClientNames) {
-			if (!wsClientName.browserName || wsClientName.browserName.toLowerCase() === 'unknown') continue;
-			if (browserName === wsClientName.browserName) continue;
-			appendTo(
-				tabMover,
-				await renderTemplate(TAB_MOVER_NATIVE_TEMPLATE, {
-					'title': wsClientName.browserName,
-					'browserName': wsClientName.browserName,
-					'tabName': wsClientName.userAgent ?? ''
-				})
-			);
+	if (await getPreference('mode') === 'delegated') {
+		const wsClientNames = await sendToMain('getWsClientNames').catch(console.error),
+			browserName = await sendToMain('getBrowserName').catch(console.error)
+		;
+		if (wsClientNames) {
+			for (const wsClientName of wsClientNames) {
+				if (!wsClientName.browserName || wsClientName.browserName.toLowerCase() === 'unknown') continue;
+				if (browserName === wsClientName.browserName) continue;
+				appendTo(
+					tabMover,
+					await renderTemplate(TAB_MOVER_NATIVE_TEMPLATE, {
+						'title': wsClientName.browserName,
+						'browserName': wsClientName.browserName,
+						'tabName': wsClientName.userAgent ?? ''
+					})
+				);
+			}
 		}
 	}
 

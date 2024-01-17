@@ -135,7 +135,10 @@ export async function loadPreferencesNodes() {
 
 
 		const labelNode = document.querySelector(`label[for="${id}"]`);
-		if (!labelNode) throw new Error(`LABEL_NOT_FOUND "${id}"`);
+		if (!labelNode) {
+			console.error(`LABEL_NOT_FOUND "${id}"`);
+			continue;
+		}
 		labelNode.dataset.translateId = `${id}_title`;
 
 		const prefNode = document.querySelector(`[id="${id}"]`);

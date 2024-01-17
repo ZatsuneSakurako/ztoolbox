@@ -13,7 +13,7 @@ export function error(msg) {
  * @param {string} msg
  */
 export function warning(msg) {
-	return console.log(chalk.keyword('orange')(msg));
+	return console.log(chalk.yellow(msg));
 }
 
 /**

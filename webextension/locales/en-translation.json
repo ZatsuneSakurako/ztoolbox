@@ -15,6 +15,7 @@
 	"ExternalNotificationsDisabled": "External notification disabled",
 
 	"leaveDelegated": "Go in normal mode",
+	"enterDelegated": "Go in external mode",
 	"checkEnabled": "Refresh Refresh",
 	"checkEnabled_off": "Refresh disable",
 	"Refresh": "Refresh",
@@ -83,8 +84,6 @@
 	"Error_when_copying_to_clipboard": "Error when copying into clipboad",
 	"Error_on_request": "Error when generating the link",
 	"Check_your_link_or_page": "Check your link or page",
-	"tabPageServerIp_alias_title": "IP aliases",
-	"tabPageServerIp_alias_description": "IP/Alias (IP as key)",
 
 
 	"no_other_window": "No other window",

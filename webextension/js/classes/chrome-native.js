@@ -23,7 +23,7 @@ port.onMessage.addListener(async function(msg) {
 		 * TODO clean when Firefox support real manifest v3
 		 * If background page present, then running in Firefox without full manifest v3 support
 		 */
-		if (location.pathname.endsWith('panel.html') || location.pathname.endsWith('options.html')) {
+		if (location.pathname.endsWith('panel.html')) {
 			console.debug('Ignoring chromeNative incoming messages');
 			return;
 		}

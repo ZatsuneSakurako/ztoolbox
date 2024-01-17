@@ -4,7 +4,7 @@
 	"short_name": "ZToolBoxDev",
 	"description": "__MSG_extShortDesc__",
 	"author": "Zatsune No Mokou",
-	"version": "1.9.0",
+	"version": "1.10.0",
 	"icons": {
 		"16": "/icon_16.png",
 		"48": "/icon_48.png",
@@ -52,10 +52,6 @@
 	"host_permissions": [
 		"<all_urls>"
 	],
-	"options_ui": {
-		"open_in_tab": true,
-		"page": "options.html"
-	},
 	"browser_specific_settings": {
 		"gecko": {
 			"id": "ztoolbox_dev@zatsunenomokou.eu",
