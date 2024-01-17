@@ -83,8 +83,6 @@
 	"Error_when_copying_to_clipboard": "Erreur lors de la copie dans le presse-papier",
 	"Error_on_request": "Erreur lors de la génération du lien",
 	"Check_your_link_or_page": "Vérifiez le lien ou page",
-	"tabPageServerIp_alias_title": "Alias d'IP",
-	"tabPageServerIp_alias_description": "IP/Alias (IP comme clé)",
 
 
 	"no_other_window": "Aucune autre fenêtre",

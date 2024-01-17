@@ -9,12 +9,6 @@ export const options = {
 		"type": "checkbox",
 		"value": true
 	},
-	/*			Features Prefs			*/
-	"tabPageServerIp_alias": {
-		"type": "json",
-		"value": "{\"127.0.0.1\": \"localhost\"}",
-		"sync": true
-	},
 	/*			Theme			*/
 	"theme": {
 		"type": "menulist",

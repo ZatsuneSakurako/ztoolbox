@@ -39,12 +39,8 @@ export async function updateData() {
 		favIconUrl: activeTab.favIconUrl,
 	};
 	if (tabData) {
-		const tabPageServerIp_alias = await getPreference('tabPageServerIp_alias');
-
 		let ipMore = false;
-		if (tabData.ip in tabPageServerIp_alias) {
-			ipMore = tabPageServerIp_alias[tabData.ip];
-		} else if (url && ipRegex({exact: true}).test(url.hostname)) {
+		if (url && ipRegex({exact: true}).test(url.hostname)) {
 			ipMore = url.hostname;
 			domain = undefined;
 		}
