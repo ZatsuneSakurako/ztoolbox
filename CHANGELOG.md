@@ -1,4 +1,6 @@
 # WIP
+* Fix : Display of main OpenGraph data (now external management only)
+* Fix : Native messaging - Open url in another browser (avoid loading tab list when not in delegated mode)
 * \- : Remove `tabPageServerIp_alias` setting
 * \- : Remove option page
 
