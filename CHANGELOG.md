@@ -1,4 +1,4 @@
-# WIP
+# 1.10.1
 * Fix : Native messaging - Send `null` when no window opened/focused
 
 # 1.10.0
