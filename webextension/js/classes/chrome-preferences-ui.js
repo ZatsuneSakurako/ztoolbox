@@ -61,21 +61,16 @@ async function refreshSettings(prefId, newValue) {
 			prefNode.checked = getBooleanFromVar(newValue);
 			break;
 	}
-	let body = document.body;
-	if (prefId === "mode") {
-		body.classList.toggle('delegated-version', (await getPreference("mode")) === 'delegated');
-		body.classList.toggle('normal-version', (await getPreference("mode")) === 'normal');
-	}
 }
 chrome.storage.onChanged.addListener((changes, area) => {
-	if (area !== "local") return;
+	if (area === "local") {
+		for (let prefId in changes) {
+			if (!changes.hasOwnProperty(prefId)) continue;
 
-	for (let prefId in changes) {
-		if (!changes.hasOwnProperty(prefId)) continue;
-
-		refreshSettings(prefId, changes[prefId].newValue)
-			.catch(console.error)
-		;
+			refreshSettings(prefId, changes[prefId].newValue)
+				.catch(console.error)
+			;
+		}
 	}
 });
 
@@ -116,8 +111,6 @@ function getValueFromNode(node) {
 }
 
 export async function loadPreferencesNodes() {
-	const body = document.body;
-
 	const options = getPreferenceConfig(true);
 	for (const [id, option] of options) {
 		if (typeof option.type === "undefined") {
@@ -125,12 +118,6 @@ export async function loadPreferencesNodes() {
 		}
 		if (option.hasOwnProperty("hidden") && option.hidden === true) {
 			continue;
-		}
-
-		if (id === "mode") {
-			const mode = await getPreference("mode");
-			body.classList.toggle('delegated-version', mode === 'delegated');
-			body.classList.toggle('normal-version', mode === 'normal');
 		}
 
 
