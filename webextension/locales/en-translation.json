@@ -14,8 +14,6 @@
 	"ExternalNotifications": "External notification enabled",
 	"ExternalNotificationsDisabled": "External notification disabled",
 
-	"leaveDelegated": "Go in normal mode",
-	"enterDelegated": "Go in external mode",
 	"checkEnabled": "Refresh Refresh",
 	"checkEnabled_off": "Refresh disable",
 	"Refresh": "Refresh",
@@ -36,11 +34,6 @@
 	"whitelist_title": "Whitelist",
 
 	"open_optionpage": "Open option page",
-
-	"mode_title": "Extension mode",
-	"mode_description": "Choose extension mode",
-	"mode_normal": "Normal",
-	"mode_delegated": "External",
 
 	"notification_support_title": "Accept notifications from chrome native messaging (external mode only)",
 	"notification_support_description": "Enabled if checked",

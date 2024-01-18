@@ -2,6 +2,7 @@ import {renderTemplate} from '../init-templates.js';
 import {appendTo} from "../utils/appendTo.js";
 import {throttle} from "../../lib/throttle.js";
 import {getPreference} from "../classes/chrome-preferences.js";
+import {getSessionNativeIsConnected} from "../classes/chrome-native-settings.js";
 
 
 
@@ -71,7 +72,9 @@ async function update() {
 
 
 
-	if (await getPreference('mode') === 'delegated') {
+	const nativeIsConnected = await getSessionNativeIsConnected()
+		.catch(console.error);
+	if (nativeIsConnected) {
 		const wsClientNames = await sendToMain('getWsClientNames').catch(console.error),
 			browserName = await sendToMain('getBrowserName').catch(console.error)
 		;

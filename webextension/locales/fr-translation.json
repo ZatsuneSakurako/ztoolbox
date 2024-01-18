@@ -14,8 +14,6 @@
 	"ExternalNotifications": "Notification externes activées",
 	"ExternalNotificationsDisabled": "Notification externes désactivées",
 
-	"leaveDelegated": "Aller en mode normal",
-	"enterDelegated": "Aller en mode externe",
 	"checkEnabled": "Rafraichissement activé",
 	"checkEnabled_off": "Rafraichissement désactivé",
 	"Refresh": "Rafraîchir",
@@ -36,11 +34,6 @@
 	"whitelist_title": "Liste blanche",
 
 	"open_optionpage": "Ouvrir la page d'option",
-
-	"mode_title": "Mode de l'extension",
-	"mode_description": "Choix du mode extension",
-	"mode_normal": "Normal",
-	"mode_delegated": "Externe",
 
 	"notification_support_title": "Accepter les notifications venant du \"chrome native messaging\" (mode externe seulement)",
 	"notification_support_description": "Activé si coché",

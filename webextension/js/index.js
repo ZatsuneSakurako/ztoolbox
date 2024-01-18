@@ -153,7 +153,7 @@ async function onStart_deleteOldPreferences() {
 	 *
 	 * @type {Set<string>}
 	 */
-	const preferences = new Set(['serviceWorkerWhitelist', 'freshRss_showInPanel', 'panel_theme', 'launchpadAddLink', 'custom_lstu_server', '_notificationGloballyDisabled', 'showExperimented', 'showAdvanced', 'check_enabled', 'panel_height', 'panel_width', '_backgroundPage_theme_cache', '_updated', '_websitesDataStore', '_notification']);
+	const preferences = new Set(['serviceWorkerWhitelist', 'freshRss_showInPanel', 'panel_theme', 'launchpadAddLink', 'custom_lstu_server', '_notificationGloballyDisabled', 'showExperimented', 'showAdvanced', 'check_enabled', 'panel_height', 'panel_width', '_backgroundPage_theme_cache', '_updated', '_websitesDataStore', '_notification', 'mode']);
 
 	await i18ex.loadingPromise;
 
@@ -173,11 +173,6 @@ async function onStart_deleteOldPreferences() {
 			console.warn(`Deleting old preference "${prefId}"`);
 			await deletePreferences(prefId);
 		}
-	}
-
-	const mode = await getPreference('mode');
-	if (mode === 'simplified') {
-		await savePreference('mode', 'normal');
 	}
 
 	const oldAlarms = new Set(['REFRESH_DATA', 'hourlyAlarm']),

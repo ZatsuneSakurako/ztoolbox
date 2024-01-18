@@ -24,17 +24,29 @@ self.sendToMain = function sendToMain(id, ...args) {
 }
 
 async function baseInit() {
-	const {getPreferences} = await import('../classes/chrome-preferences.js');
+	const {getSessionNativeIsConnected} = await import('../classes/chrome-native-settings.js');
 
-	const preferences = await getPreferences('mode');
-	document.body.classList.toggle('delegated-version', preferences.get('mode') === 'delegated');
-	document.body.classList.toggle('normal-version', preferences.get('mode') === 'normal');
+	const chromeNativeConnected = await getSessionNativeIsConnected()
+		.catch(console.error)
+	;
+	document.body.classList.toggle('delegated-version', chromeNativeConnected);
+	document.body.classList.toggle('normal-version', !chromeNativeConnected);
+
+	/**
+	 *
+	 * @type {HTMLButtonElement}
+	 */
+	const $settings = document.querySelector('button#settings');
+	if ($settings) {
+		$settings.disabled = !chromeNativeConnected;
+		$settings.classList.remove('hide');
+	}
 
 	const {loadTranslations} = await import('../translation-api.js');
 	await loadTranslations;
 
 
-	if (preferences.get('mode') === 'normal') {
+	if (!chromeNativeConnected) {
 		const {loadPreferencesNodes} = await import("../classes/chrome-preferences-ui.js"),
 			{theme_update} = await import("../classes/backgroundTheme.js")
 		;
