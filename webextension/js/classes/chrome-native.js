@@ -134,7 +134,7 @@ chrome.storage.onChanged.addListener(async (changes, area) => {
 
 	if (area !== "local") return;
 
-	if ("mode" in changes || "notification_support" in changes) {
+	if ("notification_support" in changes) {
 		sendSocketData()
 			.catch(console.error)
 		;
