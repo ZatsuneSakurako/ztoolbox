@@ -1,12 +1,24 @@
 import {randomId} from "../utils/randomId.js";
 import {getSyncKeys} from "./chrome-preferences.js";
-import {chromeNativeSettingsStorageKey, getElectronSettings} from "./chrome-native-settings.js";
+import {
+	chromeNativeSettingsStorageKey,
+	chromeNativeConnectedStorageKey,
+	getElectronSettings
+} from "./chrome-native-settings.js";
 import {sendNotification} from "./chrome-notification.js";
 import {getCurrentTab} from "../utils/getCurrentTab.js";
 import {tabPageServerIpStorage} from "../variousFeatures/tabPageServerIp.js";
 import ipRegex from "../../lib/ip-regex.js";
 
 const port = chrome.runtime.connectNative('eu.zatsunenomokou.chromenativebridge');
+
+port.onDisconnect.addListener(function () {
+	chrome.storage.session.set({
+		[chromeNativeConnectedStorageKey]: false
+	})
+		.catch(console.error)
+	;
+});
 
 port.onMessage.addListener(async function(msg) {
 	let haveBackgroundPage = false;
@@ -39,6 +51,13 @@ port.onMessage.addListener(async function(msg) {
 	switch (msg.type ?? null) {
 		case 'ws open':
 			console.log('[NativeMessaging]', 'ws open', msg);
+
+			chrome.storage.session.set({
+				[chromeNativeConnectedStorageKey]: true
+			})
+				.catch(console.error)
+			;
+
 			sendSocketData()
 				.catch(console.error)
 			;
@@ -46,10 +65,15 @@ port.onMessage.addListener(async function(msg) {
 			getSyncAllowedPreferences()
 				.catch(console.error)
 			;
-
 			break;
 		case 'ws close':
 			console.log('[NativeMessaging]', 'ws close', msg);
+
+			chrome.storage.session.set({
+				[chromeNativeConnectedStorageKey]: false
+			})
+				.catch(console.error)
+			;
 			break;
 		case "log":
 			console.log('[NativeMessaging] log', msg.data);
@@ -195,7 +219,6 @@ export async function getBrowserName() {
 async function sendSocketData() {
 	const values = await chrome.storage.local.get([
 		'notification_support',
-		'mode'
 	]);
 
 	let tabData = null;
@@ -241,7 +264,7 @@ async function sendSocketData() {
 	port.postMessage({
 		type: 'updateSocketData',
 		data: {
-			notificationSupport: values.mode === 'delegated' && values.notification_support === true,
+			notificationSupport: values.notification_support === true,
 			userAgent: navigator.userAgent,
 			browserName: await getBrowserName(),
 			extensionId: chrome.runtime.id,

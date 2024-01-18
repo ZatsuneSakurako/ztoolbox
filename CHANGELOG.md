@@ -1,3 +1,6 @@
+# WIP
+* \- : Remove `mode` setting, replaced by an automatic mode (equivalent to delegated mode if connected)
+
 # 1.10.1
 * Fix : Native messaging - Send `null` when no window opened/focused
 

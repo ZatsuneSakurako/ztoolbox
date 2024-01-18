@@ -1,5 +1,5 @@
 import {options as _options} from '/js/options-data.js';
-import {chromeNativeSettingsStorageKey} from "./chrome-native-settings.js";
+import {chromeNativeSettingsStorageKey, getSessionNativeIsConnected} from "./chrome-native-settings.js";
 
 export function getPreferenceConfig(returnMap=false) {
 	const options = JSON.parse(JSON.stringify(_options)),
@@ -79,9 +79,12 @@ export async function getPreferences(...prefIds) {
 		prefIds = [...options.keys()];
 	}
 
+	const chromeNativeConnected = await getSessionNativeIsConnected()
+		.catch(console.error)
+	;
+
 	const preferenceIdList = new Set(prefIds);
 	preferenceIdList.add(chromeNativeSettingsStorageKey);
-	preferenceIdList.add('mode');
 
 	const values = await chrome.storage.local.get([...preferenceIdList]),
 		chromeNativeSettings = values[chromeNativeSettingsStorageKey],
@@ -104,8 +107,8 @@ export async function getPreferences(...prefIds) {
 
 	for (let [prefId, current_pref] of Object.entries(values)) {
 		/*
-		 * If 'mode' or chromeNativeSettingsStorageKey
-		 * because when internal use, no need to return them
+		 * If chromeNativeSettingsStorageKey because
+		 * when internal use, no need to return it
 		 */
 		if (!prefIds.includes(prefId)) {
 			continue;
@@ -116,7 +119,7 @@ export async function getPreferences(...prefIds) {
 			continue;
 		}
 
-		if (values['mode'] === 'delegated' && prefId in chromeNativeSettings) {
+		if (chromeNativeConnected && prefId in chromeNativeSettings) {
 			current_pref = chromeNativeSettings[prefId];
 		}
 

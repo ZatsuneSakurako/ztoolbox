@@ -1,10 +1,6 @@
 'use strict';
 
 export const options = {
-	"mode": {
-		"type": "menulist",
-		"value": "normal"
-	},
 	"notification_support": {
 		"type": "checkbox",
 		"value": true

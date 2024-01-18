@@ -3,6 +3,7 @@ import {theme_cache_update} from '../classes/backgroundTheme.js';
 import * as tabPageServerIp from "./tabPageServerIp.js";
 import {getPreference, savePreference} from "../classes/chrome-preferences.js";
 import "./requestPermission.js";
+import {chromeNativeConnectedStorageKey, getSessionNativeIsConnected} from "../classes/chrome-native-settings.js";
 
 
 
@@ -38,7 +39,10 @@ document.addEventListener('click', async e => {
 	const elm = e.target.closest('#settings');
 	if (!elm) return;
 
-	if ((await getPreference('mode')) === 'delegated') {
+	const nativeIsConnected = await getSessionNativeIsConnected()
+		.catch(console.error)
+	;
+	if (nativeIsConnected) {
 		sendToMain('showSection', 'settings')
 			.catch(console.error)
 		;
@@ -47,23 +51,11 @@ document.addEventListener('click', async e => {
 
 
 chrome.storage.onChanged.addListener(async (changes, area) => {
-	if (area !== "local") return;
+	if (area !== "session") return;
 
-	if ('mode' in changes) {
+	if (chromeNativeConnectedStorageKey in changes) {
 		location.reload();
 	}
-});
-document.addEventListener('click', async e => {
-	const elm = e.target.closest('#leave_delegated');
-	if (!elm) return;
-
-	await savePreference('mode', 'normal');
-});
-document.addEventListener('click', async e => {
-	const elm = e.target.closest('#enter_delegated');
-	if (!elm) return;
-
-	await savePreference('mode', 'delegated');
 });
 
 
