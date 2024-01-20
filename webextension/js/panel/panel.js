@@ -49,6 +49,20 @@ document.addEventListener('click', async e => {
 	}
 });
 
+document.addEventListener('click', async e => {
+	const elm = e.target.closest('#openDelegatedMain');
+	if (!elm) return;
+
+	const nativeIsConnected = await getSessionNativeIsConnected()
+		.catch(console.error)
+	;
+	if (nativeIsConnected) {
+		sendToMain('showSection', 'main')
+			.catch(console.error)
+		;
+	}
+});
+
 
 chrome.storage.onChanged.addListener(async (changes, area) => {
 	if (area !== "session") return;
