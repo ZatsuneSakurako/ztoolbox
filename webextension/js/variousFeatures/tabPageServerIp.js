@@ -15,7 +15,7 @@ chrome.webRequest.onCompleted.addListener(function (details) {
 			tabOpenGraphData = null
 		}
 		updateData({
-			[details.tabId]: {
+			[`${details.tabId}`]: {
 				url: details.url,
 				ip: details.ip,
 				statusCode: details.statusCode,
@@ -35,7 +35,7 @@ chrome.webRequest.onErrorOccurred.addListener(function (details) {
 	}
 
 	updateData({
-		[details.tabId]: {
+		[`${details.tabId}`]: {
 			url: details.url,
 			error: details.error
 		}
@@ -47,7 +47,7 @@ chrome.webRequest.onErrorOccurred.addListener(function (details) {
 
 chrome.webRequest.onBeforeRequest.addListener(function (details) {
 	updateData({
-		[details.tabId]: {
+		[`${details.tabId}`]: {
 			url: details.url,
 			ip: ''
 		}
@@ -60,7 +60,7 @@ chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
 	const url = !!tab.url && new URL(tab.url);
 	if (url && 'status' in changeInfo && changeInfo.status === 'loading' && !/^https?:$/i.test(url.protocol)) {
 		updateData({
-			[tabId]: {
+			[`${tabId}`]: {
 				url: tab.url,
 				ip: ''
 			}

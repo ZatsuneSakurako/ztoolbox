@@ -1,3 +1,7 @@
+# WIP
+* \i : Equivalent to opening url in another browser in native messaging (closing active tab url)
+* Fix : Display of main OpenGraph data
+
 # 1.11.0
 * \- : Remove `mode` setting, replaced by an automatic mode (equivalent to delegated mode if connected)
 

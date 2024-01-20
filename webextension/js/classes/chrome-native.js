@@ -94,6 +94,17 @@ port.onMessage.addListener(async function(msg) {
 				.catch(console.error)
 			;
 			break;
+		case 'closeActiveUrl':
+			const activeTab = await getCurrentTab()
+				.catch(console.error)
+			;
+			console.log('[NativeMessaging]', 'closeActiveUrl type', activeTab.url);
+			if (msg.url && activeTab.url === msg.url) {
+				await chrome.tabs.remove(activeTab.id)
+					.catch(console.error)
+				;
+			}
+			break;
 		case 'openUrl':
 			if (msg.url) {
 				const tab = await chrome.tabs.create({
