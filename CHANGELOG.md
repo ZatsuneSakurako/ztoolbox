@@ -1,4 +1,4 @@
-# WIP
+# 1.13.0
 * \+ : Add button in panel to open main section (delegated only)
 * \- : Remove "native" tab mover from panel (delegated only)
 
