@@ -1,8 +1,6 @@
 import {renderTemplate} from '../init-templates.js';
 import {appendTo} from "../utils/appendTo.js";
 import {throttle} from "../../lib/throttle.js";
-import {getPreference} from "../classes/chrome-preferences.js";
-import {getSessionNativeIsConnected} from "../classes/chrome-native-settings.js";
 
 
 
@@ -12,9 +10,7 @@ const tabMover = document.querySelector('#tabMover');
  * @type {chrome.windows.Window[]}
  */
 let browserWindows;
-const TAB_MOVER_TEMPLATE = 'tabMover',
-	TAB_MOVER_NATIVE_TEMPLATE = 'tabMoverNative'
-;
+const TAB_MOVER_TEMPLATE = 'tabMover';
 async function update() {
 	const currentBrowserWindow = await chrome.windows.getCurrent({
 		populate: false,
@@ -67,31 +63,6 @@ async function update() {
 				'tabName': ''
 			})
 		);
-	}
-
-
-
-
-	const nativeIsConnected = await getSessionNativeIsConnected()
-		.catch(console.error);
-	if (nativeIsConnected) {
-		const wsClientNames = await sendToMain('getWsClientNames').catch(console.error),
-			browserName = await sendToMain('getBrowserName').catch(console.error)
-		;
-		if (wsClientNames) {
-			for (const wsClientName of wsClientNames) {
-				if (!wsClientName.browserName || wsClientName.browserName.toLowerCase() === 'unknown') continue;
-				if (browserName === wsClientName.browserName) continue;
-				appendTo(
-					tabMover,
-					await renderTemplate(TAB_MOVER_NATIVE_TEMPLATE, {
-						'title': wsClientName.browserName,
-						'browserName': wsClientName.browserName,
-						'tabName': wsClientName.userAgent ?? ''
-					})
-				);
-			}
-		}
 	}
 
 	return true;

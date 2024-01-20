@@ -1,3 +1,6 @@
+# WIP
+* \- : Remove "native" tab mover from panel (delegated only)
+
 # 1.12.0
 * \i : Equivalent to opening url in another browser in native messaging (closing active tab url)
 * Fix : Display of main OpenGraph data
