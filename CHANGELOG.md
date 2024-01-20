@@ -1,4 +1,5 @@
 # WIP
+* i : Changed panel size due to removed elements
 * \- : Cleaning unused events (chrome runtime)
 
 # 1.13.0
