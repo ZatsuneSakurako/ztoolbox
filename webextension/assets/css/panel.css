@@ -1,18 +1,24 @@
 html {
 	margin: 0;
 	padding: 0;
-	height: 280px;
+	height: 300px;
 	overflow: hidden;
 	font-weight: 300;
+}
+html.isFirefox {
+	height: 384px;
 }
 body {
 	margin: 0;
 	height: 100%;
-	width: 260px;
+	width: 200px;
 	/*width: 100%;*/
 	display: flex;
 	flex-direction: column;
 	font-family: Ubuntu, Tahoma, sans-serif;
+}
+html.isFirefox body {
+	width: 275px;
 }
 
 figure {

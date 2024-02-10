@@ -1,3 +1,8 @@
+# 1.14.0
+* i : Changed panel size due to removed elements
+* \+ : QRCode generator with Firefox
+* \- : Cleaning unused events (chrome runtime)
+
 # 1.13.0
 * \+ : Add button in panel to open main section (delegated only)
 * \- : Remove "native" tab mover from panel (delegated only)

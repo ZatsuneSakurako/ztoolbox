@@ -497,11 +497,6 @@ export async function showSection(sectionName) {
 
 
 
-export async function getWsClientNames() {
-	const {result} = await fnNative('getWsClientNames');
-	return result;
-}
-
 /**
  *
  * @param {string} browserName
@@ -533,38 +528,6 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
 				console.error(e);
 				sendResponse({
 					response: e,
-					isError: true
-				});
-			})
-		;
-		return true;
-	} else if (message.id === 'getWsClientNames') {
-		getWsClientNames()
-			.then(result => {
-				sendResponse({
-					response: result,
-					isError: false
-				});
-			})
-			.catch(err => {
-				console.error(err);
-				sendResponse({
-					isError: true
-				});
-			})
-		;
-		return true;
-	} else if (message.id === 'getBrowserName') {
-		getBrowserName()
-			.then(result => {
-				sendResponse({
-					response: result,
-					isError: false
-				});
-			})
-			.catch(err => {
-				console.error(err);
-				sendResponse({
 					isError: true
 				});
 			})
