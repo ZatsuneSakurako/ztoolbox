@@ -1,9 +1,12 @@
 html {
 	margin: 0;
 	padding: 0;
-	height: 220px;
+	height: 300px;
 	overflow: hidden;
 	font-weight: 300;
+}
+html.isFirefox {
+	height: 384px;
 }
 body {
 	margin: 0;
@@ -13,6 +16,9 @@ body {
 	display: flex;
 	flex-direction: column;
 	font-family: Ubuntu, Tahoma, sans-serif;
+}
+html.isFirefox body {
+	width: 275px;
 }
 
 figure {

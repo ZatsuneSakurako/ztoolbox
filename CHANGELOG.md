@@ -1,5 +1,6 @@
 # WIP
 * i : Changed panel size due to removed elements
+* \+ : QRCode generator with Firefox
 * \- : Cleaning unused events (chrome runtime)
 
 # 1.13.0

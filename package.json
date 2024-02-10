@@ -9,6 +9,7 @@
 		"i18next-http-backend": "^2.2.1",
 		"ip-regex": "^5.0.0",
 		"material-icons": "^1.13.8",
+		"qr-creator": "^1.0.0",
 		"twig": "^1.16.0"
 	},
 	"devDependencies": {

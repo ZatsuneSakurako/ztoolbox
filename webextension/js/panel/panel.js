@@ -1,7 +1,6 @@
 import {loadTranslations} from '../translation-api.js';
 import {theme_cache_update} from '../classes/backgroundTheme.js';
 import * as tabPageServerIp from "./tabPageServerIp.js";
-import {getPreference, savePreference} from "../classes/chrome-preferences.js";
 import "./requestPermission.js";
 import {chromeNativeConnectedStorageKey, getSessionNativeIsConnected} from "../classes/chrome-native-settings.js";
 

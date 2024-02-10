@@ -40,4 +40,7 @@ if (!exist_jsLib) {
 
 	info("Copying ip-regex...");
 	_cp("./node_modules/ip-regex/index.js", path.normalize(`${jsLib}/ip-regex.js`));
+
+	info("Copying qr-creator...");
+	_cp("./node_modules/qr-creator/dist/qr-creator.es6.min.js", path.normalize(`${jsLib}/qr-creator.es6.min.js`));
 }
