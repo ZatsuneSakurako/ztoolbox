@@ -1,3 +1,6 @@
+# WIP
+* \+ : Get and display page meta rating data
+
 # 1.14.0
 * i : Changed panel size due to removed elements
 * \+ : QRCode generator with Firefox
