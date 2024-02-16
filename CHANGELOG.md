@@ -1,4 +1,4 @@
-# WIP
+# 1.15.0
 * \+ : Get and display page meta rating data
 
 # 1.14.0
