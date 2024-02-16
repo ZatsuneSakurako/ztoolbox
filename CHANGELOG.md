@@ -1,3 +1,9 @@
+# 1.15.1
+* \Fix : Get and display page meta rating data on Firefox
+
+# 1.15.0
+* \+ : Get and display page meta rating data
+
 # 1.14.0
 * i : Changed panel size due to removed elements
 * \+ : QRCode generator with Firefox
