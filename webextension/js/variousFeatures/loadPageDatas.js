@@ -4,7 +4,6 @@ export async function loadPageDatas(activeTab) {
 			tabId: typeof activeTab === 'object' ? activeTab.id : activeTab,
 		},
 		injectImmediately: false,
-		world: 'MAIN',
 		func: function () {
 			return {
 				openGraphData: Object.fromEntries(
