@@ -1,3 +1,6 @@
+# WIP
+* Fix : Fix DNS Checker icon title
+
 # 1.16.0
 * \- : Remove feature for YouTube to remove playlist parameter 
 
