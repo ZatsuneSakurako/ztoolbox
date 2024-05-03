@@ -24,8 +24,6 @@
 
 	"request-all-url-permission": "Accorder la permission pour récupérer des données",
 
-	"OpenWithoutPlaylist": "Ouvrir sans playlist",
-
 	"clipboard_success": "Copié dans le presse-papier",
 	"clipboard_failed": "Echec de la copie dans le presse-papier. Ceci n'est pas supporté, ou la permission est manquante",
 

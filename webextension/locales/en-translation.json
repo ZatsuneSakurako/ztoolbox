@@ -24,8 +24,6 @@
 
 	"request-all-url-permission": "Grant permission to retrieve data",
 
-	"OpenWithoutPlaylist": "Open without playlist",
-
 	"clipboard_success": "Copied into the clipboad.",
 	"clipboard_failed": "Failed to copy to clipboad.\nIt is not supported or the permission is missing",
 

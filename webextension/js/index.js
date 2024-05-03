@@ -11,7 +11,6 @@ import {sendNotification} from "./classes/chrome-notification.js";
 import {ChromeUpdateNotification} from './classes/chromeUpdateNotification.js';
 
 import './variousFeatures/tabPageServerIp.js';
-import './variousFeatures/youtubePlaylist.js';
 
 import {isFirefox} from "./utils/browserDetect.js";
 if (isFirefox) {
