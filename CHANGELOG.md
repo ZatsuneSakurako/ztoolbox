@@ -1,4 +1,4 @@
-# WIP
+# 1.17.0
 * \+ : DNS report with DNSlytics
 * Fix : Fix DNS Checker icon title
 * Fix : Fix DNSlytics icon
