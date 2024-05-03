@@ -1,5 +1,5 @@
-# WIP
-* \- : Remove feature for Youtube to remove playlist parameter 
+# 1.16.0
+* \- : Remove feature for YouTube to remove playlist parameter 
 
 # 1.15.1
 * \Fix : Get and display page meta rating data on Firefox
