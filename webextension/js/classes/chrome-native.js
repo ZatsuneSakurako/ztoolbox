@@ -200,6 +200,16 @@ chrome.tabs.onActivated.addListener(async function onFocusChanged(windowId) {
 });
 
 export async function getBrowserName() {
+	if (!!navigator?.userAgentData) {
+		const searchedBrands = new Set(['vivaldi', 'firefox', 'opera'])
+		const browserBrand = navigator.userAgentData.brands
+			.find(uaBrandData => searchedBrands.has(uaBrandData.brand.toLowerCase()))
+		;
+		if (browserBrand) {
+			return `${browserBrand.brand} ${browserBrand.version ?? ''}`;
+		}
+	}
+
 	const isVivaldi = (await chrome.storage.local.get('_isVivaldi'))?._isVivaldi;
 	let browserName;
 	if (isVivaldi) {

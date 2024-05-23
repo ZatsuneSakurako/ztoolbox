@@ -1,3 +1,6 @@
+# WIP
+* i: Use [`navigator.userAgentData.brands`](https://developer.mozilla.org/en-US/docs/Web/API/User-Agent_Client_Hints_API) to get the browser name (native messaging)
+
 # 1.17.0
 * \+ : DNS report with DNSlytics
 * Fix : Fix DNS Checker icon title
