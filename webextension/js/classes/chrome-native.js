@@ -201,7 +201,7 @@ chrome.tabs.onActivated.addListener(async function onFocusChanged(windowId) {
 
 export async function getBrowserName() {
 	if (!!navigator?.userAgentData) {
-		const searchedBrands = new Set(['vivaldi', 'firefox', 'opera'])
+		const searchedBrands = new Set(['vivaldi', 'firefox', 'opera', 'brave'])
 		const browserBrand = navigator.userAgentData.brands
 			.find(uaBrandData => searchedBrands.has(uaBrandData.brand.toLowerCase()))
 		;
