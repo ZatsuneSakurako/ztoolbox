@@ -77,7 +77,10 @@ chrome.webRequest.onBeforeRequest.addListener(function (details) {
 	})
 		.catch(console.error)
 	;
-	chrome.action.setBadgeText('')
+	chrome.action.setBadgeText({
+		tabId: details.tabId,
+		text: ''
+	})
 		.catch(console.error)
 	;
 	chrome.action.setBadgeBackgroundColor({
