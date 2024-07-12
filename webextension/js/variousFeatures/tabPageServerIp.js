@@ -29,6 +29,27 @@ chrome.webRequest.onCompleted.addListener(function (details) {
 	})()
 		.catch(console.error)
 	;
+
+	if (details.statusCode !== 200) {
+		chrome.action.setBadgeText({
+			tabId: details.tabId,
+			text: details.statusCode.toString(),
+		})
+			.catch(console.error)
+		;
+		chrome.action.setBadgeBackgroundColor({
+			tabId: details.tabId,
+			color: '#ee3131'
+		})
+			.catch(console.error)
+		;
+		chrome.action.setBadgeTextColor({
+			tabId: details.tabId,
+			color: '#ebebeb'
+		})
+			.catch(console.error)
+		;
+	}
 }, {'urls' : ["<all_urls>"], 'types' : ['main_frame']});
 
 chrome.webRequest.onErrorOccurred.addListener(function (details) {
@@ -53,6 +74,21 @@ chrome.webRequest.onBeforeRequest.addListener(function (details) {
 			url: details.url,
 			ip: ''
 		}
+	})
+		.catch(console.error)
+	;
+	chrome.action.setBadgeText('')
+		.catch(console.error)
+	;
+	chrome.action.setBadgeBackgroundColor({
+		tabId: details.tabId,
+		color: null
+	})
+		.catch(console.error)
+	;
+	chrome.action.setBadgeTextColor({
+		tabId: details.tabId,
+		color: null
 	})
 		.catch(console.error)
 	;

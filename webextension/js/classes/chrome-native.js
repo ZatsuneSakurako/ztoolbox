@@ -200,6 +200,16 @@ chrome.tabs.onActivated.addListener(async function onFocusChanged(windowId) {
 });
 
 export async function getBrowserName() {
+	if (!!navigator?.userAgentData) {
+		const searchedBrands = new Set(['vivaldi', 'firefox', 'opera', 'brave'])
+		const browserBrand = navigator.userAgentData.brands
+			.find(uaBrandData => searchedBrands.has(uaBrandData.brand.toLowerCase()))
+		;
+		if (browserBrand) {
+			return `${browserBrand.brand} ${browserBrand.version ?? ''}`;
+		}
+	}
+
 	const isVivaldi = (await chrome.storage.local.get('_isVivaldi'))?._isVivaldi;
 	let browserName;
 	if (isVivaldi) {
@@ -259,9 +269,38 @@ async function sendSocketData() {
 			domain = undefined;
 		}
 
+		const reader = (blob) => {
+			return new Promise((resolve, reject) => {
+				const reader = new FileReader();
+				reader.onload = () => {
+					resolve(reader.result);
+				};
+				reader.onerror = reject;
+				reader.readAsDataURL(blob) ;
+			})
+		}
+
+		/**
+		 *
+		 * @type {string|null}
+		 */
+		let favicon = null;
+		try {
+			// Stop if not valid url
+			new URL(activeTab.favIconUrl);
+
+			/**
+			 * @type {Blob}
+			 */
+			const blob = (await (await fetch(activeTab.favIconUrl)).blob());
+			favicon = await reader(blob);
+		} catch (e) {
+			console.error('[sendSocketData] ' + activeTab.favIconUrl, e);
+		}
+
 		tabData = {
 			name: activeTab.title,
-			faviconUrl: activeTab.favIconUrl,
+			faviconUrl: favicon,
 			error: _tabData?.error ?? undefined,
 			statusCode: _tabData?.statusCode,
 			url: activeTab.url,
