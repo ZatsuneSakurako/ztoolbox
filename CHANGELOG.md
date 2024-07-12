@@ -1,4 +1,4 @@
-# WIP
+# 1.18.1
 * Fix : Fix non-200 HTTP status badge on Firefox
 
 # 1.18.0
