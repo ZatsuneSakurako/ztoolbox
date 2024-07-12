@@ -1,6 +1,7 @@
 # WIP
 * i: Use [`navigator.userAgentData.brands`](https://developer.mozilla.org/en-US/docs/Web/API/User-Agent_Client_Hints_API) to get the browser name (native messaging)
 * \+ : Base64 image instead of URL to display favicon (external management only)
+* \+ : Use action badge to display non-200 HTTP status
 
 # 1.17.0
 * \+ : DNS report with DNSlytics
