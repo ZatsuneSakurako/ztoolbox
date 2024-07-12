@@ -1,3 +1,6 @@
+# 1.18.1
+* Fix : Fix non-200 HTTP status badge on Firefox
+
 # 1.18.0
 * i: Use [`navigator.userAgentData.brands`](https://developer.mozilla.org/en-US/docs/Web/API/User-Agent_Client_Hints_API) to get the browser name (native messaging)
 * \+ : Base64 image instead of URL to display favicon (external management only)
