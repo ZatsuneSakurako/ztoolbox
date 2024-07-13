@@ -47,6 +47,7 @@
 		"tabs",
 		"activeTab",
 		"nativeMessaging",
+		"webNavigation",
 		"webRequest"
 	],
 	"host_permissions": [

@@ -1,4 +1,6 @@
 import {loadPageDatas} from "./loadPageDatas.js";
+import {updateBadge} from './httpStatus.js';
+import {webRequestFilter} from "../constants.js";
 
 export const tabPageServerIpStorage = '_tabPageServerIp';
 
@@ -29,28 +31,7 @@ chrome.webRequest.onCompleted.addListener(function (details) {
 	})()
 		.catch(console.error)
 	;
-
-	if (details.statusCode !== 200) {
-		chrome.action.setBadgeText({
-			tabId: details.tabId,
-			text: details.statusCode.toString(),
-		})
-			.catch(console.error)
-		;
-		chrome.action.setBadgeBackgroundColor({
-			tabId: details.tabId,
-			color: '#ee3131'
-		})
-			.catch(console.error)
-		;
-		chrome.action.setBadgeTextColor({
-			tabId: details.tabId,
-			color: '#ebebeb'
-		})
-			.catch(console.error)
-		;
-	}
-}, {'urls' : ["<all_urls>"], 'types' : ['main_frame']});
+}, webRequestFilter);
 
 chrome.webRequest.onErrorOccurred.addListener(function (details) {
 	if (!details.url || details.tabId < 0) {
@@ -60,54 +41,61 @@ chrome.webRequest.onErrorOccurred.addListener(function (details) {
 	updateData({
 		[`${details.tabId}`]: {
 			url: details.url,
-			error: details.error
+			error: details.error,
+			statusCode: null,
+			requestId: '',
 		}
 	})
 		.catch(console.error)
 	;
 
-}, {'urls' : ["<all_urls>"], 'types' : ['main_frame']});
+}, webRequestFilter);
 
-chrome.webRequest.onBeforeRequest.addListener(function (details) {
+chrome.webRequest.onSendHeaders.addListener(function (details) {
 	updateData({
 		[`${details.tabId}`]: {
 			url: details.url,
-			ip: ''
+			ip: '',
+			statusCode: null,
+			requestId: '',
 		}
 	})
 		.catch(console.error)
 	;
-	chrome.action.setBadgeText({
-		tabId: details.tabId,
-		text: ''
-	})
-		.catch(console.error)
-	;
-	chrome.action.setBadgeBackgroundColor({
-		tabId: details.tabId,
-		color: null
-	})
-		.catch(console.error)
-	;
-	chrome.action.setBadgeTextColor({
-		tabId: details.tabId,
-		color: null
-	})
-		.catch(console.error)
-	;
-}, {'urls' : ["<all_urls>"], 'types' : ['main_frame']});
+}, webRequestFilter);
 
 chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
-	const url = !!tab.url && new URL(tab.url);
-	if (url && 'status' in changeInfo && changeInfo.status === 'loading' && !/^https?:$/i.test(url.protocol)) {
-		updateData({
-			[`${tabId}`]: {
-				url: tab.url,
-				ip: ''
+	if (!('status' in changeInfo)) {
+		return;
+	}
+
+	/**
+	 *
+	 * @type {URL|null}
+	 */
+	let url = null;
+	try {
+		url = !!tab.url && new URL(tab.url);
+	} catch (e) {}
+
+	switch (changeInfo.status) {
+		case 'loading':
+			if (url && !/^https?:$/i.test(url.protocol)) {
+				updateData({
+					[`${tabId}`]: {
+						url: tab.url,
+						ip: ''
+					}
+				})
+					.catch(console.error)
+				;
 			}
-		})
-			.catch(console.error)
-		;
+			break;
+		case 'complete':
+			updateBadge(tabId)
+				.catch(console.error)
+			;
+			break;
 	}
 });
 
@@ -122,7 +110,7 @@ chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
  * @param {Dict<TabPageServerIdData>} [newData]
  * @return {Promise<Dict<TabPageServerIdData>>}
  */
-async function updateData(newData={}) {
+export async function updateData(newData={}) {
 	const raw = (await chrome.storage.session.get([tabPageServerIpStorage])),
 		data = Object.assign({}, raw[tabPageServerIpStorage], newData)
 	;
