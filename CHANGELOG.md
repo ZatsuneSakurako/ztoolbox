@@ -1,3 +1,6 @@
+# 1.19.0
+* \+ : Better non-200 HTTP status badge handling
+
 # 1.18.1
 * Fix : Fix non-200 HTTP status badge on Firefox
 
