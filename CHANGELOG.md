@@ -1,3 +1,6 @@
+# WIP
+* i : Minimum version Firefox 131 and Chrome 126
+
 # 1.19.0
 * \+ : Better non-200 HTTP status badge handling
 
