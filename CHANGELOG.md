@@ -1,3 +1,8 @@
+# 1.20.0
+* i : Minimum version Firefox 131 and Chrome 126
+* i: Librairies update
+* Fix: Fix StyleLint errors
+
 # 1.19.0
 * \+ : Better non-200 HTTP status badge handling
 
