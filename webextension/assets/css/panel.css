@@ -85,7 +85,7 @@ header [role="button"]:last-child {
 }
 #disableNotifications::before {
 	/*noinspection CssNoGenericFontName*/
-	font-family: "Material Icons"; /* stylelint-disable-line fonts-family-no-missing-generic-family-keyword */
+	font-family: "Material Icons"; /* stylelint-disable-line font-family-no-missing-generic-family-keyword */
 	font-size: 24px;
 	font-weight: normal;
 
@@ -204,7 +204,7 @@ section .buttonItem .title[data-count]::after {
 #panelContent .websiteItem .websiteData .folder[data-folder-url]::before {
 	content: "open_in_browser";
 	/*noinspection CssNoGenericFontName*/
-	font-family: 'Material Icons'; /* stylelint-disable-line fonts-family-no-missing-generic-family-keyword */
+	font-family: 'Material Icons'; /* stylelint-disable-line font-family-no-missing-generic-family-keyword */
 	font-size: 1.5em;
 }
 #panelContent .websiteItem .websiteData .folder {
