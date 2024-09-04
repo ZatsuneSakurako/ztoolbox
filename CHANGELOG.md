@@ -1,4 +1,4 @@
-# WIP
+# 1.20.0
 * i : Minimum version Firefox 131 and Chrome 126
 * i: Librairies update
 * Fix: Fix StyleLint errors
