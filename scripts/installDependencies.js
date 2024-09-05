@@ -43,4 +43,8 @@ if (!exist_jsLib) {
 
 	info("Copying qr-creator...");
 	_cp("./node_modules/qr-creator/dist/qr-creator.es6.min.js", path.normalize(`${jsLib}/qr-creator.es6.min.js`));
+
+	info("Copying socket.io-client...");
+	_cp("./node_modules/socket.io-client/dist/socket.io.esm.min.js", jsLib);
+	_cp("./node_modules/socket.io-client/dist/socket.io.esm.min.js.map", jsLib);
 }

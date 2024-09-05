@@ -1,3 +1,6 @@
+# WIP
+* \i : Replace [Chrome Native Messaging](https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/Native_messaging) with [socket.io](https://socket.io) managed [WebSocket](https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API)
+
 # 1.20.0
 * i : Minimum version Firefox 131 and Chrome 126
 * i: Librairies update

@@ -9,18 +9,43 @@ import {sendNotification} from "./chrome-notification.js";
 import {getCurrentTab} from "../utils/getCurrentTab.js";
 import {tabPageServerIpStorage} from "../variousFeatures/tabPageServerIp.js";
 import ipRegex from "../../lib/ip-regex.js";
+import {io} from "../../lib/socket.io.esm.min.js";
 
-const port = chrome.runtime.connectNative('eu.zatsunenomokou.chromenativebridge');
 
-port.onDisconnect.addListener(function () {
-	chrome.storage.session.set({
-		[chromeNativeConnectedStorageKey]: false
-	})
+/**
+ *
+ * @type {string|null}
+ */
+let chrome_native_token = null;
+const socket = io('ws://localhost:42080', {
+	reconnectionDelay: 2000,
+	reconnectionDelayMax: 10000,
+	randomizationFactor: 1, // Not needed, only local server
+	query: {
+		get token() {
+			return chrome_native_token ?? undefined
+		}
+	},
+	transports: ['websocket'],
+	autoConnect: false
+});
+chrome.runtime.onStartup.addListener(() => {
+	init()
+		.catch(console.error)
+	;
+});
+chrome.runtime.onInstalled.addListener(() => {
+	init()
 		.catch(console.error)
 	;
 });
 
-port.onMessage.addListener(async function(msg) {
+
+let initLaunched = false;
+async function init() {
+	if (initLaunched) return;
+	initLaunched = true;
+
 	let haveBackgroundPage = false;
 	if (typeof chrome.runtime.getBackgroundPage === 'function') {
 		try {
@@ -36,103 +61,153 @@ port.onMessage.addListener(async function(msg) {
 		 * If background page present, then running in Firefox without full manifest v3 support
 		 */
 		if (location.pathname.endsWith('panel.html')) {
-			console.debug('Ignoring chromeNative incoming messages');
+			console.debug('Ignoring "chromeNative" websocket');
 			return;
 		}
 	}
 
-	if (!msg && typeof msg !== 'object') {
-		console.warn('UnexpectedMessage', msg);
+
+	chrome_native_token = (await chrome.storage.local.get([
+		'chrome_native_token',
+	]))?.chrome_native_token ?? null;
+	socket.connect();
+	setInterval(() => {
+		socket.emit('ping', function (reply) {
+			if (reply.error || reply.result !== 'pong') {
+				console.error('[ping]', reply)
+			}
+		});
+	}, 10000);
+}
+
+socket.on('connect', function () {
+	console.info('[ws open]', 'WEBSOCKET_OPENED: client connected to server');
+});
+
+socket.on('connect_error', function (err) {
+	console.error('[ws error]', 'Socket encountered error: ' + err.message);
+});
+
+socket.on('ws open', function (err) {
+	console.log('[NativeMessaging]', 'ws open', err);
+
+	chrome.storage.session.set({
+		[chromeNativeConnectedStorageKey]: true
+	})
+		.catch(console.error)
+	;
+
+	sendSocketData()
+		.catch(console.error)
+	;
+
+	getSyncAllowedPreferences()
+		.catch(console.error)
+	;
+});
+
+socket.on('disconnect', function (reason, description) {
+	console.log('[NativeMessaging]', 'ws close', reason, description);
+
+	chrome.storage.session.set({
+		[chromeNativeConnectedStorageKey]: false
+	})
+		.catch(console.error)
+	;
+});
+
+socket.on('log', function (...args) {
+	console.log('[NativeMessaging] log', ...args);
+});
+
+
+
+socket.on('ping', function (cb) {
+	cb({
+		error: false,
+		result: 'pong'
+	});
+});
+
+/**
+ *
+ * @type {Map<string, (data) => void>}
+ */
+const notificationCbMap = new Map();
+socket.on('sendNotification', (opts, cb) => {
+	const _id = randomId();
+	const callback = (data) => {
+		notificationCbMap.delete(_id);
+		socket.off('clearNotifications', _clearNotification);
+		if (timer) {
+			clearTimeout(timer);
+		}
+		if (!!data) {
+			cb({
+				error: false,
+				result: data
+			});
+		}
+	};
+	notificationCbMap.set(_id, callback);
+	handleSendNotification(_id, opts)
+		.catch(err => {
+			console.error(err);
+			callback();
+		})
+	;
+
+	const _clearNotification = () => {
+		clearNotification(_id)
+			.catch(console.error)
+		;
+	};
+
+	let timer = null;
+	if (opts.timeoutType === 'default') {
+		timer = setTimeout(_clearNotification, 2 * 60000); // 2min
+	}
+	socket.on('clearNotifications', _clearNotification);
+});
+
+socket.on('openUrl', (url, cb) => {
+	if (!url) {
 		return;
 	}
 
-
-
-	switch (msg.type ?? null) {
-		case 'ws open':
-			console.log('[NativeMessaging]', 'ws open', msg);
-
-			chrome.storage.session.set({
-				[chromeNativeConnectedStorageKey]: true
+	(async () => {
+		const tab = await chrome.tabs.create({
+				url: url,
+				active: true
 			})
 				.catch(console.error)
-			;
+		;
+		cb({
+			response: !!tab
+		})
+	})();
+});
 
-			sendSocketData()
-				.catch(console.error)
-			;
-
-			getSyncAllowedPreferences()
-				.catch(console.error)
-			;
-			break;
-		case 'ws close':
-			console.log('[NativeMessaging]', 'ws close', msg);
-
-			chrome.storage.session.set({
-				[chromeNativeConnectedStorageKey]: false
-			})
-				.catch(console.error)
-			;
-			break;
-		case "log":
-			console.log('[NativeMessaging] log', msg.data);
-			break;
-		case 'ping':
-			port.postMessage({
-				type: 'commandReply',
-				_id: msg._id
-			});
-			break;
-		case 'sendNotification':
-			handleSendNotification(msg._id, msg.opts)
-				.catch(console.error)
-			;
-			break;
-		case 'clearNotification':
-			clearNotification(msg._id)
-				.catch(console.error)
-			;
-			break;
-		case 'closeActiveUrl':
-			const activeTab = await getCurrentTab()
-				.catch(console.error)
-			;
-			console.log('[NativeMessaging]', 'closeActiveUrl type', activeTab.url);
-			if (msg.url && activeTab.url === msg.url) {
-				await chrome.tabs.remove(activeTab.id)
-					.catch(console.error)
-				;
-			}
-			break;
-		case 'openUrl':
-			if (msg.url) {
-				const tab = await chrome.tabs.create({
-						url: msg.url,
-						active: true
-					})
-						.catch(console.error)
-				;
-				port.postMessage({
-					type: 'commandReply',
-					_id: msg._id,
-					data: {
-						response: !!tab
-					}
-				});
-			}
-			break;
-		case 'commandReply':
-			break;
-		case 'onSettingUpdate':
-			updateSyncAllowedPreferences(msg.data)
-				.catch(console.error)
-			;
-			break;
-		default:
-			console.log('[NativeMessaging]', 'Unknown type', msg);
+socket.on('closeActiveUrl', async (url) => {
+	const activeTab = await getCurrentTab()
+		.catch(console.error)
+	;
+	console.log('[NativeMessaging]', 'closeActiveUrl type', activeTab.url);
+	if (url && activeTab.url === url) {
+		await chrome.tabs.remove(activeTab.id)
+			.catch(console.error)
+		;
 	}
 });
+
+socket.on('onSettingUpdate', function (preference) {
+	updateSyncAllowedPreferences(preference)
+		.catch(console.error)
+	;
+});
+
+
+
 
 
 chrome.storage.onChanged.addListener(async (changes, area) => {
@@ -312,15 +387,12 @@ async function sendSocketData() {
 		}
 	}
 
-	port.postMessage({
-		type: 'updateSocketData',
-		data: {
-			notificationSupport: values.notification_support === true,
-			userAgent: navigator.userAgent,
-			browserName: await getBrowserName(),
-			extensionId: chrome.runtime.id,
-			tabData,
-		}
+	socket.emit('updateSocketData', {
+		notificationSupport: values.notification_support === true,
+		userAgent: navigator.userAgent,
+		browserName: await getBrowserName(),
+		extensionId: chrome.runtime.id,
+		tabData,
 	});
 }
 
@@ -342,82 +414,58 @@ chrome.notifications.onClosed.addListener(function (notificationId, byUser) {
 	if (!notificationId.startsWith('chromeNative-')) return;
 
 	chrome.notifications.clear(notificationId);
-	const _id = notificationId.replace('chromeNative-', '');
-	port.postMessage({
-		type: 'commandReply',
-		_id,
-		data: {
+	const _id = notificationId.replace('chromeNative-', ''),
+		cb = notificationCbMap.get(_id)
+	;
+	if (cb) {
+		cb({
 			response: 'close',
 			byUser
-		}
-	});
+		});
+	}
 });
 chrome.notifications.onButtonClicked.addListener(function (notificationId, buttonIndex) {
 	if (!notificationId.startsWith('chromeNative-')) return;
 
 	chrome.notifications.clear(notificationId);
-	const _id = notificationId.replace('chromeNative-', '');
-	port.postMessage({
-		type: 'commandReply',
-		_id,
-		data: {
+	const _id = notificationId.replace('chromeNative-', ''),
+		cb = notificationCbMap.get(_id)
+	;
+	if (cb) {
+		cb({
 			response: 'action',
 			index: buttonIndex
-		}
-	});
+		});
+	}
 });
 chrome.notifications.onClicked.addListener(async function (notificationId) {
 	if (!notificationId.startsWith('chromeNative-')) return;
 
 	chrome.notifications.clear(notificationId);
-	const _id = notificationId.replace('chromeNative-', '');
-	port.postMessage({
-		type: 'commandReply',
-		_id,
-		data: {
+	const _id = notificationId.replace('chromeNative-', ''),
+		cb = notificationCbMap.get(_id)
+	;
+	if (cb) {
+		cb({
 			response: 'click'
-		}
-	});
+		});
+	}
 });
-
-/**
- * Return the generated message id
- * @param {string} command
- * @param {any[]} data
- * @return {string}
- */
-function callNative(command, ...data) {
-	const _id = randomId();
-	port.postMessage({
-		_id,
-		data: data.length === 0 ? undefined : data,
-		type: command
-	});
-	return _id;
-}
 
 const timeout = 5000;
 /**
- *
- * @see callNative
  * @param {string} command
  * @param {...any[]} data
  * @return {Promise<unknown>}
  */
 function fnNative(command, ...data) {
 	return new Promise((resolve, reject) => {
-		const _id = callNative(command, ...data);
-
 		const timerId = setTimeout(() => {
-			port.onMessage.removeListener(callback);
 			reject(new Error('TIMEOUT'));
 		}, timeout);
 
 		const callback = function callback(msg, port) {
-			if (msg.type !== "commandReply" || msg._id !== _id) return;
-
 			clearTimeout(timerId);
-			port.onMessage.removeListener(callback);
 
 			if (!!msg.error) {
 				reject(msg);
@@ -427,7 +475,7 @@ function fnNative(command, ...data) {
 				reject(new Error('UnexpectedMessage'));
 			}
 		};
-		port.onMessage.addListener(callback);
+		socket.emit(command, ...data, callback);
 	});
 }
 
