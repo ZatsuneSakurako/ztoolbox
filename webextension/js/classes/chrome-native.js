@@ -70,7 +70,11 @@ async function init() {
 	chrome_native_token = (await chrome.storage.local.get([
 		'chrome_native_token',
 	]))?.chrome_native_token ?? null;
-	socket.connect();
+	if (chrome_native_token) {
+		socket.connect();
+	} else {
+		console.error('[chrome-native]', 'Missing token !');
+	}
 	setInterval(() => {
 		socket.emit('ping', function (reply) {
 			if (reply.error || reply.result !== 'pong') {
