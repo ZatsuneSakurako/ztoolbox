@@ -2,6 +2,7 @@
 
 import {getPreferences} from './chrome-preferences.js';
 import {default as env} from '../env.js';
+import {chromeNativeConnectedStorageKey} from "./chrome-native-settings.js";
 
 class Color {
 	constructor(hexColorCode){
@@ -152,9 +153,12 @@ export async function theme_update() {
 }
 
 chrome.storage.onChanged.addListener(async (changes, area) => {
-	if (area !== "local") return;
-
-	if ("theme" in changes || "background_color" in changes) {
+	if (area === "session" && chromeNativeConnectedStorageKey in changes) {
+		theme_update()
+			.catch(console.error)
+		;
+	}
+	if (area === "local" && ("theme" in changes || "background_color" in changes)) {
 		theme_update()
 			.catch(console.error)
 		;
