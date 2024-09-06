@@ -127,7 +127,6 @@ async function init() {
 	echo('Firefox manifest v3 overrides...');
 	manifestJson.background = {
 		"page": "/index.html",
-		"persistent": true
 	};
 	/**
 	 *
