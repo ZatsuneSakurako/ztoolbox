@@ -10,6 +10,7 @@ import {getCurrentTab} from "../utils/getCurrentTab.js";
 import {tabPageServerIpStorage} from "../variousFeatures/tabPageServerIp.js";
 import ipRegex from "../../lib/ip-regex.js";
 import {io} from "../../lib/socket.io.esm.min.js";
+import {isServiceWorker} from "../utils/browserDetect.js";
 
 
 /**
@@ -39,6 +40,11 @@ chrome.runtime.onInstalled.addListener(() => {
 		.catch(console.error)
 	;
 });
+if (!isServiceWorker) {
+	init()
+		.catch(console.error)
+	;
+}
 
 
 let initLaunched = false;
