@@ -30,22 +30,6 @@ const socket = io('ws://localhost:42080', {
 	transports: ['websocket'],
 	autoConnect: false
 });
-chrome.runtime.onStartup.addListener(() => {
-	init()
-		.catch(console.error)
-	;
-});
-chrome.runtime.onInstalled.addListener(() => {
-	init()
-		.catch(console.error)
-	;
-});
-if (!isServiceWorker) {
-	init()
-		.catch(console.error)
-	;
-}
-
 
 let initLaunched = false;
 async function init() {
@@ -89,6 +73,24 @@ async function init() {
 		});
 	}, 10000);
 }
+
+chrome.runtime.onStartup.addListener(() => {
+	init()
+		.catch(console.error)
+	;
+});
+chrome.runtime.onInstalled.addListener(() => {
+	init()
+		.catch(console.error)
+	;
+});
+if (!isServiceWorker) {
+	init()
+		.catch(console.error)
+	;
+}
+
+
 
 socket.on('connect', function () {
 	console.info('[ws open]', 'WEBSOCKET_OPENED: client connected to server');

@@ -1,3 +1,9 @@
+# 2.0.2
+* Fix: Syntax error in Firefox
+
+# 2.0.1
+* Fix: WebSocket not connecting in Firefox
+
 # 2.0.0
 * i : Replace [Chrome Native Messaging](https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/Native_messaging) with a [WebSocket](https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API) managed by [socket.io](https://socket.io)
 
