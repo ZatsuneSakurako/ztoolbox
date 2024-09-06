@@ -1,4 +1,4 @@
-# WIP
+# 2.0.2
 * Fix: Syntax error in Firefox
 
 # 2.0.1
