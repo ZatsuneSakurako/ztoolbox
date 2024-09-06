@@ -126,8 +126,20 @@ async function init() {
 
 	echo('Firefox manifest v3 overrides...');
 	manifestJson.background = {
-		"page": "/index.html"
+		"page": "/index.html",
+		"persistent": true
 	};
+	/**
+	 *
+	 * @see https://discourse.mozilla.org/t/how-to-prevent-upgrading-insecure-request-to-use-wss/126797/4
+	 * @see https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/Content_Security_Policy#upgrade_insecure_network_requests_in_manifest_v3
+	 * @see https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/manifest.json/content_security_policy#manifest_v3_syntax
+	 * @type {{extension_pages: string}}
+	 */
+	manifestJson["content_security_policy"] = {
+		"extension_pages": "default-src 'self' http://* https://* moz-extension://* chrome://* ws://localhost:42080; script-src 'self'; style-src 'self' moz-extension://* 'unsafe-inline';"
+	};
+
 	fs.writeJsonSync(path.join(pwd, './tmp/manifest.json'), manifestJson, {
 		encoding: 'utf-8',
 		spaces: "\t",
