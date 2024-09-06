@@ -400,6 +400,10 @@ async function sendSocketData() {
 	});
 }
 
+
+
+
+
 async function clearNotification(id) {
 	console.info('clear notification : ' + id)
 	await chrome.notifications.clear('chromeNative-' + id)
@@ -456,39 +460,16 @@ chrome.notifications.onClicked.addListener(async function (notificationId) {
 	}
 });
 
+
+
+
+
 const timeout = 5000;
-/**
- * @param {string} command
- * @param {...any[]} data
- * @return {Promise<unknown>}
- */
-function fnNative(command, ...data) {
-	return new Promise((resolve, reject) => {
-		const timerId = setTimeout(() => {
-			reject(new Error('TIMEOUT'));
-		}, timeout);
-
-		const callback = function callback(msg, port) {
-			clearTimeout(timerId);
-
-			if (!!msg.error) {
-				reject(msg);
-			} else if (msg.result) {
-				resolve(msg.result);
-			} else {
-				reject(new Error('UnexpectedMessage'));
-			}
-		};
-		socket.emit(command, ...data, callback);
-	});
-}
-
-
 
 export async function ping() {
 	try {
-		await fnNative('ping');
-		console.info('[NativeMessaging] pong');
+		const {result} = await socket.timeout(timeout).emitWithAck('ping');
+		console.info('[NativeMessaging] ping :', result);
 	} catch (e) {
 		console.error(e);
 	}
@@ -501,7 +482,7 @@ self.ping = ping;
  * @return {Promise<*>}
  */
 export async function getPreference(id) {
-	const {result} = await fnNative('getPreference', id);
+	const {result} = await socket.timeout(timeout).emitWithAck('getPreference', id);
 	return result.value;
 }
 
@@ -511,9 +492,9 @@ export async function getPreference(id) {
  * @return {Promise<Map<string, undefined|*>>}
  */
 export async function getPreferences(ids) {
-	const {result} = await fnNative('getPreferences', ids);
-
-	const output = new Map();
+	const {result} = await socket.timeout(timeout).emitWithAck('getPreferences', ids),
+		output = new Map()
+	;
 	for (let {id, value} of result) {
 		output.set(id, value);
 	}
@@ -572,7 +553,7 @@ async function updateSyncAllowedPreferences(data) {
  * @return {Promise<*[]>}
  */
 export async function getDefaultValues() {
-	const {result} = await fnNative('getDefaultValues');
+	const {result} = await socket.timeout(timeout).emitWithAck('getDefaultValues');
 	return result;
 }
 self.getDefaultValues = getDefaultValues;
@@ -583,7 +564,7 @@ self.getDefaultValues = getDefaultValues;
  * @return {Promise<*>}
  */
 export async function showSection(sectionName) {
-	const {result} = await fnNative('showSection', sectionName);
+	const {result} = await socket.timeout(timeout).emitWithAck('showSection', sectionName);
 	return result;
 }
 
@@ -596,7 +577,7 @@ export async function showSection(sectionName) {
  * @return {Promise<void>}
  */
 export async function openUrl(browserName, url) {
-	const {result} = await fnNative('openUrl', browserName, url);
+	const {result} = await socket.timeout(timeout).emitWithAck('openUrl', browserName, url);
 	console.dir(result)
 	return result;
 }
