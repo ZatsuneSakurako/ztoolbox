@@ -265,17 +265,7 @@ chrome.windows.onFocusChanged.addListener(async function onFocusChanged(windowId
 	// chrome.windows.onFocusChanged.removeListener(onFocusChanged);
 
 
-	let isVivaldi = false
-	for (let tab of tabs) {
-		if (tab.vivExtData) {
-			isVivaldi = true;
-			break;
-		}
-	}
 
-	await chrome.storage.local.set({
-		'_isVivaldi': isVivaldi
-	});
 	await sendSocketData()
 		.catch(console.error)
 	;
@@ -297,9 +287,12 @@ export async function getBrowserName() {
 		}
 	}
 
-	const isVivaldi = (await chrome.storage.local.get('_isVivaldi'))?._isVivaldi;
+	const firstBookmark = (await chrome.bookmarks.getTree()).at(0);
 	let browserName;
-	if (isVivaldi) {
+	/**
+	 * Properties "speeddial" and "bookmarkbar" should only exist in Vivaldi
+	 */
+	if (firstBookmark.speeddial !== undefined && firstBookmark.bookmarkbar !== undefined) {
 		browserName = 'Vivaldi';
 	} else {
 		const firefox = navigator.userAgent.split(' ')
