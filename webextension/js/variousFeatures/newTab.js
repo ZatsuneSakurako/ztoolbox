@@ -56,7 +56,7 @@ async function initPage() {
 	 */
 	let newTabImages = null;
 	try {
-		newTabImages = (await chrome.storage.session.get(newTabImagesStorage))[newTabImagesStorage];
+		newTabImages = (await chrome.storage.local.get(newTabImagesStorage))[newTabImagesStorage];
 		console.debug('session newTabImages', newTabImages);
 	} catch (e) {
 		console.error(e);
@@ -90,7 +90,7 @@ async function initPage() {
 			}
 
 			newTabImages = Object.fromEntries(newImages);
-			await chrome.storage.session.set({
+			await chrome.storage.local.set({
 				[newTabImagesStorage]: newTabImages
 			})
 				.catch(console.error)
@@ -202,7 +202,7 @@ if (location.pathname.includes('newTab.html')) {
 }
 
 async function onBookmarkChanged() {
-	await chrome.storage.session.remove(newTabImagesStorage);
+	await chrome.storage.local.remove(newTabImagesStorage);
 	location.reload();
 }
 chrome.bookmarks.onChanged.addListener(function (id, changeInfo) {
