@@ -1,5 +1,6 @@
 import fs from "fs-extra";
 import path from "path";
+import sass from "sass";
 
 import {cp} from "./common/file-operations.js";
 import {info, error} from "./common/custom-console.js";
@@ -35,8 +36,16 @@ if (!exist_jsLib) {
 	info("Copying i18next-http-backend...");
 	_cp("./node_modules/i18next-http-backend/i18nextHttpBackend.js", jsLib);
 
-	info("Copying MaterialIcons (marella/material-icons)...");
-	_cp("./node_modules/material-icons/iconfont/material-icons.woff2", path.normalize(`${fontPath}/MaterialIcons-Regular.woff2`));
+	info("Copying MaterialIcons (material-symbols)...");
+	_cp("./node_modules/material-symbols/material-symbols-outlined.woff2", path.normalize(`${fontPath}/material-symbols-outlined.woff2`));
+	_cp("./node_modules/material-symbols/material-symbols-rounded.woff2", path.normalize(`${fontPath}/material-symbols-rounded.woff2`));
+	_cp("./node_modules/material-symbols/material-symbols-sharp.woff2", path.normalize(`${fontPath}/material-symbols-sharp.woff2`));
+	fs.writeFileSync(
+		path.join(projectRootDir, './webextension/assets/fonts/material-symbols.css'), sass.compile("./node_modules/material-symbols/index.scss").css
+			.replace(/ {2}/g, '\t')
+			.replace(/(font-family: "Material Symbols \w+?";)/g, '/*noinspection CssNoGenericFontName*/\n\t$1 /* stylelint-disable-line font-family-no-missing-generic-family-keyword */'),
+		{ encoding: 'utf-8' }
+	);
 
 	info("Copying ip-regex...");
 	_cp("./node_modules/ip-regex/index.js", path.normalize(`${jsLib}/ip-regex.js`));

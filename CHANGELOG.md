@@ -1,4 +1,5 @@
 # WIP
+* i: Move from `Material Icons` to `Material Symbols`
 * Fix: Better Vivaldi detection for WebSocket (using speed dial and bookmark bar properties)
 
 # 2.0.2
