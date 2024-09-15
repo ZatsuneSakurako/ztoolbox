@@ -15,5 +15,11 @@ export const options = {
 		"type": "color",
 		"value": "#000000",
 		"sync": true
+	},
+	/*		    NewTab			*/
+	"newTabStylesheet": {
+		"type": "text",
+		"value": "",
+		"sync": true
 	}
 };

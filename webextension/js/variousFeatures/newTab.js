@@ -1,6 +1,7 @@
 import {appendTo} from "../utils/appendTo.js";
 import {renderTemplate} from "../init-templates.js";
 import "../utils/onImageError.js";
+import {getPreference, getPreferences} from "../classes/chrome-preferences.js";
 
 const newTabImagesStorage = '_newTabImages';
 
@@ -38,7 +39,20 @@ async function loadBookmarks() {
 
 const imageUrlAlgorithm = 'SHA-256';
 
+const newTabCustomStylesheet = new CSSStyleSheet();
+document.adoptedStyleSheets.push(newTabCustomStylesheet);
 async function initPage() {
+	const newTabStylesheet = await getPreference('newTabStylesheet')
+		.catch(console.error)
+	;
+	if (newTabStylesheet) {
+		for (let i = newTabCustomStylesheet.cssRules.length - 1; i >= 0; i--) {
+			newTabCustomStylesheet.deleteRule(i);
+		}
+		newTabCustomStylesheet.insertRule(newTabStylesheet);
+	}
+
+
 	const $newTabContainer = document.querySelector('#newTabContainer');
 	if (!$newTabContainer) {
 		console.error('Missing newTabContainer');
