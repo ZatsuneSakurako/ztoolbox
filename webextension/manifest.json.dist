@@ -61,6 +61,5 @@
 		},
 		"gecko_android": {}
 	},
-	"minimum_chrome_version": "126.0",
-	"key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAm7LWGlY+o0B7uV5cbVorR3bVXWVPGKTj6LyL5kuAXzBixwpzrQt/mD4FBrVw6ME4sILy7Py2S69GveJ0IkWsIXT2uCFIVrlirPRIW1MVu0HTddEwy/IdSgyXsm3V24MCrthWOvQ0eT9h86b0habG4AdzaOirE5jmHnLaPgm9ZmLmTgLOpQ/WmUTVmEJv8OzvGhke+XB+iaCK9wkjClF4V2p9TPkdGw+5YfkStjnXH+hiwVrOp3CKcbYdwi5/hezAC6ZmaUY0hhwmec/WGsPX/uH7/XuE9n3elLhG/3N3i6JziDbUih7LbuBg+UNrudfTJbgp/dYICZn5TiFUjAA2CwIDAQAB"
+	"minimum_chrome_version": "126.0"
 }
