@@ -125,6 +125,7 @@ async function init() {
 	}));
 
 	echo('Firefox manifest v3 overrides...');
+	delete manifestJson['key'];
 	manifestJson.background = {
 		"page": "/index.html",
 	};

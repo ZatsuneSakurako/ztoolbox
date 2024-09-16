@@ -3,9 +3,9 @@ import {projectRootDir as pwd} from "../projectRootDir.js";
 
 /**
  *
- * @param {String} command
- * @param {Boolean} outputInConsole
- * @return {Buffer | String} Stdout from the command
+ * @param {string} command
+ * @param {boolean} outputInConsole
+ * @return {Buffer | string} Stdout from the command
  */
 export function execSync(command, outputInConsole=false) {
 	let options = {
