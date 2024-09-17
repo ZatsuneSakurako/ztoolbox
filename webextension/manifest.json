@@ -15,6 +15,9 @@
 		"service_worker": "/js/index.js",
 		"type": "module"
 	},
+	"chrome_url_overrides" : {
+		"newtab": "newTab.html"
+	},
 	"action": {
 		"browser_style": false,
 		"default_icon": {
