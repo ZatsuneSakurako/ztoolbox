@@ -6,7 +6,6 @@ z-toolbox_dev-*.zip
 *.crx
 tmp/
 firefox/
-webextension/manifest.json
 TODO.md
 node_modules
 

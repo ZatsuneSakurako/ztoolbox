@@ -28,7 +28,7 @@ if (!exist_jsLib) {
 	error("JS lib folder not found!");
 	process.exit(1);
 } else {
-	info("Generating `manifest.json`...");
+	/*info("Generating `manifest.json`...");
 	const manifestJsonPath = path.join(projectRootDir, "/webextension/manifest.json");
 	if (!fs.existsSync(manifestJsonPath)) {
 		const privateKeyPath = path.join(projectRootDir, "/key.pem");
@@ -49,7 +49,7 @@ if (!exist_jsLib) {
 			spaces: "\t",
 			EOL: "\n",
 		});
-	}
+	}*/
 
 	info("Copying twing...");
 	_cp("./node_modules/twig/twig.min.js", jsLib);
