@@ -89,9 +89,12 @@ h2 {
 	text-align: center;
 	text-overflow: ellipsis;
 	transform: translateX(-50%);
+	transition: opacity 0.2s ease-in-out;
 	vertical-align: bottom;
 	white-space: nowrap;
 	width: calc(100% - var(--defaultSpace));
 	z-index: 2;
-
+}
+.newTab-sectionChildren article:not(:hover):has(.background):not(:has(.image-error)) a.title {
+	opacity: 0;
 }
