@@ -137,7 +137,7 @@ async function init() {
 	 * @type {{extension_pages: string}}
 	 */
 	manifestJson["content_security_policy"] = {
-		"extension_pages": "default-src 'self' http://* https://* moz-extension://* chrome://* ws://localhost:42080; script-src 'self'; style-src 'self' moz-extension://* 'unsafe-inline';"
+		"extension_pages": "default-src 'self' http://* https://* moz-extension://* chrome://* ws://localhost:42080 http://localhost:42080; script-src 'self'; style-src 'self' moz-extension://* 'unsafe-inline';"
 	};
 
 	fs.writeJsonSync(path.join(pwd, './tmp/manifest.json'), manifestJson, {
