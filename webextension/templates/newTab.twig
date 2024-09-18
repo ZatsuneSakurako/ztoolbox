@@ -1,0 +1,29 @@
+<h1 class="screen-reader-text">New tab</h1>
+{% for folderName, data in bookmarks %}
+    <section id="{{ folderName }}" class="newTab-section">
+        <h2>{{ folderName }}</h2>
+        <div id="newTab-content-{{ folderName }}" class="newTab-sectionChildren">
+            {% for bookmark in data.children %}
+                {% if bookmark.children %}
+                    <!-- Folder not yet supported -->
+                {% else %}
+                    {% set meta = getMeta(bookmark) %}
+                    <article style="{% if meta.theme_color %}--theme-color: {{ meta.theme_color }};{% endif %}{% if meta.background_color %}--background-color: {{ meta.background_color }};{% endif %}">
+                        <a href="{{ bookmark.url }}" class="title" target="_blank">
+                            {%- if meta._hostname -%}
+                                {%- if meta.favicon -%}
+                                    <img class="favicon" src="{{ meta.favicon }}" crossorigin="anonymous" alt="favicon" loading="lazy" />
+                                {%- endif -%}
+                                <img class="favicon favicon-default" src="https://icons.duckduckgo.com/ip2/{{ meta._hostname }}.ico" crossorigin="anonymous" alt="favicon">
+                            {%- endif -%}
+
+                            {{- bookmark.title -}}
+                        </a>
+                        <a href="{{ bookmark.url }}" class="hover" target="_blank"></a>
+                        {% if meta.image %}<img class="background" src="{{ meta.image }}" crossorigin="anonymous" alt="{{ bookmark.title }}">{% endif %}
+                    </article>
+                {% endif %}
+            {% endfor %}
+        </div>
+    </section>
+{% endfor %}

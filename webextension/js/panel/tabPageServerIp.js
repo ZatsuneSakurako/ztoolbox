@@ -71,7 +71,7 @@ document.addEventListener('error', (e) => {
 
 	if (/(img|svg)/i.test(target.tagName) && !target.classList.contains('error') && target.closest(`#${idTabPageServerIp}`)) {
 		const node = document.createElement('span');
-		node.classList.add('icon','material-icons')
+		node.classList.add('icon','material-symbols-outlined');
 		node.textContent = 'tab';
 		node.dataset.oldSrc = target.src;
 		target.replaceWith(node);

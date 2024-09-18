@@ -1,6 +1,6 @@
 {
 	"name": "ztoolbox",
-	"version": "2.0.2",
+	"version": "2.1.0",
 	"private": true,
 	"description": "Web Extension to test various things.",
 	"type": "module",
@@ -8,7 +8,7 @@
 		"i18next": "^23.14.0",
 		"i18next-http-backend": "^2.6.1",
 		"ip-regex": "^5.0.0",
-		"material-icons": "^1.13.12",
+		"material-symbols": "^0.23.0",
 		"qr-creator": "^1.0.0",
 		"socket.io-client": "^4.7.5",
 		"twig": "^1.17.1"
@@ -23,6 +23,7 @@
 		"dotenv": "^16.4.5",
 		"fs-extra": "^11.2.0",
 		"klaw-sync": "^6.0.0",
+		"sass": "1.56.1",
 		"stylelint": "^15.11.0",
 		"stylelint-config-recommended": "^12.0.0",
 		"web-ext": "^8.2.0",

@@ -2,6 +2,7 @@ const templatesSource = window.templatesSource = new Map();
 templatesSource.set('backgroundTheme', '/templates/backgroundTheme');
 templatesSource.set('tabMover', '/templates/panel/tabMover');
 templatesSource.set('tabPageServerIp', '/templates/panel/tabPageServerIp');
+templatesSource.set('newTab', '/templates/newTab');
 
 
 
@@ -20,11 +21,12 @@ export async function getTwig() {
  *
  * @param {string} templateId
  * @param {Dict<*>} data
+ * @param {boolean} allow_async
  * @return {Promise<string>}
  */
-export async function renderTemplate(templateId, data) {
+export async function renderTemplate(templateId, data, allow_async=false) {
 	const twigTemplate = await getTemplate(templateId);
-	return await twigTemplate.render(data);
+	return await twigTemplate.render(data, {}, allow_async);
 }
 
 const loadMap = new Map();
