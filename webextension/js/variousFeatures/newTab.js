@@ -1,9 +1,26 @@
 import {appendTo} from "../utils/appendTo.js";
 import {renderTemplate} from "../init-templates.js";
 import "../utils/onImageError.js";
-import {getPreference, getPreferences} from "../classes/chrome-preferences.js";
+import {getPreference} from "../classes/chrome-preferences.js";
+import {chromeNativeConnectedStorageKey} from "../classes/chrome-native-settings.js";
 
-const newTabImagesStorage = '_newTabImages';
+const newTabImagesStorage = '_newTabImages',
+	imageUrlAlgorithm = 'SHA-256'
+;
+
+/**
+ *
+ * @param {string} string
+ * @param {AlgorithmIdentifier} algorithm
+ */
+async function generateChecksum(string, algorithm) {
+	const encoder = new TextEncoder(),
+		data = encoder.encode(string),
+		hash= await crypto.subtle.digest(algorithm, data)
+	;
+	const hashArray = Array.from(new Uint8Array(hash));
+	return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+}
 
 /**
  *
@@ -37,21 +54,12 @@ async function loadBookmarks() {
 	return output;
 }
 
-const imageUrlAlgorithm = 'SHA-256';
+async function loadSpeedDial() {
+	console.debug('load SpeedDial...')
 
-const newTabCustomStylesheet = new CSSStyleSheet();
-document.adoptedStyleSheets.push(newTabCustomStylesheet);
-async function initPage() {
-	const newTabStylesheet = await getPreference('newTabStylesheet')
+	loadStylesheet()
 		.catch(console.error)
 	;
-	if (newTabStylesheet) {
-		for (let i = newTabCustomStylesheet.cssRules.length - 1; i >= 0; i--) {
-			newTabCustomStylesheet.deleteRule(i);
-		}
-		newTabCustomStylesheet.insertRule(newTabStylesheet);
-	}
-
 
 	const $newTabContainer = document.querySelector('#newTabContainer');
 	if (!$newTabContainer) {
@@ -113,6 +121,11 @@ async function initPage() {
 		} else {
 			newTabImages = {};
 		}
+	}
+
+	// Copy node list as we are removing them
+	for (let child of [...$newTabContainer.children]) {
+		child.remove();
 	}
 
 	appendTo($newTabContainer, await renderTemplate('newTab', {
@@ -195,34 +208,49 @@ async function fetchSeoMetaData(url) {
 	return pageContent.size ? Object.fromEntries(pageContent) : null;
 }
 
-/**
- *
- * @param {string} string
- * @param {AlgorithmIdentifier} algorithm
- */
-function generateChecksum(string, algorithm) {
-	const encoder = new TextEncoder();
-	const data = encoder.encode(string);
-	return crypto.subtle.digest(algorithm, data).then(hash => {
-		const hashArray = Array.from(new Uint8Array(hash));
-		return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-	});
-}
-
 if (location.pathname.includes('newTab.html')) {
-	initPage()
+	loadSpeedDial()
 		.catch(console.error)
 	;
 }
 
 async function onBookmarkChanged() {
 	await chrome.storage.local.remove(newTabImagesStorage);
-	location.reload();
+	loadSpeedDial()
+		.catch(console.error)
+	;
 }
 chrome.bookmarks.onChanged.addListener(function (id, changeInfo) {
 	const links = document.querySelectorAll(`.newTab-section a[href*=${JSON.stringify(changeInfo.url)}]`);
 	if (links.length > 0) {
 		onBookmarkChanged()
+			.catch(console.error)
+		;
+	}
+});
+
+
+
+const newTabCustomStylesheet = new CSSStyleSheet();
+document.adoptedStyleSheets.push(newTabCustomStylesheet);
+
+async function loadStylesheet() {
+	const newTabStylesheet = await getPreference('newTabStylesheet')
+		.catch(console.error)
+	;
+	for (let i = newTabCustomStylesheet.cssRules.length - 1; i >= 0; i--) {
+		newTabCustomStylesheet.deleteRule(i);
+	}
+	if (newTabStylesheet) {
+		newTabCustomStylesheet.insertRule(newTabStylesheet);
+	}
+}
+
+chrome.storage.onChanged.addListener(function (changes, areaName) {
+	if (areaName !== 'session') return;
+
+	if (chromeNativeConnectedStorageKey in changes) {
+		loadStylesheet()
 			.catch(console.error)
 		;
 	}
