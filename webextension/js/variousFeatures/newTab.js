@@ -303,6 +303,9 @@ async function fillThumbnails() {
 	await chrome.storage.local.set({
 		[newTabCapturesStorage]: newTabCaptures
 	});
+	await loadSpeedDial()
+		.catch(console.error)
+	;
 
 	const $articles = document.querySelectorAll('article.newTab-item:not(:has(img.background))');
 	for (let [i, $article] of $articles.entries()) {
