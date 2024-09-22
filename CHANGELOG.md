@@ -1,5 +1,9 @@
+# WIP
+* \+ : Capture page system for the new tab page
+
 # 2.1.0
 * i: Move from `Material Icons` to `Material Symbols`
+* \+ : New tab page
 * Fix: Better Vivaldi detection for WebSocket (using speed dial and bookmark bar properties)
 
 # 2.0.2

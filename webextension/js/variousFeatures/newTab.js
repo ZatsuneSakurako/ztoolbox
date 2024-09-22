@@ -3,8 +3,10 @@ import {renderTemplate} from "../init-templates.js";
 import "../utils/onImageError.js";
 import {getPreference} from "../classes/chrome-preferences.js";
 import {chromeNativeConnectedStorageKey} from "../classes/chrome-native-settings.js";
+import {generateThumbnail} from "../utils/captureScreenshot.js";
 
 const newTabImagesStorage = '_newTabImages',
+	newTabCapturesStorage = '_newTabCaptures',
 	imageUrlAlgorithm = 'SHA-256'
 ;
 
@@ -77,8 +79,14 @@ async function loadSpeedDial() {
 	 * @type {Dict<string> & { _manifest: Dict<string> }}
 	 */
 	let newTabImages = null;
+	let newTabCaptures = null;
 	try {
-		newTabImages = (await chrome.storage.local.get(newTabImagesStorage))[newTabImagesStorage];
+		const result = (await chrome.storage.local.get([
+			newTabImagesStorage,
+			newTabCapturesStorage,
+		]));
+		newTabImages = result[newTabImagesStorage];
+		newTabCaptures = result[newTabCapturesStorage];
 		console.debug('session newTabImages', newTabImages);
 	} catch (e) {
 		console.error(e);
@@ -135,11 +143,17 @@ async function loadSpeedDial() {
 				checksum = await generateChecksum(url, imageUrlAlgorithm),
 				output = {}
 			;
+
+			if (newTabCaptures && typeof newTabCaptures[checksum] === 'string' ) {
+				output.capture = newTabCaptures[checksum];
+			}
+
 			output._hostname = null;
 			try {
 				output._hostname = new URL(url).hostname;
 			} catch (_) {}
 			if (!newTabImages[checksum]) return output;
+
 
 
 			const imagePropertyNames = new Set([
@@ -254,4 +268,72 @@ chrome.storage.onChanged.addListener(function (changes, areaName) {
 			.catch(console.error)
 		;
 	}
+});
+
+
+/**
+ *
+ * @param {HTMLElement} node
+ * @returns {Promise<{ url:string, base64:string }>}
+ */
+async function generateBookmarkThumbnail(node) {
+	const url = node.querySelector('a[href]')?.href;
+	if (!url) throw new Error('url')
+
+	const base64 = await generateThumbnail(url)
+		.catch(console.error)
+	;
+	if (!base64) throw new Error('base64')
+
+	const $img = document.createElement('img')
+	$img.classList.add('background');
+	$img.src = base64;
+	node.appendChild($img);
+	return {
+		url,
+		base64,
+	};
+}
+
+async function fillThumbnails() {
+	console.group('fillThumbnails');
+	console.time('fillThumbnails');
+
+	const newTabCaptures = {};
+	await chrome.storage.local.set({
+		[newTabCapturesStorage]: newTabCaptures
+	});
+
+	const $articles = document.querySelectorAll('article.newTab-item:not(:has(img.background))');
+	for (let [i, $article] of $articles.entries()) {
+		console.info(`Refreshing ${i + 1} of ${$articles.length}...`, $article);
+		const result = await generateBookmarkThumbnail($article)
+			.catch(console.error)
+		;
+		if (result) {
+			try {
+				newTabCaptures[await generateChecksum(result.url, imageUrlAlgorithm)] = result.base64;
+				await chrome.storage.local.set({
+					[newTabCapturesStorage]: newTabCaptures
+				});
+			} catch (e) {
+				console.error(e);
+			}
+		}
+	}
+
+	console.timeEnd('fillThumbnails');
+	console.groupEnd('fillThumbnails');
+}
+document.addEventListener('click', function onThumbnailRefresh(ev) {
+	const el = ev.target.closest('#refreshThumbnails');
+	if (!el) return;
+
+	el.disabled = true;
+	fillThumbnails()
+		.catch(console.error)
+		.finally(() => {
+			el.disabled = false;
+		})
+	;
 });
