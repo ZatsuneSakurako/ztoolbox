@@ -1,5 +1,6 @@
 # WIP
 * \+ : Capture page system for the new tab page
+* \+ : Restore last closed tab button for the new tab page
 
 # 2.1.0
 * i: Move from `Material Icons` to `Material Symbols`

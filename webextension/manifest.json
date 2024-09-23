@@ -47,6 +47,7 @@
 		"contextMenus",
 		"notifications",
 		"scripting",
+		"sessions",
 		"storage",
 		"tabs",
 		"activeTab",
