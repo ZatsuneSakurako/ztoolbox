@@ -4,6 +4,8 @@ import "../utils/onImageError.js";
 import {getPreference} from "../classes/chrome-preferences.js";
 import {chromeNativeConnectedStorageKey} from "../classes/chrome-native-settings.js";
 import {generateThumbnail} from "../utils/captureScreenshot.js";
+import './newTab-reopenTab.js';
+import {reopenTabStateRefresh} from "./newTab-reopenTab.js";
 
 const newTabImagesStorage = '_newTabImages',
 	newTabCapturesStorage = '_newTabCaptures',
@@ -181,6 +183,12 @@ async function loadSpeedDial() {
 			return output;
 		},
 	}, true));
+
+
+
+	await reopenTabStateRefresh()
+		.catch(console.error)
+	;
 }
 
 async function fetchSeoMetaData(url) {
