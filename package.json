@@ -5,6 +5,7 @@
 	"description": "Web Extension to test various things.",
 	"type": "module",
 	"dependencies": {
+		"@textea/json-viewer": "^4.0.0",
 		"i18next": "^23.14.0",
 		"i18next-http-backend": "^2.6.1",
 		"ip-regex": "^5.0.0",

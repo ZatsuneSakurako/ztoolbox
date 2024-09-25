@@ -28,29 +28,6 @@ if (!exist_jsLib) {
 	error("JS lib folder not found!");
 	process.exit(1);
 } else {
-	/*info("Generating `manifest.json`...");
-	const manifestJsonPath = path.join(projectRootDir, "/webextension/manifest.json");
-	if (!fs.existsSync(manifestJsonPath)) {
-		const privateKeyPath = path.join(projectRootDir, "/key.pem");
-		if (!fs.existsSync(privateKeyPath)) {
-			child_process.execSync('openssl genrsa 2048 | openssl pkcs8 -topk8 -nocrypt -out key.pem', {
-				encoding: 'utf8',
-				cwd: projectRootDir,
-			});
-		}
-
-		const _manifestJson = fs.readJsonSync(`${manifestJsonPath}.dist`);
-		_manifestJson.key = child_process.execSync('openssl rsa -in key.pem -pubout -outform DER | openssl base64 -A', {
-			encoding: 'utf8',
-			cwd: projectRootDir,
-		});
-		fs.writeJsonSync(manifestJsonPath, _manifestJson, {
-			encoding: 'utf-8',
-			spaces: "\t",
-			EOL: "\n",
-		});
-	}*/
-
 	info("Copying twing...");
 	_cp("./node_modules/twig/twig.min.js", jsLib);
 	_cp("./node_modules/twig/twig.min.js.map", jsLib);
@@ -81,4 +58,11 @@ if (!exist_jsLib) {
 	info("Copying socket.io-client...");
 	_cp("./node_modules/socket.io-client/dist/socket.io.esm.min.js", jsLib);
 	_cp("./node_modules/socket.io-client/dist/socket.io.esm.min.js.map", jsLib);
+
+	info("Copying @textea/json-viewer...");
+	fs.writeFileSync(
+		`${jsLib}/textea-json-viewer.js`,
+		await (await fetch('https://cdn.jsdelivr.net/npm/@textea/json-viewer@4')).text(),
+		{ encoding: 'utf-8' }
+	);
 }
