@@ -13,7 +13,7 @@
                 {% else %}
                     {% set meta = getMeta(bookmark) %}
                     <article class="newTab-item" style="{% if meta.theme_color %}--theme-color: {{ meta.theme_color }};{% endif %}{% if meta.background_color %}--background-color: {{ meta.background_color }};{% endif %}">
-                        <a href="{{ bookmark.url }}" class="title" target="_blank">
+                        <a href="{{ bookmark.url }}" class="title">
                             {%- if meta._hostname -%}
                                 {%- if meta.favicon -%}
                                     <img class="favicon" src="{{ meta.favicon }}" crossorigin="anonymous" alt="favicon" loading="lazy" />
@@ -23,7 +23,7 @@
 
                             {{- bookmark.title -}}
                         </a>
-                        <a href="{{ bookmark.url }}" class="hover" target="_blank"></a>
+                        <a href="{{ bookmark.url }}" class="hover"></a>
 
                         {% set image = meta.capture ?? meta.image %}
                         {% if image %}<img class="background" src="{{ image }}" crossorigin="anonymous" alt="{{ bookmark.title }}">{% endif %}
