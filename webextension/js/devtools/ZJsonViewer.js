@@ -117,10 +117,9 @@ export class ZJsonViewer {
 				for (const item of value) {
 					const arrayLi = document.createElement('li');
 					if (typeof item === 'object') {
-						// arrayLi.textContent = '';
 						this.#buildList(item, arrayLi, depth + 1);
 					} else {
-						arrayLi.textContent = typeof value === 'string' ? this.linkify(value) : value;
+						arrayLi.append(this.#createElement('span', typeof item === 'string' ? this.linkify(item) : item, `type-${this.#getValueType(item)}`));
 					}
 					arrayUl.appendChild(arrayLi);
 				}

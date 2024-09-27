@@ -115,6 +115,9 @@ input[type="checkbox"].collapse:not(:checked):has(+ .z-json-viewer.z-json-viewer
 	content: ']';
 }
 
+.z-json-viewer > li:not(:has(.type-object)):not(:has(.type-array)) {
+	display: flex;
+}
 
 .z-json-viewer .type-null,
 .z-json-viewer .type-boolean {
@@ -132,8 +135,14 @@ input[type="checkbox"].collapse:not(:checked):has(+ .z-json-viewer.z-json-viewer
 
 .z-json-viewer .type-string {
 	display: -webkit-box;
+	display: -webkit-inline-box;
 	overflow: hidden;
 	text-overflow: ellipsis;
 	-webkit-line-clamp: 3;
 	-webkit-box-orient: vertical;
+}
+
+.type-array > li > span.type-string {
+	position: relative;
+	top: 0.3rem;
 }
