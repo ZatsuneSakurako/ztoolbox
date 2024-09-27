@@ -104,7 +104,7 @@ input[type='radio'] {
 input[type='radio']::before,
 input[type='checkbox']::before {
 	/*noinspection CssNoGenericFontName*/
-	font-family: "Material Icons"; /* stylelint-disable-line font-family-no-missing-generic-family-keyword */
+	font-family: "Material Symbols Outlined"; /* stylelint-disable-line font-family-no-missing-generic-family-keyword */
 	font-size: 1.2rem;
 	font-weight: normal;
 	vertical-align: middle;
