@@ -1,11 +1,5 @@
 import {theme_cache_update} from "../classes/backgroundTheme.js";
-import '../../lib/textea-json-viewer.js';
-
-/**
- *
- * @type {(props: import('@textea/json-viewer').JsonViewerProps) => import('react').React.ReactElement}
- */
-const JsonViewer = window.JsonViewer;
+import {ZJsonViewer} from "./ZJsonViewer.js";
 
 /**
  *
@@ -65,26 +59,8 @@ init()
 ;
 
 
-/**
- *
- * @param {HTMLElement} container
- * @param json
- */
-function buildRecursiveUL(container, json) {
-	const ul = document.createElement('ul');
-	container.appendChild(ul);
+// buildList(jsonData, document.getElementById('json-data'));
 
-	for (let [key, value] of Object.entries(json)) {
-		const li = document.createElement('li');
-		li.textContent = key;
-
-		if (typeof value === 'object' && value !== null) {
-			buildRecursiveUL(li, value);
-		}
-
-		ul.appendChild(li);
-	}
-}
 
 function onJsonContent(resource, json) {
 	console.info('onJsonContent', resource, json);
@@ -97,30 +73,8 @@ function onJsonContent(resource, json) {
 			jsonData: json
 		}
 	});
-	new JsonViewer({
-		value: json,
-		enableClipboard: false,
-		theme: {
-			scheme: 'monokai',
-			author: 'wimer hazenberg (http://www.monokai.nl)',
-			base00: '#272822',
-			base01: '#383830',
-			base02: '#49483e',
-			base03: '#75715e',
-			base04: '#a59f85',
-			base05: '#f8f8f2',
-			base06: '#f5f4f1',
-			base07: '#f9f8f5',
-			base08: '#f92672',
-			base09: '#fd971f',
-			base0A: '#f4bf75',
-			base0B: '#a6e22e',
-			base0C: '#a1efe4',
-			base0D: '#66d9ef',
-			base0E: '#ae81ff',
-			base0F: '#cc6633',
-		}
-	}).render($main)
+
+	new ZJsonViewer(json).render($main);
 }
 
 

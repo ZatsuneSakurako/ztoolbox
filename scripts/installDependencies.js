@@ -58,11 +58,4 @@ if (!exist_jsLib) {
 	info("Copying socket.io-client...");
 	_cp("./node_modules/socket.io-client/dist/socket.io.esm.min.js", jsLib);
 	_cp("./node_modules/socket.io-client/dist/socket.io.esm.min.js.map", jsLib);
-
-	info("Copying @textea/json-viewer...");
-	fs.writeFileSync(
-		`${jsLib}/textea-json-viewer.js`,
-		await (await fetch('https://cdn.jsdelivr.net/npm/@textea/json-viewer@4')).text(),
-		{ encoding: 'utf-8' }
-	);
 }

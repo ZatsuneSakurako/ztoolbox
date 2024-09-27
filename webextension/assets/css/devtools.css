@@ -22,6 +22,7 @@ body.page-devtools header {
 }
 main {
 	font-size: 1.2rem;
+	position: relative;
 }
 h2 {
 	text-align: center;
