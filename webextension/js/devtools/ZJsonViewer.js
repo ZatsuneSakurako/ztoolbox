@@ -66,12 +66,35 @@ export class ZJsonViewer {
 
 	/**
 	 *
+	 * @param {any} value
+	 * @returns {Array<string|HTMLAnchorElement>|string}
+	 */
+	#stringify(value) {
+		if (value === null) return 'null';
+		if (value === undefined) return 'undefined';
+		if (['string', 'number'].includes(typeof value)) {
+			return this.linkify(value.toString());
+		}
+		return JSON.stringify(value, null, 4);
+	}
+
+	/**
+	 *
 	 * @param {any} data
 	 * @param {HTMLElement} parentElement
 	 * @param {number} [depth]
 	 * @return {HTMLUListElement}
 	 */
 	#buildList(data, parentElement, depth = 0) {
+		const valueType = this.#getValueType(data);
+		if (['null', 'undefined', 'string', 'number'].includes(valueType)) {
+			parentElement.append(
+				this.#createElement('span', this.#stringify(data), `type-${valueType}`)
+			);
+			return;
+		}
+
+
 		if (depth > 0) {
 			const checkbox = document.createElement('input');
 			checkbox.classList.add('collapse');
@@ -88,19 +111,13 @@ export class ZJsonViewer {
 		ul.classList.add("z-json-viewer");
 		parentElement.appendChild(ul);
 
-		const valueType = this.#getValueType(data);
-		if (['null', 'undefined', 'string', 'number'].includes(valueType)) {
-			parentElement.append(
-				this.#createElement('span', data, `type-${valueType}`)
-			);
-			return;
-		}
 
 		ul.classList.add('type-object');
 		for (const [key, value] of Object.entries(data)) {
 			const li = document.createElement('li'),
 				propertySpan = this.#createElement('span', key, 'property')
 			;
+			li.tabIndex = 0;
 			li.append(propertySpan);
 			ul.append(li);
 
@@ -116,10 +133,11 @@ export class ZJsonViewer {
 
 				for (const item of value) {
 					const arrayLi = document.createElement('li');
+					li.tabIndex = 0;
 					if (typeof item === 'object') {
 						this.#buildList(item, arrayLi, depth + 1);
 					} else {
-						arrayLi.append(this.#createElement('span', typeof item === 'string' ? this.linkify(item) : item, `type-${this.#getValueType(item)}`));
+						arrayLi.append(this.#createElement('span', this.#stringify(item), `type-${this.#getValueType(item)}`));
 					}
 					arrayUl.appendChild(arrayLi);
 				}
@@ -128,7 +146,7 @@ export class ZJsonViewer {
 			} else if (typeof value === 'object') {
 				this.#buildList(value, li, depth + 1);
 			} else {
-				li.append(this.#createElement('span', typeof value === 'string' ? this.linkify(value) : value, `type-${this.#getValueType(value)}`));
+				li.append(this.#createElement('span', this.#stringify(value), `type-${this.#getValueType(value)}`));
 			}
 		}
 

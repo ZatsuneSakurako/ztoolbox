@@ -118,6 +118,9 @@ input[type="checkbox"].collapse:not(:checked):has(+ .z-json-viewer.z-json-viewer
 .z-json-viewer > li:not(:has(.type-object)):not(:has(.type-array)) {
 	display: flex;
 }
+.z-json-viewer > li:not(:has(.type-object)):not(:has(.type-array)) > *:not(.type-string) {
+	flex-shrink: 0;
+}
 
 .z-json-viewer .type-null,
 .z-json-viewer .type-boolean {
@@ -133,7 +136,12 @@ input[type="checkbox"].collapse:not(:checked):has(+ .z-json-viewer.z-json-viewer
 	color: #e5cc53;
 }
 
-.z-json-viewer .type-string {
+.z-json-viewer li:has(.type-string)::after {
+	margin-top: auto;
+}
+
+.z-json-viewer .type-string,
+.z-json-viewer .property {
 	display: -webkit-box;
 	/*noinspection CssInvalidPropertyValue*/
 	display: -webkit-inline-box;
@@ -146,4 +154,8 @@ input[type="checkbox"].collapse:not(:checked):has(+ .z-json-viewer.z-json-viewer
 .type-array > li > span.type-string {
 	position: relative;
 	top: 0.3rem;
+}
+
+.z-json-viewer li[tabindex]:focus {
+	outline: dotted 0.1ch;
 }
