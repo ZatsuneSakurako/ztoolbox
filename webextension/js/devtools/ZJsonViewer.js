@@ -130,13 +130,17 @@ export class ZJsonViewer {
 
 				const arrayUl = document.createElement('ol');
 				arrayUl.classList.add('type-array');
+				li.classList.add('container-array');
 
 				for (const item of value) {
 					const arrayLi = document.createElement('li');
 					li.tabIndex = 0;
 					if (typeof item === 'object') {
+						arrayLi.classList.add(Array.isArray(item) ? 'container-array' : 'container-object');
 						this.#buildList(item, arrayLi, depth + 1);
 					} else {
+						const valueType = this.#getValueType(item);
+						arrayLi.classList.add(`container-${valueType}`);
 						arrayLi.append(this.#createElement('span', this.#stringify(item), `type-${this.#getValueType(item)}`));
 					}
 					arrayUl.appendChild(arrayLi);
@@ -144,9 +148,12 @@ export class ZJsonViewer {
 
 				li.appendChild(arrayUl);
 			} else if (typeof value === 'object') {
+				li.classList.add('container-object');
 				this.#buildList(value, li, depth + 1);
 			} else {
-				li.append(this.#createElement('span', this.#stringify(value), `type-${this.#getValueType(value)}`));
+				const valueType = this.#getValueType(value);
+				li.classList.add(`container-${valueType}`);
+				li.append(this.#createElement('span', this.#stringify(value), `type-${valueType}`));
 			}
 		}
 

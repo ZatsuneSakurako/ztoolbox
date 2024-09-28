@@ -34,19 +34,18 @@ ul.z-json-viewer ol {
 	top: 0.2rem;
 }
 .z-json-viewer ol.type-array > li > input[type="checkbox"].collapse {
-	left: -30px;
+	left: 0;
+	position: absolute;
+	top: -0.2rem;
 }
-input[type="checkbox"].collapse:has(+ .z-json-viewer.z-json-viewer-container)::before,
 .z-json-viewer input[type="checkbox"].collapse::before {
 	content: 'chevron_right';
 	display: block;
 	transition: transform .2s ease-in-out;
 }
-input[type="checkbox"].collapse:checked:has(+ .z-json-viewer.z-json-viewer-container)::before,
 .z-json-viewer input[type="checkbox"].collapse:checked::before {
 	transform: rotate(90deg);
 }
-input[type="checkbox"].collapse:not(:checked):has(+ .z-json-viewer.z-json-viewer-container) + .z-json-viewer > li,
 .z-json-viewer input[type="checkbox"].collapse:not(:checked) + .property + .type-array > li,
 .z-json-viewer input[type="checkbox"].collapse:not(:checked) + .z-json-viewer > li,
 .z-json-viewer input[type="checkbox"].collapse:not(:checked) + .property  + .z-json-viewer > li {
@@ -60,7 +59,6 @@ input[type="checkbox"].collapse:not(:checked):has(+ .z-json-viewer.z-json-viewer
 .z-json-viewer.z-json-viewer-container.type-array::before {
 	content: '['
 }
-
 .z-json-viewer.z-json-viewer-container.type-object::after {
 	content: '}'
 }
@@ -85,13 +83,48 @@ input[type="checkbox"].collapse:not(:checked):has(+ .z-json-viewer.z-json-viewer
 	content: ":";
 	margin-right: .2rem;
 }
-.z-json-viewer > li:has(> .type-object) > .property::after {
+.z-json-viewer > li.container-object > .property::after {
 	content: ": {";
 	margin-right: .2rem;
 }
-.z-json-viewer > li:has(> .type-array) > .property::after {
+.z-json-viewer > li.container-array > .property::after {
 	content: ": [";
 	margin-right: .2rem;
+}
+
+.z-json-viewer ol.type-array {
+	counter-reset: item;
+	list-style-type: none;
+}
+.z-json-viewer ol.type-array > li {
+	counter-increment: item;
+}
+.z-json-viewer ol.type-array > li:before {
+	content: counter(item) ".";
+	margin-right: 5px;
+}
+
+.z-json-viewer .type-array > li.container-object::before {
+	content: counter(item) ". {";
+	margin-right: .2rem;
+}
+.z-json-viewer .type-array > li.container-array::before {
+	content: counter(item) ". [";
+	margin-right: .2rem;
+}
+.z-json-viewer .type-array > li.container-object::after {
+	content: "},";
+	margin-right: .2rem;
+}
+.z-json-viewer .type-array > li.container-array::after {
+	content: "],";
+	margin-right: .2rem;
+}
+.z-json-viewer .type-array > li.container-object:last-child::after {
+	content: "}";
+}
+.z-json-viewer .type-array > li.container-array:last-child::after {
+	content: "]";
 }
 
 
@@ -102,23 +135,23 @@ input[type="checkbox"].collapse:not(:checked):has(+ .z-json-viewer.z-json-viewer
 .z-json-viewer > li:last-child::after {
 	content: none;
 }
-.z-json-viewer > li:has(.type-object)::after {
+.z-json-viewer > li.container-object::after {
 	content: '},';
 }
-.z-json-viewer > li:last-child:has(.type-object)::after {
+.z-json-viewer > li.container-object:last-child::after {
 	content: '}';
 }
-.z-json-viewer > li:has(.type-array)::after {
+.z-json-viewer > li.container-array::after {
 	content: '],';
 }
-.z-json-viewer > li:last-child:has(.type-array)::after {
+.z-json-viewer > li.container-array:last-child::after {
 	content: ']';
 }
 
-.z-json-viewer > li:not(:has(.type-object)):not(:has(.type-array)) {
+.z-json-viewer > li.container-string {
 	display: flex;
 }
-.z-json-viewer > li:not(:has(.type-object)):not(:has(.type-array)) > *:not(.type-string) {
+.z-json-viewer > li.container-string > *:not(.type-string) {
 	flex-shrink: 0;
 }
 
@@ -136,7 +169,7 @@ input[type="checkbox"].collapse:not(:checked):has(+ .z-json-viewer.z-json-viewer
 	color: #e5cc53;
 }
 
-.z-json-viewer li:has(.type-string)::after {
+.z-json-viewer li.container-string::after {
 	margin-top: auto;
 }
 
