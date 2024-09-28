@@ -135,6 +135,7 @@ input[type="checkbox"].collapse:not(:checked):has(+ .z-json-viewer.z-json-viewer
 
 .z-json-viewer .type-string {
 	display: -webkit-box;
+	/*noinspection CssInvalidPropertyValue*/
 	display: -webkit-inline-box;
 	overflow: hidden;
 	text-overflow: ellipsis;
