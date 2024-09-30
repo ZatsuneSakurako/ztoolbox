@@ -6,6 +6,7 @@ import {chromeNativeConnectedStorageKey} from "../classes/chrome-native-settings
 import {generateThumbnail} from "../utils/captureScreenshot.js";
 import './newTab-reopenTab.js';
 import {reopenTabStateRefresh} from "./newTab-reopenTab.js";
+import {i18ex} from "../translation-api.js";
 
 const newTabImagesStorage = '_newTabImages',
 	newTabCapturesStorage = '_newTabCaptures',
@@ -347,4 +348,48 @@ document.addEventListener('click', function onThumbnailRefresh(ev) {
 			el.disabled = false;
 		})
 	;
+});
+
+
+
+/**
+ *
+ * @param {string} linkUrl
+ * @return {Promise<void>}
+ */
+async function refreshLinkThumbnail(linkUrl) {
+	console.debug(`Refreshing ${linkUrl}...`);
+
+	const $article = document.querySelector(`a[href=${JSON.stringify(linkUrl)}]`).parentElement;
+	if (!$article) throw new Error('LINK_NOT_FOUND');
+
+	const existingThumbnail = $article.querySelector('img.background');
+	if (existingThumbnail) {
+		existingThumbnail.remove();
+	}
+
+	const result = await generateBookmarkThumbnail($article)
+		.catch(console.error)
+	;
+	if (!result) return;
+
+
+	const storageResult = await chrome.storage.local.get([
+		newTabCapturesStorage
+	])
+		.catch(console.error)
+	;
+	const newTabCaptures = storageResult[newTabCapturesStorage] ?? {};
+	newTabCaptures[await generateChecksum(result.url, imageUrlAlgorithm)] = result.base64;
+	await chrome.storage.local.set({
+		[newTabCapturesStorage]: newTabCaptures
+	});
+}
+
+chrome.runtime.onMessage.addListener(function (message, sender) {
+	if (sender.id === chrome.runtime.id && message.name === 'newTab_refreshLinkImage') {
+		refreshLinkThumbnail(message.data.linkUrl)
+			.catch(console.error)
+		;
+	}
 });
