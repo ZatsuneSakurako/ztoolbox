@@ -44,6 +44,7 @@ async function init() {
 	let json = null;
 	try {
 		const mainDocContent = await getResourceContent(mainDoc);
+		console.log('[ZToolBox] mainDocContent :', mainDocContent);
 		json = JSON.parse(mainDocContent.content)
 	} catch (e) {
 		console.error(e);
@@ -58,8 +59,6 @@ init()
 	.catch(console.error)
 ;
 
-
-// buildList(jsonData, document.getElementById('json-data'));
 
 
 function onJsonContent(resource, json) {

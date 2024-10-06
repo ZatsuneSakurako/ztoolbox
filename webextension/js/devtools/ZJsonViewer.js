@@ -66,6 +66,23 @@ export class ZJsonViewer {
 
 	/**
 	 *
+	 * @param {string[]} pathArray
+	 * @returns {string}
+	 */
+	pathArrayToString(pathArray) {
+		return pathArray
+			.map((key, index) => {
+				if (index === 0) return key;
+				if (typeof key !== 'string' || /[^\w$]/.test(key)) return `[${key}]`;
+				return `.${key}`;
+			})
+			.join('')
+		;
+	}
+
+
+	/**
+	 *
 	 * @param {any} value
 	 * @returns {Array<string|HTMLAnchorElement>|string}
 	 */
@@ -82,10 +99,10 @@ export class ZJsonViewer {
 	 *
 	 * @param {any} data
 	 * @param {HTMLElement} parentElement
-	 * @param {number} [depth]
+	 * @param {string[]} [path]
 	 * @return {HTMLUListElement}
 	 */
-	#buildList(data, parentElement, depth = 0) {
+	#buildList(data, parentElement, path = []) {
 		const valueType = this.#getValueType(data);
 		if (['null', 'undefined', 'string', 'number'].includes(valueType)) {
 			parentElement.append(
@@ -95,11 +112,11 @@ export class ZJsonViewer {
 		}
 
 
-		if (depth > 0) {
+		if (path.length > 0) {
 			const checkbox = document.createElement('input');
 			checkbox.classList.add('collapse');
 			checkbox.type = 'checkbox';
-			checkbox.checked = depth !== 5;
+			checkbox.checked = path.length !== 5;
 			if (parentElement.children.length) {
 				parentElement.insertBefore(checkbox, parentElement.children.item(0));
 			} else {
@@ -114,10 +131,13 @@ export class ZJsonViewer {
 
 		ul.classList.add('type-object');
 		for (const [key, value] of Object.entries(data)) {
+			const propSubPath = [...path];
+			propSubPath.push(key);
 			const li = document.createElement('li'),
 				propertySpan = this.#createElement('span', key, 'property')
 			;
 			li.tabIndex = 0;
+			li.dataset.path = this.pathArrayToString(propSubPath);
 			li.append(propertySpan);
 			ul.append(li);
 
@@ -132,12 +152,16 @@ export class ZJsonViewer {
 				arrayUl.classList.add('type-array');
 				li.classList.add('container-array');
 
-				for (const item of value) {
-					const arrayLi = document.createElement('li');
+				for (const [i, item] of value.entries()) {
+					const arrayLi = document.createElement('li'),
+						arraySubPath = [...propSubPath]
+					;
+					arraySubPath.push(i);
+					arrayLi.dataset.path = this.pathArrayToString(arraySubPath);
 					li.tabIndex = 0;
 					if (typeof item === 'object') {
 						arrayLi.classList.add(Array.isArray(item) ? 'container-array' : 'container-object');
-						this.#buildList(item, arrayLi, depth + 1);
+						this.#buildList(item, arrayLi, arraySubPath);
 					} else {
 						const valueType = this.#getValueType(item);
 						arrayLi.classList.add(`container-${valueType}`);
@@ -149,7 +173,7 @@ export class ZJsonViewer {
 				li.appendChild(arrayUl);
 			} else if (typeof value === 'object') {
 				li.classList.add('container-object');
-				this.#buildList(value, li, depth + 1);
+				this.#buildList(value, li, propSubPath);
 			} else {
 				const valueType = this.#getValueType(value);
 				li.classList.add(`container-${valueType}`);

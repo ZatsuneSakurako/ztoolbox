@@ -29,6 +29,7 @@ ul.z-json-viewer ol {
 
 
 .z-json-viewer input[type="checkbox"].collapse {
+	display: inline-block;
 	position: relative;
 	margin-left: -1.5rem;
 	top: 0.2rem;
