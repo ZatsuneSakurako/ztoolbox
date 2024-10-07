@@ -1,7 +1,7 @@
 # WIP
 * \+ : Capture page system for the new tab page
 * \+ : Restore last closed tab button for the new tab page
-* \+ : JSON view test in devtools
+* \+ : JSON view test in devtools (Chrome Only)
 * Fix : Blank with new tab page  
 
 # 2.1.0
