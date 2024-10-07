@@ -1,3 +1,7 @@
+<header>
+    <button id="reopenWindow" disabled><span class="material-symbols-outlined">reopen_window</span></button>
+    <button id="refreshThumbnails"><span class="material-symbols-outlined">frame_reload</span></button>
+</header>
 <h1 class="screen-reader-text">New tab</h1>
 {% for folderName, data in bookmarks %}
     <section id="{{ folderName }}" class="newTab-section">
@@ -8,8 +12,8 @@
                     <!-- Folder not yet supported -->
                 {% else %}
                     {% set meta = getMeta(bookmark) %}
-                    <article style="{% if meta.theme_color %}--theme-color: {{ meta.theme_color }};{% endif %}{% if meta.background_color %}--background-color: {{ meta.background_color }};{% endif %}">
-                        <a href="{{ bookmark.url }}" class="title" target="_blank">
+                    <article class="newTab-item" style="{% if meta.theme_color %}--theme-color: {{ meta.theme_color }};{% endif %}{% if meta.background_color %}--background-color: {{ meta.background_color }};{% endif %}">
+                        <a href="{{ bookmark.url }}" class="title">
                             {%- if meta._hostname -%}
                                 {%- if meta.favicon -%}
                                     <img class="favicon" src="{{ meta.favicon }}" crossorigin="anonymous" alt="favicon" loading="lazy" />
@@ -19,8 +23,10 @@
 
                             {{- bookmark.title -}}
                         </a>
-                        <a href="{{ bookmark.url }}" class="hover" target="_blank"></a>
-                        {% if meta.image %}<img class="background" src="{{ meta.image }}" crossorigin="anonymous" alt="{{ bookmark.title }}">{% endif %}
+                        <a href="{{ bookmark.url }}" class="hover"></a>
+
+                        {% set image = meta.capture ?? meta.image %}
+                        {% if image %}<img class="background" src="{{ image }}" crossorigin="anonymous" alt="{{ bookmark.title }}">{% endif %}
                     </article>
                 {% endif %}
             {% endfor %}

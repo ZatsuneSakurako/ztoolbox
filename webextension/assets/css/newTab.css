@@ -10,8 +10,37 @@ body {
 * {
 	box-sizing: border-box;
 }
+body.page-newTab header {
+	margin-left: auto;
+	padding: 8px;
+	position: sticky;
+	right: 0;
+	text-align: center;
+	top: 0;
+	width: 250px;
+	z-index: 1;
+}
 h2 {
 	text-align: center;
+}
+button,
+a[role="button"] {
+	flex: 1;
+	height: 36px;
+	border: 0 none;
+	border-radius: 1px;
+	font-weight: 700;
+	min-width: 42px;
+	max-width: 64px;
+	padding: 0 8px;
+	margin-left: 5px;
+}
+button:not(:disabled) {
+	cursor: pointer;
+}
+button[disabled],
+[role="button"].disabled {
+	opacity: 0.5;
 }
 .screen-reader-text {
 	position: absolute;
@@ -39,15 +68,15 @@ h2 {
 	overflow: hidden;
 }
 .newTab-sectionChildren article .background {
-	height: auto;
+	height: 100%;
 	left: 50%;
 	max-height: 100%;
 	max-width: 100%;
-	object-fit: contain;
+	object-fit: cover;
 	position: absolute;
 	top: 50%;
 	transform: translate(-50%, -50%);
-	width: auto;
+	width: 100%;
 	z-index: 0;
 }
 
@@ -95,6 +124,6 @@ h2 {
 	width: calc(100% - var(--defaultSpace));
 	z-index: 2;
 }
-.newTab-sectionChildren article:not(:hover):has(.background):not(:has(.image-error)) a.title {
+.newTab-sectionChildren article:not(:hover):has(.background):not(:has(.background.image-error)) a.title {
 	opacity: 0;
 }
