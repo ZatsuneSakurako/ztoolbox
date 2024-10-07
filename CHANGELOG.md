@@ -1,4 +1,4 @@
-# WIP
+# 2.2.0
 * \+ : Capture page system for the new tab page
 * \+ : Restore last closed tab button for the new tab page
 * \+ : JSON view test in devtools (Chrome Only)
