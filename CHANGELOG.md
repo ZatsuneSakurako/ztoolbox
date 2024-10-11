@@ -1,3 +1,6 @@
+# WIP
+* \+ : Setting to display new window button even if there is another window for the tab mover
+
 # 2.2.0
 * \+ : Capture page system for the new tab page
 * \+ : Restore last closed tab button for the new tab page

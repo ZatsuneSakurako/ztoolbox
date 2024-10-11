@@ -21,5 +21,11 @@ export const options = {
 		"type": "text",
 		"value": "",
 		"sync": true
-	}
+	},
+	/*		    Panel			*/
+	"panelAlwaysShowMoveInNewWindow": {
+		"type": "checkbox",
+		"value": false,
+		"sync": true
+	},
 };

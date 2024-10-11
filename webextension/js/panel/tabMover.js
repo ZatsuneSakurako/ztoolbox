@@ -1,6 +1,7 @@
 import {renderTemplate} from '../init-templates.js';
 import {appendTo} from "../utils/appendTo.js";
 import {throttle} from "../../lib/throttle.js";
+import {getPreference} from "../classes/chrome-preferences.js";
 
 
 
@@ -54,7 +55,12 @@ async function update() {
 				})
 			);
 		}
-	} else {
+	}
+	const shouldDisplayNewWindow = !browserWindows.length || (await getPreference('panelAlwaysShowMoveInNewWindow')
+		.catch(console.error))
+	;
+	console.dir(shouldDisplayNewWindow)
+	if (shouldDisplayNewWindow) {
 		appendTo(
 			tabMover,
 			await renderTemplate(TAB_MOVER_TEMPLATE, {
