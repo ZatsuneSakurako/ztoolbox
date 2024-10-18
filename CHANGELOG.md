@@ -1,5 +1,6 @@
 # WIP
 * \+ : Setting to display new window button even if there is another window for the tab mover
+* \+ : Path-like resolving with bookmarks for new tab
 
 # 2.2.0
 * \+ : Capture page system for the new tab page

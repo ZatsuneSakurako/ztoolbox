@@ -6,7 +6,7 @@ import {chromeNativeConnectedStorageKey} from "../classes/chrome-native-settings
 import {generateThumbnail} from "../utils/captureScreenshot.js";
 import './newTab-reopenTab.js';
 import {reopenTabStateRefresh} from "./newTab-reopenTab.js";
-import {i18ex} from "../translation-api.js";
+import {BookmarksResolver} from "./BookmarksResolver.js";
 
 const newTabImagesStorage = '_newTabImages',
 	newTabCapturesStorage = '_newTabCaptures',
@@ -27,6 +27,8 @@ async function generateChecksum(string, algorithm) {
 	return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
 }
 
+self.BookmarksResolver = BookmarksResolver;
+
 /**
  *
  * @returns {Promise<Map<string, chrome.bookmarks.BookmarkTreeNode>>}
@@ -38,21 +40,13 @@ async function loadBookmarks() {
 	 */
 	const output = new Map();
 
+	const bookmarkResolver = new BookmarksResolver();
+	await bookmarkResolver.loadBookmarks();
+
 	for (let folderName of ['Speed Dial']) {
-		const bookmarks = await chrome.bookmarks.search({title: folderName});
-
-		/**
-		 *
-		 * @type {BookmarkTreeNode[]}
-		 */
-		const bookmarkTrees = [];
-		for (let bookmark of bookmarks) {
-			bookmarkTrees.push((await chrome.bookmarks.getSubTree(bookmark.id))?.at(0));
-		}
-
-		const item = bookmarkTrees.find(item => item && Array.isArray(item.children));
-		if (item) {
-			output.set(folderName, item);
+		const bookmarks = Array.isArray(folderName) ? bookmarkResolver.get(...folderName) : bookmarkResolver.get(folderName);
+		if (bookmarks) {
+			output.set(folderName, bookmarks);
 		}
 	}
 
