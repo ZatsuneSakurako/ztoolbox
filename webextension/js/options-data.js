@@ -21,5 +21,16 @@ export const options = {
 		"type": "text",
 		"value": "",
 		"sync": true
-	}
+	},
+	"newTab_folders": {
+		"type": "json",
+		"value": ['Speed Dial'],
+		"sync": true
+	},
+	/*		    Panel			*/
+	"panelAlwaysShowMoveInNewWindow": {
+		"type": "checkbox",
+		"value": false,
+		"sync": true
+	},
 };
