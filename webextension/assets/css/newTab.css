@@ -24,16 +24,18 @@ h2 {
 	text-align: center;
 }
 button,
-a[role="button"] {
+[role="button"] {
 	flex: 1;
 	height: 36px;
 	border: 0 none;
 	border-radius: 1px;
 	font-weight: 700;
 	min-width: 42px;
-	max-width: 64px;
 	padding: 0 8px;
 	margin-left: 5px;
+}
+a[role="button"] {
+	max-width: 64px;
 }
 button:not(:disabled) {
 	cursor: pointer;
@@ -42,10 +44,35 @@ button[disabled],
 [role="button"].disabled {
 	opacity: 0.5;
 }
+.hide {
+	display: none !important;
+	visibility: hidden !important;
+}
 .screen-reader-text {
 	position: absolute;
 	top: -9999px;
 	left: -9999px;
+}
+nav {
+	display: flex;
+	gap: 5px;
+	justify-content: center;
+	margin: 8px 0;
+	text-align: center;
+}
+nav [role="button"] {
+	display: inline-block;
+	cursor: pointer;
+	flex: 0 0 auto;
+	margin: 0;
+	text-align: center;
+	vertical-align: bottom;
+}
+nav [role="button"].checked {
+	background-color: var(--bgLight1);
+}
+input[type="radio"]:not(:checked) + section.newTab-section {
+	display: none;
 }
 .newTab-section {
 	display: grid;

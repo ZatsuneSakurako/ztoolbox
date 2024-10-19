@@ -43,7 +43,8 @@ async function loadBookmarks() {
 	const bookmarkResolver = new BookmarksResolver();
 	await bookmarkResolver.loadBookmarks();
 
-	for (let folderName of ['Speed Dial']) {
+	const newTabFolders = (await getPreference('newTab_folders')) ?? ['Speed Dial'];
+	for (let folderName of newTabFolders) {
 		const bookmarks = Array.isArray(folderName) ? bookmarkResolver.get(...folderName) : bookmarkResolver.get(folderName);
 		if (bookmarks) {
 			output.set(folderName, bookmarks);
@@ -343,6 +344,18 @@ document.addEventListener('click', function onThumbnailRefresh(ev) {
 		})
 	;
 });
+
+document.addEventListener('change', function (ev) {
+	const el = ev.target.closest('input[name="newTab-folders"][type="radio"]');
+	if (!el) return;
+
+	const inputs = document.querySelectorAll('input[name="newTab-folders"][type="radio"]');
+	for (let input of inputs) {
+		for (let label of input.labels) {
+			label.classList.toggle('checked', input.checked);
+		}
+	}
+})
 
 
 

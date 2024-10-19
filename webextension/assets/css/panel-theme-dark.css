@@ -10,7 +10,7 @@ footer {
 }
 
 header button,
-header [role="button"],
+[role="button"],
 button,
 input[type="number"],
 select,

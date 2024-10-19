@@ -3,9 +3,16 @@
     <button id="refreshThumbnails"><span class="material-symbols-outlined">frame_reload</span></button>
 </header>
 <h1 class="screen-reader-text">New tab</h1>
+
+<nav>
 {% for folderName, data in bookmarks %}
+    <label for="{{ folderName }}"{% if loop.first %} class="checked" {% endif %} role="button">{{ folderName }}</label>
+{% endfor %}
+</nav>
+
+{% for folderName, data in bookmarks %}
+    <input type="radio" name="newTab-folders" id="{{ folderName }}" value="{{ folderName }}" class="hide"{% if loop.first %} checked{% endif %}>
     <section id="{{ folderName }}" class="newTab-section">
-        <h2>{{ folderName }}</h2>
         <div id="newTab-content-{{ folderName }}" class="newTab-sectionChildren">
             {% for bookmark in data.children %}
                 {% if bookmark.children %}
