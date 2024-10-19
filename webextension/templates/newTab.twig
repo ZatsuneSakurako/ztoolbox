@@ -1,15 +1,18 @@
 <header>
+    <ul role="tablist">
+        {%- for folderName, data in bookmarks -%}
+        <li>
+            <label for="{{ folderName }}"{% if loop.first %} class="checked" {% endif %} role="tab">
+                {{- folderName -}}
+            </label>
+        </li>
+        {%- endfor -%}
+    </ul>
     <button id="reopenWindow" disabled><span class="material-symbols-outlined">reopen_window</span></button>
     <button id="refreshThumbnails"><span class="material-symbols-outlined">frame_reload</span></button>
 </header>
+
 <h1 class="screen-reader-text">New tab</h1>
-
-<nav>
-{% for folderName, data in bookmarks %}
-    <label for="{{ folderName }}"{% if loop.first %} class="checked" {% endif %} role="button">{{ folderName }}</label>
-{% endfor %}
-</nav>
-
 {% for folderName, data in bookmarks %}
     <input type="radio" name="newTab-folders" id="{{ folderName }}" value="{{ folderName }}" class="hide"{% if loop.first %} checked{% endif %}>
     <section id="{{ folderName }}" class="newTab-section">
