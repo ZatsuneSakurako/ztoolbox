@@ -268,7 +268,7 @@ chrome.storage.onChanged.addListener(function (changes, areaName) {
 	if (areaName !== 'session') return;
 
 	if (chromeNativeConnectedStorageKey in changes) {
-		loadStylesheet()
+		loadSpeedDial()
 			.catch(console.error)
 		;
 	}

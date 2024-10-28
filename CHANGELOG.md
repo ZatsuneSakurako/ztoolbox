@@ -1,3 +1,6 @@
+# WIP
+* Fix : Refresh data when getting connected to web socket in new tab
+
 # 2.3.0
 * \+ : Setting to display new window button even if there is another window for the tab mover
 * \+ : Path-like resolving with bookmarks for new tab, and setting to customize folders to display in new tab
