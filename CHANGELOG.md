@@ -1,4 +1,4 @@
-# WIP
+# 2.3.1
 * Fix : Refresh data when getting connected to web socket in new tab
 
 # 2.3.0
