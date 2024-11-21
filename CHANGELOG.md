@@ -1,3 +1,6 @@
+# WIP
+* Fix : Font on new tab page and devtools section
+
 # 2.3.1
 * Fix : Refresh data when getting connected to web socket in new tab
 
