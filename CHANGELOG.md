@@ -1,4 +1,5 @@
 # WIP
+* i : Minimum version Firefox 133
 * Fix : Font on new tab page and devtools section
 
 # 2.3.1
