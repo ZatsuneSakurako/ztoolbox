@@ -1,4 +1,5 @@
 # WIP
+* i : Minimum version Chrome/Chromium 130
 * i : Minimum version Firefox 134
 * Fix : Font on new tab page and devtools section
 
