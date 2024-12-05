@@ -3,6 +3,7 @@
 }
 body {
 	display: grid;
+	font-family: Ubuntu, Tahoma, sans-serif;
 	height: 100vh;
 	grid-template-columns: 100%;
 	grid-template-rows: fit-content(50px) 1fr;

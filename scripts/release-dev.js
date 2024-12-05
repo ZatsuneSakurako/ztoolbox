@@ -146,6 +146,26 @@ async function init() {
 		EOL: "\n"
 	});
 
+	fs.writeJsonSync(path.join(pwd, './dist/z_toolbox_dev.update.json'), {
+		"addons": {
+			"ztoolbox_dev@zatsunenomokou.eu": {
+				"updates": [
+					{ "version": manifestJson.version,
+						"update_link": "https://github.com/ZatsuneNoMokou/ztoolbox/raw/master/dist/z_toolbox_dev.xpi",
+						"applications": {
+							"gecko": { "strict_min_version": manifestJson.browser_specific_settings.gecko.strict_min_version },
+							"gecko_android": {}
+						}
+					}
+				]
+			}
+		}
+	}, {
+		encoding: 'utf-8',
+		spaces: "\t",
+		EOL: "\n"
+	});
+
 	await errorHandler(webExt.cmd.build({
 		sourceDir: path.resolve(pwd, './tmp'),
 		artifactsDir: '.',
