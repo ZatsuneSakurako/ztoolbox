@@ -4601,13 +4601,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"qr-creator@npm:^1.0.0":
-  version: 1.0.0
-  resolution: "qr-creator@npm:1.0.0"
-  checksum: 64d2c67493eef1d5a165ba0017e10bc2d36f4964676e886a6bcc0b2cee686ce92727d2964f81744511af44052e34c93c184b18eefe0adefa933957ad2dcb14a1
-  languageName: node
-  linkType: hard
-
 "queue-microtask@npm:^1.2.2":
   version: 1.2.2
   resolution: "queue-microtask@npm:1.2.2"
@@ -6151,7 +6144,6 @@ __metadata:
     ip-regex: ^5.0.0
     klaw-sync: ^6.0.0
     material-symbols: ^0.23.0
-    qr-creator: ^1.0.0
     sass: 1.56.1
     socket.io-client: ^4.7.5
     stylelint: ^15.11.0
