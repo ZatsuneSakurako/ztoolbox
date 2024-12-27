@@ -1,4 +1,5 @@
 # WIP
+* Fix : Fix socket response to `openUrl`
 * \- : Remove QR code
 
 # 2.3.2
