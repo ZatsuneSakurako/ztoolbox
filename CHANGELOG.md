@@ -1,3 +1,6 @@
+# 2.3.4
+* i : Minimum version Firefox 135
+
 # 2.3.3
 * Fix : Fix socket response to `openUrl`
 * Fix : Better folder name support when using array (bookmark path) in new tab
