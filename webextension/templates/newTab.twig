@@ -1,9 +1,24 @@
 <header>
     <ul role="tablist">
-        {%- for folderName, data in bookmarks -%}
+        {%- for item in bookmarks -%}
         <li>
-            <label for="{{ folderName }}"{% if loop.first %} class="checked" {% endif %} role="tab">
-                {{- folderName -}}
+            {%- set folderName = item[0] -%}
+            {%- set data = item[1] -%}
+
+
+            {%- set id = folderName -%}
+            {%- if (folderName | type) != 'string' -%}
+                {%- set id = folderName | join(',') -%}
+            {% endif %}
+
+
+            {%- set displayName = folderName -%}
+            {%- if (folderName | type) != 'string' -%}
+                {%- set displayName = folderName | last -%}
+            {%- endif -%}
+
+            <label for="{{ id }}"{% if loop.first %} class="checked" {% endif %}{% if folderName != displayName %} title="{{ folderName | join(' \ ') }}"{% endif %} role="tab">
+                {{- displayName -}}
             </label>
         </li>
         {%- endfor -%}
@@ -13,10 +28,20 @@
 </header>
 
 <h1 class="screen-reader-text">New tab</h1>
-{% for folderName, data in bookmarks %}
-    <input type="radio" name="newTab-folders" id="{{ folderName }}" value="{{ folderName }}" class="hide"{% if loop.first %} checked{% endif %}>
-    <section id="{{ folderName }}" class="newTab-section">
-        <div id="newTab-content-{{ folderName }}" class="newTab-sectionChildren">
+{% for item in bookmarks %}
+    {%- set folderName = item[0] -%}
+    {%- set data = item[1] -%}
+
+
+    {%- set id = folderName -%}
+    {%- if (folderName | type) != 'string' -%}
+        {%- set id = folderName | join(',') -%}
+    {% endif %}
+
+
+    <input type="radio" name="newTab-folders" id="{{ id }}" value="{{ folderName }}" class="hide"{% if loop.first %} checked{% endif %}>
+    <section id="{{ id }}" class="newTab-section">
+        <div id="newTab-content-{{ id }}" class="newTab-sectionChildren">
             {% for bookmark in data.children %}
                 {% if bookmark.children %}
                     <!-- Folder not yet supported -->

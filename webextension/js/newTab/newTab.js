@@ -135,7 +135,7 @@ async function loadSpeedDial() {
 	}
 
 	appendTo($newTabContainer, await renderTemplate('newTab', {
-		'bookmarks': Object.fromEntries(data),
+		'bookmarks': [...data.entries()],
 		async getMeta(bookmark) {
 			const url = bookmark.url,
 				checksum = await generateChecksum(url, imageUrlAlgorithm),
