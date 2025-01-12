@@ -13,6 +13,12 @@ templatesSource.set('newTab', '/templates/newTab');
 export async function getTwig() {
 	if (!window.Twig) {
 		await import('../lib/twig.min.js');
+		window.Twig.extendFilter('type', function (value) {
+			return typeof value;
+		});
+		window.Twig.extendFilter('dump', function (value) {
+			return '<pre>' + JSON.stringify(value, null, '\t') + '</pre>';
+		});
 	}
 	return window.Twig;
 }

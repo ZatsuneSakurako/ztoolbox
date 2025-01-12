@@ -4,12 +4,6 @@ import('../utils/browserDetect.js')
 	.then(module => {
 		document.documentElement.classList.toggle('isFirefox', module.isFirefox);
 		document.documentElement.classList.toggle('isChrome', module.isChrome);
-
-		if (module.isFirefox) {
-			import('./qrCodeGenerator.js')
-				.catch(console.error)
-			;
-		}
 	})
 	.catch(console.error)
 ;

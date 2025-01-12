@@ -189,14 +189,14 @@ socket.on('openUrl', (url, cb) => {
 
 	(async () => {
 		const tab = await chrome.tabs.create({
-				url: url,
-				active: true
-			})
-				.catch(console.error)
+			url: url,
+			active: true
+		})
+			.catch(console.error)
 		;
 		cb({
-			response: !!tab
-		})
+			error: !tab
+		});
 	})();
 });
 
