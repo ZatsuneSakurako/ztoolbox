@@ -1,4 +1,4 @@
-# WIP
+# 2.3.4
 * i : Minimum version Firefox 135
 
 # 2.3.3
