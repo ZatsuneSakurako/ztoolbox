@@ -1,4 +1,4 @@
-# WIP
+# 2.3.3
 * Fix : Fix socket response to `openUrl`
 * Fix : Better folder name support when using array (bookmark path) in new tab
 * \- : Remove QR code
