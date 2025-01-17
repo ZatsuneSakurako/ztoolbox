@@ -90,44 +90,44 @@ async function loadSpeedDial() {
 		console.error(e);
 	}
 
-	if (!newTabImages) {
-		/**
-		 *
-		 * @type {Map<string, string|null|Promise<string>>}
-		 */
-		const newImages = new Map();
-		if (data) {
-			for (let [, newTabData] of data) {
-				for (let child of newTabData.children) {
-					const bookmarkUrlChecksum = await generateChecksum(child.url, imageUrlAlgorithm);
-					if (newImages.has(bookmarkUrlChecksum)) {
-						continue;
-					}
 
-					newImages.set(bookmarkUrlChecksum, (async () => {
-						return await fetchSeoMetaData(child.url);
-					})());
+	/**
+	 *
+	 * @type {Map<string, string|null|Promise<string>>}
+	 */
+	const newImages =newTabImages ? new Map(Object.entries(newTabImages)) : new Map();
+	if (data) {
+		for (let [, newTabData] of data) {
+			for (let child of newTabData.children) {
+				const bookmarkUrlChecksum = await generateChecksum(child.url, imageUrlAlgorithm);
+				if (newImages.has(bookmarkUrlChecksum)) {
+					continue;
 				}
-			}
 
-			for (let [key, value] of newImages) {
-				if (value instanceof Promise) {
-					value = (await value.catch(console.error)) ?? null;
-				}
-				newImages.set(key, value);
+				newImages.set(bookmarkUrlChecksum, (async () => {
+					return await fetchSeoMetaData(child.url);
+				})());
 			}
-
-			newTabImages = Object.fromEntries(newImages);
-			await chrome.storage.local.set({
-				[newTabImagesStorage]: newTabImages
-			})
-				.catch(console.error)
-			;
-			console.debug('newTabImages', newTabImages);
-		} else {
-			newTabImages = {};
 		}
+
+		for (let [key, value] of newImages) {
+			if (value instanceof Promise) {
+				value = (await value.catch(console.error)) ?? null;
+			}
+			newImages.set(key, value);
+		}
+
+		newTabImages = Object.fromEntries(newImages);
+		await chrome.storage.local.set({
+			[newTabImagesStorage]: newTabImages
+		})
+			.catch(console.error)
+		;
+		console.debug('newTabImages', newTabImages);
+	} else {
+		newTabImages = {};
 	}
+
 
 	// Copy node list as we are removing them
 	for (let child of [...$newTabContainer.children]) {

@@ -1,3 +1,6 @@
+# WIP
+* Fix : Load new bookmark metadata when loading new tab
+
 # 2.3.4
 * i : Minimum version Firefox 135
 
