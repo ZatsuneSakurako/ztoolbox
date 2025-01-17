@@ -355,7 +355,12 @@ document.addEventListener('change', function (ev) {
 			label.classList.toggle('checked', input.checked);
 		}
 	}
-})
+
+	const openedFolders = document.querySelectorAll('article.newTab-item.folder.active');
+	for (let newTabItem of openedFolders) {
+		newTabItem.classList.remove('active');
+	}
+});
 
 
 
@@ -399,4 +404,13 @@ chrome.runtime.onMessage.addListener(function (message, sender) {
 			.catch(console.error)
 		;
 	}
+});
+
+
+document.addEventListener('click', function (ev) {
+	const el = ev.target.closest('article.newTab-item.folder');
+	if (!el) return;
+
+	console.dir(el);
+	el.classList.toggle('active');
 });

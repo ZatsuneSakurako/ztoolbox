@@ -1,4 +1,5 @@
 # WIP
+* \+ : Support of the folders in bookmarks first depth in new tab
 * Fix : Load new bookmark metadata when loading new tab
 
 # 2.3.4
