@@ -15,8 +15,10 @@ function setVariable() {
 
 chrome.webRequest.onHeadersReceived.addListener(function (details) {
 	const hasJsonContentType = details.responseHeaders?.find(header => {
-		return header.name.toLocaleLowerCase() === 'content-type' &&
-			/^(application|text)\/json($|;.*$)/i.test(header.value)
+		if (header.name.toLocaleLowerCase() !== 'content-type') return false;
+
+		const contentTypeValue = header.value.split(';').at(0);
+		return /^((application|text)\/json|text\/plain)$/i.test(contentTypeValue);
 	});
 
 	if (hasJsonContentType) {
