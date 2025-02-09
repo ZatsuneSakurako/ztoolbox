@@ -15,7 +15,7 @@ import './devtools/devtools-background.js';
 
 import {isFirefox} from "./utils/browserDetect.js";
 import "./newTab/newTab-background.js";
-import {onDevToolsJson} from "./devtools/devtools-background.js";
+import "./devtools/devtools-background.js";
 if (isFirefox) {
 	import('./variousFeatures/copyTextLink.js')
 		.catch(console.error)
@@ -55,9 +55,6 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
 						});
 					})
 				;
-				return true;
-			case "ztoolbox_devtools_json":
-				onDevToolsJson(message.data);
 				return true;
 		}
 	}

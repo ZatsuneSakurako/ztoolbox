@@ -65,13 +65,6 @@ function onJsonContent(resource, json) {
 	console.info('onJsonContent', resource, json);
 	const $main = document.querySelector('main');
 	$main.innerHTML = '';
-	chrome.runtime.sendMessage(chrome.runtime.id, {
-		id: 'ztoolbox_devtools_json',
-		data: {
-			tabId: chrome.devtools.inspectedWindow.tabId,
-			jsonData: json
-		}
-	});
 
 	new ZJsonViewer(json).render($main);
 }

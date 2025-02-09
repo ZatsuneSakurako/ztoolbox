@@ -1,5 +1,6 @@
 # WIP
 * \+ : Support of the folders in bookmarks first depth in new tab
+* \+ : Trigger writing JSON into page variable from [webRequest.onHeadersReceived](https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/webRequest/onHeadersReceived) instead of [devtools](https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/devtools) (Chrome Only)
 * Fix : Load new bookmark metadata when loading new tab
 * Fix : Lazy loading missing on background image in new tab 
 
