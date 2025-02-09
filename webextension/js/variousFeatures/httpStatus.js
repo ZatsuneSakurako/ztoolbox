@@ -7,13 +7,13 @@ export async function updateBadge(tabId) {
 	;
 
 	let color = '#3B3B3B';
-	if (data.statusCode >= 500) {
+	if (data?.statusCode >= 500) {
 		color = '#BA0000';
-	} else if (data.statusCode >= 400) {
+	} else if (data?.statusCode >= 400) {
 		color = '#DE5500';
-	} else if (data.statusCode >= 300) {
+	} else if (data?.statusCode >= 300) {
 		color = '#0062A3';
-	} else if (data.statusCode >= 200) {
+	} else if (data?.statusCode >= 200) {
 		color = '#078F00';
 	}
 
