@@ -3,11 +3,11 @@
 		"ztoolbox_dev@zatsunenomokou.eu": {
 			"updates": [
 				{
-					"version": "2.3.4",
+					"version": "2.4.0",
 					"update_link": "https://github.com/ZatsuneNoMokou/ztoolbox/raw/master/dist/z_toolbox_dev.xpi",
 					"applications": {
 						"gecko": {
-							"strict_min_version": "135.0"
+							"strict_min_version": "137.0"
 						},
 						"gecko_android": {}
 					}
