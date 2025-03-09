@@ -1,4 +1,4 @@
-# WIP
+# 2.4.0
 * i : Minimum version Chrome/Chromium 131
 * i : Minimum version Firefox 137
 * \+ : Support of the folders in bookmarks first depth in new tab
