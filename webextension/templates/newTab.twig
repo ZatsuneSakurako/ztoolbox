@@ -27,6 +27,28 @@
     <button id="refreshThumbnails"><span class="material-symbols-outlined">frame_reload</span></button>
 </header>
 
+
+{% macro showBookmark(bookmark) %}
+    {% set meta = getMeta(bookmark) %}
+    <article class="newTab-item" style="{% if meta.theme_color %}--theme-color: {{ meta.theme_color }};{% endif %}{% if meta.background_color %}--background-color: {{ meta.background_color }};{% endif %}">
+        <a href="{{ bookmark.url }}" class="title">
+            {%- if meta._hostname -%}
+                {%- if meta.favicon -%}
+                    <img class="favicon" src="{{ meta.favicon }}" crossorigin="anonymous" alt="favicon" loading="lazy" />
+                {%- endif -%}
+                <img class="favicon favicon-default" src="https://icons.duckduckgo.com/ip2/{{ meta._hostname }}.ico" crossorigin="anonymous" alt="favicon">
+            {%- endif -%}
+
+            {{- bookmark.title -}}
+        </a>
+        <a href="{{ bookmark.url }}" class="hover"></a>
+
+        {% set image = meta.capture ?? meta.image %}
+        {% if image %}<img class="background" src="{{ image }}" crossorigin="anonymous" alt="{{ bookmark.title }}" loading="lazy">{% endif %}
+    </article>
+{% endmacro %}{% import _self as newTab %}
+
+
 <h1 class="screen-reader-text">New tab</h1>
 {% for item in bookmarks %}
     {%- set folderName = item[0] -%}
@@ -42,29 +64,28 @@
     <input type="radio" name="newTab-folders" id="{{ id }}" value="{{ folderName }}" class="hide"{% if loop.first %} checked{% endif %}>
     <section id="{{ id }}" class="newTab-section">
         <div id="newTab-content-{{ id }}" class="newTab-sectionChildren">
-            {% for bookmark in data.children %}
-                {% if bookmark.children %}
-                    <!-- Folder not yet supported -->
-                {% else %}
-                    {% set meta = getMeta(bookmark) %}
-                    <article class="newTab-item" style="{% if meta.theme_color %}--theme-color: {{ meta.theme_color }};{% endif %}{% if meta.background_color %}--background-color: {{ meta.background_color }};{% endif %}">
-                        <a href="{{ bookmark.url }}" class="title">
-                            {%- if meta._hostname -%}
-                                {%- if meta.favicon -%}
-                                    <img class="favicon" src="{{ meta.favicon }}" crossorigin="anonymous" alt="favicon" loading="lazy" />
-                                {%- endif -%}
-                                <img class="favicon favicon-default" src="https://icons.duckduckgo.com/ip2/{{ meta._hostname }}.ico" crossorigin="anonymous" alt="favicon">
-                            {%- endif -%}
-
+            {%- for bookmark in data.children -%}
+                {%- if bookmark.children -%}
+                    <article class="newTab-item folder">
+                        <a class="title">
                             {{- bookmark.title -}}
                         </a>
-                        <a href="{{ bookmark.url }}" class="hover"></a>
-
-                        {% set image = meta.capture ?? meta.image %}
-                        {% if image %}<img class="background" src="{{ image }}" crossorigin="anonymous" alt="{{ bookmark.title }}">{% endif %}
+                        <span class="background material-symbols-outlined">folder_special</span>
+                        <span class="background material-symbols-outlined active">folder_open</span>
                     </article>
-                {% endif %}
-            {% endfor %}
+                    <div class="folderItems">
+                        {%- for childrenBookmark in bookmark.children -%}
+                            {%- if childrenBookmark.children -%}
+                                <!-- Sub-folder not supported -->
+                            {%- else -%}
+                                {{ newTab.showBookmark(childrenBookmark) }}
+                            {%- endif -%}
+                        {%- endfor -%}
+                    </div>
+                {%- else -%}
+                    {{ newTab.showBookmark(bookmark) }}
+                {%- endif -%}
+            {%- endfor -%}
         </div>
     </section>
 {% endfor %}

@@ -167,6 +167,30 @@ input[type="radio"]:not(:checked) + section.newTab-section {
 	width: calc(100% - var(--defaultSpace));
 	z-index: 2;
 }
-.newTab-sectionChildren article:not(:hover):has(.background):not(:has(.background.image-error)) a.title {
+.newTab-sectionChildren article:not(:hover):has(.background):has(.folder):not(:has(.background.image-error)) a.title {
 	opacity: 0;
+}
+
+.newTab-sectionChildren:has(.newTab-item.folder.active) > .newTab-item:not(.folder.active) {
+	display: none;
+}
+.newTab-item.folder {
+	cursor: pointer;
+}
+.newTab-item.folder + div.folderItems {
+	display: contents;
+}
+.newTab-item.folder:not(.active) + div.folderItems {
+	display: none;
+}
+.newTab-sectionChildren article .background.material-symbols-outlined {
+	font-size: 128px;
+	text-align: center;
+	line-height: 1.5;
+}
+.newTab-sectionChildren article.active .background.material-symbols-outlined:not(.active) {
+	display: none;
+}
+.newTab-sectionChildren article:not(.active) .background.active.material-symbols-outlined {
+	display: none;
 }
