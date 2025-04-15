@@ -39,6 +39,20 @@ export function setUserStyles(userStyles) {
 
 /**
  *
+ * @param {string} pattern
+ * @returns {RegExp}
+ */
+function patternToRegExp(pattern) {
+	// Escape special RegExp characters except for '*'
+	pattern = pattern.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+	// Replace '*' with '.*'
+	pattern = pattern.replace(/\*/g, '.*');
+	// Create RegExp object
+	return new RegExp('^' + pattern + '$');
+}
+
+/**
+ *
  * @param {number} tabId
  * @param {string} url
  */
@@ -67,16 +81,20 @@ async function onTabUrl(tabId, url) {
 	 */
 	const matchedStyles = new Set((data[domain] ?? []).concat(data['*'] ?? []));
 	for (let matchedStyle of matchedStyles) {
+		/**
+		 *
+		 * @type {CSSInjection}
+		 */
 		const userStyleOpts = {
 			css: matchedStyle.css,
-			origin: matchedStyle.asUserStyle ? 'USER' : undefined,
+			origin: matchedStyle.asUserStyle ? 'USER' : 'AUTHOR',
 			target: {
 				tabId,
 				allFrames: matchedStyle.allFrames ?? false,
 			}
 		};
 
-		let doInject = false;
+		let doInject = true;
 		if (doInject && matchedStyle.url.startWith !== undefined) {
 			if (!url.startsWith(matchedStyle.url.startWith)) doInject = false;
 		}
@@ -84,7 +102,7 @@ async function onTabUrl(tabId, url) {
 			if (!url.endsWith(matchedStyle.url.endWith)) doInject = false;
 		}
 		if (doInject && matchedStyle.url.regex !== undefined) {
-			if (!matchedStyle.url.regex.test(url)) doInject = false;
+			if (!patternToRegExp(matchedStyle.url.regex).test(url)) doInject = false;
 		}
 
 		if (!doInject) {

@@ -11,6 +11,7 @@ import {tabPageServerIpStorage} from "../variousFeatures/tabPageServerIp.js";
 import ipRegex from "../../lib/ip-regex.js";
 import {io} from "../../lib/socket.io.esm.min.js";
 import {isServiceWorker} from "../utils/browserDetect.js";
+import {setUserStyles} from "../variousFeatures/contentStyles.js";
 
 
 /**
@@ -114,6 +115,40 @@ socket.on('ws open', function (err) {
 	;
 
 	getSyncAllowedPreferences()
+		.catch(console.error)
+	;
+
+	getUserscripts()
+		.then((userscripts) => {
+			if (!userscripts) {
+				setUserStyles([]);
+				return;
+			}
+
+			/**
+			 *
+			 * @type {UserStyle[]}
+			 */
+			const styles = [];
+			for (let userscript of userscripts) {
+				console.dir(userscript)
+				if (userscript.ext !== 'css') continue;
+
+				styles.push({
+					url: {
+						domain: userscript.meta.domain,
+						startWith: userscript.meta.startWith,
+						endWith: userscript.meta.endWith,
+						regex: userscript.meta.regex,
+					},
+					tags: userscript.meta.tags,
+					css: userscript.content,
+					allFrames: userscript.allFrames,
+					asUserStyle: userscript.asUserStyle,
+				})
+			}
+			setUserStyles(styles);
+		})
 		.catch(console.error)
 	;
 });
@@ -566,6 +601,26 @@ self.getDefaultValues = getDefaultValues;
  */
 export async function showSection(sectionName) {
 	const {result} = await socket.timeout(timeout).emitWithAck('showSection', sectionName);
+	return result;
+}
+
+
+
+/**
+ * @typedef {object} IUserscriptJson
+ * @property {string} name
+ * @property {string} ext
+ * @property {string} content
+ * @property {string[]} tags
+ * @property {Dict<string | boolean>} meta
+ */
+/**
+ *
+ * @return {Promise<IUserscriptJson[] | void>}
+ */
+export async function getUserscripts() {
+	const {result} = await socket.timeout(timeout).emitWithAck('getUserscripts');
+	console.dir(result)
 	return result;
 }
 
