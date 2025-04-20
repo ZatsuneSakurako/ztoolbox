@@ -1,4 +1,5 @@
 # WIP
+* \+ : Add extension reload to browser action context menu
 * \+ : System to apply styles to websites
 
 # 2.4.0
