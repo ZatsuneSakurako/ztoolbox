@@ -17,6 +17,7 @@ import './devtools/devtools-background.js';
 import {isFirefox} from "./utils/browserDetect.js";
 import "./newTab/newTab-background.js";
 import "./devtools/devtools-background.js";
+import {ContextMenusController} from "./classes/contextMenusController.js";
 if (isFirefox) {
 	import('./variousFeatures/copyTextLink.js')
 		.catch(console.error)
@@ -145,6 +146,23 @@ chrome.runtime.onInstalled.addListener(function (installReason) {
 		version = '';
 	}
 	console.log(`onInstalled (${installReason.reason}) ${version}`);
+});
+
+
+
+
+
+async function restartContentMenu() {
+	await chrome.contextMenus.create({
+		id: 'restartContentMenu',
+		title: i18ex._("restartContentMenu"),
+		contexts: [ "action" ],
+	});
+}
+ContextMenusController.waitInit.then(restartContentMenu);
+chrome.contextMenus.onClicked.addListener(function (info) {
+	if (info.menuItemId !== 'restartContentMenu') return;
+	chrome.runtime.reload();
 });
 
 

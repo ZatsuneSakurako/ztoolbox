@@ -44,9 +44,16 @@ export const BROWSER_DOCUMENT_SUPPORTED_CONTEXTS = Object.freeze(getBrowserDocum
 
 
 export class ContextMenusController extends Map {
+	static #waitInit = Promise.withResolvers();
+
 	constructor(){
 		super();
 	}
+
+	static get waitInit() {
+		return this.#waitInit.promise;
+	}
+
 
 	/**
 	 *
@@ -179,6 +186,8 @@ export class ContextMenusController extends Map {
 				console.warn(`UnsupportedContexts : ${[...contexts].join(', ')}`);
 			}
 		}
+
+		ContextMenusController.#waitInit.resolve();
 	}
 
 	create(id, title, targetUrlPatterns, onClick) {

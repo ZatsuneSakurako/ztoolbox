@@ -22,6 +22,8 @@
 	"openDelegatedMain": "Open main section",
 	"Settings": "Settings",
 
+	"restartContentMenu": "Reload extension",
+
 	"request-all-url-permission": "Grant permission to retrieve data",
 
 	"clipboard_success": "Copied into the clipboad.",

@@ -22,6 +22,8 @@
 	"openDelegatedMain": "Ouvrir section principal",
 	"Settings": "Options",
 
+	"restartContentMenu": "Recharger l'extension",
+
 	"request-all-url-permission": "Accorder la permission pour récupérer des données",
 
 	"clipboard_success": "Copié dans le presse-papier",
