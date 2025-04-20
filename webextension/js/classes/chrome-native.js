@@ -120,6 +120,7 @@ socket.on('ws open', function (err) {
 
 	getUserscripts()
 		.then((userscripts) => {
+			console.debug('[NativeMessaging]', 'getUserscripts', userscripts);
 			if (!userscripts) {
 				setUserStyles([]);
 				return;
@@ -131,7 +132,6 @@ socket.on('ws open', function (err) {
 			 */
 			const styles = [];
 			for (let userscript of userscripts) {
-				console.dir(userscript)
 				if (userscript.ext !== 'css') continue;
 
 				styles.push({
@@ -620,7 +620,6 @@ export async function showSection(sectionName) {
  */
 export async function getUserscripts() {
 	const {result} = await socket.timeout(timeout).emitWithAck('getUserscripts');
-	console.dir(result)
 	return result;
 }
 

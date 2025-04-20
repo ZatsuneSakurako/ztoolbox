@@ -54,9 +54,18 @@ function patternToRegExp(pattern) {
 /**
  *
  * @param {number} tabId
- * @param {string} url
+ * @param {string|undefined} url
  */
 async function onTabUrl(tabId, url) {
+	console.dir(url)
+	if (url === undefined) {
+		/**
+		 * If tab is reloaded, url will be undefined so fetching it
+		 */
+		url = (await chrome.tabs.get(tabId))?.url;
+	}
+	console.dir(url)
+
 	let domain = null;
 	try {
 		domain = new URL(url).hostname;
@@ -119,7 +128,7 @@ async function onTabUrl(tabId, url) {
 }
 
 chrome.tabs.onUpdated.addListener(function (tabId, changeInfo) {
-	if ('url' in changeInfo) {
+	if ('url' in changeInfo || changeInfo.status === 'complete') {
 		onTabUrl(tabId, changeInfo.url)
 			.catch(console.error)
 		;
