@@ -22,7 +22,7 @@
 	"openDelegatedMain": "Ouvrir section principal",
 	"Settings": "Options",
 
-	"restartContentMenu": "Recharger l'extension",
+	"reloadUserscripts": "Recharger les UserStyles",
 
 	"request-all-url-permission": "Accorder la permission pour récupérer des données",
 

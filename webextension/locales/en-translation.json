@@ -22,7 +22,7 @@
 	"openDelegatedMain": "Open main section",
 	"Settings": "Settings",
 
-	"restartContentMenu": "Reload extension",
+	"reloadUserscripts": "Reload UserStyles",
 
 	"request-all-url-permission": "Grant permission to retrieve data",
 
