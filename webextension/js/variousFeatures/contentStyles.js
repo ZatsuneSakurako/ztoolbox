@@ -162,6 +162,30 @@ export async function onTabUrl(tab, changeInfo, forceRemove, currentUserStyles) 
 	;
 }
 
+/**
+ *
+ * @param {chrome.tabs.Tab} tab
+ * @returns {Promise<UserStyle[]>}
+ */
+export async function getTabUserStyles(tab) {
+	const userStyles = await getUserStyles();
+
+	/**
+	 *
+	 * @type {string[] | void}
+	 */
+	let injectedStyles = undefined;
+	try {
+		injectedStyles = (await chrome.storage.session.get([_tabStylesStoreKey]))[_tabStylesStoreKey][tab.id].injectedStyles;
+	} catch (e) {
+		console.error(e);
+	}
+
+	return userStyles.filter(userStyle => {
+		return injectedStyles.includes(userStyle.fileName);
+	});
+}
+
 chrome.tabs.onUpdated.addListener(async function (tabId, changeInfo, tab) {
 	// status 'complete' handled by tabPageServerIp
 	if ('url' in changeInfo || changeInfo.status === 'complete') {
