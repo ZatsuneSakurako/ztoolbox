@@ -12,6 +12,7 @@ const _userStylesStoreKey = '_userStyles',
  * @property { {domain: string, regex?: string, startWith?: string, endWith?: string} } url
  * @property {string} name
  * @property {string} fileName
+ * @property {boolean} enabled
  * @property {string[]} tags
  * @property {boolean} [allFrames]
  * @property {boolean} [asUserStyle]
@@ -118,6 +119,9 @@ export async function onTabUrl(tab, changeInfo, forceRemove, currentUserStyles) 
 		};
 
 		let doInject = !forceRemove;
+		if (doInject && !matchedStyle.enabled) {
+			doInject = false;
+		}
 		if (doInject && matchedStyle.url.startWith !== undefined) {
 			if (!url.startsWith(matchedStyle.url.startWith)) doInject = false;
 		}
@@ -250,6 +254,7 @@ export async function updateStyles() {
 			},
 			name: userscript.name,
 			fileName: userscript.fileName,
+			enabled: !userscript.meta.disabled,
 			tags: userscript.tags,
 			css: userscript.content,
 			allFrames: userscript.meta.allFrames,
