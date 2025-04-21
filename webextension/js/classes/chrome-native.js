@@ -578,6 +578,7 @@ export async function showSection(sectionName) {
 /**
  * @typedef {object} IUserscriptJson
  * @property {string} name
+ * @property {string} fileName
  * @property {string} ext
  * @property {string} content
  * @property {string[]} tags

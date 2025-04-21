@@ -2,12 +2,16 @@ import {i18ex} from "../translation-api.js";
 import {ContextMenusController} from "../classes/contextMenusController.js";
 import {getUserscripts} from "../classes/chrome-native.js";
 
-const _userStylesStoreKey = '_userStyles';
+const _userStylesStoreKey = '_userStyles',
+	_tabStylesStoreKey = '_tabUserStyles'
+;
 
 /**
  *
  * @typedef {object} UserStyle
  * @property { {domain: string, regex?: string, startWith?: string, endWith?: string} } url
+ * @property {string} name
+ * @property {string} fileName
  * @property {string[]} tags
  * @property {boolean} [allFrames]
  * @property {boolean} [asUserStyle]
@@ -61,20 +65,17 @@ function patternToRegExp(pattern) {
 /**
  *
  * @param {chrome.tabs.Tab} tab
- * @param {string|undefined} url
+ * @param {chrome.tabs.TabChangeInfo|undefined} changeInfo
  * @param {boolean} forceRemove
  * @param {UserStyle[]} [currentUserStyles]
  */
-async function onTabUrl(tab, url, forceRemove, currentUserStyles) {
-	if (url === undefined) {
+export async function onTabUrl(tab, changeInfo, forceRemove, currentUserStyles) {
+	let url = changeInfo?.url ?? tab.url;
+	let domain = null;
+	try {
 		/**
 		 * If tab is reloaded, url will be undefined so fetching it
 		 */
-		url = tab.pendingUrl ?? tab.url;
-	}
-
-	let domain = null;
-	try {
 		domain = new URL(url).hostname;
 	} catch (_) {
 	}
@@ -97,6 +98,11 @@ async function onTabUrl(tab, url, forceRemove, currentUserStyles) {
 	 * @type {Set<UserStyle>}
 	 */
 	const matchedStyles = new Set((data[domain] ?? []).concat(data['*'] ?? []));
+	/**
+	 *
+	 * @type {Set<string>}
+	 */
+	const injectedStyles = new Set();
 	for (let matchedStyle of matchedStyles) {
 		/**
 		 *
@@ -129,15 +135,33 @@ async function onTabUrl(tab, url, forceRemove, currentUserStyles) {
 			continue;
 		}
 
+		injectedStyles.add(matchedStyle.fileName);
 		chrome.scripting.insertCSS(userStyleOpts)
 			.catch(console.error)
 		;
 	}
+
+
+
+	const raw = (await chrome.storage.session.get([_tabStylesStoreKey])),
+		tabData = raw[_tabStylesStoreKey] ?? {}
+	;
+
+	tabData[`${tab.id}`] = {
+		injectedStyles: injectedStyles ? Array.from(injectedStyles) : [],
+	}
+
+	await chrome.storage.session.set({
+		[_tabStylesStoreKey]: tabData
+	})
+		.catch(console.error)
+	;
 }
 
-chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
+chrome.tabs.onUpdated.addListener(async function (tabId, changeInfo, tab) {
+	// status 'complete' handled by tabPageServerIp
 	if ('url' in changeInfo || changeInfo.status === 'complete') {
-		onTabUrl(tab, changeInfo.url, false)
+		onTabUrl(tab, changeInfo, false)
 			.catch(console.error)
 		;
 	}
@@ -169,7 +193,7 @@ chrome.contextMenus.onClicked.addListener(function (info) {
  * @returns {Promise<void>}
  */
 async function updateTabStyles(userStyles, forceRemove=false) {
-	if (!userStyles.length) {
+	if (!userStyles || !userStyles.length) {
 		console.warn('Empty UserStyle list');
 		return;
 	}
@@ -224,10 +248,12 @@ export async function updateStyles() {
 				endWith: userscript.meta.endWith,
 				regex: userscript.meta.regex,
 			},
-			tags: userscript.meta.tags,
+			name: userscript.name,
+			fileName: userscript.fileName,
+			tags: userscript.tags,
 			css: userscript.content,
-			allFrames: userscript.allFrames,
-			asUserStyle: userscript.asUserStyle,
+			allFrames: userscript.meta.allFrames,
+			asUserStyle: userscript.meta.asUserStyle,
 		})
 	}
 
