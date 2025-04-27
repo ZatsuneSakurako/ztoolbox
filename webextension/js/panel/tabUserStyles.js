@@ -10,7 +10,11 @@ const idTabUserStyles = 'idTabUserStyles';
  * @returns {Promise<UserStyle[]>}
  */
 export async function getTabUserStyles(tab) {
-	const result = await chrome.storage.session.get(_userStylesStoreKey)
+	const result = await chrome.storage.session.get([
+		_userStylesStoreKey,
+		_tabStylesStoreKey,
+		_userStylesStateStoreKey
+	])
 		.catch(console.error);
 	if (!(_userStylesStoreKey in result) || !Array.isArray(result[_userStylesStoreKey])) return [];
 
@@ -22,12 +26,25 @@ export async function getTabUserStyles(tab) {
 	 */
 	let injectedStyles = undefined;
 	try {
-		injectedStyles = (await chrome.storage.session.get([_tabStylesStoreKey]))[_tabStylesStoreKey][tab.id].injectedStyles;
+		injectedStyles = result[_tabStylesStoreKey][tab.id].injectedStyles;
+	} catch (e) {
+		console.error(e);
+	}
+	/**
+	 *
+	 * @type {Dict<boolean> | void}
+	 */
+	let userStyleStates = undefined;
+	try {
+		userStyleStates = result[_userStylesStateStoreKey];
 	} catch (e) {
 		console.error(e);
 	}
 
 	return userStyles.filter(userStyle => {
+		if (userStyle.fileName in userStyleStates) {
+			userStyle.enabled = userStyleStates[userStyle.fileName];
+		}
 		return injectedStyles && injectedStyles.includes(userStyle.fileName);
 	});
 }
