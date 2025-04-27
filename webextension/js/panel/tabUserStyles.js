@@ -42,7 +42,7 @@ export async function getTabUserStyles(tab) {
 	}
 
 	return userStyles.filter(userStyle => {
-		if (userStyle.fileName in userStyleStates) {
+		if (userStyleStates !== undefined && userStyle.fileName in userStyleStates) {
 			userStyle.enabled = userStyleStates[userStyle.fileName];
 		}
 		return injectedStyles && injectedStyles.includes(userStyle.fileName);
