@@ -116,6 +116,10 @@ input[type='checkbox']::before {
 input[type='checkbox']:checked::before {
 	content: "check_box";
 }
+input[type='checkbox']:read-only::before,
+input[type='checkbox']:disabled::before {
+	opacity: .5;
+}
 
 input[type='radio']::before {
 	content: "radio_button_unchecked";

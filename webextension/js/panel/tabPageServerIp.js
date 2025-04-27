@@ -8,7 +8,12 @@ const idTabPageServerIp = 'tabPageServerIp',
 	tabPageServerIpStorage = '_tabPageServerIp'
 ;
 
-export async function updateData() {
+/**
+ *
+ * @param {chrome.tabs.Tab} activeTab
+ * @returns {Promise<void>}
+ */
+export async function updateData(activeTab) {
 	const $tabPageServerIp = document.querySelector(`#${idTabPageServerIp}`),
 		raw = (await chrome.storage.session.get([tabPageServerIpStorage])),
 		data = Object.assign({}, raw[tabPageServerIpStorage])
@@ -18,7 +23,6 @@ export async function updateData() {
 		node.remove();
 	}
 
-	const activeTab = await getCurrentTab();
 	if (!activeTab) {
 		return;
 	}
