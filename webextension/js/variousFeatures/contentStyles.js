@@ -1,7 +1,7 @@
 import {i18ex} from "../translation-api.js";
 import {ContextMenusController} from "../classes/contextMenusController.js";
 import {getUserscripts} from "../classes/chrome-native.js";
-import {_userStylesStoreKey, _tabStylesStoreKey} from "../constants.js";
+import {_userStylesStoreKey, _tabStylesStoreKey, _userStylesStateStoreKey} from "../constants.js";
 
 
 /**
@@ -36,13 +36,24 @@ export async function getUserStyles() {
  * @return {Promise<void>}
  */
 async function setUserStyles(userStyles) {
-	if (!Array.isArray(userStyles)) {
-		throw new Error('userStyles must be an array');
-	}
+	if (!Array.isArray(userStyles)) throw new Error('userStyles must be an array');
 
 	await chrome.storage.session.set({
 		[_userStylesStoreKey]: userStyles,
 	});
+}
+
+/**
+ *
+ * @return {Promise<Dict<boolean>>}
+ */
+async function getUserStyleStates() {
+	const result = await chrome.storage.session.get(_userStylesStateStoreKey)
+		.catch(console.error);
+	if (!(_userStylesStateStoreKey in result)) return [];
+
+	if (!result || typeof result !== 'object') throw new Error('userStyles must be an object');
+	return result[_userStylesStateStoreKey];
 }
 
 
@@ -97,6 +108,13 @@ export async function onTabUrl(tab, changeInfo, forceRemove, currentUserStyles) 
 	 * @type {Set<UserStyle>}
 	 */
 	const matchedStyles = new Set((data[domain] ?? []).concat(data['*'] ?? []));
+
+	/**
+	 *
+	 * @type {Dict<boolean>}
+	 */
+	const userStyleStates = (await getUserStyleStates().catch(console.error)) ?? {};
+
 	/**
 	 *
 	 * @type {Set<string>}
@@ -135,7 +153,11 @@ export async function onTabUrl(tab, changeInfo, forceRemove, currentUserStyles) 
 		 */
 		injectedStyles.add(matchedStyle.fileName);
 
-		if (!doInject && !matchedStyle.enabled) {
+		let enabled = matchedStyle.enabled;
+		if (matchedStyle.fileName in userStyleStates) {
+			enabled = userStyleStates[matchedStyle.fileName];
+		}
+		if (!doInject && !enabled) {
 			chrome.scripting.removeCSS(userStyleOpts)
 				.catch(console.error)
 			;
@@ -216,10 +238,24 @@ async function updateTabStyles(userStyles, forceRemove=false) {
 
 
 chrome.storage.onChanged.addListener(function (changes, areaName) {
-	if (areaName !== 'session' || !(_userStylesStoreKey in changes)) return;
+	if (areaName !== 'session') return;
 
-	_updateStyles(changes[_userStylesStoreKey])
-		.catch(console.error);
+	if (_userStylesStoreKey in changes) {
+		_updateStyles(changes[_userStylesStoreKey])
+			.catch(console.error);
+	} else if (_userStylesStateStoreKey in changes) {
+		console.dir(changes)
+		getUserStyles()
+			.then(userStyles => {
+				console.dir(userStyles)
+				_updateStyles({
+					oldValue: userStyles,
+					newValue: userStyles,
+				})
+					.catch(console.error);
+			})
+			.catch(console.error)
+	}
 });
 /**
  *

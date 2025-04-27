@@ -1,4 +1,4 @@
-import {_tabStylesStoreKey, _userStylesStoreKey} from "../constants.js";
+import {_tabStylesStoreKey, _userStylesStateStoreKey, _userStylesStoreKey} from "../constants.js";
 import {appendTo} from "../utils/appendTo.js";
 import {renderTemplate} from "../init-templates.js";
 
@@ -74,9 +74,40 @@ export async function updateData(activeTab) {
 				id: `${i}-${userStyle.fileName}`,
 				label: userStyle.name,
 				enabled: userStyle.enabled,
+				fileName: userStyle.fileName,
 			},
 		});
 	}
 
 	appendTo($tabUserStyles, await renderTemplate("tabUserStyles", renderData));
 }
+
+
+/**
+ *
+ * @param {string} userStyleFileName
+ * @param {boolean} newState
+ * @return {Promise<Dict<boolean>>}
+ */
+async function setUserStyleStates(userStyleFileName, newState) {
+	const result = (await chrome.storage.session.get(_userStylesStateStoreKey)
+		.catch(console.error)) ?? {};
+
+	/**
+	 *
+	 * @type {Dict<boolean>}
+	 */
+	const userStyleStates = result[_userStylesStateStoreKey] ?? {};
+	userStyleStates[userStyleFileName] = newState;
+	await chrome.storage.session.set({
+		[_userStylesStateStoreKey]: userStyleStates
+	});
+}
+
+document.addEventListener('change', function (ev) {
+	const element = ev.target.closest('input[type="checkbox"][name^="userStyle-"]');
+	if (!element) return;
+
+	setUserStyleStates(element.value, element.checked)
+		.catch(console.error);
+})

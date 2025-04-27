@@ -3,7 +3,7 @@
 	{%- if not item.data -%}
 		<span class="icon material-symbols-outlined">tab</span>
 	{%- else -%}
-		<input class="icon" type="checkbox" name="{{ item.data.id }}" id="{{ item.data.id }}" readonly disabled{% if item.data.enabled %} checked{% endif %} />
+		<input class="icon" type="checkbox" name="userStyle-{{ item.data.id }}" value="{{ item.data.fileName }}" id="{{ item.data.id }}"{% if item.data.enabled %} checked{% endif %} />
 	{%- endif -%}
 
 	<label class="title ellipse" for="{{ item.data.id }}">{{item.title}}</label>
