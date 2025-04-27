@@ -117,7 +117,7 @@ export async function onTabUrl(tab, changeInfo, forceRemove, currentUserStyles) 
 		};
 
 		let doInject = !forceRemove;
-		if (doInject && !matchedStyle.enabled) {
+		if (doInject) {
 			doInject = false;
 		}
 		if (doInject && matchedStyle.url.startWith !== undefined) {
@@ -130,14 +130,18 @@ export async function onTabUrl(tab, changeInfo, forceRemove, currentUserStyles) 
 			if (!patternToRegExp(matchedStyle.url.regex).test(url)) doInject = false;
 		}
 
-		if (!doInject) {
+		/**
+		 * Allow to display "matched" and disabled UserStyles
+		 */
+		injectedStyles.add(matchedStyle.fileName);
+
+		if (!doInject && !matchedStyle.enabled) {
 			chrome.scripting.removeCSS(userStyleOpts)
 				.catch(console.error)
 			;
 			continue;
 		}
 
-		injectedStyles.add(matchedStyle.fileName);
 		chrome.scripting.insertCSS(userStyleOpts)
 			.catch(console.error)
 		;
