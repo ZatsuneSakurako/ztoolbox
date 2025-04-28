@@ -244,7 +244,6 @@ chrome.storage.onChanged.addListener(function (changes, areaName) {
 		_updateStyles(changes[_userStylesStoreKey])
 			.catch(console.error);
 	} else if (_userStylesStateStoreKey in changes) {
-		console.dir(changes)
 		getUserStyles()
 			.then(userStyles => {
 				console.dir(userStyles)
