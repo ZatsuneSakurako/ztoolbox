@@ -1,4 +1,4 @@
-# WIP
+# 2.5.0
 * i : Minimum version Firefox 138
 * \+ : System to apply styles to websites
 
