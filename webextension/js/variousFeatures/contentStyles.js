@@ -134,30 +134,29 @@ export async function onTabUrl(tab, changeInfo, forceRemove, currentUserStyles) 
 			}
 		};
 
-		let doInject = !forceRemove;
-		if (doInject) {
-			doInject = false;
+		let doMatch = true;
+		if (!forceRemove && doMatch && matchedStyle.url.startWith !== undefined) {
+			if (!url.startsWith(matchedStyle.url.startWith)) doMatch = false;
 		}
-		if (doInject && matchedStyle.url.startWith !== undefined) {
-			if (!url.startsWith(matchedStyle.url.startWith)) doInject = false;
+		if (!forceRemove && doMatch && matchedStyle.url.endWith !== undefined) {
+			if (!url.endsWith(matchedStyle.url.endWith)) doMatch = false;
 		}
-		if (doInject && matchedStyle.url.endWith !== undefined) {
-			if (!url.endsWith(matchedStyle.url.endWith)) doInject = false;
-		}
-		if (doInject && matchedStyle.url.regex !== undefined) {
-			if (!patternToRegExp(matchedStyle.url.regex).test(url)) doInject = false;
+		if (!forceRemove && doMatch && matchedStyle.url.regex !== undefined) {
+			if (!patternToRegExp(matchedStyle.url.regex).test(url)) doMatch = false;
 		}
 
-		/**
-		 * Allow to display "matched" and disabled UserStyles
-		 */
-		injectedStyles.add(matchedStyle.fileName);
+		if (doMatch) {
+			/**
+			 * Allow to display "matched" and disabled UserStyles
+			 */
+			injectedStyles.add(matchedStyle.fileName);
+		}
 
 		let enabled = matchedStyle.enabled;
 		if (matchedStyle.fileName in userStyleStates) {
 			enabled = userStyleStates[matchedStyle.fileName];
 		}
-		if (!doInject && !enabled) {
+		if (forceRemove || !doMatch || !enabled) {
 			chrome.scripting.removeCSS(userStyleOpts)
 				.catch(console.error)
 			;
@@ -246,7 +245,6 @@ chrome.storage.onChanged.addListener(function (changes, areaName) {
 	} else if (_userStylesStateStoreKey in changes) {
 		getUserStyles()
 			.then(userStyles => {
-				console.dir(userStyles)
 				_updateStyles({
 					oldValue: userStyles,
 					newValue: userStyles,
