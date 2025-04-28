@@ -22,6 +22,8 @@
 	"openDelegatedMain": "Ouvrir section principal",
 	"Settings": "Options",
 
+	"reloadUserscripts": "Recharger les UserStyles",
+
 	"request-all-url-permission": "Accorder la permission pour récupérer des données",
 
 	"clipboard_success": "Copié dans le presse-papier",

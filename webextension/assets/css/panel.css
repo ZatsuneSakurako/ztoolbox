@@ -120,7 +120,8 @@ body.normal-version .if-not-normal-version {
 	display: none;
 }
 
-.cursor {
+.cursor,
+label[for] {
 	cursor: pointer;
 }
 body > section {

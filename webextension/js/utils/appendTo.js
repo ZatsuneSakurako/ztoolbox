@@ -15,11 +15,8 @@ export function appendTo(selector, html) {
 		return null;
 	}
 
-	for (let i in nodes) {
-		if (nodes.hasOwnProperty(i)) {
-			const node = nodes[i];
-			output[i] = target.appendChild(node);
-		}
+	for (let [i, node] of Array.from(nodes.entries())) {
+		output[i] = target.appendChild(node);
 	}
 	return output;
 }

@@ -1,3 +1,7 @@
+# 2.5.0
+* i : Minimum version Firefox 138
+* \+ : System to apply styles to websites
+
 # 2.4.0
 * i : Minimum version Chrome/Chromium 131
 * i : Minimum version Firefox 137

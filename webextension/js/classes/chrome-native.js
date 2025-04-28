@@ -11,6 +11,7 @@ import {tabPageServerIpStorage} from "../variousFeatures/tabPageServerIp.js";
 import ipRegex from "../../lib/ip-regex.js";
 import {io} from "../../lib/socket.io.esm.min.js";
 import {isServiceWorker} from "../utils/browserDetect.js";
+import {updateStyles} from "../variousFeatures/contentStyles.js";
 
 
 /**
@@ -116,6 +117,9 @@ socket.on('ws open', function (err) {
 	getSyncAllowedPreferences()
 		.catch(console.error)
 	;
+
+	updateStyles()
+		.catch(console.error);
 });
 
 socket.on('disconnect', function (reason, description) {
@@ -566,6 +570,26 @@ self.getDefaultValues = getDefaultValues;
  */
 export async function showSection(sectionName) {
 	const {result} = await socket.timeout(timeout).emitWithAck('showSection', sectionName);
+	return result;
+}
+
+
+
+/**
+ * @typedef {object} IUserscriptJson
+ * @property {string} name
+ * @property {string} fileName
+ * @property {string} ext
+ * @property {string} content
+ * @property {string[]} tags
+ * @property {Dict<string | boolean>} meta
+ */
+/**
+ *
+ * @return {Promise<IUserscriptJson[] | void>}
+ */
+export async function getUserscripts() {
+	const {result} = await socket.timeout(timeout).emitWithAck('getUserscripts');
 	return result;
 }
 
