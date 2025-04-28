@@ -92,6 +92,7 @@ export async function updateData(activeTab) {
 				label: userStyle.name,
 				enabled: userStyle.enabled,
 				fileName: userStyle.fileName,
+				tags: userStyle.tags,
 			},
 		});
 	}
