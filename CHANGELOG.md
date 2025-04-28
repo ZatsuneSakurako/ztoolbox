@@ -1,4 +1,4 @@
-# WIP
+# 2.5.1
 * Fix : System to apply styles to websites
 
 # 2.5.0
