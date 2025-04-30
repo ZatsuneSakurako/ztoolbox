@@ -185,8 +185,7 @@ export async function onTabUrl(tab, changeInfo, forceRemove, currentUserStyles) 
 	;
 }
 chrome.tabs.onUpdated.addListener(async function (tabId, changeInfo, tab) {
-	// status 'complete' handled by tabPageServerIp
-	if ('url' in changeInfo || changeInfo.status === 'complete') {
+	if (changeInfo.status === 'loading') {
 		onTabUrl(tab, changeInfo, false)
 			.catch(console.error)
 		;
