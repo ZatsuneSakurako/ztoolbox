@@ -4,7 +4,7 @@
 	"short_name": "ZToolBoxDev",
 	"description": "__MSG_extShortDesc__",
 	"author": "Zatsune No Mokou",
-	"version": "2.5.1",
+	"version": "2.5.2",
 	"icons": {
 		"16": "/icon_16.png",
 		"48": "/icon_48.png",
@@ -63,7 +63,7 @@
 		"gecko": {
 			"id": "ztoolbox_dev@zatsunenomokou.eu",
 			"update_url": "https://github.com/ZatsuneNoMokou/ztoolbox/raw/master/dist/z_toolbox_dev.update.json",
-			"strict_min_version": "138.0"
+			"strict_min_version": "139.0"
 		},
 		"gecko_android": {}
 	},
