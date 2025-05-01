@@ -6,13 +6,7 @@
 		<input class="icon" type="checkbox" name="userStyle-{{ item.data.id }}" value="{{ item.data.fileName }}" id="{{ item.data.id }}"{% if item.data.enabled %} checked{% endif %} />
 	{%- endif -%}
 
-	<label class="title ellipse" for="{{ item.data.id }}">
-		{%- if not item.data -%}
-			{{item.title}}
-		{%- else -%}
-			{{ item.data.label }}
-		{%- endif -%}
-	</label>
+	<label class="title ellipse" for="{{ item.data.id }}">{{item.title}}</label>
 	{%- if not item.data -%}
 		<div class="data ellipse">Aucun style</div>
 	{%- else -%}

@@ -86,7 +86,7 @@ export async function updateData(activeTab) {
 	};
 	for (let [i, userStyle] of tabData.entries()) {
 		renderData.items.push({
-			title: activeTab.title,
+			title: userStyle.name,
 			data: {
 				id: `${i}-${userStyle.fileName}`,
 				label: userStyle.name,
@@ -96,6 +96,11 @@ export async function updateData(activeTab) {
 			},
 		});
 	}
+
+	renderData.items.sort((a, b) => {
+		if (a.data.enabled !== b.data.enabled) return b.data.enabled ? 1 : -1;
+		return a.title > b.title ? 1 : -1;
+	});
 
 	appendTo($tabUserStyles, await renderTemplate("tabUserStyles", renderData));
 }
