@@ -17,18 +17,24 @@ import {_userStylesStoreKey, _tabStylesStoreKey, _userStylesStateStoreKey} from 
  * @property {string} css
  */
 /**
+ * @type {UserStyle[]|null}
+ */
+let userStylesCache = null;
+/**
  *
  * @returns {Promise<UserStyle[]>}
  */
 export async function getUserStyles() {
+	if (userStylesCache) return userStylesCache;
+
 	const result = await chrome.storage.session.get(_userStylesStoreKey)
 		.catch(console.error);
-	if (!(_userStylesStoreKey in result)) return [];
+	if (!(_userStylesStoreKey in result)) return userStylesCache = [];
 
 	if (!Array.isArray(result[_userStylesStoreKey])) {
 		throw new Error('userStyles must be an array');
 	}
-	return result[_userStylesStoreKey];
+	return userStylesCache = result[_userStylesStoreKey];
 }
 /**
  *
@@ -44,16 +50,22 @@ async function setUserStyles(userStyles) {
 }
 
 /**
+ * @type {Dict<boolean>|null}
+ */
+let userStylesStatesCache = null;
+/**
  *
  * @return {Promise<Dict<boolean>>}
  */
 async function getUserStyleStates() {
+	if (userStylesStatesCache) return userStylesStatesCache;
+
 	const result = await chrome.storage.session.get(_userStylesStateStoreKey)
 		.catch(console.error);
-	if (!(_userStylesStateStoreKey in result)) return [];
+	if (!(_userStylesStateStoreKey in result)) return userStylesStatesCache = [];
 
 	if (!result || typeof result !== 'object') throw new Error('userStyles must be an object');
-	return result[_userStylesStateStoreKey];
+	return userStylesStatesCache = result[_userStylesStateStoreKey];
 }
 
 
@@ -239,9 +251,11 @@ chrome.storage.onChanged.addListener(function (changes, areaName) {
 	if (areaName !== 'session') return;
 
 	if (_userStylesStoreKey in changes) {
+		userStylesCache = changes[_userStylesStoreKey].newValue;
 		_updateStyles(changes[_userStylesStoreKey])
 			.catch(console.error);
 	} else if (_userStylesStateStoreKey in changes) {
+		userStylesStatesCache = changes[_userStylesStateStoreKey].newValue;
 		getUserStyles()
 			.then(userStyles => {
 				_updateStyles({
