@@ -352,7 +352,6 @@ export async function onTabUrl(tab, changeInfo, forceRemove) {
 	currentTabData.injectedStyles = currentTabData.injectedStyles.filter(function(value) {
 		return value !== undefined;
 	});
-	console.dir(currentTabData)
 	tabData[`${tab.id}`] = currentTabData;
 	contentStyles.tabData = tabData;
 }
