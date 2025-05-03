@@ -48,6 +48,7 @@
 		"contextMenus",
 		"devtools",
 		"notifications",
+		"offscreen",
 		"scripting",
 		"sessions",
 		"storage",
