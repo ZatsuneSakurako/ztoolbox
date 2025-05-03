@@ -33,7 +33,7 @@ class ContentStyles {
 	 */
 	#userStyleStates= null;
 	/**
-	 * @type {Dict<{ injectedStyles: string[] }> | null}
+	 * @type {Dict<UserStyleTabData> | null}
 	 */
 	#tabData= null;
 
@@ -41,7 +41,9 @@ class ContentStyles {
 	 * @private
 	 */
 	constructor() {
-		chrome.storage.onChanged.addListener(this.#onStorageChange);
+		chrome.storage.onChanged.addListener((changes, areaName) => {
+			this.#onStorageChange(changes, areaName);
+		});
 	}
 
 	// noinspection SpellCheckingInspection
@@ -114,18 +116,19 @@ class ContentStyles {
 
 		if (_userStylesStoreKey in changes) {
 			const oldValue = changes[_userStylesStoreKey].oldValue,
-				newValue = ContentStyles.instance.userStyles = changes[_userStylesStoreKey].newValue;
+				newValue = changes[_userStylesStoreKey].newValue;
 
 			(async () => {
 				await updateTabStyles(oldValue, true)
 					.catch(console.error);
+				this.#userStyles = newValue;
 				await updateTabStyles(newValue);
 			})()
 				.catch(console.error)
 		} else if (_userStylesStateStoreKey in changes) {
-			this.userStyleStates = changes[_userStylesStateStoreKey].newValue;
+			this.#userStyleStates = changes[_userStylesStateStoreKey].newValue;
 
-			updateTabStyles(ContentStyles.instance.#userStyles)
+			updateTabStyles(this.#userStyles)
 				.catch(console.error);
 		}
 	}
