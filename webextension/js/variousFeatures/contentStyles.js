@@ -7,7 +7,7 @@ import {_userStylesStoreKey, _tabStylesStoreKey, _userStylesStateStoreKey} from 
 /**
  *
  * @typedef {object} UserStyle
- * @property { {domain: string, regex?: string, startWith?: string, endWith?: string} } url
+ * @property { {domain: string|string[], regex?: string, startWith?: string, endWith?: string} } url
  * @property {string} name
  * @property {string} fileName
  * @property {boolean} enabled
@@ -266,10 +266,13 @@ export async function onTabUrl(tab, changeInfo, forceRemove) {
 
 	const data = {};
 	for (let userStyle of contentStyles.userStyles) {
-		const domainList = data[userStyle.url.domain] ?? [];
-		domainList.push(userStyle);
-		data[userStyle.url.domain] = domainList;
+		for (const domain of Array.isArray(userStyle.url.domain) ? userStyle.url.domain : [userStyle.url.domain]) {
+			const userStyleList = data[domain] ?? [];
+			userStyleList.push(userStyle);
+			data[domain] = userStyleList;
+		}
 	}
+	console.dir(data)
 
 	/**
 	 *
@@ -421,7 +424,7 @@ export async function updateStyles() {
 
 		newUserStyles.push({
 			url: {
-				domain: userscript.meta.domain,
+				domain: userscript.domains ?? userscript.meta.domain,
 				startWith: userscript.meta.startWith,
 				endWith: userscript.meta.endWith,
 				regex: userscript.meta.regex,

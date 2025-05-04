@@ -581,6 +581,7 @@ export async function showSection(sectionName) {
  * @property {string} fileName
  * @property {string} ext
  * @property {string} content
+ * @property {string[]} [domains]
  * @property {string[]} tags
  * @property {Dict<string | boolean>} meta
  */
