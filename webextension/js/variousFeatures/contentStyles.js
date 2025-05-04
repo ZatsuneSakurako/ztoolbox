@@ -133,20 +133,6 @@ class ContentStyles {
 		}
 	}
 
-	/**
-	 *
-	 * @param {string} pattern
-	 * @returns {RegExp}
-	 */
-	static patternToRegExp(pattern) {
-		// Escape special RegExp characters except for '*'
-		pattern = pattern.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
-		// Replace '*' with '.*'
-		pattern = pattern.replace(/\*/g, '.*');
-		// Create RegExp object
-		return new RegExp('^' + pattern + '$');
-	}
-
 
 
 	/**
@@ -272,7 +258,6 @@ export async function onTabUrl(tab, changeInfo, forceRemove) {
 			data[domain] = userStyleList;
 		}
 	}
-	console.dir(data)
 
 	/**
 	 *
@@ -303,7 +288,7 @@ export async function onTabUrl(tab, changeInfo, forceRemove) {
 			if (!url.endsWith(matchedStyle.url.endWith)) doMatch = false;
 		}
 		if (!forceRemove && doMatch && matchedStyle.url.regex !== undefined) {
-			if (!ContentStyles.patternToRegExp(matchedStyle.url.regex).test(url)) doMatch = false;
+			if (!new RegExp(matchedStyle.url.regex).test(url)) doMatch = false;
 		}
 
 		if (doMatch && !currentTabData.matchedStyles.includes(matchedStyle.fileName)) {
