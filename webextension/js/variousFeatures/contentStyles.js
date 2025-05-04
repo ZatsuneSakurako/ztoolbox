@@ -303,7 +303,7 @@ export async function onTabUrl(tab, changeInfo, forceRemove) {
 			if (!ContentStyles.patternToRegExp(matchedStyle.url.regex).test(url)) doMatch = false;
 		}
 
-		if (doMatch && !currentTabData.injectedStyles.includes(matchedStyle.fileName)) {
+		if (doMatch && !currentTabData.matchedStyles.includes(matchedStyle.fileName)) {
 			currentTabData.matchedStyles.push(matchedStyle.fileName);
 		}
 
