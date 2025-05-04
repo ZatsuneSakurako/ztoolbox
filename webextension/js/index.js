@@ -24,11 +24,24 @@ if (isFirefox) {
 	import('./variousFeatures/iqdb.js')
 		.catch(console.error)
 	;
+} else {
+	chrome.offscreen.createDocument({
+		url: chrome.runtime.getURL("offscreen.html"),
+		reasons: [ "WORKERS" ],
+		justification: "Service worker keepalive workaround"
+	})
+		.catch(console.error)
+	;
 }
 
 
 
 chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
+	if (message.type === "service_worker_keepalive") {
+		console.debug("[DEBUG] Keepalive ping received");
+		return;
+	}
+
 	if (sender.hasOwnProperty("url")) {
 		console.debug(`Receiving message from: ${sender.url} (${sender.id})`);
 	}

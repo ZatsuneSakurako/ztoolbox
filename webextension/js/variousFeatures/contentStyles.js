@@ -7,7 +7,7 @@ import {_userStylesStoreKey, _tabStylesStoreKey, _userStylesStateStoreKey} from 
 /**
  *
  * @typedef {object} UserStyle
- * @property { {domain: string, regex?: string, startWith?: string, endWith?: string} } url
+ * @property { {domain: string|string[], regex?: string, startWith?: string, endWith?: string} } url
  * @property {string} name
  * @property {string} fileName
  * @property {boolean} enabled
@@ -17,71 +17,213 @@ import {_userStylesStoreKey, _tabStylesStoreKey, _userStylesStateStoreKey} from 
  * @property {string} css
  */
 /**
- * @type {UserStyle[]|null}
- */
-let userStylesCache = null;
-/**
  *
- * @returns {Promise<UserStyle[]>}
+ * @typedef {object} UserStyleTabData
+ * @property {string[]} matchedStyles
+ * @property {string[]} injectedStyles
+ *
  */
-export async function getUserStyles() {
-	if (userStylesCache) return userStylesCache;
+class ContentStyles {
+	/**
+	 * @type {UserStyle[] | null}
+	 */
+	#userStyles= null;
+	/**
+	 * @type {Dict<boolean> | null}
+	 */
+	#userStyleStates= null;
+	/**
+	 * @type {Dict<UserStyleTabData> | null}
+	 */
+	#tabData= null;
 
-	const result = await chrome.storage.session.get(_userStylesStoreKey)
-		.catch(console.error);
-	if (!(_userStylesStoreKey in result)) return userStylesCache = [];
-
-	if (!Array.isArray(result[_userStylesStoreKey])) {
-		throw new Error('userStyles must be an array');
+	/**
+	 * @private
+	 */
+	constructor() {
+		chrome.storage.onChanged.addListener((changes, areaName) => {
+			this.#onStorageChange(changes, areaName);
+		});
 	}
-	return userStylesCache = result[_userStylesStoreKey];
+
+	// noinspection SpellCheckingInspection
+	/**
+	 * @type {ContentStyles}
+	 */
+	static #instance;
+	/**
+	 * @return {ContentStyles}
+	 */
+	static get instance() {
+		return this.#instance;
+	}
+	/**
+	 *
+	 * @returns {Promise<ContentStyles>}
+	 */
+	static async load() {
+		this.#instance = new ContentStyles();
+		await this.#instance.load();
+		return this.#instance;
+	}
+	async load() {
+		if (!this.#userStyles) {
+			const result = await chrome.storage.session.get(_userStylesStoreKey)
+				.catch(console.error);
+			if (!(_userStylesStoreKey in result)) {
+				this.#userStyles = [];
+			} else {
+				if (!Array.isArray(result[_userStylesStoreKey])) {
+					throw new Error('userStyles must be an array');
+				}
+				this.#userStyles = result[_userStylesStoreKey];
+			}
+		}
+
+		if (!this.#userStyleStates) {
+			const result = await chrome.storage.session.get(_userStylesStateStoreKey)
+				.catch(console.error);
+			if (!(_userStylesStateStoreKey in result)) {
+				this.#userStyleStates = {};
+			} else {
+				if (!result || typeof result !== 'object') throw new Error('userStyles must be an object');
+				this.#userStyleStates = result[_userStylesStateStoreKey];
+			}
+
+		}
+
+		if (!this.#tabData) {
+			const result = await chrome.storage.session.get(_tabStylesStoreKey)
+				.catch(console.error);
+			if (!(_tabStylesStoreKey in result)) {
+				this.#tabData = {};
+			} else {
+				if (!result || typeof result !== 'object') throw new Error('tabData must be an object');
+				this.#tabData = result[_tabStylesStoreKey];
+			}
+		}
+	}
+
+
+
+	/**
+	 *
+	 * @param {chrome.storage.StorageChange} changes
+	 * @param {chrome.storage.AreaName} areaName
+	 */
+	#onStorageChange(changes, areaName) {
+		if (areaName !== 'session') return;
+
+		if (_userStylesStoreKey in changes) {
+			const oldValue = changes[_userStylesStoreKey].oldValue,
+				newValue = changes[_userStylesStoreKey].newValue;
+
+			(async () => {
+				await updateTabStyles(oldValue, true)
+					.catch(console.error);
+				this.#userStyles = newValue;
+				await updateTabStyles(newValue);
+			})()
+				.catch(console.error)
+		} else if (_userStylesStateStoreKey in changes) {
+			this.#userStyleStates = changes[_userStylesStateStoreKey].newValue;
+
+			updateTabStyles(this.#userStyles)
+				.catch(console.error);
+		}
+	}
+
+
+
+	/**
+	 *
+	 * @param {UserStyle[]} newValue
+	 */
+	set userStyles(newValue)  {
+		if (!Array.isArray(newValue)) throw new Error('ARRAY_VALUE_EXPECTED');
+		this.#userStyles = newValue;
+		chrome.storage.session.set({
+			[_userStylesStoreKey]: newValue
+		})
+			.catch(console.error);
+	}
+	/**
+	 *
+	 * @returns {UserStyle[]}
+	 */
+	get userStyles()  {
+		if (!this.#userStyles) {
+			throw new Error('USER_STYLES_NOT_LOADED');
+		}
+		return this.#userStyles;
+	}
+
+	/**
+	 *
+	 * @param {Dict<boolean>} newValue
+	 */
+	set userStyleStates(newValue)  {
+		this.#userStyleStates = newValue;
+		chrome.storage.session.set({
+			[_userStylesStateStoreKey]: newValue,
+		})
+			.catch(console.error);
+	}
+	/**
+	 *
+	 * @return {Dict<boolean>}
+	 */
+	get userStyleStates()  {
+		if (!this.#userStyleStates) {
+			throw new Error('USER_STYLES_STATES_NOT_LOADED');
+		}
+		return this.#userStyleStates;
+	}
+
+	/**
+	 *
+	 * @param {Dict<UserStyleTabData>} newValue
+	 */
+	set tabData(newValue)  {
+		this.#tabData = newValue;
+		chrome.storage.session.set({
+			[_tabStylesStoreKey]: newValue,
+		})
+			.catch(console.error);
+	}
+	/**
+	 *
+	 * @return {Dict<UserStyleTabData>}
+	 */
+	get tabData()  {
+		if (!this.#tabData) {
+			throw new Error('TAB_DATA_NOT_LOADED');
+		}
+		return this.#tabData;
+	}
 }
+
 /**
  *
- * @param {UserStyle[]} userStyles
- * @return {Promise<void>}
+ * @type {ContentStyles|Promise<ContentStyles>}
  */
-async function setUserStyles(userStyles) {
-	if (!Array.isArray(userStyles)) throw new Error('userStyles must be an array');
-
-	await chrome.storage.session.set({
-		[_userStylesStoreKey]: userStyles,
-	});
-}
-
-/**
- * @type {Dict<boolean>|null}
- */
-let userStylesStatesCache = null;
-/**
- *
- * @return {Promise<Dict<boolean>>}
- */
-async function getUserStyleStates() {
-	if (userStylesStatesCache) return userStylesStatesCache;
-
-	const result = await chrome.storage.session.get(_userStylesStateStoreKey)
-		.catch(console.error);
-	if (!(_userStylesStateStoreKey in result)) return userStylesStatesCache = [];
-
-	if (!result || typeof result !== 'object') throw new Error('userStyles must be an object');
-	return userStylesStatesCache = result[_userStylesStateStoreKey];
-}
-
-
+export let contentStyles = ContentStyles.load();
 
 /**
  *
- * @param {string} pattern
- * @returns {RegExp}
+ * @param {UserStyle} userStyle
+ * @param {chrome.tabs.Tab} tab
+ * @return chrome.scripting.CSSInjection
  */
-function patternToRegExp(pattern) {
-	// Escape special RegExp characters except for '*'
-	pattern = pattern.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
-	// Replace '*' with '.*'
-	pattern = pattern.replace(/\*/g, '.*');
-	// Create RegExp object
-	return new RegExp('^' + pattern + '$');
+function userStyleInjectOpts(userStyle, tab) {
+	return {
+		css: userStyle.css,
+		origin: userStyle.asUserStyle ? 'USER' : 'AUTHOR',
+		target: {
+			tabId: tab.id,
+			allFrames: userStyle.allFrames ?? false,
+		}
+	};
 }
 
 /**
@@ -89,9 +231,10 @@ function patternToRegExp(pattern) {
  * @param {chrome.tabs.Tab} tab
  * @param {chrome.tabs.TabChangeInfo|undefined} changeInfo
  * @param {boolean} forceRemove
- * @param {UserStyle[]} [currentUserStyles]
  */
-export async function onTabUrl(tab, changeInfo, forceRemove, currentUserStyles) {
+export async function onTabUrl(tab, changeInfo, forceRemove) {
+	contentStyles = await contentStyles;
+
 	let url = changeInfo?.url ?? tab.url;
 	let domain = null;
 	try {
@@ -108,12 +251,13 @@ export async function onTabUrl(tab, changeInfo, forceRemove, currentUserStyles) 
 
 
 	const data = {};
-	for (let userStyle of (currentUserStyles ?? await getUserStyles())) {
-		const domainList = data[userStyle.url.domain] ?? [];
-		domainList.push(userStyle);
-		data[userStyle.url.domain] = domainList;
+	for (let userStyle of contentStyles.userStyles) {
+		for (const domain of Array.isArray(userStyle.url.domain) ? userStyle.url.domain : [userStyle.url.domain]) {
+			const userStyleList = data[domain] ?? [];
+			userStyleList.push(userStyle);
+			data[domain] = userStyleList;
+		}
 	}
-
 
 	/**
 	 *
@@ -123,28 +267,18 @@ export async function onTabUrl(tab, changeInfo, forceRemove, currentUserStyles) 
 
 	/**
 	 *
-	 * @type {Dict<boolean>}
-	 */
-	const userStyleStates = (await getUserStyleStates().catch(console.error)) ?? {};
-
-	/**
-	 *
 	 * @type {Set<string>}
 	 */
-	const injectedStyles = new Set();
-	for (let matchedStyle of matchedStyles) {
-		/**
-		 *
-		 * @type {CSSInjection}
-		 */
-		const userStyleOpts = {
-			css: matchedStyle.css,
-			origin: matchedStyle.asUserStyle ? 'USER' : 'AUTHOR',
-			target: {
-				tabId: tab.id,
-				allFrames: matchedStyle.allFrames ?? false,
-			}
-		};
+	const neededStyles = new Set();
+	const tabData = contentStyles.tabData,
+		currentTabData = tabData[`${tab.id}`] ?? { injectedStyles: [], matchedStyles: [] }
+	/**
+	 * Clear old matched styles
+	 * @type {string[]}
+	 */
+	currentTabData.matchedStyles = [];
+	for (const matchedStyle of matchedStyles) {
+		const userStyleOpts = userStyleInjectOpts(matchedStyle, tab);
 
 		let doMatch = true;
 		if (!forceRemove && doMatch && matchedStyle.url.startWith !== undefined) {
@@ -154,47 +288,60 @@ export async function onTabUrl(tab, changeInfo, forceRemove, currentUserStyles) 
 			if (!url.endsWith(matchedStyle.url.endWith)) doMatch = false;
 		}
 		if (!forceRemove && doMatch && matchedStyle.url.regex !== undefined) {
-			if (!patternToRegExp(matchedStyle.url.regex).test(url)) doMatch = false;
+			if (!new RegExp(matchedStyle.url.regex).test(url)) doMatch = false;
 		}
 
-		if (doMatch) {
-			/**
-			 * Allow to display "matched" and disabled UserStyles
-			 */
-			injectedStyles.add(matchedStyle.fileName);
+		if (doMatch && !currentTabData.matchedStyles.includes(matchedStyle.fileName)) {
+			currentTabData.matchedStyles.push(matchedStyle.fileName);
 		}
 
 		let enabled = matchedStyle.enabled;
-		if (matchedStyle.fileName in userStyleStates) {
-			enabled = userStyleStates[matchedStyle.fileName];
+		if (matchedStyle.fileName in contentStyles.userStyleStates) {
+			enabled = contentStyles.userStyleStates[matchedStyle.fileName];
 		}
 		if (forceRemove || !doMatch || !enabled) {
-			chrome.scripting.removeCSS(userStyleOpts)
-				.catch(console.error)
-			;
+			const cssIndex = currentTabData.injectedStyles.indexOf(matchedStyle.fileName);
+			if (cssIndex >= 0) {
+				chrome.scripting.removeCSS(userStyleOpts)
+					.catch(console.error)
+				;
+				delete currentTabData.injectedStyles[cssIndex];
+			}
 			continue;
 		}
 
-		chrome.scripting.insertCSS(userStyleOpts)
-			.catch(console.error)
-		;
+		neededStyles.add(matchedStyle.fileName);
+		if (!currentTabData.injectedStyles.includes(matchedStyle.fileName)) {
+			chrome.scripting.insertCSS(userStyleOpts)
+				.catch(console.error);
+			currentTabData.injectedStyles.push(matchedStyle.fileName);
+		}
 	}
 
+	for (const [i, injectedStyle] of currentTabData.injectedStyles.entries()) {
+		if (injectedStyle === undefined) continue;
 
+		if (!neededStyles.has(injectedStyle)) {
+			const userStyle = contentStyles.userStyles
+				.find(userStyle => userStyle.fileName === injectedStyle);
+			if (!userStyle) {
+				console.error(`Cannot remove user style "${injectedStyle}" (not found)`);
+				continue;
+			}
 
-	const raw = (await chrome.storage.session.get([_tabStylesStoreKey])),
-		tabData = raw[_tabStylesStoreKey] ?? {}
-	;
-
-	tabData[`${tab.id}`] = {
-		injectedStyles: injectedStyles ? Array.from(injectedStyles) : [],
+			const userStyleOpts = userStyleInjectOpts(userStyle, tab);
+			chrome.scripting.removeCSS(userStyleOpts)
+				.catch(console.error)
+			;
+			delete currentTabData.injectedStyles[i];
+		}
 	}
 
-	await chrome.storage.session.set({
-		[_tabStylesStoreKey]: tabData
-	})
-		.catch(console.error)
-	;
+	currentTabData.injectedStyles = currentTabData.injectedStyles.filter(function(value) {
+		return value !== undefined;
+	});
+	tabData[`${tab.id}`] = currentTabData;
+	contentStyles.tabData = tabData;
 }
 chrome.tabs.onUpdated.addListener(async function (tabId, changeInfo, tab) {
 	if ('url' in changeInfo && changeInfo.status === 'loading') {
@@ -241,43 +388,11 @@ async function updateTabStyles(userStyles, forceRemove=false) {
 		.catch(console.error);
 
 	for (let tab of tabs ?? []) {
-		onTabUrl(tab, undefined, forceRemove, userStyles)
+		onTabUrl(tab, undefined, forceRemove)
 			.catch(console.error);
 	}
 }
 
-
-chrome.storage.onChanged.addListener(function (changes, areaName) {
-	if (areaName !== 'session') return;
-
-	if (_userStylesStoreKey in changes) {
-		userStylesCache = changes[_userStylesStoreKey].newValue;
-		_updateStyles(changes[_userStylesStoreKey])
-			.catch(console.error);
-	} else if (_userStylesStateStoreKey in changes) {
-		userStylesStatesCache = changes[_userStylesStateStoreKey].newValue;
-		getUserStyles()
-			.then(userStyles => {
-				_updateStyles({
-					oldValue: userStyles,
-					newValue: userStyles,
-				})
-					.catch(console.error);
-			})
-			.catch(console.error)
-	}
-});
-/**
- *
- * @param {chrome.storage.StorageChange} userStyleStorageChange
- * @returns {Promise<void>}
- * @private
- */
-async function _updateStyles(userStyleStorageChange) {
-	await updateTabStyles(userStyleStorageChange.oldValue, true)
-		.catch(console.error);
-	await updateTabStyles(userStyleStorageChange.newValue);
-}
 
 
 export async function updateStyles() {
@@ -294,7 +409,7 @@ export async function updateStyles() {
 
 		newUserStyles.push({
 			url: {
-				domain: userscript.meta.domain,
+				domain: userscript.domains ?? userscript.meta.domain,
 				startWith: userscript.meta.startWith,
 				endWith: userscript.meta.endWith,
 				regex: userscript.meta.regex,
@@ -309,6 +424,5 @@ export async function updateStyles() {
 		})
 	}
 
-	await setUserStyles(newUserStyles)
-		.catch(console.error);
+	(await contentStyles).userStyles = newUserStyles;
 }

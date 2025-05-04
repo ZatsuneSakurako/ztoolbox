@@ -24,9 +24,9 @@ export async function getTabUserStyles(tab) {
 	 *
 	 * @type {string[] | void}
 	 */
-	let injectedStyles = undefined;
+	let matchedStyles = undefined;
 	try {
-		injectedStyles = result[_tabStylesStoreKey][tab.id].injectedStyles;
+		matchedStyles = result[_tabStylesStoreKey][tab.id].matchedStyles;
 	} catch (e) {
 		console.error(e);
 	}
@@ -45,7 +45,7 @@ export async function getTabUserStyles(tab) {
 		if (userStyleStates !== undefined && userStyle.fileName in userStyleStates) {
 			userStyle.enabled = userStyleStates[userStyle.fileName];
 		}
-		return injectedStyles && injectedStyles.includes(userStyle.fileName);
+		return matchedStyles && matchedStyles.includes(userStyle.fileName);
 	});
 }
 
