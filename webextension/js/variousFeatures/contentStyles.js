@@ -206,6 +206,17 @@ class ContentStyles {
 		}
 		return this.#tabData;
 	}
+	/**
+	 *
+	 * @returns {UserStyleTabData}
+	 */
+	get tabNewData() {
+		return {
+			injectedStyles: [],
+			executedScripts: [],
+			matchedStyles: [],
+		}
+	}
 }
 
 /**
@@ -276,7 +287,9 @@ export async function onTabUrl(tab, changeInfo, forceRemove) {
 	 */
 	const neededStyles = new Set();
 	const tabData = contentStyles.tabData,
-		currentTabData = tabData[`${tab.id}`] ?? { injectedStyles: [], executedScripts: [], matchedStyles: [] }
+		currentTabData = tabData[`${tab.id}`] ?? contentStyles.tabNewData
+	tabData[`${tab.id}`] = currentTabData;
+
 	/**
 	 * Clear old matched styles
 	 * @type {string[]}
@@ -342,14 +355,13 @@ export async function onTabUrl(tab, changeInfo, forceRemove) {
 		}
 	}
 
-	currentTabData.executedScripts = [];
 	currentTabData.injectedStyles = currentTabData.injectedStyles.filter(function(value) {
 		return value !== undefined;
 	});
 	tabData[`${tab.id}`] = currentTabData;
 	contentStyles.tabData = tabData;
 }
-chrome.tabs.onUpdated.addListener(async function (tabId, changeInfo, tab) {
+chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
 	if ('url' in changeInfo && changeInfo.status === 'loading') {
 		onTabUrl(tab, changeInfo, false)
 			.catch(console.error)

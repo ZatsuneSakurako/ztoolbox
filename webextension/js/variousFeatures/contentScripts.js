@@ -43,6 +43,7 @@ class ContentScripts {
                 const tabData = this.#contentStyle.tabData,
                     currentTabData = tabData[sender.tab.id];
 
+                // console.debug("[UserScript] Event from", sender.tab, message);
                 (currentTabData.executedScripts ?? []).push(message.userScriptsId);
                 this.#contentStyle.tabData = tabData;
 
@@ -50,6 +51,19 @@ class ContentScripts {
             } catch (e) {
                 console.error(e);
                 sendResponse(null);
+            }
+        });
+        chrome.webNavigation.onBeforeNavigate.addListener(async function (details) {
+            try {
+                // console.info('[UserScripts] Tab navigation, resetting', details);
+                const _contentStyles = await contentStyles,
+                    tabId = details.tabId,
+                    tabData = _contentStyles.tabData ?? _contentStyles.tabNewData;
+
+                tabData[`${tabId}`].executedScripts = [];
+                _contentStyles.tabData = tabData;
+            } catch (e) {
+                console.error(e);
             }
         });
     }
@@ -155,6 +169,10 @@ class ContentScripts {
              * @type {UserScript[]}
              */
             this.#userScripts = changes[_userScriptsStoreKey].newValue;
+            this.#updateUserScripts()
+                .catch(console.error);
+        } else if (_userScriptsStateStoreKey in changes) {
+            this.#userScriptsStates = changes[_userScriptsStateStoreKey].newValue;
             this.#updateUserScripts()
                 .catch(console.error);
         }

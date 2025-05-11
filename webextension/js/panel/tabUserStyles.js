@@ -1,6 +1,13 @@
-import {_tabStylesStoreKey, _userStylesStateStoreKey, _userStylesStoreKey} from "../constants.js";
+import {
+	_tabStylesStoreKey,
+	_userScriptsStateStoreKey,
+	_userScriptsStoreKey,
+	_userStylesStateStoreKey,
+	_userStylesStoreKey
+} from "../constants.js";
 import {appendTo} from "../utils/appendTo.js";
 import {renderTemplate} from "../init-templates.js";
+import {matchesChromePattern} from "../matchesChromePattern.js";
 
 const idTabUserStyles = 'idTabUserStyles';
 
@@ -13,20 +20,31 @@ export async function getTabUserStyles(tab) {
 	const result = await chrome.storage.session.get([
 		_userStylesStoreKey,
 		_tabStylesStoreKey,
-		_userStylesStateStoreKey
+		_userStylesStateStoreKey,
+		_userScriptsStoreKey,
+		_userScriptsStateStoreKey,
 	])
 		.catch(console.error);
 	if (!(_userStylesStoreKey in result) || !Array.isArray(result[_userStylesStoreKey])) return [];
 
-	const userStyles = result[_userStylesStoreKey];
+	const userStyles = result[_userStylesStoreKey],
+		userScripts = result[_userScriptsStoreKey]
+	;
 
 	/**
 	 *
 	 * @type {string[] | void}
 	 */
 	let matchedStyles = undefined;
+	/**
+	 *
+	 * @type {Set<string> | void}
+	 */
+	let executedScripts = undefined;
 	try {
-		matchedStyles = result[_tabStylesStoreKey][tab.id].matchedStyles;
+		const tabData = result[_tabStylesStoreKey][tab.id];
+		matchedStyles = tabData.matchedStyles;
+		executedScripts = new Set(tabData.executedScripts ?? []);
 	} catch (e) {
 		console.error(e);
 	}
@@ -41,12 +59,39 @@ export async function getTabUserStyles(tab) {
 		console.error(e);
 	}
 
-	return userStyles.filter(userStyle => {
-		if (userStyleStates !== undefined && userStyle.fileName in userStyleStates) {
-			userStyle.enabled = userStyleStates[userStyle.fileName];
-		}
-		return matchedStyles && matchedStyles.includes(userStyle.fileName);
-	});
+	return {
+		userStyles: userStyles.filter(userStyle => {
+			if (userStyleStates !== undefined && userStyle.fileName in userStyleStates) {
+				userStyle.enabled = userStyleStates[userStyle.fileName];
+			}
+			return matchedStyles && matchedStyles.includes(userStyle.fileName);
+		}),
+		userScripts: userScripts.filter(userScript => {
+			let matched = false;
+			if (!tab.url) return false;
+
+			if (Array.isArray(userScript.matches)) {
+				for (let match of userScript.matches) {
+					if (matchesChromePattern(tab.url, match)) {
+						matched = true;
+						break;
+					}
+				}
+			}
+			if (matched && Array.isArray(userScript.excludeMatches)) {
+				for (let match of userScript.excludeMatches) {
+					if (matchesChromePattern(tab.url, match)) {
+						matched = false;
+						break;
+					}
+				}
+			}
+			if (!matched) return false;
+
+			userScript.enabled = executedScripts.has(userScript.fileName);
+			return true;
+		}),
+	};
 }
 
 /**
@@ -67,10 +112,10 @@ export async function updateData(activeTab) {
 	}
 
 	/**
-	 * @type {UserStyle[]}
+	 * @type { { userStyles: UserStyle[], userScripts: UserScript[] } }
 	 */
 	const tabData = await dataPromise;
-	if (!tabData.length) {
+	if (!tabData.userStyles.length && tabData.userScripts.length) {
 		appendTo($tabUserStyles, await renderTemplate("tabUserStyles", {
 			items: [
 				{
@@ -84,7 +129,7 @@ export async function updateData(activeTab) {
 	const renderData = {
 		items: [],
 	};
-	for (let [i, userStyle] of tabData.entries()) {
+	for (let [i, userStyle] of [].concat(tabData.userStyles, tabData.userScripts).entries()) {
 		renderData.items.push({
 			title: userStyle.name,
 			data: {
@@ -108,22 +153,23 @@ export async function updateData(activeTab) {
 
 /**
  *
- * @param {string} userStyleFileName
+ * @param {string} userScriptFileName
  * @param {boolean} newState
  * @return {Promise<Dict<boolean>>}
  */
-async function setUserStyleStates(userStyleFileName, newState) {
-	const result = (await chrome.storage.session.get(_userStylesStateStoreKey)
-		.catch(console.error)) ?? {};
+async function setUserScriptStates(userScriptFileName, newState) {
+	const userStateStoreKey = /\.(?:ts|js)$/.test(userScriptFileName) ? _userScriptsStateStoreKey : _userStylesStateStoreKey,
+		result = (await chrome.storage.session.get(userStateStoreKey).catch(console.error)) ?? {};
 
 	/**
 	 *
 	 * @type {Dict<boolean>}
 	 */
-	const userStyleStates = result[_userStylesStateStoreKey] ?? {};
-	userStyleStates[userStyleFileName] = newState;
+	const state = result[userStateStoreKey] ?? {};
+	state[userScriptFileName] = newState;
+
 	await chrome.storage.session.set({
-		[_userStylesStateStoreKey]: userStyleStates
+		[userStateStoreKey]: state
 	});
 }
 
@@ -131,6 +177,6 @@ document.addEventListener('change', function (ev) {
 	const element = ev.target.closest('input[type="checkbox"][name^="userStyle-"]');
 	if (!element) return;
 
-	setUserStyleStates(element.value, element.checked)
+	setUserScriptStates(element.value, element.checked)
 		.catch(console.error);
 })
