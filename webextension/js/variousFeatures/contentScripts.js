@@ -38,7 +38,6 @@ class ContentScripts {
         });
         chrome.runtime.onUserScriptMessage.addListener((message, sender, sendResponse) => {
             if (sender.id !== chrome.runtime.id || !message.userScriptsId) return;
-            console.log(message);
 
             try {
                 const tabData = this.#contentStyle.tabData,
