@@ -1,7 +1,12 @@
 import {i18ex} from "../translation-api.js";
 import {ContextMenusController} from "../classes/contextMenusController.js";
 import {getUserscripts} from "../classes/chrome-native.js";
-import {_userStylesStoreKey, _tabStylesStoreKey, _userStylesStateStoreKey} from "../constants.js";
+import {
+	_userStylesStoreKey,
+	_tabStylesStoreKey,
+	_userStylesStateStoreKey,
+} from "../constants.js";
+import {contentScripts} from "./contentScripts.js";
 
 
 /**
@@ -108,7 +113,7 @@ class ContentStyles {
 
 	/**
 	 *
-	 * @param {chrome.storage.StorageChange} changes
+	 * @param {Dict<chrome.storage.StorageChange>} changes
 	 * @param {chrome.storage.AreaName} areaName
 	 */
 	#onStorageChange(changes, areaName) {
@@ -271,7 +276,7 @@ export async function onTabUrl(tab, changeInfo, forceRemove) {
 	 */
 	const neededStyles = new Set();
 	const tabData = contentStyles.tabData,
-		currentTabData = tabData[`${tab.id}`] ?? { injectedStyles: [], matchedStyles: [] }
+		currentTabData = tabData[`${tab.id}`] ?? { injectedStyles: [], executedScripts: [], matchedStyles: [] }
 	/**
 	 * Clear old matched styles
 	 * @type {string[]}
@@ -337,6 +342,7 @@ export async function onTabUrl(tab, changeInfo, forceRemove) {
 		}
 	}
 
+	currentTabData.executedScripts = [];
 	currentTabData.injectedStyles = currentTabData.injectedStyles.filter(function(value) {
 		return value !== undefined;
 	});
@@ -357,14 +363,14 @@ chrome.tabs.onUpdated.addListener(async function (tabId, changeInfo, tab) {
 
 async function restartContentMenu() {
 	await chrome.contextMenus.create({
-		id: 'reloadUserscripts',
-		title: i18ex._("reloadUserscripts"),
+		id: 'refreshUserscripts',
+		title: i18ex._("refreshUserscripts"),
 		contexts: [ "action" ],
 	});
 }
 ContextMenusController.waitInit.then(restartContentMenu);
 chrome.contextMenus.onClicked.addListener(function (info) {
-	if (info.menuItemId !== 'reloadUserscripts') return;
+	if (info.menuItemId !== 'refreshUserscripts') return;
 
 	updateStyles()
 		.catch(console.error);
@@ -404,25 +410,44 @@ export async function updateStyles() {
 	 * @type {UserStyle[]}
 	 */
 	const newUserStyles = [];
+	/**
+	 *
+	 * @type {UserScript[]}
+	 */
+	const newUserScripts = [];
 	for (let userscript of userscripts) {
-		if (userscript.ext !== 'css') continue;
-
-		newUserStyles.push({
-			url: {
-				domain: userscript.domains ?? userscript.meta.domain,
-				startWith: userscript.meta.startWith,
-				endWith: userscript.meta.endWith,
-				regex: userscript.meta.regex,
-			},
-			name: userscript.name,
-			fileName: userscript.fileName,
-			enabled: !userscript.meta.disabled,
-			tags: userscript.tags,
-			css: userscript.content,
-			allFrames: userscript.meta.allFrames,
-			asUserStyle: userscript.meta.asUserStyle,
-		})
+		if (userscript.ext === 'css') {
+			newUserStyles.push({
+				url: {
+					domain: userscript.domains ?? userscript.meta.domain,
+					startWith: userscript.meta.startWith,
+					endWith: userscript.meta.endWith,
+					regex: userscript.meta.regex,
+				},
+				name: userscript.name,
+				fileName: userscript.fileName,
+				enabled: !userscript.meta.disabled,
+				tags: userscript.tags,
+				css: userscript.content,
+				allFrames: userscript.meta.allFrames,
+				asUserStyle: userscript.meta.asUserStyle,
+			});
+		} else if (userscript.ext === 'js') {
+			newUserScripts.push({
+				matches: userscript.matches,
+				excludeMatches: userscript.excludeMatches,
+				name: userscript.name,
+				fileName: userscript.fileName,
+				enabled: !userscript.meta.disabled,
+				tags: userscript.tags,
+				script: userscript.content,
+				allFrames: userscript.meta.allFrames,
+				asMainWorld: userscript.meta.asMainWorld,
+				runAt: userscript.meta['run-at'],
+			});
+		}
 	}
 
 	(await contentStyles).userStyles = newUserStyles;
+	(await contentScripts).userScripts = newUserScripts;
 }

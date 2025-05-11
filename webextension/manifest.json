@@ -52,6 +52,7 @@
 		"scripting",
 		"sessions",
 		"storage",
+		"userScripts",
 		"tabs",
 		"activeTab",
 		"webNavigation",

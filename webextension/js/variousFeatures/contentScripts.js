@@ -1,0 +1,273 @@
+import {
+    _userScriptsStateStoreKey,
+    _userScriptsStoreKey
+} from "../constants.js";
+import {contentStyles} from "./contentStyles.js";
+
+
+
+/**
+ *
+ * @typedef {object} UserScript
+ * @property {string} name
+ * @property {string} fileName
+ * @property {boolean} enabled
+ * @property {string[]} tags
+ * @property {string} script
+ * @property {string[]} [matches]
+ * @property {string[]} [excludeMatches]
+ * @property {string} [allFrames]
+ * @property {string} [asMainWorld]
+ */
+class ContentScripts {
+    /**
+     * @type {UserScript[] | null}
+     */
+    #userScripts= null;
+    /**
+     * @type {Dict<boolean> | null}
+     */
+    #userScriptsStates= null;
+
+    /**
+     * @private
+     */
+    constructor() {
+        chrome.storage.onChanged.addListener((changes, areaName) => {
+            this.#onStorageChange(changes, areaName);
+        });
+        chrome.runtime.onUserScriptMessage.addListener((message, sender, sendResponse) => {
+            if (sender.id !== chrome.runtime.id || !message.userScriptsId) return;
+            console.log(message);
+
+            try {
+                const tabData = this.#contentStyle.tabData,
+                    currentTabData = tabData[sender.tab.id];
+
+                (currentTabData.executedScripts ?? []).push(message.userScriptsId);
+                this.#contentStyle.tabData = tabData;
+
+                sendResponse(true);
+            } catch (e) {
+                console.error(e);
+                sendResponse(null);
+            }
+        });
+    }
+
+    // noinspection SpellCheckingInspection
+    /**
+     * @type {ContentScripts}
+     */
+    static #instance;
+    /**
+     @type {ContentStyles}
+     */
+    #contentStyle;
+    /**
+     * @return {ContentScripts}
+     */
+    static get instance() {
+        return this.#instance;
+    }
+    /**
+     *
+     * @returns {Promise<ContentScripts>}
+     */
+    static async load() {
+        this.#instance = new ContentScripts();
+        await this.#instance.load();
+        this.#instance.#contentStyle = await contentStyles;
+        return this.#instance;
+    }
+    async load() {
+        if (!this.#userScriptsStates) {
+            const result = await chrome.storage.session.get(_userScriptsStateStoreKey)
+                .catch(console.error);
+            if (!(_userScriptsStateStoreKey in result)) {
+                this.#userScriptsStates = {};
+            } else {
+                if (!result || typeof result !== 'object') throw new Error('userScripts must be an object');
+                this.#userScriptsStates = result[_userScriptsStateStoreKey];
+            }
+
+        }
+    }
+
+
+
+    /**
+     *
+     * @param {UserScript[]} newValue
+     */
+    set userScripts(newValue)  {
+        if (!Array.isArray(newValue)) throw new Error('ARRAY_VALUE_EXPECTED');
+        this.#userScripts = newValue;
+        chrome.storage.session.set({
+            [_userScriptsStoreKey]: newValue
+        })
+            .catch(console.error);
+    }
+    /**
+     *
+     * @returns {UserScript[]}
+     */
+    get userScripts()  {
+        if (!this.#userScripts) {
+            throw new Error('USER_SCRIPT_NOT_LOADED');
+        }
+        return this.#userScripts;
+    }
+
+    /**
+     *
+     * @param {Dict<boolean>} newValue
+     */
+    set userScriptStates(newValue)  {
+        this.#userScriptsStates = newValue;
+        chrome.storage.session.set({
+            [_userScriptsStateStoreKey]: newValue,
+        })
+            .catch(console.error);
+    }
+    /**
+     *
+     * @return {Dict<boolean>}
+     */
+    get userScriptStates()  {
+        if (!this.#userScriptsStates) {
+            throw new Error('USER_SCRIPTS_STATES_NOT_LOADED');
+        }
+        return this.#userScriptsStates;
+    }
+
+
+
+    /**
+     *
+     * @param {Dict<chrome.storage.StorageChange>} changes
+     * @param {chrome.storage.AreaName} areaName
+     */
+    #onStorageChange(changes, areaName) {
+        if (areaName !== 'session') return;
+
+        if (_userScriptsStoreKey in changes) {
+            /**
+             * @type {UserScript[]}
+             */
+            this.#userScripts = changes[_userScriptsStoreKey].newValue;
+            this.#updateUserScripts()
+                .catch(console.error);
+        }
+    }
+
+    async #updateUserScripts() {
+        const userScripts = this.userScripts;
+
+        const currentUserScripts = new Set(
+            (await chrome.userScripts.getScripts())
+                .map(userScript => userScript.id)
+        );
+
+        /**
+         *
+         * @type {Set<string>}
+         */
+        const userScriptIds = new Set();
+
+        /**
+         *
+         * @type {chrome.userScripts.RegisteredUserScript[]}
+         */
+        const userScriptRegistration = [];
+        /**
+         *
+         * @type {chrome.userScripts.RegisteredUserScript[]}
+         */
+        const newUserScriptRegistration = [];
+
+        const cb = (userScriptsId) => {
+            chrome.runtime.sendMessage({
+                type: 'user_script_executed',
+                userScriptsId,
+            }).catch(console.error);
+        };
+
+        for (let userScript of userScripts) {
+            const enabled = this.userScriptStates[userScript.fileName] ?? userScript.enabled;
+            if (!enabled) continue;
+            userScriptIds.add(userScript.fileName);
+
+            /**
+             *
+             * @type {chrome.userScripts.RegisteredUserScript}
+             */
+            const registrationUserScript = {
+                id: userScript.fileName,
+                runAt: userScript.runAt,
+                js: [
+                    { code: `(${cb.toString()})(${JSON.stringify(userScript.fileName)});` },
+                    { code: userScript.script },
+                ],
+                matches: userScript.matches ?? [],
+                excludeMatches: userScript.excludeMatches ?? [],
+                world: userScript.asMainWorld === true ? 'MAIN' : 'USER_SCRIPT',
+                allFrames: !!userScript.allFrames,
+            };
+
+            if (currentUserScripts.has(userScript.fileName)) {
+                userScriptRegistration.push(registrationUserScript);
+            } else {
+                newUserScriptRegistration.push(registrationUserScript);
+            }
+        }
+
+
+        if (newUserScriptRegistration.length > 0) {
+            await chrome.userScripts.register(newUserScriptRegistration)
+                .catch(console.error);
+        }
+        await chrome.userScripts.update(userScriptRegistration)
+            .catch(console.error);
+
+
+        /**
+         *
+         * @type {Set<string>}
+         */
+        const removedUserScriptIds = new Set();
+        for (let userScriptId of currentUserScripts) {
+            if (!userScriptIds.has(userScriptId)) {
+                removedUserScriptIds.add(userScriptId);
+            }
+        }
+        if (removedUserScriptIds.size > 0) {
+            await chrome.userScripts.unregister({
+                ids: Array.from(removedUserScriptIds),
+            }).catch(console.error);
+        }
+
+
+        console.log('[UserScript] Now registered UserScripts', await chrome.userScripts.getScripts());
+    }
+}
+
+/**
+ *
+ * @type {ContentScripts|Promise<ContentScripts>}
+ */
+export let contentScripts = ContentScripts.load();
+
+
+async function onStart() {
+    await chrome.userScripts.configureWorld({
+        messaging: true,
+    })
+        .catch(console.error);
+}
+chrome.runtime.onStartup.addListener(function () {
+    onStart().catch(console.error);
+});
+chrome.runtime.onInstalled.addListener(function () {
+    onStart().catch(console.error);
+});

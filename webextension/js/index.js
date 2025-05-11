@@ -12,6 +12,7 @@ import {ChromeUpdateNotification} from './classes/chromeUpdateNotification.js';
 
 import './variousFeatures/tabPageServerIp.js';
 import './variousFeatures/contentStyles.js';
+import './variousFeatures/contentScripts.js';
 import './devtools/devtools-background.js';
 
 import {isFirefox} from "./utils/browserDetect.js";
