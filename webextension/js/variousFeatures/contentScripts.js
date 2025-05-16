@@ -107,6 +107,23 @@ function userScriptApiLoader(context) {
         }
     });
 
+    /**
+     *
+     * @type {ProxyHandler}
+     */
+    const readOnlyProxy = {
+        set(target, property) {
+            throw new Error(`Cannot modify property ${property} of the target object (READ_ONLY)`);
+        },
+        defineProperty(target, property) {
+            throw new Error(`Cannot define property ${property} of the target object (READ_ONLY)`);
+        },
+        deleteProperty: (target, property) => {
+            throw new Error(`Cannot delete property ${property} of the target object (READ_ONLY)`);
+        },
+        preventExtensions: ()=> true,
+    }
+
     return new Proxy({
         ...context,
         on(eventName, listener) {
@@ -122,6 +139,7 @@ function userScriptApiLoader(context) {
                 return call.call(this, key, ...arguments);
             }
         },
+        ...readOnlyProxy,
     });
 }
 
@@ -352,7 +370,7 @@ class ContentScripts {
                 id: userScript.fileName,
                 runAt: userScript.runAt,
                 js: [
-                    { code: `const znmApi = Object.freeze(${userScriptApiLoader.toString()}(${JSON.stringify(context)}));\n(function(unsafeWindow){ ${userScript.script} }).call(znmApi, window);` },
+                    { code: `const znmApi = ${userScriptApiLoader.toString()}(${JSON.stringify(context)});\n(function(unsafeWindow, window){ ${userScript.script} }).call(znmApi, window, undefined);` },
                 ],
                 matches: userScript.matches ?? [],
                 excludeMatches: userScript.excludeMatches ?? [],
