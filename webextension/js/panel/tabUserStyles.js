@@ -8,6 +8,7 @@ import {
 import {appendTo} from "../utils/appendTo.js";
 import {renderTemplate} from "../init-templates.js";
 import {matchesChromePattern} from "../matchesChromePattern.js";
+import {getCurrentTab} from "../utils/getCurrentTab.js";
 
 const idTabUserStyles = 'idTabUserStyles';
 
@@ -138,6 +139,7 @@ export async function updateData(activeTab) {
 				enabled: userStyle.enabled,
 				fileName: userStyle.fileName,
 				tags: userStyle.tags,
+				menuCommands: userStyle.menuCommands ?? [],
 			},
 		});
 	}
@@ -150,6 +152,35 @@ export async function updateData(activeTab) {
 	appendTo($tabUserStyles, await renderTemplate("tabUserStyles", renderData));
 }
 
+document.addEventListener('click', function (ev) {
+	const element = ev.target.closest('[data-userscript-menu-command]');
+	if (!element) return;
+
+	ev.preventDefault();
+
+	const target = element.dataset.target,
+		eventName = element.dataset.userscriptMenuCommand;
+	if (!target || !eventName) return;
+
+	console.log(eventName, target);
+	userScriptSendEvent(eventName, target).catch(console.error);
+})
+
+/**
+ *
+ * @param {string} eventName
+ * @param {string} target
+ * @param {chrome.tabs.Tab} [tab]
+ */
+async function userScriptSendEvent(eventName, target, tab) {
+	if (!tab) tab = await getCurrentTab();
+	console.info('Sending to tab ', tab, 'the event', eventName, 'for ', target);
+	await chrome.tabs.sendMessage(tab.id, {
+		type: "userScriptEvent",
+		target,
+		eventName: `menuCommand-${eventName}`,
+	});
+}
 
 /**
  *

@@ -456,6 +456,15 @@ export async function updateStyles() {
 				allFrames: userscript.meta.allFrames,
 				asMainWorld: userscript.meta.asMainWorld,
 				runAt: userscript.meta['run-at'],
+				menuCommands: (userscript.meta.menu ?? '').split(/\s*,\s*/)
+					.filter(menuString => menuString.length > 0)
+					.map(command => {
+						const [id, label] = command.split('=');
+						return {
+							id,
+							label: label ?? id,
+						}
+					}),
 			});
 		}
 	}

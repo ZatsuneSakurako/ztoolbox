@@ -12,6 +12,9 @@
 	{%- else -%}
 		<div class="data ellipse">
 			<label for="{{ item.data.id }}">{{ item.data.tags.join(', ') }}</label>
+			{%- for menuItem in item.data.menuCommands  -%}
+				<button data-target="{{ item.data.fileName }}" data-userscript-menu-command="{{ menuItem.id }}">{{ menuItem.label }}</button>
+			{%- endfor -%}
 		</div>
 	{%- endif -%}
 </div>

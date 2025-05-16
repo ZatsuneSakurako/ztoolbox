@@ -3,6 +3,126 @@ import {
     _userScriptsStoreKey
 } from "../constants.js";
 import {contentStyles} from "./contentStyles.js";
+import {sendNotification} from "../classes/chrome-notification.js";
+
+/**
+ *
+ * @param {any} message
+ * @param {chrome.runtime.MessageSender} sender
+ * @param {(response?: any) => void} sendResponse
+ */
+function onUserScriptMessage(message, sender, sendResponse) {
+    if (sender.id !== chrome.runtime.id) {
+        sendResponse(null);
+        return;
+    }
+    if (typeof message !== 'object' || !message) {
+        sendResponse({
+            error: true,
+            data: 'DATA_SHOULD_BE_AN_OBJECT',
+        });
+        return;
+    }
+
+    const success = (data) => {
+        sendResponse({error: false, data});
+    };
+    const error = (error) => {
+        sendResponse({error: true, data: error});
+    };
+    try {
+        switch (message.type) {
+            case 'download':
+                // download(url, name, saveAs)
+                error('WIP');
+                break;
+            case 'notification':
+                const [text, title, image] = message.data;
+                sendNotification({
+                    'id': 'updateNotification',
+                    "title": title ?? message.context.fileName,
+                    "message": text ?? 'Aucun texte',
+                    "iconUrl": image,
+                }, {
+                    onClickAutoClose: false,
+                    onButtonClickAutoClose: false
+                })
+                    .then(id => success(id))
+                    .catch((err) => {
+                        console.error(err);
+                        error(err);
+                    });
+                break;
+            case 'log':
+                console.log(`[UserScript] Log from ${message.context.fileName} :`, ...message.data);
+                success(true);
+                break;
+            default:
+                sendResponse({
+                    error: true,
+                    data: 'NOT_FOUND',
+                });
+        }
+    } catch (e) {
+        console.error(e);
+        error((e ?? new Error('UNKNOWN_ERROR')).toString());
+    }
+}
+
+function userScriptApiLoader(context) {
+    const call = async function userScriptApiCall() {
+        const [callName, ...args] = arguments;
+        const result = await chrome.runtime.sendMessage({
+            type: callName,
+            context: context,
+            data: args,
+        });
+        if (!result) return result;
+        if (typeof result !== 'object') {
+            console.error(result);
+            throw new Error('RESULT_SHOULD_BE_AN_OBJECT');
+        }
+        if (result.error) throw new Error(result.error);
+        return result.data;
+    }
+
+    /**
+     *
+     * @type {Dict<((eventName: string) => void)[]>}
+     */
+    const listeners = {};
+    chrome.runtime.onMessage.addListener((request, sender) => {
+        if (sender.id !== chrome.runtime.id || request.type !== 'userScriptEvent') return;
+        if (!(request.eventName in listeners) || request.target !== context.fileName) return;
+
+        for (const listener of listeners[request.eventName]) {
+            if (typeof listener !== 'function') continue;
+            if (listener.data === undefined) {
+                listener();
+                continue;
+            }
+            const arrData = Array.isArray(listener.data) ? listener.data : [listener.data];
+            listener(...(arrData ?? []));
+        }
+    });
+
+    return new Proxy({
+        ...context,
+        on(eventName, listener) {
+            if (!(eventName in listeners)) {
+                listeners[eventName] = [];
+            }
+            listeners[eventName].push(listener);
+        },
+    }, {
+        get(target, key) {
+            if (key in target) return target[key];
+            return function () {
+                return call.call(this, key, ...arguments);
+            }
+        },
+    });
+}
 
 
 
@@ -18,6 +138,7 @@ import {contentStyles} from "./contentStyles.js";
  * @property {string[]} [excludeMatches]
  * @property {string} [allFrames]
  * @property {string} [asMainWorld]
+ * @property {Dict<{ id: string, label?: string }>} [menuCommands]
  */
 class ContentScripts {
     /**
@@ -37,8 +158,10 @@ class ContentScripts {
             this.#onStorageChange(changes, areaName);
         });
         chrome.runtime.onUserScriptMessage.addListener((message, sender, sendResponse) => {
-            if (sender.id !== chrome.runtime.id || !message.userScriptsId) return;
-
+            if (sender.id !== chrome.runtime.id || !message.userScriptsId) {
+                onUserScriptMessage(message, sender, sendResponse);
+                return;
+            }
             try {
                 const tabData = this.#contentStyle.tabData,
                     currentTabData = tabData[sender.tab.id];
@@ -215,6 +338,11 @@ class ContentScripts {
             if (!enabled) continue;
             userScriptIds.add(userScript.fileName);
 
+            const context = {
+                fileName: userScript.fileName,
+                tags: userScript.tags,
+            };
+
             /**
              *
              * @type {chrome.userScripts.RegisteredUserScript}
@@ -224,7 +352,7 @@ class ContentScripts {
                 runAt: userScript.runAt,
                 js: [
                     { code: `(${cb.toString()})(${JSON.stringify(userScript.fileName)});` },
-                    { code: userScript.script },
+                    { code: `const znmApi = Object.freeze(${userScriptApiLoader.toString()}(${JSON.stringify(context)}));\n${userScript.script}` },
                 ],
                 matches: userScript.matches ?? [],
                 excludeMatches: userScript.excludeMatches ?? [],
