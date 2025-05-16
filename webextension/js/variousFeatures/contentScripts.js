@@ -70,6 +70,7 @@ function onUserScriptMessage(message, sender, sendResponse) {
 }
 
 function userScriptApiLoader(context) {
+    chrome.runtime.sendMessage({ type: 'user_script_executed', userScriptsId: context.fileName }).catch(console.error);
     const call = async function userScriptApiCall() {
         const [callName, ...args] = arguments;
         const result = await chrome.runtime.sendMessage({
@@ -351,8 +352,7 @@ class ContentScripts {
                 id: userScript.fileName,
                 runAt: userScript.runAt,
                 js: [
-                    { code: `(${cb.toString()})(${JSON.stringify(userScript.fileName)});` },
-                    { code: `const znmApi = Object.freeze(${userScriptApiLoader.toString()}(${JSON.stringify(context)}));\n${userScript.script}` },
+                    { code: `const znmApi = Object.freeze(${userScriptApiLoader.toString()}(${JSON.stringify(context)}));\n(function(unsafeWindow){ ${userScript.script} }).call(znmApi, window);` },
                 ],
                 matches: userScript.matches ?? [],
                 excludeMatches: userScript.excludeMatches ?? [],
