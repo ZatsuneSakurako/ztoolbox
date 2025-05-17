@@ -33,8 +33,23 @@ function onUserScriptMessage(message, sender, sendResponse) {
     try {
         switch (message.type) {
             case 'download':
-                // download(url, name, saveAs)
-                error('WIP');
+                const [url, filename, saveAs] = message.data;
+                if (!url) {
+                    error('MISSING URL');
+                    return;
+                }
+                chrome.downloads.download({
+                    url,
+                    filename,
+                    saveAs: saveAs !== undefined ? !!saveAs : true,
+                })
+                    .then(function (downloadId) {
+                        console.log('Download started. ID: ' + downloadId);
+                    })
+                    .catch((err) => {
+                        console.error(err);
+                        error(err);
+                    });
                 break;
             case 'notification':
                 const [text, title, image] = message.data;
@@ -54,7 +69,12 @@ function onUserScriptMessage(message, sender, sendResponse) {
                     });
                 break;
             case 'log':
-                console.log(`[UserScript] Log from ${message.context.fileName} :`, ...message.data);
+            case 'debug':
+            case 'dir':
+            case 'info':
+            case 'warn':
+            case 'error':
+                console[message.type](`[UserScript] ${message.type} from ${message.context.fileName} :`, ...message.data);
                 success(true);
                 break;
             default:
@@ -132,6 +152,19 @@ function userScriptApiLoader(context) {
             }
             listeners[eventName].push(listener);
         },
+        /**
+         *
+         * @param {string} css
+         */
+        addStyle(css) {
+            try {
+                const styleSheet = new CSSStyleSheet();
+                styleSheet.replaceSync(css);
+                document.adoptedStyleSheets = [...document.adoptedStyleSheets, styleSheet];
+            } catch (e) {
+                call('error', `Error adding style ${e}`);
+            }
+        }
     }, {
         get(target, key) {
             if (key in target) return target[key];
