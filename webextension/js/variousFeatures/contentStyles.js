@@ -245,13 +245,13 @@ function userStyleInjectOpts(userStyle, tab) {
 /**
  *
  * @param {chrome.tabs.Tab} tab
- * @param {chrome.tabs.TabChangeInfo|undefined} changeInfo
+ * @param {chrome.tabs.TabChangeInfo|chrome.webNavigation.WebNavigationParentedCallbackDetails|undefined} details
  * @param {boolean} forceRemove
  */
-export async function onTabUrl(tab, changeInfo, forceRemove) {
+export async function onTabUrl(tab, details, forceRemove) {
 	contentStyles = await contentStyles;
 
-	let url = changeInfo?.url ?? tab.url;
+	let url = details?.url ?? tab.url;
 	let domain = null;
 	try {
 		/**
@@ -261,7 +261,7 @@ export async function onTabUrl(tab, changeInfo, forceRemove) {
 	} catch (_) {
 	}
 	if (!domain) {
-		console.error('Could not parse domain url');
+		console.error(`Could not parse domain url "${url}"`);
 		return;
 	}
 
@@ -361,12 +361,18 @@ export async function onTabUrl(tab, changeInfo, forceRemove) {
 	tabData[`${tab.id}`] = currentTabData;
 	contentStyles.tabData = tabData;
 }
-chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
-	if ('url' in changeInfo && changeInfo.status === 'loading') {
-		onTabUrl(tab, changeInfo, false)
-			.catch(console.error)
-		;
-	}
+chrome.webNavigation.onCommitted.addListener(function (details) {
+	// Exclude iframes & special "tabs"
+	if (details.frameId !== 0 || details.tabId < 0) return;
+
+	(async () => {
+		const tab = await chrome.tabs.get(details.tabId)
+			.catch(console.error);
+		if (!tab) return;
+		await onTabUrl(tab, details, false)
+			.catch(console.error);
+	})()
+		.catch(console.error);
 });
 
 
