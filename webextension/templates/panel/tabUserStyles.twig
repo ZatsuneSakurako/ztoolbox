@@ -1,20 +1,41 @@
 {%- for item in items -%}
-<div class="buttonItem cursor">
+<div class="buttonItem cursor
+	{%- if item.data.isCss %} userstyle{% endif -%}
+	{%- if item.data.isScript %} userscript{% endif -%}">
+
 	{%- if not item.data -%}
 		<span class="icon material-symbols-outlined">tab</span>
 	{%- else -%}
 		<input class="icon" type="checkbox" name="userStyle-{{ item.data.id }}" value="{{ item.data.fileName }}" id="{{ item.data.id }}"{% if item.data.enabled %} checked{% endif %} />
 	{%- endif -%}
+	<label class="title ellipse" for="{{ item.data.id }}">
+		{%- if item.data.isScriptExecuted | default(null) != null -%}
+		<span class="running-state material-symbols-outlined">{%- if item.data.isScriptExecuted == true -%}
+			play_arrow
+		{%- else -%}
+			warning
+		{%- endif -%}</span>
+		{%- endif -%}
 
-	<label class="title ellipse" for="{{ item.data.id }}">{{item.title}}</label>
+		{{- item.title -}}
+	</label>
 	{%- if not item.data -%}
 		<div class="data ellipse">Aucun style</div>
 	{%- else -%}
 		<div class="data ellipse">
 			<label for="{{ item.data.id }}">{{ item.data.tags.join(', ') }}</label>
-			{%- for menuItem in item.data.menuCommands  -%}
-				<button data-target="{{ item.data.fileName }}" data-userscript-menu-command="{{ menuItem.id }}">{{ menuItem.label }}</button>
-			{%- endfor -%}
+			{%- if item.data.isScriptExecuted == true -%}
+				<ul class="menu-actions">
+				{%- for menuItem in item.data.menuCommands  -%}
+					<li>
+						<button class="menu-action" data-target="{{ item.data.fileName }}" data-userscript-menu-command="{{ menuItem.id }}">
+							<span class="material-symbols-outlined">manufacturing</span>
+							{{- menuItem.label -}}
+						</button>
+					</li>
+				{%- endfor -%}
+				</ul>
+			{%- endif -%}
 		</div>
 	{%- endif -%}
 </div>

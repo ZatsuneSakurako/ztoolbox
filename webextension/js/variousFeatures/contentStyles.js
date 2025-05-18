@@ -460,7 +460,7 @@ export async function updateStyles() {
 				tags: userscript.tags,
 				script: userscript.content,
 				allFrames: userscript.meta.allFrames,
-				asMainWorld: userscript.meta.asMainWorld,
+				sandbox: userscript.meta.sandbox,
 				runAt: userscript.meta['run-at'],
 				menuCommands: (userscript.meta.menu ?? '').split(/\s*,\s*/)
 					.filter(menuString => menuString.length > 0)

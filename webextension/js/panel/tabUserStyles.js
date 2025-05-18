@@ -15,7 +15,7 @@ const idTabUserStyles = 'idTabUserStyles';
 /**
  *
  * @param {chrome.tabs.Tab} tab
- * @returns {Promise<UserStyle[]>}
+ * @returns {Promise<{ userStyles: UserStyle[], executedScripts: Set<string>, userScripts: UserScript[] }>}
  */
 export async function getTabUserStyles(tab) {
 	const result = await chrome.storage.session.get([
@@ -26,7 +26,13 @@ export async function getTabUserStyles(tab) {
 		_userScriptsStateStoreKey,
 	])
 		.catch(console.error);
-	if (!(_userStylesStoreKey in result) || !Array.isArray(result[_userStylesStoreKey])) return [];
+	if (!(_userStylesStoreKey in result) || !Array.isArray(result[_userStylesStoreKey])) {
+		return {
+			userStyles: [],
+			executedScripts: new Set(),
+			userScripts: [],
+		};
+	}
 
 	const userStyles = result[_userStylesStoreKey],
 		userScripts = result[_userScriptsStoreKey]
@@ -67,6 +73,7 @@ export async function getTabUserStyles(tab) {
 			}
 			return matchedStyles && matchedStyles.includes(userStyle.fileName);
 		}),
+		executedScripts,
 		userScripts: userScripts.filter(userScript => {
 			let matched = false;
 			if (!tab.url) return false;
@@ -89,7 +96,7 @@ export async function getTabUserStyles(tab) {
 			}
 			if (!matched) return false;
 
-			userScript.enabled = executedScripts.has(userScript.fileName);
+			userScript.enabled = true;
 			return true;
 		}),
 	};
@@ -112,9 +119,6 @@ export async function updateData(activeTab) {
 		return;
 	}
 
-	/**
-	 * @type { { userStyles: UserStyle[], userScripts: UserScript[] } }
-	 */
 	const tabData = await dataPromise;
 	if (!tabData.userStyles.length && tabData.userScripts.length) {
 		appendTo($tabUserStyles, await renderTemplate("tabUserStyles", {
@@ -131,6 +135,14 @@ export async function updateData(activeTab) {
 		items: [],
 	};
 	for (let [i, userStyle] of [].concat(tabData.userStyles, tabData.userScripts).entries()) {
+		/**
+		 *
+		 * @type {boolean|undefined}
+		 */
+		let isScriptExecuted = undefined;
+		if ('script' in userStyle) {
+			isScriptExecuted = tabData.executedScripts.has(userStyle.fileName);
+		}
 		renderData.items.push({
 			title: userStyle.name,
 			data: {
@@ -140,6 +152,9 @@ export async function updateData(activeTab) {
 				fileName: userStyle.fileName,
 				tags: userStyle.tags,
 				menuCommands: userStyle.menuCommands ?? [],
+				isScriptExecuted,
+				isCss: 'css' in userStyle,
+				isScript: 'script' in userStyle,
 			},
 		});
 	}

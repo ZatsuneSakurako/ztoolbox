@@ -5,6 +5,74 @@ import {
 import {contentStyles} from "./contentStyles.js";
 import {sendNotification} from "../classes/chrome-notification.js";
 
+async function znmDownload(data) {
+    let opts = {};
+    if (typeof data === 'object') {
+        opts = data;
+    } else if (Array.isArray(data)) {
+        const [url, filename, saveAs] = data;
+        opts = {url, filename, saveAs};
+    } else {
+        throw new Error('INVALID_ARGUMENTS')
+    }
+    if (!opts.url || typeof opts.url !== 'string') throw new Error('INVALID URL');
+    if (opts.filename !== undefined && typeof opts.filename !== 'string') throw new Error('INVALID FILENAME');
+
+    return await chrome.downloads.download({
+        url: opts.url,
+        filename: opts.filename,
+        saveAs: opts.saveAs !== undefined ? !!opts.saveAs : true,
+    })
+}
+
+async function znmNotification(data, context) {
+    let opts = {};
+    if (typeof data === 'object') {
+        opts = data;
+    } else if (Array.isArray(data)) {
+        if (data.length === 2 && typeof data.at(0) === 'object') {
+            throw new Error('UNSUPPORTED_ON_DONE_PARAMETER');
+        }
+        const [text, title, image, onclick] = data;
+        opts = {text, title, image, onclick};
+    }
+    if (opts.text === undefined || typeof opts.text !== 'string') throw new Error('INVALID TEXT');
+    if (opts.title !== undefined && typeof opts.title !== 'string') throw new Error('INVALID TITLE');
+    if (opts.image !== undefined && typeof opts.image !== 'string') throw new Error('INVALID IMAGE');
+    if (opts.onclick !== undefined) throw new Error('UNSUPPORTED_ONCLICK_PARAMETER');
+    return await sendNotification({
+        'id': 'updateNotification',
+        "title": opts.title ?? context.fileName,
+        "message": opts.text,
+        "iconUrl": opts.image,
+    }, {
+        onClickAutoClose: false,
+        onButtonClickAutoClose: false
+    });
+}
+
+async function znmOpenInTab(data) {
+    let opts = {};
+    if (typeof data === 'object') {
+        opts = data;
+    } else if (Array.isArray(data)) {
+        const [url, loadInBackground] = data;
+        opts = {url, loadInBackground};
+    }
+    if (opts.url === undefined || typeof opts.url !== 'string') throw new Error('INVALID URL');
+    if (opts.insert !== undefined && typeof opts.insert !== 'number') throw new Error('INVALID INSERT');
+    if (opts.loadInBackground !== undefined && !typeof opts.loadInBackground !== 'boolean') {
+        throw new Error('INVALID loadInBackground');
+    }
+    if (opts.setParent !== undefined) throw new Error('UNSUPPORTED_SET_PARENT_PARAMETER');
+    if (opts.incognito !== undefined) throw new Error('UNSUPPORTED_INCOGNITO_PARAMETER');
+    return await chrome.tabs.create({
+        url: opts.url,
+        active: opts.loadInBackground !== undefined ? !opts.loadInBackground : undefined,
+        index: opts.insert !== undefined ? opts.insert : undefined,
+    });
+}
+
 /**
  *
  * @param {any} message
@@ -33,18 +101,10 @@ function onUserScriptMessage(message, sender, sendResponse) {
     try {
         switch (message.type) {
             case 'download':
-                const [url, filename, saveAs] = message.data;
-                if (!url) {
-                    error('MISSING URL');
-                    return;
-                }
-                chrome.downloads.download({
-                    url,
-                    filename,
-                    saveAs: saveAs !== undefined ? !!saveAs : true,
-                })
+                znmDownload(message.data)
                     .then(function (downloadId) {
                         console.log('Download started. ID: ' + downloadId);
+                        success(downloadId);
                     })
                     .catch((err) => {
                         console.error(err);
@@ -52,17 +112,16 @@ function onUserScriptMessage(message, sender, sendResponse) {
                     });
                 break;
             case 'notification':
-                const [text, title, image] = message.data;
-                sendNotification({
-                    'id': 'updateNotification',
-                    "title": title ?? message.context.fileName,
-                    "message": text ?? 'Aucun texte',
-                    "iconUrl": image,
-                }, {
-                    onClickAutoClose: false,
-                    onButtonClickAutoClose: false
-                })
+                znmNotification(message.data, message.context)
                     .then(id => success(id))
+                    .catch((err) => {
+                        console.error(err);
+                        error(err);
+                    });
+                break;
+            case 'openInTab':
+                znmOpenInTab(message.data)
+                    .then(result => success(result))
                     .catch((err) => {
                         console.error(err);
                         error(err);
@@ -144,6 +203,7 @@ function userScriptApiLoader(context) {
         preventExtensions: ()=> true,
     }
 
+    // noinspection JSUnusedGlobalSymbols
     return new Proxy({
         ...context,
         on(eventName, listener) {
@@ -162,11 +222,16 @@ function userScriptApiLoader(context) {
                 styleSheet.replaceSync(css);
                 document.adoptedStyleSheets = [...document.adoptedStyleSheets, styleSheet];
             } catch (e) {
-                call('error', `Error adding style ${e}`);
+                call('error', `Error adding style ${e}`).catch(console.error);
             }
         }
     }, {
         get(target, key) {
+            const compatibilityKeys = /^(GM_|TM_)/;
+            if (typeof key === 'string' && !(key in target) && compatibilityKeys.test(key)) {
+                // Compatibility for Tampermonkey
+                key = key.replace(compatibilityKeys, '');
+            }
             if (key in target) return target[key];
             return function () {
                 return call.call(this, key, ...arguments);
@@ -186,10 +251,11 @@ function userScriptApiLoader(context) {
  * @property {boolean} enabled
  * @property {string[]} tags
  * @property {string} script
+ * @property {chrome.userScripts.RunAt} [runAt]
  * @property {string[]} [matches]
  * @property {string[]} [excludeMatches]
  * @property {string} [allFrames]
- * @property {string} [asMainWorld]
+ * @property {chrome.userScripts.ExecutionWorld} [sandbox]
  * @property {Dict<{ id: string, label?: string }>} [menuCommands]
  */
 class ContentScripts {
@@ -229,12 +295,18 @@ class ContentScripts {
             }
         });
         chrome.webNavigation.onBeforeNavigate.addListener(async function (details) {
+            // Exclude iframes
+            if (details.frameId !== 0) return;
             try {
                 // console.info('[UserScripts] Tab navigation, resetting', details);
                 const _contentStyles = await contentStyles,
                     tabId = details.tabId,
                     tabData = _contentStyles.tabData ?? _contentStyles.tabNewData;
 
+                if (!(`${tabId}` in tabData)) {
+                    console.warn(`Tab ${tabId} not found in contentScripts tabData.`);
+                    return;
+                }
                 tabData[`${tabId}`].executedScripts = [];
                 _contentStyles.tabData = tabData;
             } catch (e) {
@@ -378,13 +450,6 @@ class ContentScripts {
          */
         const newUserScriptRegistration = [];
 
-        const cb = (userScriptsId) => {
-            chrome.runtime.sendMessage({
-                type: 'user_script_executed',
-                userScriptsId,
-            }).catch(console.error);
-        };
-
         for (let userScript of userScripts) {
             const enabled = this.userScriptStates[userScript.fileName] ?? userScript.enabled;
             if (!enabled) continue;
@@ -407,9 +472,17 @@ class ContentScripts {
                 ],
                 matches: userScript.matches ?? [],
                 excludeMatches: userScript.excludeMatches ?? [],
-                world: userScript.asMainWorld === true ? 'MAIN' : 'USER_SCRIPT',
+                // NO chrome.runtime.* access in "MAIN" world as it's not isolated anymore
+                world: 'USER_SCRIPT',
                 allFrames: !!userScript.allFrames,
             };
+            if (userScript.sandbox === 'MAIN') {
+                // Exclude "znmApi" if running in MAIN world
+                registrationUserScript.world = userScript.sandbox;
+                registrationUserScript.js = [
+                    { code: userScript.script }
+                ];
+            }
 
             if (currentUserScripts.has(userScript.fileName)) {
                 userScriptRegistration.push(registrationUserScript);

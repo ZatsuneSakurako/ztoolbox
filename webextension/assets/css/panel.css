@@ -183,6 +183,28 @@ section .buttonItem.tabPageServerIp.error {
 section .buttonItem.tabMover .data {
 	-webkit-line-clamp: 1;
 }
+section .buttonItem.userscript .title .running-state {
+	float: left;
+}
+section .buttonItem.userscript .menu-action {
+	cursor: pointer;
+	font-size: 12px;
+	margin: 0;
+	padding-bottom: 4px;
+	padding-left: .8em;
+	padding-top: 4px;
+	text-align: left;
+}
+section .buttonItem.userscript .menu-action .material-symbols-outlined {
+	font-size: 1em;
+	margin-right: .2em;
+}
+section .buttonItem.userscript .menu-actions {
+	list-style-type: none;
+	padding: 0;
+	margin-block-start: 0;
+	margin-block-end: 0;
+}
 
 section .buttonItem .icon {
 	font-size: 32px;
