@@ -4,6 +4,7 @@ import {
 } from "../constants.js";
 import {contentStyles} from "./contentStyles.js";
 import {sendNotification} from "../classes/chrome-notification.js";
+import {getUserscriptData, setUserscriptData} from "../classes/chrome-native.js";
 
 async function znmDownload(data) {
     let opts = {};
@@ -75,6 +76,71 @@ async function znmOpenInTab(data) {
 
 /**
  *
+ * @param {string} fileName
+ * @returns {Promise<Dict<any>>}
+ */
+async function znmGetData(fileName) {
+    if (!fileName || typeof fileName !== 'string') {
+        // noinspection ExceptionCaughtLocallyJS
+        throw new Error('INVALID FILE_NAME');
+    }
+    return await getUserscriptData(fileName);
+}
+/**
+ *
+ * @param {string} fileName
+ * @param {[Dict<any>|null]} data
+ * @param {chrome.tabs.Tab.id} fromTabId
+ * @returns {Promise<boolean>}
+ */
+async function znmSetData(fileName, data, fromTabId) {
+    const [newData] = data;
+    if (!fileName || typeof fileName !== 'string') {
+        // noinspection ExceptionCaughtLocallyJS
+        throw new Error('INVALID FILE_NAME');
+    }
+    if (typeof newData !== 'object') {
+        // noinspection ExceptionCaughtLocallyJS
+        throw new Error('INVALID DATA');
+    }
+    const result = await setUserscriptData(fileName, newData);
+    try {
+        const exceptTab = [];
+        if (fromTabId !== undefined) {
+            exceptTab.push(fromTabId);
+        }
+        triggerUserScriptDataUpdated(fileName, newData ?? {}, new Set(exceptTab))
+    } catch (error) {
+        console.error(error);
+    }
+    return result;
+}
+
+/**
+ *
+ * @param {string} fileName
+ * @param {Dict<any>} newData
+ * @param {Set<string>} [exceptTabs]
+ * @returns {Promise<void>}
+ */
+async function triggerUserScriptDataUpdated(fileName, newData, exceptTabs) {
+    const tabs = await chrome.tabs.query({
+        windowType: 'normal'
+    });
+    for (let tab of tabs) {
+        if (exceptTabs && exceptTabs.has(tab.id)) continue;
+        await chrome.tabs.sendMessage(tab.id, {
+            type: "userScriptEvent",
+            target: fileName,
+            eventName: 'dataUpdated',
+            data: [newData],
+        })
+            .catch(console.error);
+    }
+}
+
+/**
+ *
  * @param {any} message
  * @param {chrome.runtime.MessageSender} sender
  * @param {(response?: any) => void} sendResponse
@@ -121,6 +187,22 @@ function onUserScriptMessage(message, sender, sendResponse) {
                 break;
             case 'openInTab':
                 znmOpenInTab(message.data)
+                    .then(result => success(result))
+                    .catch((err) => {
+                        console.error(err);
+                        error(err);
+                    });
+                break;
+            case 'getData':
+                znmGetData(message.context.fileName)
+                    .then(result => success(result))
+                    .catch((err) => {
+                        console.error(err);
+                        error(err);
+                    });
+                break;
+            case 'setData':
+                znmSetData(message.context.fileName, message.data, sender.tab?.id)
                     .then(result => success(result))
                     .catch((err) => {
                         console.error(err);
@@ -177,11 +259,11 @@ function userScriptApiLoader(context) {
 
         for (const listener of listeners[request.eventName]) {
             if (typeof listener !== 'function') continue;
-            if (listener.data === undefined) {
+            if (request.data === undefined) {
                 listener();
                 continue;
             }
-            const arrData = Array.isArray(listener.data) ? listener.data : [listener.data];
+            const arrData = Array.isArray(request.data) ? request.data : [request.data];
             listener(...(arrData ?? []));
         }
     });
@@ -267,6 +349,11 @@ class ContentScripts {
      * @type {Dict<boolean> | null}
      */
     #userScriptsStates= null;
+    /**
+     *
+     * @type {((fileName: string, newData: Dict<any>) => void)[]}
+     */
+    onUserScriptDataUpdatedCbList = [];
 
     /**
      * @private
@@ -313,6 +400,7 @@ class ContentScripts {
                 console.error(e);
             }
         });
+        this.onUserScriptDataUpdatedCbList.push(triggerUserScriptDataUpdated);
     }
 
     // noinspection SpellCheckingInspection
