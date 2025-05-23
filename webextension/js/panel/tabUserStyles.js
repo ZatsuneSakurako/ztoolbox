@@ -94,10 +94,7 @@ export async function getTabUserStyles(tab) {
 					}
 				}
 			}
-			if (!matched) return false;
-
-			userScript.enabled = true;
-			return true;
+			return matched;
 		}),
 	};
 }

@@ -12,7 +12,7 @@
 		{%- if item.data.isScriptExecuted | default(null) != null -%}
 		<span class="running-state material-symbols-outlined">{%- if item.data.isScriptExecuted == true -%}
 			play_arrow
-		{%- else -%}
+		{%- elseif item.data.enabled -%}
 			warning
 		{%- endif -%}</span>
 		{%- endif -%}
