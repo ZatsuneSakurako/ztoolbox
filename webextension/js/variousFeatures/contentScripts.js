@@ -140,6 +140,76 @@ async function triggerUserScriptDataUpdated(fileName, newData, exceptTabs) {
 }
 
 /**
+ * @typedef {object} RegisterMenuCommand
+ * @property {number|string} [id]
+ * @property {string} [accessKey]
+ * @property {boolean} [autoClose]
+ * @property {string} [title]
+ */
+/**
+ *
+ * @param data
+ * @param {string} fileName
+ * @param {chrome.tabs.Tab} tab
+ * @returns {Promise<number|string>}
+ */
+async function znmRegisterMenuCommand(data, fileName, tab) {
+    const [name, _accessKeyOrOptions, _options] = data;
+    if (typeof name !== 'string') throw new Error('INVALID NAME');
+
+    /**
+     * @type {RegisterMenuCommand}
+     */
+    let options= {};
+    if (typeof _accessKeyOrOptions === 'string') {
+        if (_options && typeof _options !== 'object') {
+            throw new Error('INVALID_OPTIONS');
+        }
+        options = _options ?? {};
+        options.accessKey = _accessKeyOrOptions;
+    } else if (typeof _accessKeyOrOptions === 'object') {
+        options = _accessKeyOrOptions;
+    } else if (_accessKeyOrOptions !== undefined) {
+        throw new Error('INVALID_OPTIONS');
+    }
+
+    const menu_command_id = options.id ?? crypto.randomUUID();
+    options.id = menu_command_id;
+    options.name = name;
+    options.fileName = fileName;
+
+    const _contentStyles = await contentStyles,
+        tabData = _contentStyles.tabData;
+
+    const index = tabData[`${tab.id}`].menus.findIndex(option => option.id === menu_command_id);
+    if (index !== -1) {
+        tabData[`${tab.id}`].menus[index] = options;
+    } else {
+        tabData[`${tab.id}`].menus.push(options);
+    }
+    _contentStyles.tabData = tabData;
+
+    return menu_command_id;
+}
+
+/**
+ *
+ * @param { [string] } data
+ * @param {chrome.tabs.Tab} tab
+ * @returns {Promise<void>}
+ */
+async function znmUnregisterMenuCommand(data, tab) {
+    const [menu_command_id] = data;
+    if (typeof menu_command_id !== 'string') throw new Error('INVALID MENU_COMMAND_ID');
+    if (!tab) throw new Error('INVALID TAB');
+
+    const _contentStyles = await contentStyles,
+        tabData = _contentStyles.tabData;
+    delete tabData[`${tab.id}`].menus[menu_command_id];
+    _contentStyles.tabData = tabData;
+}
+
+/**
  *
  * @param {any} message
  * @param {chrome.runtime.MessageSender} sender
@@ -203,6 +273,22 @@ function onUserScriptMessage(message, sender, sendResponse) {
                 break;
             case 'setData':
                 znmSetData(message.context.fileName, message.data, sender.tab?.id)
+                    .then(result => success(result))
+                    .catch((err) => {
+                        console.error(err);
+                        error(err);
+                    });
+                break;
+            case 'registerMenuCommand':
+                znmRegisterMenuCommand(message.data, message.context.fileName, sender.tab)
+                    .then(result => success(result))
+                    .catch((err) => {
+                        console.error(err);
+                        error(err);
+                    });
+                break;
+            case 'unregisterMenuCommand':
+                znmUnregisterMenuCommand(message.data, sender.tab)
                     .then(result => success(result))
                     .catch((err) => {
                         console.error(err);
@@ -294,6 +380,32 @@ function userScriptApiLoader(context) {
             }
             listeners[eventName].push(listener);
         },
+        off(eventName, listener) {
+            if (!(eventName in listeners)) return;
+
+            if (listener === undefined) {
+                // if no listener specified, remove all listeners
+                listeners[eventName] = [];
+                return;
+            }
+            for (const [i, _listener] of listeners[eventName].entries()) {
+                if (_listener === listener) {
+                    delete listeners[eventName][i];
+                }
+            }
+        },
+        async registerMenuCommand() {
+            const [name, callback, ...args] = arguments;
+            // Keep callback and does not send it to registerMenuCommand
+            const menu_command_id = await call.call(this, 'registerMenuCommand', name, ...args);
+            this.on(`menuCommand-${menu_command_id}`, callback);
+            return menu_command_id;
+        },
+        unregisterMenuCommand() {
+            const [menu_command_id, ...args] = arguments;
+            this.off(`menuCommand-${menu_command_id}`);
+            return call.call(this, 'unregisterMenuCommand', menu_command_id, ...args);
+        },
         /**
          *
          * @param {string} css
@@ -306,7 +418,7 @@ function userScriptApiLoader(context) {
             } catch (e) {
                 call('error', `Error adding style ${e}`).catch(console.error);
             }
-        }
+        },
     }, {
         get(target, key) {
             const compatibilityKeys = /^(GM_|TM_)/;
@@ -338,7 +450,6 @@ function userScriptApiLoader(context) {
  * @property {string[]} [excludeMatches]
  * @property {string} [allFrames]
  * @property {chrome.userScripts.ExecutionWorld} [sandbox]
- * @property {Dict<{ id: string, label?: string }>} [menuCommands]
  */
 class ContentScripts {
     /**
@@ -395,6 +506,7 @@ class ContentScripts {
                     return;
                 }
                 tabData[`${tabId}`].executedScripts = [];
+                tabData[`${tabId}`].menus = [];
                 _contentStyles.tabData = tabData;
             } catch (e) {
                 console.error(e);

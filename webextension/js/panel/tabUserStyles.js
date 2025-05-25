@@ -31,6 +31,7 @@ export async function getTabUserStyles(tab) {
 			userStyles: [],
 			executedScripts: new Set(),
 			userScripts: [],
+			menus: {},
 		};
 	}
 
@@ -48,9 +49,11 @@ export async function getTabUserStyles(tab) {
 	 * @type {Set<string> | void}
 	 */
 	let executedScripts = undefined;
+	let menus = [];
 	try {
 		const tabData = result[_tabStylesStoreKey][tab.id];
 		matchedStyles = tabData.matchedStyles;
+		menus = tabData.menus;
 		executedScripts = new Set(tabData.executedScripts ?? []);
 	} catch (e) {
 		console.error(e);
@@ -96,6 +99,7 @@ export async function getTabUserStyles(tab) {
 			}
 			return matched;
 		}),
+		menus,
 	};
 }
 
@@ -132,12 +136,14 @@ export async function updateData(activeTab) {
 		items: [],
 	};
 	for (let [i, userStyle] of [].concat(tabData.userStyles, tabData.userScripts).entries()) {
+		let menuCommands = []
 		/**
 		 *
 		 * @type {boolean|undefined}
 		 */
 		let isScriptExecuted = undefined;
 		if ('script' in userStyle) {
+			menuCommands = Array.from(Object.values(tabData.menus));
 			isScriptExecuted = tabData.executedScripts.has(userStyle.fileName);
 		}
 		renderData.items.push({
@@ -148,7 +154,7 @@ export async function updateData(activeTab) {
 				enabled: userStyle.enabled,
 				fileName: userStyle.fileName,
 				tags: userStyle.tags,
-				menuCommands: userStyle.menuCommands ?? [],
+				menuCommands,
 				isScriptExecuted,
 				isCss: 'css' in userStyle,
 				isScript: 'script' in userStyle,
@@ -174,8 +180,14 @@ document.addEventListener('click', function (ev) {
 		eventName = element.dataset.userscriptMenuCommand;
 	if (!target || !eventName) return;
 
-	console.log(eventName, target);
-	userScriptSendEvent(eventName, target).catch(console.error);
+	console.log(eventName, target, element.dataset.userscriptAutoClose !== undefined);
+	userScriptSendEvent(eventName, target)
+		.catch(console.error)
+		.finally(() => {
+			if (element.dataset.userscriptAutoClose !== undefined) {
+				window.close();
+			}
+		});
 })
 
 /**

@@ -26,6 +26,7 @@ import {contentScripts} from "./contentScripts.js";
  * @typedef {object} UserStyleTabData
  * @property {string[]} matchedStyles
  * @property {string[]} injectedStyles
+ * @property {RegisterMenuCommand[]} menus
  *
  */
 class ContentStyles {
@@ -215,6 +216,7 @@ class ContentStyles {
 			injectedStyles: [],
 			executedScripts: [],
 			matchedStyles: [],
+			menus: [],
 		}
 	}
 }
@@ -462,15 +464,6 @@ export async function updateStyles() {
 				allFrames: userscript.meta.allFrames,
 				sandbox: userscript.meta.sandbox,
 				runAt: userscript.meta['run-at'],
-				menuCommands: (userscript.meta.menu ?? '').split(/\s*,\s*/)
-					.filter(menuString => menuString.length > 0)
-					.map(command => {
-						const [id, label] = command.split('=');
-						return {
-							id,
-							label: label ?? id,
-						}
-					}),
 			});
 		}
 	}

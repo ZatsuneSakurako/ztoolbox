@@ -20,17 +20,17 @@
 		{{- item.title -}}
 	</label>
 	{%- if not item.data -%}
-		<div class="data ellipse">Aucun style</div>
+		<div class="data">Aucun style</div>
 	{%- else -%}
-		<div class="data ellipse">
+		<div class="data">
 			<label for="{{ item.data.id }}">{{ item.data.tags.join(', ') }}</label>
 			{%- if item.data.isScriptExecuted == true -%}
 				<ul class="menu-actions">
 				{%- for menuItem in item.data.menuCommands  -%}
 					<li>
-						<button class="menu-action" data-target="{{ item.data.fileName }}" data-userscript-menu-command="{{ menuItem.id }}">
+						<button class="menu-action" data-target="{{ item.data.fileName }}" data-userscript-menu-command="{{ menuItem.id }}"{% if menuItem.title %} title="{{ menuItem.title }}"{% endif %}{% if menuItem.accessKey %} accesskey="{{ menuItem.accessKey }}"{% endif %}{% if menuItem.autoClose %} data-userscript-auto-close=""{% endif %}>
 							<span class="material-symbols-outlined">manufacturing</span>
-							{{- menuItem.label -}}
+							{{- menuItem.name -}}
 						</button>
 					</li>
 				{%- endfor -%}
