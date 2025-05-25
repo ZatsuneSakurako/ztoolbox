@@ -6,121 +6,251 @@ import {contentStyles} from "./contentStyles.js";
 import {sendNotification} from "../classes/chrome-notification.js";
 import {getUserscriptData, setUserscriptData} from "../classes/chrome-native.js";
 
-async function znmDownload(data) {
-    let opts = {};
-    if (typeof data === 'object') {
-        opts = data;
-    } else if (Array.isArray(data)) {
-        const [url, filename, saveAs] = data;
-        opts = {url, filename, saveAs};
-    } else {
-        throw new Error('INVALID_ARGUMENTS')
-    }
-    if (!opts.url || typeof opts.url !== 'string') throw new Error('INVALID URL');
-    if (opts.filename !== undefined && typeof opts.filename !== 'string') throw new Error('INVALID FILENAME');
-
-    return await chrome.downloads.download({
-        url: opts.url,
-        filename: opts.filename,
-        saveAs: opts.saveAs !== undefined ? !!opts.saveAs : true,
-    })
-}
-
-async function znmNotification(data, context) {
-    let opts = {};
-    if (typeof data === 'object') {
-        opts = data;
-    } else if (Array.isArray(data)) {
-        if (data.length === 2 && typeof data.at(0) === 'object') {
-            throw new Error('UNSUPPORTED_ON_DONE_PARAMETER');
+// noinspection JSUnusedGlobalSymbols,JSUnusedLocalSymbols
+const znmDataApi = {
+    async setValue(fileName, tab, [key, value]) {
+        const currentData = (await znmUserscriptApi.getData(fileName)) ?? {};
+        currentData[key] = value;
+        await znmUserscriptApi.setData(fileName, tab, [currentData]);
+    },
+    async getValue(fileName, tab, [key, defaultValue]) {
+        const currentData = (await znmUserscriptApi.getData(fileName)) ?? {};
+        return currentData[key] ?? defaultValue;
+    },
+    async deleteValue(fileName, tab, [key]) {
+        const currentData = (await znmUserscriptApi.getData(fileName)) ?? {};
+        delete currentData[key];
+        await znmUserscriptApi.setData(fileName, tab, [currentData]);
+    },
+    async listValues(fileName, tab) {
+        const currentData = (await znmUserscriptApi.getData(fileName)) ?? {};
+        return Array.from(Object.keys(currentData));
+    },
+    async setValues(fileName, tab, [values]) {
+        const currentData = (await znmUserscriptApi.getData(fileName)) ?? {};
+        for (let [key, value] of Object.entries(values)) {
+            currentData[key] = value;
         }
-        const [text, title, image, onclick] = data;
-        opts = {text, title, image, onclick};
-    }
-    if (opts.text === undefined || typeof opts.text !== 'string') throw new Error('INVALID TEXT');
-    if (opts.title !== undefined && typeof opts.title !== 'string') throw new Error('INVALID TITLE');
-    if (opts.image !== undefined && typeof opts.image !== 'string') throw new Error('INVALID IMAGE');
-    if (opts.onclick !== undefined) throw new Error('UNSUPPORTED_ONCLICK_PARAMETER');
-    return await sendNotification({
-        'id': 'updateNotification',
-        "title": opts.title ?? context.fileName,
-        "message": opts.text,
-        "iconUrl": opts.image,
-    }, {
-        onClickAutoClose: false,
-        onButtonClickAutoClose: false
-    });
-}
-
-async function znmOpenInTab(data) {
-    let opts = {};
-    if (typeof data === 'object') {
-        opts = data;
-    } else if (Array.isArray(data)) {
-        const [url, loadInBackground] = data;
-        opts = {url, loadInBackground};
-    }
-    if (opts.url === undefined || typeof opts.url !== 'string') throw new Error('INVALID URL');
-    if (opts.insert !== undefined && typeof opts.insert !== 'number') throw new Error('INVALID INSERT');
-    if (opts.loadInBackground !== undefined && !typeof opts.loadInBackground !== 'boolean') {
-        throw new Error('INVALID loadInBackground');
-    }
-    if (opts.setParent !== undefined) throw new Error('UNSUPPORTED_SET_PARENT_PARAMETER');
-    if (opts.incognito !== undefined) throw new Error('UNSUPPORTED_INCOGNITO_PARAMETER');
-    return await chrome.tabs.create({
-        url: opts.url,
-        active: opts.loadInBackground !== undefined ? !opts.loadInBackground : undefined,
-        index: opts.insert !== undefined ? opts.insert : undefined,
-    });
-}
-
-/**
- *
- * @param {string} fileName
- * @returns {Promise<Dict<any>>}
- */
-async function znmGetData(fileName) {
-    if (!fileName || typeof fileName !== 'string') {
-        // noinspection ExceptionCaughtLocallyJS
-        throw new Error('INVALID FILE_NAME');
-    }
-    return await getUserscriptData(fileName);
-}
-/**
- *
- * @param {string} fileName
- * @param {[Dict<any>|null]} data
- * @param {chrome.tabs.Tab.id} fromTabId
- * @returns {Promise<boolean>}
- */
-async function znmSetData(fileName, data, fromTabId) {
-    const [newData] = data;
-    if (!fileName || typeof fileName !== 'string') {
-        // noinspection ExceptionCaughtLocallyJS
-        throw new Error('INVALID FILE_NAME');
-    }
-    if (typeof newData !== 'object') {
-        // noinspection ExceptionCaughtLocallyJS
-        throw new Error('INVALID DATA');
-    }
-    const result = await setUserscriptData(fileName, newData);
-    try {
-        const exceptTab = [];
-        if (fromTabId !== undefined) {
-            exceptTab.push(fromTabId);
+        await znmUserscriptApi.setData(fileName, tab, [currentData]);
+    },
+    async getValues(fileName, tab, [keysOrDefaults]) {
+        const currentData = (await znmUserscriptApi.getData(fileName)) ?? {},
+            output = {}
+        ;
+        if (Array.isArray(currentData)) {
+            for (let key of keysOrDefaults) {
+                output[key] = currentData[key];
+            }
+        } else {
+            for (let [key, defaultValue] of Object.entries(keysOrDefaults)) {
+                output[key] = currentData[key] ?? defaultValue;
+            }
         }
-        triggerUserScriptDataUpdated(fileName, newData ?? {}, new Set(exceptTab))
-    } catch (error) {
-        console.error(error);
-    }
-    return result;
-}
+        return output;
+    },
+    async deleteValues(fileName, tab, [keys]) {
+        const currentData = (await znmUserscriptApi.getData(fileName)) ?? {};
+        for (let key of keys) {
+            if (key in currentData) {
+                delete currentData[key];
+            }
+        }
+        await znmUserscriptApi.setData(fileName, tab, [currentData]);
+    },
+};
+
+
+// noinspection JSUnusedGlobalSymbols
+const znmUserscriptApi = {
+    async download(fileName, tab, data) {
+        let opts = {};
+        if (typeof data === 'object') {
+            opts = data;
+        } else if (Array.isArray(data)) {
+            const [url, filename, saveAs] = data;
+            opts = {url, filename, saveAs};
+        } else {
+            throw new Error('INVALID_ARGUMENTS')
+        }
+        if (!opts.url || typeof opts.url !== 'string') throw new Error('INVALID URL');
+        if (opts.filename !== undefined && typeof opts.filename !== 'string') throw new Error('INVALID FILENAME');
+
+        return await chrome.downloads.download({
+            url: opts.url,
+            filename: opts.filename,
+            saveAs: opts.saveAs !== undefined ? !!opts.saveAs : true,
+        })
+    },
+    async notification(fileName, tab, data, context) {
+        let opts = {};
+        if (typeof data === 'object') {
+            opts = data;
+        } else if (Array.isArray(data)) {
+            if (data.length === 2 && typeof data.at(0) === 'object') {
+                throw new Error('UNSUPPORTED_ON_DONE_PARAMETER');
+            }
+            const [text, title, image, onclick] = data;
+            opts = {text, title, image, onclick};
+        }
+        if (opts.text === undefined || typeof opts.text !== 'string') throw new Error('INVALID TEXT');
+        if (opts.title !== undefined && typeof opts.title !== 'string') throw new Error('INVALID TITLE');
+        if (opts.image !== undefined && typeof opts.image !== 'string') throw new Error('INVALID IMAGE');
+        if (opts.onclick !== undefined) throw new Error('UNSUPPORTED_ONCLICK_PARAMETER');
+        return await sendNotification({
+            'id': 'updateNotification',
+            "title": opts.title ?? context.fileName,
+            "message": opts.text,
+            "iconUrl": opts.image,
+        }, {
+            onClickAutoClose: false,
+            onButtonClickAutoClose: false
+        });
+    },
+    async openInTab(fileName, tab, data) {
+        let opts = {};
+        if (typeof data === 'object') {
+            opts = data;
+        } else if (Array.isArray(data)) {
+            const [url, loadInBackground] = data;
+            opts = {url, loadInBackground};
+        }
+        if (opts.url === undefined || typeof opts.url !== 'string') throw new Error('INVALID URL');
+        if (opts.insert !== undefined && typeof opts.insert !== 'number') throw new Error('INVALID INSERT');
+        // noinspection JSUnresolvedReference
+        if (opts.setParent !== undefined) throw new Error('UNSUPPORTED_SET_PARENT_PARAMETER');
+        // noinspection JSUnresolvedReference
+        if (opts.incognito !== undefined) throw new Error('UNSUPPORTED_INCOGNITO_PARAMETER');
+        return await chrome.tabs.create({
+            url: opts.url,
+            active: opts.loadInBackground !== undefined ? !opts.loadInBackground : undefined,
+            index: opts.insert !== undefined ? opts.insert : undefined,
+        });
+    },
+
+    /**
+     *
+     * @param {string} fileName
+     * @returns {Promise<Dict<any>>}
+     */
+    async getData(fileName) {
+        if (!fileName || typeof fileName !== 'string') {
+            // noinspection ExceptionCaughtLocallyJS
+            throw new Error('INVALID FILE_NAME');
+        }
+        return await getUserscriptData(fileName);
+    },
+    /**
+     *
+     * @param {string} fileName
+     * @param {chrome.tabs.Tab} tab
+     * @param {[Dict<any>|null]} data
+     * @returns {Promise<boolean>}
+     */
+    async setData(fileName, tab, data) {
+        const [newData] = data;
+        if (!fileName || typeof fileName !== 'string') {
+            // noinspection ExceptionCaughtLocallyJS
+            throw new Error('INVALID FILE_NAME');
+        }
+        if (typeof newData !== 'object') {
+            // noinspection ExceptionCaughtLocallyJS
+            throw new Error('INVALID DATA');
+        }
+        const result = await setUserscriptData(fileName, newData);
+        try {
+            const exceptTab = [];
+            if (tab !== undefined) {
+                exceptTab.push(tab.id);
+            }
+            await triggerUserScriptDataUpdated(fileName, newData ?? {}, new Set(exceptTab));
+        } catch (error) {
+            console.error(error);
+        }
+        return result;
+    },
+    ...znmDataApi,
+
+    /**
+     * @typedef {object} RegisterMenuCommand
+     * @property {number|string} [id]
+     * @property {string} [name]
+     * @property {string} [fileName]
+     * @property {string} [accessKey]
+     * @property {boolean} [autoClose]
+     * @property {string} [title]
+     */
+    /**
+     *
+     * @param {string} fileName
+     * @param {chrome.tabs.Tab} tab
+     * @param data
+     * @returns {Promise<number|string>}
+     */
+    async registerMenuCommand(fileName, tab, data) {
+        const [name, _accessKeyOrOptions, _options] = data;
+        if (typeof name !== 'string') throw new Error('INVALID NAME');
+
+        /**
+         * @type {RegisterMenuCommand}
+         */
+        let options= {};
+        if (typeof _accessKeyOrOptions === 'string') {
+            if (_options && typeof _options !== 'object') {
+                throw new Error('INVALID_OPTIONS');
+            }
+            options = _options ?? {};
+            options.accessKey = _accessKeyOrOptions;
+        } else if (typeof _accessKeyOrOptions === 'object') {
+            options = _accessKeyOrOptions;
+        } else if (_accessKeyOrOptions !== undefined) {
+            throw new Error('INVALID_OPTIONS');
+        }
+
+        const menu_command_id = options.id ?? crypto.randomUUID();
+        options.id = menu_command_id;
+        options.name = name;
+        options.fileName = fileName;
+
+        const _contentStyles = await contentStyles,
+            tabData = _contentStyles.tabData;
+
+        const index = tabData[`${tab.id}`].menus.findIndex(option => option.id === menu_command_id);
+        if (index !== -1) {
+            tabData[`${tab.id}`].menus[index] = options;
+        } else {
+            tabData[`${tab.id}`].menus.push(options);
+        }
+        _contentStyles.tabData = tabData;
+
+        return menu_command_id;
+    },
+
+    /**
+     *
+     * @param {string} fileName
+     * @param {chrome.tabs.Tab} tab
+     * @param { [string] } data
+     * @returns {Promise<void>}
+     */
+    async unregisterMenuCommand(fileName, tab, data) {
+        const [menu_command_id] = data;
+        if (typeof menu_command_id !== 'string') throw new Error('INVALID MENU_COMMAND_ID');
+        if (!tab) throw new Error('INVALID TAB');
+
+        const _contentStyles = await contentStyles,
+            tabData = _contentStyles.tabData;
+        delete tabData[`${tab.id}`].menus[menu_command_id];
+        _contentStyles.tabData = tabData;
+    },
+
+};
+
 
 /**
  *
  * @param {string} fileName
  * @param {Dict<any>} newData
- * @param {Set<string>} [exceptTabs]
+ * @param {Set<number>} [exceptTabs]
  * @returns {Promise<void>}
  */
 async function triggerUserScriptDataUpdated(fileName, newData, exceptTabs) {
@@ -137,76 +267,6 @@ async function triggerUserScriptDataUpdated(fileName, newData, exceptTabs) {
         })
             .catch(console.error);
     }
-}
-
-/**
- * @typedef {object} RegisterMenuCommand
- * @property {number|string} [id]
- * @property {string} [accessKey]
- * @property {boolean} [autoClose]
- * @property {string} [title]
- */
-/**
- *
- * @param data
- * @param {string} fileName
- * @param {chrome.tabs.Tab} tab
- * @returns {Promise<number|string>}
- */
-async function znmRegisterMenuCommand(data, fileName, tab) {
-    const [name, _accessKeyOrOptions, _options] = data;
-    if (typeof name !== 'string') throw new Error('INVALID NAME');
-
-    /**
-     * @type {RegisterMenuCommand}
-     */
-    let options= {};
-    if (typeof _accessKeyOrOptions === 'string') {
-        if (_options && typeof _options !== 'object') {
-            throw new Error('INVALID_OPTIONS');
-        }
-        options = _options ?? {};
-        options.accessKey = _accessKeyOrOptions;
-    } else if (typeof _accessKeyOrOptions === 'object') {
-        options = _accessKeyOrOptions;
-    } else if (_accessKeyOrOptions !== undefined) {
-        throw new Error('INVALID_OPTIONS');
-    }
-
-    const menu_command_id = options.id ?? crypto.randomUUID();
-    options.id = menu_command_id;
-    options.name = name;
-    options.fileName = fileName;
-
-    const _contentStyles = await contentStyles,
-        tabData = _contentStyles.tabData;
-
-    const index = tabData[`${tab.id}`].menus.findIndex(option => option.id === menu_command_id);
-    if (index !== -1) {
-        tabData[`${tab.id}`].menus[index] = options;
-    } else {
-        tabData[`${tab.id}`].menus.push(options);
-    }
-    _contentStyles.tabData = tabData;
-
-    return menu_command_id;
-}
-
-/**
- *
- * @param { [string] } data
- * @param {chrome.tabs.Tab} tab
- * @returns {Promise<void>}
- */
-async function znmUnregisterMenuCommand(data, tab) {
-    const [menu_command_id] = data;
-    if (typeof menu_command_id !== 'string') throw new Error('INVALID MENU_COMMAND_ID');
-    if (!tab) throw new Error('INVALID TAB');
-
-    const _contentStyles = await contentStyles,
-        tabData = _contentStyles.tabData;
-    delete tabData[`${tab.id}`].menus[menu_command_id];
-    _contentStyles.tabData = tabData;
 }
 
 /**
@@ -234,82 +294,36 @@ function onUserScriptMessage(message, sender, sendResponse) {
     const error = (error) => {
         sendResponse({error: true, data: error});
     };
-    try {
-        switch (message.type) {
-            case 'download':
-                znmDownload(message.data)
-                    .then(function (downloadId) {
-                        console.log('Download started. ID: ' + downloadId);
-                        success(downloadId);
-                    })
-                    .catch((err) => {
-                        console.error(err);
-                        error(err);
-                    });
-                break;
-            case 'notification':
-                znmNotification(message.data, message.context)
-                    .then(id => success(id))
-                    .catch((err) => {
-                        console.error(err);
-                        error(err);
-                    });
-                break;
-            case 'openInTab':
-                znmOpenInTab(message.data)
+
+    if (message.type in znmUserscriptApi) {
+        try {
+            const result = znmDataApi[message.type](message.fileName, sender.tab, message.data, message.context);
+            if (result instanceof Promise) {
+                result
                     .then(result => success(result))
                     .catch((err) => {
                         console.error(err);
                         error(err);
                     });
-                break;
-            case 'getData':
-                znmGetData(message.context.fileName)
-                    .then(result => success(result))
-                    .catch((err) => {
-                        console.error(err);
-                        error(err);
-                    });
-                break;
-            case 'setData':
-                znmSetData(message.context.fileName, message.data, sender.tab?.id)
-                    .then(result => success(result))
-                    .catch((err) => {
-                        console.error(err);
-                        error(err);
-                    });
-                break;
-            case 'registerMenuCommand':
-                znmRegisterMenuCommand(message.data, message.context.fileName, sender.tab)
-                    .then(result => success(result))
-                    .catch((err) => {
-                        console.error(err);
-                        error(err);
-                    });
-                break;
-            case 'unregisterMenuCommand':
-                znmUnregisterMenuCommand(message.data, sender.tab)
-                    .then(result => success(result))
-                    .catch((err) => {
-                        console.error(err);
-                        error(err);
-                    });
-                break;
-            case 'log':
-            case 'debug':
-            case 'dir':
-            case 'info':
-            case 'warn':
-            case 'error':
-                console[message.type](`[UserScript] ${message.type} from ${message.context.fileName} :`, ...message.data);
-                success(true);
-                break;
-            default:
-                sendResponse({
-                    error: true,
-                    data: 'NOT_FOUND',
-                });
+            }
+        } catch (err) {
+            console.error(err);
+            error(err);
         }
+        return;
+    }
+
+    try {
+        if (message.type in console) {
+            console[message.type](`[UserScript] ${message.type} from ${message.context.fileName} :`, ...message.data);
+            success(true);
+            return;
+        }
+
+        sendResponse({
+            error: true,
+            data: 'NOT_FOUND',
+        });
     } catch (e) {
         console.error(e);
         error((e ?? new Error('UNKNOWN_ERROR')).toString());

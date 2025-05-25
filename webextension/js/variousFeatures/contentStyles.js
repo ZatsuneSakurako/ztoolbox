@@ -24,6 +24,7 @@ import {contentScripts} from "./contentScripts.js";
 /**
  *
  * @typedef {object} UserStyleTabData
+ * @property {string[]} executedScripts
  * @property {string[]} matchedStyles
  * @property {string[]} injectedStyles
  * @property {RegisterMenuCommand[]} menus
