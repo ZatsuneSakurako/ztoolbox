@@ -675,6 +675,10 @@ class ContentScripts {
                 tags: userScript.tags,
             };
 
+            let specialScripts = '';
+            for (let grant of userScript.grant) {
+                specialScripts += `const ${grant} = function ${grant}() { return znmApi[${JSON.stringify(grant)}].apply(this, arguments); }; `;
+            }
             /**
              *
              * @type {chrome.userScripts.RegisteredUserScript}
@@ -683,9 +687,9 @@ class ContentScripts {
                 id: userScript.fileName,
                 runAt: userScript.runAt,
                 js: [
-                    { code: `const znmApi = ${userScriptApiLoader.toString()}(${JSON.stringify(context)});\n(function(unsafeWindow, window){ ${userScript.script} }).call(znmApi, window, undefined);` },
+                    { code: `${specialScripts}const znmApi = ${userScriptApiLoader.toString()}(${JSON.stringify(context)});\n(function(unsafeWindow, window){ ${userScript.script} }).call(znmApi, window, undefined);` },
                 ],
-                matches: userScript.matches ?? [],
+                matches: userScript.match ?? [],
                 excludeMatches: userScript.excludeMatches ?? [],
                 // NO chrome.runtime.* access in "MAIN" world as it's not isolated anymore
                 world: 'USER_SCRIPT',
