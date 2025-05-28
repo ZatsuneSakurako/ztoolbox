@@ -64,11 +64,11 @@ const znmDataApi = {
 const znmUserscriptApi = {
     async download(fileName, tab, data) {
         let opts = {};
-        if (typeof data === 'object') {
-            opts = data;
-        } else if (Array.isArray(data)) {
+        if (Array.isArray(data)) {
             const [url, filename, saveAs] = data;
             opts = {url, filename, saveAs};
+        } else if (typeof data === 'object') {
+            opts = data;
         } else {
             throw new Error('INVALID_ARGUMENTS')
         }
@@ -83,14 +83,14 @@ const znmUserscriptApi = {
     },
     async notification(fileName, tab, data, context) {
         let opts = {};
-        if (typeof data === 'object') {
-            opts = data;
-        } else if (Array.isArray(data)) {
+        if (Array.isArray(data)) {
             if (data.length === 2 && typeof data.at(0) === 'object') {
                 throw new Error('UNSUPPORTED_ON_DONE_PARAMETER');
             }
             const [text, title, image, onclick] = data;
             opts = {text, title, image, onclick};
+        } else if (typeof data === 'object') {
+            opts = data;
         }
         if (opts.text === undefined || typeof opts.text !== 'string') throw new Error('INVALID TEXT');
         if (opts.title !== undefined && typeof opts.title !== 'string') throw new Error('INVALID TITLE');
@@ -108,11 +108,11 @@ const znmUserscriptApi = {
     },
     async openInTab(fileName, tab, data) {
         let opts = {};
-        if (typeof data === 'object') {
-            opts = data;
-        } else if (Array.isArray(data)) {
+        if (Array.isArray(data)) {
             const [url, loadInBackground] = data;
             opts = {url, loadInBackground};
+        } else if (typeof data === 'object') {
+            opts = data;
         }
         if (opts.url === undefined || typeof opts.url !== 'string') throw new Error('INVALID URL');
         if (opts.insert !== undefined && typeof opts.insert !== 'number') throw new Error('INVALID INSERT');
@@ -297,7 +297,7 @@ function onUserScriptMessage(message, sender, sendResponse) {
 
     if (message.type in znmUserscriptApi) {
         try {
-            const result = znmDataApi[message.type](message.fileName, sender.tab, message.data, message.context);
+            const result = znmUserscriptApi[message.type](message.fileName, sender.tab, message.data, message.context);
             if (result instanceof Promise) {
                 result
                     .then(result => success(result))
@@ -412,12 +412,12 @@ function userScriptApiLoader(context) {
             const [name, callback, ...args] = arguments;
             // Keep callback and does not send it to registerMenuCommand
             const menu_command_id = await call.call(this, 'registerMenuCommand', name, ...args);
-            this.on(`menuCommand-${menu_command_id}`, callback);
+            znmApi.on(`menuCommand-${menu_command_id}`, callback);
             return menu_command_id;
         },
         unregisterMenuCommand() {
             const [menu_command_id, ...args] = arguments;
-            this.off(`menuCommand-${menu_command_id}`);
+            znmApi.off(`menuCommand-${menu_command_id}`);
             return call.call(this, 'unregisterMenuCommand', menu_command_id, ...args);
         },
         /**
