@@ -455,7 +455,8 @@ export async function updateStyles() {
 			});
 		} else if (userscript.ext === 'js') {
 			newUserScripts.push({
-				matches: userscript.matches,
+				grant: userscript.grant,
+				match: userscript.match,
 				excludeMatches: userscript.excludeMatches,
 				name: userscript.name,
 				fileName: userscript.fileName,

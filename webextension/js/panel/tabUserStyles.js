@@ -81,8 +81,8 @@ export async function getTabUserStyles(tab) {
 			let matched = false;
 			if (!tab.url) return false;
 
-			if (Array.isArray(userScript.matches)) {
-				for (let match of userScript.matches) {
+			if (Array.isArray(userScript.match)) {
+				for (let match of userScript.match) {
 					if (matchesChromePattern(tab.url, match)) {
 						matched = true;
 						break;

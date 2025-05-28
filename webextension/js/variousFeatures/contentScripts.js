@@ -460,7 +460,8 @@ function userScriptApiLoader(context) {
  * @property {string[]} tags
  * @property {string} script
  * @property {chrome.userScripts.RunAt} [runAt]
- * @property {string[]} [matches]
+ * @property {string[]} [grant]
+ * @property {string[]} [match]
  * @property {string[]} [excludeMatches]
  * @property {string} [allFrames]
  * @property {chrome.userScripts.ExecutionWorld} [sandbox]
