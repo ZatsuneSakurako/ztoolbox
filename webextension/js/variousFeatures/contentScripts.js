@@ -677,6 +677,7 @@ class ContentScripts {
 
             let specialScripts = new Map();
             for (let grant of userScript.grant ?? []) {
+                if (grant === 'none') continue;
                 specialScripts.set(grant, `function ${grant}() { return znmApi[${JSON.stringify(grant)}].apply(this, arguments); }`);
             }
             const additionalParams = !specialScripts.size ? ''
@@ -690,7 +691,7 @@ class ContentScripts {
              */
             const registrationUserScript = {
                 id: userScript.fileName,
-                runAt: userScript.runAt,
+                runAt: userScript.runAt? userScript.runAt.replace(/-/g, '_') : undefined,
                 js: [
                     { code: `const znmApi = ${userScriptApiLoader.toString()}(${JSON.stringify(context)});\n(function(unsafeWindow, window${additionalParams}){ ${userScript.script} }).call(znmApi, window, undefined${additionalValues});` },
                 ],
