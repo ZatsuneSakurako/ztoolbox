@@ -55,4 +55,9 @@ if (!exist_jsLib) {
 	info("Copying socket.io-client...");
 	_cp("./node_modules/socket.io-client/dist/socket.io.esm.min.js", jsLib);
 	_cp("./node_modules/socket.io-client/dist/socket.io.esm.min.js.map", jsLib);
+
+	info("Copying dayjs...");
+	_cp("./node_modules/dayjs/dayjs.min.js", jsLib);
+	_cp("./node_modules/dayjs/locale/fr.js", path.normalize(`${jsLib}/dayjs-fr.js`));
+	_cp("./node_modules/dayjs/plugin/customParseFormat.js", path.normalize(`${jsLib}/dayjs-customParseFormat.js`));
 }
