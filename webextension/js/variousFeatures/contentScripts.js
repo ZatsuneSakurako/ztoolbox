@@ -705,7 +705,7 @@ class ContentScripts {
 
             let specialScripts = new Map();
             for (let grant of userScript.grant ?? []) {
-                if (grant === 'none') continue;
+                if (['none', 'unsafeWindow'].includes(grant)) continue;
                 specialScripts.set(grant, `function ${grant}() { return znmApi[${JSON.stringify(grant)}].apply(this, arguments); }`);
             }
             const additionalParams = !specialScripts.size ? ''
