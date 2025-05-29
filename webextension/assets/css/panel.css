@@ -187,6 +187,7 @@ section .buttonItem.userscript .title .running-state {
 	float: left;
 }
 section .buttonItem.userscript .menu-action {
+	-webkit-line-clamp: 1;
 	cursor: pointer;
 	font-size: 12px;
 	margin: 0;
@@ -204,6 +205,10 @@ section .buttonItem.userscript .menu-actions {
 	padding: 0;
 	margin-block-start: 0;
 	margin-block-end: 0;
+}
+section .buttonItem.userscript .data .d-block,
+section .buttonItem.userstyle .data .d-block {
+	display: block;
 }
 
 section .buttonItem .icon {

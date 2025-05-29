@@ -8,7 +8,8 @@
 	{%- else -%}
 		<input class="icon" type="checkbox" name="userStyle-{{ item.data.id }}" value="{{ item.data.fileName }}" id="{{ item.data.id }}"{% if item.data.enabled %} checked{% endif %} />
 	{%- endif -%}
-	<label class="title ellipse" for="{{ item.data.id }}">
+	<label class="title ellipse" for="{{ item.data.id }}"
+			{%- if item.data.tags | length > 0 %} title="Tag{%- if item.data.tags | length > 1 -%}s{%- endif %} : {{ item.data.tags.join(', ') }}"{% endif -%}>
 		{%- if item.data.isScriptExecuted | default(null) != null -%}
 		<span class="running-state material-symbols-outlined">{%- if item.data.isScriptExecuted == true -%}
 			play_arrow
@@ -23,18 +24,25 @@
 		<div class="data">Aucun style</div>
 	{%- else -%}
 		<div class="data">
-			<label for="{{ item.data.id }}">{{ item.data.tags.join(', ') }}</label>
 			{%- if item.data.isScriptExecuted == true -%}
 				<ul class="menu-actions">
 				{%- for menuItem in item.data.menuCommands  -%}
 					<li>
-						<button class="menu-action" data-target="{{ item.data.fileName }}" data-userscript-menu-command="{{ menuItem.id }}"{% if menuItem.title %} title="{{ menuItem.title }}"{% endif %}{% if menuItem.accessKey %} accesskey="{{ menuItem.accessKey }}"{% endif %}{% if menuItem.autoClose %} data-userscript-auto-close=""{% endif %}>
+						<button class="menu-action ellipse"
+								data-target="{{ item.data.fileName }}"
+								data-userscript-menu-command="{{ menuItem.id }}"
+								{%- if menuItem.title %} title="{{ menuItem.title }}"
+								{%- else %} title="{{ menuItem.name }}"{%- endif -%}
+								{%- if menuItem.accessKey %} accesskey="{{ menuItem.accessKey }}"{%- endif -%}
+								{%- if menuItem.autoClose %} data-userscript-auto-close=""{%- endif -%}>
 							<span class="material-symbols-outlined">manufacturing</span>
 							{{- menuItem.name -}}
 						</button>
 					</li>
 				{%- endfor -%}
 				</ul>
+			{%- else -%}
+				<label class="d-block" for="{{ item.data.id }}">&nbsp;</label>
 			{%- endif -%}
 		</div>
 	{%- endif -%}
