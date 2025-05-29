@@ -5,6 +5,7 @@ import {
 import {contentStyles} from "./contentStyles.js";
 import {sendNotification} from "../classes/chrome-notification.js";
 import {getUserscriptData, setUserscriptData, writeClipboard} from "../classes/chrome-native.js";
+import {errorToString} from "../utils/errorToString.js";
 
 // noinspection JSUnusedGlobalSymbols,JSUnusedLocalSymbols
 const znmDataApi = {
@@ -320,7 +321,7 @@ function onUserScriptMessage(message, sender, sendResponse) {
         sendResponse({error: false, data});
     };
     const error = (error) => {
-        sendResponse({error: true, data: error});
+        sendResponse({ error: true, data: errorToString(error) });
     };
 
     if (message.type in znmUserscriptApi) {
@@ -354,7 +355,7 @@ function onUserScriptMessage(message, sender, sendResponse) {
         });
     } catch (e) {
         console.error(e);
-        error((e ?? new Error('UNKNOWN_ERROR')).toString());
+        errorToString(e ?? new Error('UNKNOWN_ERROR'));
     }
 }
 
