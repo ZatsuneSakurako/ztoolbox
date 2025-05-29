@@ -344,7 +344,7 @@ function userScriptApiLoader(context) {
             console.error(result);
             throw new Error('RESULT_SHOULD_BE_AN_OBJECT');
         }
-        if (result.error) throw new Error(result.error);
+        if (result.error) throw new Error(result.data ?? result.error);
         return result.data;
     }
 
