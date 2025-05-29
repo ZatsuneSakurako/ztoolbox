@@ -675,10 +675,15 @@ class ContentScripts {
                 tags: userScript.tags,
             };
 
-            let specialScripts = '';
-            for (let grant of userScript.grant) {
-                specialScripts += `const ${grant} = function ${grant}() { return znmApi[${JSON.stringify(grant)}].apply(this, arguments); }; `;
+            let specialScripts = new Map();
+            for (let grant of userScript.grant ?? []) {
+                specialScripts.set(grant, `function ${grant}() { return znmApi[${JSON.stringify(grant)}].apply(this, arguments); }`);
             }
+            const additionalParams = !specialScripts.size ? ''
+                : ', ' + Array.from(specialScripts.keys()).join(', ');
+            const additionalValues = !specialScripts.size ? ''
+                : ', ' + Array.from(specialScripts.values()).join(', ');
+
             /**
              *
              * @type {chrome.userScripts.RegisteredUserScript}
@@ -687,7 +692,7 @@ class ContentScripts {
                 id: userScript.fileName,
                 runAt: userScript.runAt,
                 js: [
-                    { code: `${specialScripts}const znmApi = ${userScriptApiLoader.toString()}(${JSON.stringify(context)});\n(function(unsafeWindow, window){ ${userScript.script} }).call(znmApi, window, undefined);` },
+                    { code: `const znmApi = ${userScriptApiLoader.toString()}(${JSON.stringify(context)});\n(function(unsafeWindow, window${additionalParams}){ ${userScript.script} }).call(znmApi, window, undefined${additionalValues});` },
                 ],
                 matches: userScript.match ?? [],
                 excludeMatches: userScript.excludeMatches ?? [],
