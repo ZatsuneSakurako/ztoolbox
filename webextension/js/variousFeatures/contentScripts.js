@@ -65,10 +65,12 @@ const znmUserscriptApi = {
     async download(fileName, tab, data) {
         let opts = {};
         if (Array.isArray(data)) {
-            const [url, filename, saveAs] = data;
-            opts = {url, filename, saveAs};
-        } else if (typeof data === 'object') {
-            opts = data;
+            const [optsOrUrl, filename, saveAs] = data;
+            if (optsOrUrl && typeof optsOrUrl === "object") {
+                opts = optsOrUrl;
+            } else {
+                opts = {url: optsOrUrl, filename, saveAs};
+            }
         } else {
             throw new Error('INVALID_ARGUMENTS')
         }
@@ -87,10 +89,15 @@ const znmUserscriptApi = {
             if (data.length === 2 && typeof data.at(0) === 'object') {
                 throw new Error('UNSUPPORTED_ON_DONE_PARAMETER');
             }
-            const [text, title, image, onclick] = data;
+            const [optsOrText, title, image, onclick] = data;
+            if (optsOrText && typeof optsOrUrl === "object") {
+                opts = optsOrText;
+            } else {
+                opts = {text: optsOrText, filename, saveAs};
+            }
             opts = {text, title, image, onclick};
-        } else if (typeof data === 'object') {
-            opts = data;
+        } else {
+            throw new Error('INVALID_ARGUMENTS')
         }
         if (opts.text === undefined || typeof opts.text !== 'string') throw new Error('INVALID TEXT');
         if (opts.title !== undefined && typeof opts.title !== 'string') throw new Error('INVALID TITLE');
@@ -109,10 +116,14 @@ const znmUserscriptApi = {
     async openInTab(fileName, tab, data) {
         let opts = {};
         if (Array.isArray(data)) {
-            const [url, loadInBackground] = data;
-            opts = {url, loadInBackground};
-        } else if (typeof data === 'object') {
-            opts = data;
+            const [url, loadInBackgroundOrOpts] = data;
+            if (typeof loadInBackgroundOrOpts === "object" && loadInBackgroundOrOpts) {
+                opts = {url, ...loadInBackgroundOrOpts};
+            } else {
+                opts = {url, loadInBackgroundOrOpts};
+            }
+        } else {
+            throw new Error('INVALID_ARGUMENTS')
         }
         if (opts.url === undefined || typeof opts.url !== 'string') throw new Error('INVALID URL');
         if (opts.insert !== undefined && typeof opts.insert !== 'number') throw new Error('INVALID INSERT');
