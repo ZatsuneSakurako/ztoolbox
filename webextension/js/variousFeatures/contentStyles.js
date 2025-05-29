@@ -423,8 +423,16 @@ async function updateTabStyles(userStyles, forceRemove=false) {
 
 
 export async function updateStyles() {
-	const userscripts = await getUserscripts()
-	console.debug('[UserScript]', 'updateStyles', userscripts);
+	const userscripts = await getUserscripts();
+
+	const grouped = new Map();
+	for (const userscript of userscripts) {
+		const tag = userscript.tags.at(0) ?? '_none',
+			groupList = grouped.get(tag) ?? [];
+		groupList.push(userscript);
+		grouped.set(tag, groupList);
+	}
+	console.debug('[UserScript]', 'updateStyles', Object.fromEntries(grouped.entries()));
 
 	/**
 	 *
