@@ -65,23 +65,23 @@ const znmUserscriptApi = {
     async download(fileName, tab, data) {
         let opts = {};
         if (Array.isArray(data)) {
-            const [optsOrUrl, filename, saveAs] = data;
+            const [optsOrUrl, name, saveAs] = data;
             if (optsOrUrl && typeof optsOrUrl === "object") {
                 opts = optsOrUrl;
             } else {
-                opts = {url: optsOrUrl, filename, saveAs};
+                opts = {url: optsOrUrl, name, saveAs};
             }
         } else {
             throw new Error('INVALID_ARGUMENTS')
         }
         if (!opts.url || typeof opts.url !== 'string') throw new Error('INVALID URL');
-        if (opts.filename !== undefined && typeof opts.filename !== 'string') throw new Error('INVALID FILENAME');
+        if (opts.name !== undefined && typeof opts.name !== 'string') throw new Error('INVALID NAME');
 
         return await chrome.downloads.download({
             url: opts.url,
-            filename: opts.filename,
-            saveAs: opts.saveAs !== undefined ? !!opts.saveAs : true,
-        })
+            filename: opts.name,
+            saveAs: opts.saveAs !== undefined ? !!opts.saveAs : undefined,
+        });
     },
     async notification(fileName, tab, data, context) {
         let opts = {};
