@@ -4,7 +4,7 @@ import {
 } from "../constants.js";
 import {contentStyles} from "./contentStyles.js";
 import {sendNotification} from "../classes/chrome-notification.js";
-import {getUserscriptData, setUserscriptData} from "../classes/chrome-native.js";
+import {getUserscriptData, setUserscriptData, writeClipboard} from "../classes/chrome-native.js";
 
 // noinspection JSUnusedGlobalSymbols,JSUnusedLocalSymbols
 const znmDataApi = {
@@ -124,6 +124,23 @@ const znmUserscriptApi = {
             url: opts.url,
             active: opts.loadInBackground !== undefined ? !opts.loadInBackground : undefined,
             index: opts.insert !== undefined ? opts.insert : undefined,
+        });
+    },
+    async setClipboard(fileName, tab, data) {
+        let opts = {};
+        if (Array.isArray(data)) {
+            const [clipboardData, info] = data;
+            opts = {
+                data: clipboardData,
+                info
+            };
+        } else {
+            throw new Error('INVALID_ARGUMENTS');
+        }
+        if (!opts.info?.type || typeof opts.info.type !== 'string') throw new Error('INVALID TYPE');
+        if (opts.data === undefined) throw new Error('INVALID DATA');
+        return await writeClipboard({
+            [opts.info.type]: opts.data,
         });
     },
 

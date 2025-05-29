@@ -628,6 +628,23 @@ socket.on('userScriptDataUpdated', async function (fileName, newData) {
 	}
 });
 
+/**
+ * @typedef {Object} ElectronClipboardData
+ * @property {string} [text] - The text data.
+ * @property {string} [html] - The HTML data.
+ * @property {string} [rtf] - The RTF data.
+ * @property {string} [bookmark] - The title of the URL at text.
+ */
+/**
+ *
+ * @param {ElectronClipboardData} data
+ * @return {Promise<boolean>}
+ */
+export async function writeClipboard(data) {
+	return await socket.timeout(timeout).emitWithAck('writeClipboard', data);
+}
+
+
 
 
 /**
