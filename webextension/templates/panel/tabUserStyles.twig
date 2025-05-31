@@ -34,7 +34,7 @@
 								{%- if menuItem.title %} title="{{ menuItem.title }}"
 								{%- else %} title="{{ menuItem.name }}"{%- endif -%}
 								{%- if menuItem.accessKey %} accesskey="{{ menuItem.accessKey }}"{%- endif -%}
-								{%- if menuItem.autoClose %} data-userscript-auto-close=""{%- endif -%}>
+								{%- if menuItem.autoClose | default(true) %} data-userscript-auto-close=""{%- endif -%}>
 							<span class="material-symbols-outlined">manufacturing</span>
 							{{- menuItem.name -}}
 						</button>
