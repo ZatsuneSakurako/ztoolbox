@@ -123,6 +123,10 @@ socket.on('ws open', function (err) {
 		.catch(console.error);
 });
 
+socket.on('doRestart', function () {
+	chrome.runtime.restart();
+});
+
 socket.on('disconnect', function (reason, description) {
 	console.log('[NativeMessaging]', 'ws close', reason, description);
 
