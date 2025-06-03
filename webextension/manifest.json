@@ -69,7 +69,9 @@
 				"/lib/dayjs-fr.js",
 				"/lib/dayjs-customParseFormat.js"
 			],
-			"matches": ["<all_urls>"]
+			"matches": [
+				"<all_urls>"
+			]
 		}
 	],
 	"browser_specific_settings": {
