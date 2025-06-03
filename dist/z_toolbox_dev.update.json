@@ -7,7 +7,7 @@
 					"update_link": "https://github.com/ZatsuneNoMokou/ztoolbox/raw/master/dist/z_toolbox_dev.xpi",
 					"applications": {
 						"gecko": {
-							"strict_min_version": "139.0"
+							"strict_min_version": "140.0"
 						},
 						"gecko_android": {}
 					}
