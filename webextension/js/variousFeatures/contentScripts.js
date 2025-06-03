@@ -382,12 +382,9 @@ function userScriptApiLoader(context) {
      * @type {Dict<((eventName: string) => void)[]>}
      */
     const listeners = {};
-    chrome.runtime.onConnect.addListener(function onConnect(port) {
-        port.onMessage.addListener((message, port) => {
-            return onMessage(message, port.sender);
-        });
-    });
-    // chrome.runtime.onMessage.addListener(onMessage);
+    if (chrome.runtime.onMessage) {
+        chrome.runtime.onMessage.addListener(onMessage);
+    }
     /**
      *
      * @param {any} request
