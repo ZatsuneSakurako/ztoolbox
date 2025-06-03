@@ -199,11 +199,24 @@ document.addEventListener('click', function (ev) {
 async function userScriptSendEvent(eventName, target, tab) {
 	if (!tab) tab = await getCurrentTab();
 	console.info('Sending to tab ', tab, 'the event', eventName, 'for ', target);
-	await chrome.tabs.sendMessage(tab.id, {
+
+	const port = chrome.tabs.connect(tab.id);
+	try {
+		await port.postMessage({
+			type: "userScriptEvent",
+			target,
+			eventName: `menuCommand-${eventName}`,
+		});
+	} catch (e) {
+		console.error(e);
+	} finally {
+		port.disconnect();
+	}
+	/*await chrome.tabs.sendMessage(tab.id, {
 		type: "userScriptEvent",
 		target,
 		eventName: `menuCommand-${eventName}`,
-	});
+	});*/
 }
 
 /**

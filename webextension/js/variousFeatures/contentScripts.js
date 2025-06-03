@@ -382,7 +382,18 @@ function userScriptApiLoader(context) {
      * @type {Dict<((eventName: string) => void)[]>}
      */
     const listeners = {};
-    chrome.runtime.onMessage.addListener((request, sender) => {
+    chrome.runtime.onConnect.addListener(function onConnect(port) {
+        port.onMessage.addListener((message, port) => {
+            return onMessage(message, port.sender);
+        });
+    });
+    // chrome.runtime.onMessage.addListener(onMessage);
+    /**
+     *
+     * @param {any} request
+     * @param {chrome.runtime.MessageSender} sender
+     */
+    function onMessage(request, sender) {
         if (sender.id !== chrome.runtime.id || request.type !== 'userScriptEvent') return;
         if (!(request.eventName in listeners) || request.target !== context.fileName) return;
 
@@ -395,7 +406,7 @@ function userScriptApiLoader(context) {
             const arrData = Array.isArray(request.data) ? request.data : [request.data];
             listener(...(arrData ?? []));
         }
-    });
+    }
 
     /**
      *
