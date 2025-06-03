@@ -141,10 +141,15 @@ export async function updateData(activeTab) {
 		 *
 		 * @type {boolean|undefined}
 		 */
-		let isScriptExecuted = undefined;
+		let isScriptExecuted = undefined,
+			manual = undefined,
+			icon = undefined
+		;
 		if ('script' in userStyle) {
 			menuCommands = Array.from(Object.values(tabData.menus));
 			isScriptExecuted = tabData.executedScripts.has(userStyle.fileName);
+			manual = userStyle.manual;
+			icon = userStyle.icon;
 		}
 		renderData.items.push({
 			title: userStyle.name,
@@ -152,6 +157,8 @@ export async function updateData(activeTab) {
 				id: `${i}-${userStyle.fileName}`,
 				label: userStyle.name,
 				enabled: userStyle.enabled,
+				manual,
+				icon,
 				fileName: userStyle.fileName,
 				tags: userStyle.tags,
 				menuCommands,
@@ -188,7 +195,23 @@ document.addEventListener('click', function (ev) {
 				window.close();
 			}
 		});
-})
+});
+
+document.addEventListener('click', async function (ev) {
+	const element = ev.target.closest('.userscript[data-manual-target]');
+	if (!element) return;
+
+	chrome.runtime.sendMessage(chrome.runtime.id, {
+		id: 'userscript_manual_execute',
+		data: {
+			target: element.dataset.manualTarget,
+			tabId: (await getCurrentTab()).id,
+		}
+	}, function () {
+		console.log('[UserScript]', ...arguments);
+		window.close();
+	});
+});
 
 /**
  *

@@ -1,14 +1,23 @@
 {%- for item in items -%}
 <div class="buttonItem cursor
 	{%- if item.data.isCss %} userstyle{% endif -%}
-	{%- if item.data.isScript %} userscript{% endif -%}">
+	{%- if item.data.isScript %} userscript{% endif -%}"
+	{%- if item.data.manual %} data-manual-target="{{ item.data.fileName }}"{% endif -%}">
 
+	{%- set titleTag = 'label' -%}
 	{%- if not item.data -%}
 		<span class="icon material-symbols-outlined">tab</span>
+	{%- elseif item.data.manual -%}
+		{%- set titleTag = 'div' -%}
+		{%- if item.data.icon -%}
+			<img class="icon" src="{{ item.data.icon }}" alt="">
+		{%- else -%}
+			<span class="icon material-symbols-outlined">rocket_launch</span>
+		{%- endif -%}
 	{%- else -%}
 		<input class="icon" type="checkbox" name="userStyle-{{ item.data.id }}" value="{{ item.data.fileName }}" id="{{ item.data.id }}"{% if item.data.enabled %} checked{% endif %} />
 	{%- endif -%}
-	<label class="title ellipse" for="{{ item.data.id }}"
+	<{{ titleTag }} class="title ellipse" for="{{ item.data.id }}"
 			{%- if item.data.tags | length > 0 %} title="Tag{%- if item.data.tags | length > 1 -%}s{%- endif %} : {{ item.data.tags.join(', ') }}"{% endif -%}>
 		{%- if item.data.isScriptExecuted | default(null) != null -%}
 		<span class="running-state material-symbols-outlined">{%- if item.data.isScriptExecuted == true -%}
@@ -19,7 +28,7 @@
 		{%- endif -%}
 
 		{{- item.title -}}
-	</label>
+	</{{ titleTag }}>
 	{%- if not item.data -%}
 		<div class="data">Aucun style</div>
 	{%- else -%}

@@ -179,7 +179,7 @@ const znmUserscriptApi = {
         const [newData] = data;
         if (!fileName || typeof fileName !== 'string') {
             // noinspection ExceptionCaughtLocallyJS
-            throw new Error('INVALID FILE_NAME');
+            throw new Error(`INVALID FILE_NAME ${JSON.stringify(fileName)}`);
         }
         if (typeof newData !== 'object') {
             // noinspection ExceptionCaughtLocallyJS
@@ -326,7 +326,7 @@ function onUserScriptMessage(message, sender, sendResponse) {
 
     if (message.type in znmUserscriptApi) {
         try {
-            const result = znmUserscriptApi[message.type](message.fileName, sender.tab, message.data, message.context);
+            const result = znmUserscriptApi[message.type](message.context.fileName, sender.tab, message.data, message.context);
             if (result instanceof Promise) {
                 result
                     .then(result => success(result))
@@ -494,6 +494,8 @@ function userScriptApiLoader(context) {
  * @property {string} name
  * @property {string} fileName
  * @property {boolean} enabled
+ * @property {boolean} manual
+ * @property {string} [icon]
  * @property {string[]} tags
  * @property {string} script
  * @property {chrome.userScripts.RunAt} [runAt]
@@ -526,7 +528,8 @@ class ContentScripts {
             this.#onStorageChange(changes, areaName);
         });
         chrome.runtime.onUserScriptMessage.addListener((message, sender, sendResponse) => {
-            if (sender.id !== chrome.runtime.id || !message.userScriptsId) {
+            if (sender.id !== chrome.runtime.id) return;
+            if (!message.userScriptsId) {
                 onUserScriptMessage(message, sender, sendResponse);
                 return;
             }
@@ -542,6 +545,40 @@ class ContentScripts {
             } catch (e) {
                 console.error(e);
                 sendResponse(null);
+            }
+        });
+        chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+            if (!message || typeof message !== 'object' || sender.id !== chrome.runtime.id) return;
+
+            if (message.id === 'userscript_manual_execute') {
+                if ((message.data.tabId ?? null) === null) {
+                    sendResponse({
+                        error: 'TAB_ID_MISSING',
+                    });
+                    return;
+                }
+                const userScript = this.#userScripts.find(userScript => userScript.fileName === message.data.target);
+                if (!userScript) {
+                    sendResponse({
+                        error: 'USERSCRIPT_NOT_FOUND',
+                    });
+                    return;
+                }
+
+                this.#manuallyExecute(userScript, message.data.tabId)
+                    .then(result => {
+                        sendResponse({
+                            error: false,
+                            data: result,
+                        });
+                    })
+                    .catch(e => {
+                        console.error(e);
+                        sendResponse({
+                            error: true,
+                        });
+                    })
+                ;
             }
         });
         chrome.webNavigation.onBeforeNavigate.addListener(async function (details) {
@@ -677,6 +714,74 @@ class ContentScripts {
         }
     }
 
+    /**
+     *
+     * @param {UserScript} userScript
+     * @return {chrome.userScripts.RegisteredUserScript}
+     */
+    #userScriptToRegistrationOptions(userScript) {
+        const context = {
+            fileName: userScript.fileName,
+            tags: userScript.tags,
+        };
+
+        let specialScripts = new Map();
+        for (let grant of userScript.grant ?? []) {
+            if (['none', 'unsafeWindow'].includes(grant)) continue;
+            specialScripts.set(grant, `function ${grant}() { return znmApi[${JSON.stringify(grant)}].apply(this, arguments); }`);
+        }
+        const additionalParams = !specialScripts.size ? ''
+            : ', ' + Array.from(specialScripts.keys()).join(', ');
+        const additionalValues = !specialScripts.size ? ''
+            : ', ' + Array.from(specialScripts.values()).join(', ');
+
+        /**
+         *
+         * @type {chrome.userScripts.RegisteredUserScript}
+         */
+        const registrationUserScript = {
+            id: userScript.fileName,
+            runAt: userScript.runAt? userScript.runAt.replace(/-/g, '_') : undefined,
+            js: [
+                { code: `const znmApi = ${userScriptApiLoader.toString()}(${JSON.stringify(context)});\n(function(unsafeWindow, window${additionalParams}){ ${userScript.script} }).call(znmApi, window, undefined${additionalValues});` },
+            ],
+            matches: userScript.match ?? [],
+            excludeMatches: userScript.excludeMatches ?? [],
+            // NO chrome.runtime.* access in "MAIN" world as it's not isolated anymore
+            world: 'USER_SCRIPT',
+            allFrames: !!userScript.allFrames,
+        };
+        if (userScript.sandbox === 'MAIN') {
+            // Exclude "znmApi" if running in MAIN world
+            registrationUserScript.world = userScript.sandbox;
+            registrationUserScript.js = [
+                { code: userScript.script }
+            ];
+        }
+
+        return registrationUserScript;
+    }
+
+    /**
+     *
+     * @param {UserScript} userScript
+     * @param {string} tabId
+     * @returns {Promise<any[]>}
+     */
+    async #manuallyExecute(userScript, tabId) {
+        const tab = await chrome.tabs.get(tabId);
+        const registrationOptions = this.#userScriptToRegistrationOptions(userScript);
+        return await chrome.userScripts.execute({
+            injectImmediately: true,
+            target: {
+                tabId,
+                allFrames: registrationOptions.allFrames,
+            },
+            js: registrationOptions.js,
+            world: registrationOptions.world,
+        });
+    }
+
     async #updateUserScripts() {
         const userScripts = this.userScripts;
 
@@ -707,45 +812,7 @@ class ContentScripts {
             if (!enabled) continue;
             userScriptIds.add(userScript.fileName);
 
-            const context = {
-                fileName: userScript.fileName,
-                tags: userScript.tags,
-            };
-
-            let specialScripts = new Map();
-            for (let grant of userScript.grant ?? []) {
-                if (['none', 'unsafeWindow'].includes(grant)) continue;
-                specialScripts.set(grant, `function ${grant}() { return znmApi[${JSON.stringify(grant)}].apply(this, arguments); }`);
-            }
-            const additionalParams = !specialScripts.size ? ''
-                : ', ' + Array.from(specialScripts.keys()).join(', ');
-            const additionalValues = !specialScripts.size ? ''
-                : ', ' + Array.from(specialScripts.values()).join(', ');
-
-            /**
-             *
-             * @type {chrome.userScripts.RegisteredUserScript}
-             */
-            const registrationUserScript = {
-                id: userScript.fileName,
-                runAt: userScript.runAt? userScript.runAt.replace(/-/g, '_') : undefined,
-                js: [
-                    { code: `const znmApi = ${userScriptApiLoader.toString()}(${JSON.stringify(context)});\n(function(unsafeWindow, window${additionalParams}){ ${userScript.script} }).call(znmApi, window, undefined${additionalValues});` },
-                ],
-                matches: userScript.match ?? [],
-                excludeMatches: userScript.excludeMatches ?? [],
-                // NO chrome.runtime.* access in "MAIN" world as it's not isolated anymore
-                world: 'USER_SCRIPT',
-                allFrames: !!userScript.allFrames,
-            };
-            if (userScript.sandbox === 'MAIN') {
-                // Exclude "znmApi" if running in MAIN world
-                registrationUserScript.world = userScript.sandbox;
-                registrationUserScript.js = [
-                    { code: userScript.script }
-                ];
-            }
-
+            const registrationUserScript = this.#userScriptToRegistrationOptions(userScript);
             if (currentUserScripts.has(userScript.fileName)) {
                 userScriptRegistration.push(registrationUserScript);
             } else {
