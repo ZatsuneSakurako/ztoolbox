@@ -1,3 +1,6 @@
+# 2.6.0
+* Fix : System to apply scripts to websites
+
 # 2.5.3
 * Fix : System to apply styles to websites
 

@@ -22,7 +22,7 @@
 	"openDelegatedMain": "Open main section",
 	"Settings": "Settings",
 
-	"reloadUserscripts": "Reload UserStyles",
+	"refreshUserscripts": "Refresh UserScripts",
 
 	"request-all-url-permission": "Grant permission to retrieve data",
 

@@ -59,7 +59,6 @@ async function update() {
 	const shouldDisplayNewWindow = !browserWindows.length || (await getPreference('panelAlwaysShowMoveInNewWindow')
 		.catch(console.error))
 	;
-	console.dir(shouldDisplayNewWindow)
 	if (shouldDisplayNewWindow) {
 		appendTo(
 			tabMover,
@@ -160,8 +159,6 @@ chrome.windows.onFocusChanged.addListener(_update);
 chrome.tabs.onUpdated.addListener(function (info, changeInfo, tab) {
 	if (tab.active === true && ((changeInfo.hasOwnProperty("status") && changeInfo.status === "complete") || changeInfo.hasOwnProperty("title"))) {
 		// Only update context menu if the active tab have a "complete" load
-		_update()
-			.catch(console.error)
-		;
+		_update();
 	}
 });

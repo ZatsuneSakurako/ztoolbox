@@ -1,7 +1,12 @@
 import {i18ex} from "../translation-api.js";
 import {ContextMenusController} from "../classes/contextMenusController.js";
 import {getUserscripts} from "../classes/chrome-native.js";
-import {_userStylesStoreKey, _tabStylesStoreKey, _userStylesStateStoreKey} from "../constants.js";
+import {
+	_userStylesStoreKey,
+	_tabStylesStoreKey,
+	_userStylesStateStoreKey,
+} from "../constants.js";
+import {contentScripts} from "./contentScripts.js";
 
 
 /**
@@ -19,8 +24,10 @@ import {_userStylesStoreKey, _tabStylesStoreKey, _userStylesStateStoreKey} from 
 /**
  *
  * @typedef {object} UserStyleTabData
+ * @property {string[]} executedScripts
  * @property {string[]} matchedStyles
  * @property {string[]} injectedStyles
+ * @property {RegisterMenuCommand[]} menus
  *
  */
 class ContentStyles {
@@ -108,7 +115,7 @@ class ContentStyles {
 
 	/**
 	 *
-	 * @param {chrome.storage.StorageChange} changes
+	 * @param {Dict<chrome.storage.StorageChange>} changes
 	 * @param {chrome.storage.AreaName} areaName
 	 */
 	#onStorageChange(changes, areaName) {
@@ -201,6 +208,18 @@ class ContentStyles {
 		}
 		return this.#tabData;
 	}
+	/**
+	 *
+	 * @returns {UserStyleTabData}
+	 */
+	get tabNewData() {
+		return {
+			injectedStyles: [],
+			executedScripts: [],
+			matchedStyles: [],
+			menus: [],
+		}
+	}
 }
 
 /**
@@ -229,13 +248,13 @@ function userStyleInjectOpts(userStyle, tab) {
 /**
  *
  * @param {chrome.tabs.Tab} tab
- * @param {chrome.tabs.TabChangeInfo|undefined} changeInfo
+ * @param {chrome.tabs.TabChangeInfo|chrome.webNavigation.WebNavigationParentedCallbackDetails|undefined} details
  * @param {boolean} forceRemove
  */
-export async function onTabUrl(tab, changeInfo, forceRemove) {
+export async function onTabUrl(tab, details, forceRemove) {
 	contentStyles = await contentStyles;
 
-	let url = changeInfo?.url ?? tab.url;
+	let url = details?.url ?? tab.url;
 	let domain = null;
 	try {
 		/**
@@ -245,7 +264,7 @@ export async function onTabUrl(tab, changeInfo, forceRemove) {
 	} catch (_) {
 	}
 	if (!domain) {
-		console.error('Could not parse domain url');
+		console.error(`Could not parse domain url "${url}"`);
 		return;
 	}
 
@@ -271,7 +290,9 @@ export async function onTabUrl(tab, changeInfo, forceRemove) {
 	 */
 	const neededStyles = new Set();
 	const tabData = contentStyles.tabData,
-		currentTabData = tabData[`${tab.id}`] ?? { injectedStyles: [], matchedStyles: [] }
+		currentTabData = tabData[`${tab.id}`] ?? contentStyles.tabNewData
+	tabData[`${tab.id}`] = currentTabData;
+
 	/**
 	 * Clear old matched styles
 	 * @type {string[]}
@@ -343,12 +364,18 @@ export async function onTabUrl(tab, changeInfo, forceRemove) {
 	tabData[`${tab.id}`] = currentTabData;
 	contentStyles.tabData = tabData;
 }
-chrome.tabs.onUpdated.addListener(async function (tabId, changeInfo, tab) {
-	if ('url' in changeInfo && changeInfo.status === 'loading') {
-		onTabUrl(tab, changeInfo, false)
-			.catch(console.error)
-		;
-	}
+chrome.webNavigation.onCommitted.addListener(function (details) {
+	// Exclude iframes & special "tabs"
+	if (details.frameId !== 0 || details.tabId < 0) return;
+
+	(async () => {
+		const tab = await chrome.tabs.get(details.tabId)
+			.catch(console.error);
+		if (!tab) return;
+		await onTabUrl(tab, details, false)
+			.catch(console.error);
+	})()
+		.catch(console.error);
 });
 
 
@@ -357,14 +384,14 @@ chrome.tabs.onUpdated.addListener(async function (tabId, changeInfo, tab) {
 
 async function restartContentMenu() {
 	await chrome.contextMenus.create({
-		id: 'reloadUserscripts',
-		title: i18ex._("reloadUserscripts"),
+		id: 'refreshUserscripts',
+		title: i18ex._("refreshUserscripts"),
 		contexts: [ "action" ],
 	});
 }
 ContextMenusController.waitInit.then(restartContentMenu);
 chrome.contextMenus.onClicked.addListener(function (info) {
-	if (info.menuItemId !== 'reloadUserscripts') return;
+	if (info.menuItemId !== 'refreshUserscripts') return;
 
 	updateStyles()
 		.catch(console.error);
@@ -396,33 +423,61 @@ async function updateTabStyles(userStyles, forceRemove=false) {
 
 
 export async function updateStyles() {
-	const userscripts = await getUserscripts()
-	console.debug('[UserScript]', 'updateStyles', userscripts);
+	const userscripts = await getUserscripts();
+
+	const grouped = new Map();
+	for (const userscript of userscripts) {
+		const tag = userscript.tags.at(0) ?? '_none',
+			groupList = grouped.get(tag) ?? [];
+		groupList.push(userscript);
+		grouped.set(tag, groupList);
+	}
+	console.debug('[UserScript]', 'updateStyles', Object.fromEntries(grouped.entries()));
 
 	/**
 	 *
 	 * @type {UserStyle[]}
 	 */
 	const newUserStyles = [];
+	/**
+	 *
+	 * @type {UserScript[]}
+	 */
+	const newUserScripts = [];
 	for (let userscript of userscripts) {
-		if (userscript.ext !== 'css') continue;
-
-		newUserStyles.push({
-			url: {
-				domain: userscript.domains ?? userscript.meta.domain,
-				startWith: userscript.meta.startWith,
-				endWith: userscript.meta.endWith,
-				regex: userscript.meta.regex,
-			},
-			name: userscript.name,
-			fileName: userscript.fileName,
-			enabled: !userscript.meta.disabled,
-			tags: userscript.tags,
-			css: userscript.content,
-			allFrames: userscript.meta.allFrames,
-			asUserStyle: userscript.meta.asUserStyle,
-		})
+		if (userscript.ext === 'css') {
+			newUserStyles.push({
+				url: {
+					domain: userscript.domains ?? userscript.meta.domain,
+					startWith: userscript.meta.startWith,
+					endWith: userscript.meta.endWith,
+					regex: userscript.meta.regex,
+				},
+				name: userscript.name,
+				fileName: userscript.fileName,
+				enabled: !userscript.meta.disabled,
+				tags: userscript.tags,
+				css: userscript.content,
+				allFrames: userscript.meta.allFrames,
+				asUserStyle: userscript.meta.asUserStyle,
+			});
+		} else if (userscript.ext === 'js') {
+			newUserScripts.push({
+				grant: userscript.grant,
+				match: userscript.match,
+				excludeMatches: userscript.excludeMatches,
+				name: userscript.name,
+				fileName: userscript.fileName,
+				enabled: !userscript.meta.disabled,
+				tags: userscript.tags,
+				script: userscript.content,
+				allFrames: userscript.meta.allFrames,
+				sandbox: userscript.meta.sandbox,
+				runAt: userscript.meta['run-at'],
+			});
+		}
 	}
 
 	(await contentStyles).userStyles = newUserStyles;
+	(await contentScripts).userScripts = newUserScripts;
 }

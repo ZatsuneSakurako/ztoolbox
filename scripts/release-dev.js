@@ -129,6 +129,17 @@ async function init() {
 	manifestJson.background = {
 		"page": "/index.html",
 	};
+
+	const manifestPermissions = new Set(manifestJson.permissions ?? []),
+		optionalPermissions = new Set(manifestJson.optional_permissions ?? [])
+	;
+	if (manifestPermissions.has('userScripts')) {
+		manifestPermissions.delete('userScripts');
+		optionalPermissions.add('userScripts');
+	}
+	manifestJson.permissions = Array.from(manifestPermissions);
+	manifestJson.optional_permissions = Array.from(optionalPermissions);
+
 	/**
 	 *
 	 * @see https://discourse.mozilla.org/t/how-to-prevent-upgrading-insecure-request-to-use-wss/126797/4

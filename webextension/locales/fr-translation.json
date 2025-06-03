@@ -22,7 +22,7 @@
 	"openDelegatedMain": "Ouvrir section principal",
 	"Settings": "Options",
 
-	"reloadUserscripts": "Recharger les UserStyles",
+	"refreshUserscripts": "Rafraichir les UserScripts",
 
 	"request-all-url-permission": "Accorder la permission pour récupérer des données",
 
