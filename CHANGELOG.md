@@ -1,5 +1,8 @@
+# 2.6.1
+* Fix : Firefox userScripts support
+
 # 2.6.0
-* Fix : System to apply scripts to websites
+* Feat : System to apply scripts to websites
 
 # 2.5.3
 * Fix : System to apply styles to websites
