@@ -223,10 +223,13 @@ async function userScriptSendEvent(eventName, target, tab) {
 	if (!tab) tab = await getCurrentTab();
 	console.info('Sending to tab ', tab, 'the event', eventName, 'for ', target);
 
-	await chrome.tabs.sendMessage(tab.id, {
-		type: "userScriptEvent",
-		target,
-		eventName: `menuCommand-${eventName}`,
+	await chrome.runtime.sendMessage(chrome.runtime.id, {
+		id: 'user_script_panel_event',
+		data: {
+			target: target,
+			tabId: tab.id,
+			eventName: `menuCommand-${eventName}`,
+		}
 	});
 }
 

@@ -384,6 +384,22 @@ function userScriptApiLoader(context) {
     const listeners = {};
     if (chrome.runtime.onMessage) {
         chrome.runtime.onMessage.addListener(onMessage);
+    } else {
+        /**
+         * Firefox does not support chrome.runtime.onMessage
+         * @type {chrome.runtime.Port|null}
+         */
+        let port = null;
+        try {
+            port = chrome.runtime.connect({
+                name: 'user_script_port',
+            });
+            port.onMessage.addListener((message) => {
+                onMessage(message, null);
+            });
+        } catch (e) {
+            console.error(e);
+        }
     }
     /**
      *
@@ -391,7 +407,7 @@ function userScriptApiLoader(context) {
      * @param {chrome.runtime.MessageSender} sender
      */
     function onMessage(request, sender) {
-        if (sender.id !== chrome.runtime.id || request.type !== 'userScriptEvent') return;
+        if ((sender !== null && sender.id !== chrome.runtime.id) || request.type !== 'userScriptEvent') return;
         if (!(request.eventName in listeners) || request.target !== context.fileName) return;
 
         for (const listener of listeners[request.eventName]) {
@@ -521,6 +537,12 @@ class ContentScripts {
     onUserScriptDataUpdatedCbList = [];
 
     /**
+     *
+     * @type {Map<number, chrome.runtime.Port>}
+     */
+    #ports=new Map()
+
+    /**
      * @private
      */
     constructor() {
@@ -547,38 +569,68 @@ class ContentScripts {
                 sendResponse(null);
             }
         });
+        chrome.runtime.onUserScriptConnect.addListener((port) => {
+            if (!port.sender.tab) {
+                port.disconnect();
+                return;
+            }
+
+            const oldPort = this.#ports.get(port.sender.tab.id);
+            if (oldPort) {
+                console.log('[UserScript] Port already connected on ' + port.sender.tab.id);
+                oldPort.disconnect();
+            }
+            this.#ports.set(port.sender.tab.id, port);
+            port.onDisconnect.addListener((port) => {
+                this.#ports.delete(port.sender.tab.id);
+            });
+        });
         chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
             if (!message || typeof message !== 'object' || sender.id !== chrome.runtime.id) return;
 
+            const wrapPromise = (promise) => {
+                promise.then(result => {
+                    sendResponse({ error: false, data: result });
+                })
+                    .catch(e => {
+                        console.error(e);
+                        sendResponse({ error: true });
+                    })
+            }
             if (message.id === 'userscript_manual_execute') {
                 if ((message.data.tabId ?? null) === null) {
-                    sendResponse({
-                        error: 'TAB_ID_MISSING',
-                    });
+                    sendResponse({ error: 'TAB_ID_MISSING' });
                     return;
                 }
                 const userScript = this.#userScripts.find(userScript => userScript.fileName === message.data.target);
                 if (!userScript) {
-                    sendResponse({
-                        error: 'USERSCRIPT_NOT_FOUND',
-                    });
+                    sendResponse({ error: 'USERSCRIPT_NOT_FOUND' });
                     return;
                 }
 
-                this.#manuallyExecute(userScript, message.data.tabId)
-                    .then(result => {
-                        sendResponse({
-                            error: false,
-                            data: result,
+                wrapPromise(this.#manuallyExecute(userScript, message.data.tabId));
+            } else if (message.id === 'user_script_panel_event') {
+                const port = this.#ports.get(message.data.tabId);
+                if (port !== undefined) {
+                    // If "saved" port connected (Firefox does not support chrome.runtime.onMessage version)
+                    try {
+                        port.postMessage({
+                            type: "userScriptEvent",
+                            target: message.data.target,
+                            eventName: message.data.eventName,
                         });
-                    })
-                    .catch(e => {
+                        sendResponse({ error: false });
+                    } catch (e) {
                         console.error(e);
-                        sendResponse({
-                            error: true,
-                        });
-                    })
-                ;
+                        sendResponse({ error: true });
+                    }
+                } else {
+                    wrapPromise(chrome.tabs.sendMessage(message.data.tabId, {
+                        type: "userScriptEvent",
+                        target: message.data.target,
+                        eventName: message.data.eventName,
+                    }));
+                }
             }
         });
         chrome.webNavigation.onBeforeNavigate.addListener(async function (details) {
