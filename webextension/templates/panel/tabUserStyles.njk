@@ -44,9 +44,13 @@
 								{%- else %} title="{{ menuItem.name }}"{%- endif -%}
 								{%- if menuItem.accessKey %} accesskey="{{ menuItem.accessKey }}"{%- endif -%}
 								{%- if menuItem.autoClose | default(true) %} data-userscript-auto-close=""{%- endif -%}>
-							<span class="material-symbols-outlined">
+							{%- if menuItem.icon and menuItem.icon.startsWith('https://') -%}
+							<img class="menu-action-icon" src="{{ menuItem.icon }}" alt="" loading="lazy">
+							{%- else -%}
+							<span class="menu-action-icon material-symbols-outlined">
 							    {%- if menuItem.icon -%}{{ menuItem.icon }}{%- else -%}manufacturing{%- endif -%}
                             </span>
+                            {%- endif -%}
 							{%- if not menuItem.iconOnly -%}{{- menuItem.name -}}{%- endif -%}
 						</button>
 					</li>
