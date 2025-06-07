@@ -648,6 +648,22 @@ export async function writeClipboard(data) {
 	return await socket.timeout(timeout).emitWithAck('writeClipboard', data);
 }
 
+/**
+ *
+ * @param {string} templateName
+ * @param {object} context
+ * @returns {Promise<string>}
+ */
+export async function nunjuckRender({templateName, context}) {
+	const data = await socket.timeout(timeout).emitWithAck('nunjuckRender', templateName, context);
+	if (data.error) throw new Error(data.error);
+	if (!('result' in data)) {
+		throw new Error(JSON.stringify(data, null, "\t"));
+	}
+	return data.result;
+}
+
+
 
 
 
@@ -692,6 +708,22 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
 			.then(() => {
 				sendResponse({
 					isError: false
+				});
+			})
+			.catch(err => {
+				console.error(err);
+				sendResponse({
+					isError: true
+				});
+			})
+		;
+		return true;
+	} else if (message.id === 'nunjuckRender') {
+		nunjuckRender(...message.data)
+			.then((data) => {
+				sendResponse({
+					isError: false,
+					response: data,
 				});
 			})
 			.catch(err => {

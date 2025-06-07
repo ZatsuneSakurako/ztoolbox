@@ -1,3 +1,16 @@
+/**
+ *
+ * @param {string} templateName
+ * @param {object} context
+ */
+export function nunjuckRender(templateName, context) {
+	return sendToMain('nunjuckRender', { templateName, context });
+}
+
+
+
+
+
 const templatesSource = window.templatesSource = new Map();
 templatesSource.set('backgroundTheme', '/templates/backgroundTheme');
 templatesSource.set('tabMover', '/templates/panel/tabMover');
