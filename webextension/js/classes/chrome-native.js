@@ -396,7 +396,6 @@ async function sendSocketData() {
 			domain,
 			ip: _tabData?.ip,
 			ipMore,
-			openGraph: _tabData?.tabOpenGraphData ?? undefined,
 			pageRating: _tabData?.pageRating ?? undefined,
 		}
 	}
