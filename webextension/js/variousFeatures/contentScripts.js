@@ -206,6 +206,8 @@ const znmUserscriptApi = {
      * @property {string} [fileName]
      * @property {string} [accessKey]
      * @property {boolean} [autoClose]
+     * @property {string} [icon]
+     * @property {boolean} [iconOnly]
      * @property {string} [title]
      */
     /**

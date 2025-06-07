@@ -200,6 +200,17 @@ section .buttonItem.userscript .menu-action .material-symbols-outlined {
 	font-size: 1em;
 	margin-right: .2em;
 }
+section .buttonItem.userscript li:has(.menu-action.icon-only) {
+	display: inline-block;
+}
+section .buttonItem.userscript .menu-action.icon-only {
+	padding: 0 4px;
+	margin: 0 4px;
+}
+section .buttonItem.userscript .menu-action.icon-only .material-symbols-outlined {
+	font-size: 1.75em;
+	margin-right: 0;
+}
 section .buttonItem.userscript .menu-actions {
 	list-style-type: none;
 	padding: 0;

@@ -6,7 +6,7 @@ import {
 	_userStylesStoreKey
 } from "../constants.js";
 import {appendTo} from "../utils/appendTo.js";
-import {renderTemplate} from "../init-templates.js";
+import {nunjuckRender} from "../init-templates.js";
 import {matchesChromePattern} from "../matchesChromePattern.js";
 import {getCurrentTab} from "../utils/getCurrentTab.js";
 
@@ -122,7 +122,7 @@ export async function updateData(activeTab) {
 
 	const tabData = await dataPromise;
 	if (!tabData.userStyles.length && tabData.userScripts.length) {
-		appendTo($tabUserStyles, await renderTemplate("tabUserStyles", {
+		appendTo($tabUserStyles, await nunjuckRender("panel/tabUserStyles", {
 			items: [
 				{
 					title: activeTab.title,
@@ -174,7 +174,7 @@ export async function updateData(activeTab) {
 		return a.title > b.title ? 1 : -1;
 	});
 
-	appendTo($tabUserStyles, await renderTemplate("tabUserStyles", renderData));
+	appendTo($tabUserStyles, await nunjuckRender("panel/tabUserStyles", renderData));
 }
 
 document.addEventListener('click', function (ev) {
@@ -182,6 +182,7 @@ document.addEventListener('click', function (ev) {
 	if (!element) return;
 
 	ev.preventDefault();
+	ev.stopImmediatePropagation();
 
 	const target = element.dataset.target,
 		eventName = element.dataset.userscriptMenuCommand;
@@ -261,4 +262,4 @@ document.addEventListener('change', function (ev) {
 
 	setUserScriptStates(element.value, element.checked)
 		.catch(console.error);
-})
+});

@@ -16,7 +16,6 @@ templatesSource.set('backgroundTheme', '/templates/backgroundTheme');
 templatesSource.set('tabMover', '/templates/panel/tabMover');
 templatesSource.set('tabPageServerIp', '/templates/panel/tabPageServerIp');
 templatesSource.set('newTab', '/templates/newTab');
-templatesSource.set('tabUserStyles', '/templates/panel/tabUserStyles');
 
 
 
