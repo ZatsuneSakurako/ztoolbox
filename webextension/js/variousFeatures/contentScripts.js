@@ -794,7 +794,7 @@ class ContentScripts {
      * @return {chrome.userScripts.RegisteredUserScript}
      */
     #userScriptToRegistrationOptions(userScript) {
-        const uniqSuffix = Math.random().toString(36).replace('.', '');
+        const uniqSuffix = self.crypto.randomUUID().replaceAll('-', '');
         const context = {
             fileName: userScript.fileName,
             tags: userScript.tags,
