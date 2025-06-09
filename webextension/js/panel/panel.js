@@ -1,6 +1,5 @@
 import {loadTranslations} from '../translation-api.js';
 import {theme_cache_update} from '../classes/backgroundTheme.js';
-import * as tabPageServerIp from "./tabPageServerIp.js";
 import * as tabUserStyles from "./tabUserStyles.js";
 import "./requestPermission.js";
 import {chromeNativeConnectedStorageKey, getSessionNativeIsConnected} from "../classes/chrome-native-settings.js";
@@ -93,9 +92,6 @@ async function updatePanelData() {
 	console.log("Updating panel data");
 
 	const activeTab = await getCurrentTab();
-	tabPageServerIp.updateData(activeTab)
-		.catch(console.error)
-	;
 	tabUserStyles.updateData(activeTab)
 		.catch(console.error)
 	;

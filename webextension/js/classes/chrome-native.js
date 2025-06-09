@@ -7,12 +7,12 @@ import {
 } from "./chrome-native-settings.js";
 import {sendNotification} from "./chrome-notification.js";
 import {getCurrentTab} from "../utils/getCurrentTab.js";
-import {tabPageServerIpStorage} from "../variousFeatures/tabPageServerIp.js";
 import ipRegex from "../../lib/ip-regex.js";
 import {io} from "../../lib/socket.io.esm.min.js";
 import {isServiceWorker} from "../utils/browserDetect.js";
-import {updateStyles} from "../variousFeatures/contentStyles.js";
+import {contentStyles, updateStyles} from "../variousFeatures/contentStyles.js";
 import {contentScripts} from "../variousFeatures/contentScripts.js";
+import {_tabStylesStoreKey} from "../constants.js";
 
 
 /**
@@ -232,7 +232,7 @@ socket.on('onSettingUpdate', function (preference) {
 
 
 chrome.storage.onChanged.addListener(async (changes, area) => {
-	if (area === 'session' && tabPageServerIpStorage in changes) {
+	if (area === 'session' && _tabStylesStoreKey in changes) {
 		sendSocketData()
 			.catch(console.error)
 		;
@@ -336,14 +336,25 @@ async function sendSocketData() {
 		.catch(console.error)
 	;
 	if (activeTab) {
-		const raw = (await chrome.storage.session.get([tabPageServerIpStorage])),
-			data = Object.assign({}, raw[tabPageServerIpStorage])
-		;
+		try {
+			/**
+			 *
+			 * @type {ContentStyles}
+			 * @private
+			 */
+			const _contentStyles = await contentStyles;
+			const _tabData = _contentStyles.tabData[`${activeTab.id}`];
+			if (_tabData && _tabData.customData && _tabData.customData.requestDetails) {
+				tabData = _tabData.customData.requestDetails;
+				tabData.pageRating = _tabData.customData.metaRating;
+			}
+		} catch (e) {
+			console.error(e);
+		}
 
 		/**
 		 * @type {undefined|TabPageServerIdData}
 		 */
-		const _tabData = data[`${activeTab.id}`];
 		let url, domain;
 		try {
 			url = new URL(activeTab.url);
@@ -390,13 +401,12 @@ async function sendSocketData() {
 		tabData = {
 			name: activeTab.title,
 			faviconUrl: favicon,
-			error: _tabData?.error ?? undefined,
-			statusCode: _tabData?.statusCode,
+			statusCode: tabData?.status,
 			url: activeTab.url,
 			domain,
-			ip: _tabData?.ip,
+			ip: tabData?.ip,
 			ipMore,
-			pageRating: _tabData?.pageRating ?? undefined,
+			pageRating: tabData?.pageRating ?? undefined,
 		}
 	}
 

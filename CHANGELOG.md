@@ -1,3 +1,6 @@
+# WIP
+* i : Move ip and meta rating data to UserScript tab data
+
 # 2.6.1
 * Fix : Firefox userScripts support
 
