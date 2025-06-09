@@ -10,7 +10,6 @@ import {sendNotification} from "./classes/chrome-notification.js";
 
 import {ChromeUpdateNotification} from './classes/chromeUpdateNotification.js';
 
-import './variousFeatures/tabPageServerIp.js';
 import './variousFeatures/contentStyles.js';
 import './variousFeatures/contentScripts.js';
 import './devtools/devtools-background.js';
