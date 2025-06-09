@@ -422,7 +422,7 @@ chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
 				if (!tabData || !tabData.customData) return;
 
 				await updateBadge(tab.id, {
-					statusCode: tabData.customData.requestDetails.status,
+					statusCode: tabData.customData.requestDetails?.status,
 				});
 			} catch (e) {
 				console.error(e);
