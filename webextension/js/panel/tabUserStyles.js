@@ -6,7 +6,7 @@ import {
 	_userStylesStoreKey
 } from "../constants.js";
 import {appendTo} from "../utils/appendTo.js";
-import {renderTemplate} from "../init-templates.js";
+import {nunjuckRender} from "../init-templates.js";
 import {matchesChromePattern} from "../matchesChromePattern.js";
 import {getCurrentTab} from "../utils/getCurrentTab.js";
 
@@ -51,7 +51,7 @@ export async function getTabUserStyles(tab) {
 	let executedScripts = undefined;
 	let menus = [];
 	try {
-		const tabData = result[_tabStylesStoreKey][tab.id];
+		const tabData = result[_tabStylesStoreKey][tab.id.toString(36)];
 		matchedStyles = tabData.matchedStyles;
 		menus = tabData.menus;
 		executedScripts = new Set(tabData.executedScripts ?? []);
@@ -122,7 +122,7 @@ export async function updateData(activeTab) {
 
 	const tabData = await dataPromise;
 	if (!tabData.userStyles.length && tabData.userScripts.length) {
-		appendTo($tabUserStyles, await renderTemplate("tabUserStyles", {
+		appendTo($tabUserStyles, await nunjuckRender("panel/tabUserStyles", {
 			items: [
 				{
 					title: activeTab.title,
@@ -141,10 +141,15 @@ export async function updateData(activeTab) {
 		 *
 		 * @type {boolean|undefined}
 		 */
-		let isScriptExecuted = undefined;
+		let isScriptExecuted = undefined,
+			manual = undefined,
+			icon = undefined
+		;
 		if ('script' in userStyle) {
 			menuCommands = Array.from(Object.values(tabData.menus));
 			isScriptExecuted = tabData.executedScripts.has(userStyle.fileName);
+			manual = userStyle.manual;
+			icon = userStyle.icon;
 		}
 		renderData.items.push({
 			title: userStyle.name,
@@ -152,6 +157,8 @@ export async function updateData(activeTab) {
 				id: `${i}-${userStyle.fileName}`,
 				label: userStyle.name,
 				enabled: userStyle.enabled,
+				manual,
+				icon,
 				fileName: userStyle.fileName,
 				tags: userStyle.tags,
 				menuCommands,
@@ -167,7 +174,7 @@ export async function updateData(activeTab) {
 		return a.title > b.title ? 1 : -1;
 	});
 
-	appendTo($tabUserStyles, await renderTemplate("tabUserStyles", renderData));
+	appendTo($tabUserStyles, await nunjuckRender("panel/tabUserStyles", renderData));
 }
 
 document.addEventListener('click', function (ev) {
@@ -175,6 +182,7 @@ document.addEventListener('click', function (ev) {
 	if (!element) return;
 
 	ev.preventDefault();
+	ev.stopImmediatePropagation();
 
 	const target = element.dataset.target,
 		eventName = element.dataset.userscriptMenuCommand;
@@ -188,7 +196,23 @@ document.addEventListener('click', function (ev) {
 				window.close();
 			}
 		});
-})
+});
+
+document.addEventListener('click', async function (ev) {
+	const element = ev.target.closest('.userscript[data-manual-target]');
+	if (!element) return;
+
+	chrome.runtime.sendMessage(chrome.runtime.id, {
+		id: 'userscript_manual_execute',
+		data: {
+			target: element.dataset.manualTarget,
+			tabId: (await getCurrentTab()).id,
+		}
+	}, function () {
+		console.log('[UserScript]', ...arguments);
+		window.close();
+	});
+});
 
 /**
  *
@@ -200,10 +224,13 @@ async function userScriptSendEvent(eventName, target, tab) {
 	if (!tab) tab = await getCurrentTab();
 	console.info('Sending to tab ', tab, 'the event', eventName, 'for ', target);
 
-	await chrome.tabs.sendMessage(tab.id, {
-		type: "userScriptEvent",
-		target,
-		eventName: `menuCommand-${eventName}`,
+	await chrome.runtime.sendMessage(chrome.runtime.id, {
+		id: 'user_script_panel_event',
+		data: {
+			target: target,
+			tabId: tab.id,
+			eventName: `menuCommand-${eventName}`,
+		}
 	});
 }
 
@@ -235,4 +262,4 @@ document.addEventListener('change', function (ev) {
 
 	setUserScriptStates(element.value, element.checked)
 		.catch(console.error);
-})
+});

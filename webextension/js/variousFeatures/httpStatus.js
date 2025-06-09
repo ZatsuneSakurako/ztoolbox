@@ -1,11 +1,4 @@
-import {tabPageServerIpStorage, updateData} from "./tabPageServerIp.js";
-import {webRequestFilter} from "../constants.js";
-
-export async function updateBadge(tabId) {
-	const rawDatas = (await chrome.storage.session.get([tabPageServerIpStorage])),
-		data = rawDatas[tabPageServerIpStorage][tabId]
-	;
-
+export async function updateBadge(tabId, data) {
 	let color = '#3B3B3B';
 	if (data?.statusCode >= 500) {
 		color = '#BA0000';
@@ -17,40 +10,23 @@ export async function updateBadge(tabId) {
 		color = '#078F00';
 	}
 
+	// console.log(tabId, color, data.statusCode?.toString() ?? '');
 	chrome.action.setBadgeText({
-		tabId: tabId,
+		tabId,
 		text: data.statusCode?.toString() ?? '',
 	})
 		.catch(console.error)
 	;
 	chrome.action.setBadgeBackgroundColor({
-		tabId: tabId,
+		tabId,
 		color
 	})
 		.catch(console.error)
 	;
 	chrome.action.setBadgeTextColor({
-		tabId: tabId,
+		tabId,
 		color: '#ebebeb'
 	})
 		.catch(console.error)
 	;
 }
-
-chrome.webRequest.onHeadersReceived.addListener(function (details) {
-	updateData({
-		statusCode: details.statusCode,
-		requestId: details.requestId,
-	})
-		.catch(console.error)
-	;
-}, webRequestFilter, ['responseHeaders']);
-
-chrome.webRequest.onCompleted.addListener(function (details) {
-	updateData({
-		statusCode: details.statusCode,
-		requestId: details.requestId,
-	})
-		.catch(console.error)
-	;
-}, webRequestFilter);

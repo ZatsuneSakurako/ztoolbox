@@ -1,7 +1,4 @@
-import {
-    _userScriptsStateStoreKey,
-    _userScriptsStoreKey
-} from "../constants.js";
+import {_userScriptsStateStoreKey, _userScriptsStoreKey} from "../constants.js";
 import {contentStyles} from "./contentStyles.js";
 import {sendNotification} from "../classes/chrome-notification.js";
 import {getUserscriptData, setUserscriptData, writeClipboard} from "../classes/chrome-native.js";
@@ -179,7 +176,7 @@ const znmUserscriptApi = {
         const [newData] = data;
         if (!fileName || typeof fileName !== 'string') {
             // noinspection ExceptionCaughtLocallyJS
-            throw new Error('INVALID FILE_NAME');
+            throw new Error(`INVALID FILE_NAME ${JSON.stringify(fileName)}`);
         }
         if (typeof newData !== 'object') {
             // noinspection ExceptionCaughtLocallyJS
@@ -206,6 +203,8 @@ const znmUserscriptApi = {
      * @property {string} [fileName]
      * @property {string} [accessKey]
      * @property {boolean} [autoClose]
+     * @property {string} [icon]
+     * @property {boolean} [iconOnly]
      * @property {string} [title]
      */
     /**
@@ -243,11 +242,11 @@ const znmUserscriptApi = {
         const _contentStyles = await contentStyles,
             tabData = _contentStyles.tabData;
 
-        const index = tabData[`${tab.id}`].menus.findIndex(option => option.id === menu_command_id);
+        const index = tabData[tab.id.toString(36)].menus.findIndex(option => option.id === menu_command_id);
         if (index !== -1) {
-            tabData[`${tab.id}`].menus[index] = options;
+            tabData[tab.id.toString(36)].menus[index] = options;
         } else {
-            tabData[`${tab.id}`].menus.push(options);
+            tabData[tab.id.toString(36)].menus.push(options);
         }
         _contentStyles.tabData = tabData;
 
@@ -268,10 +267,31 @@ const znmUserscriptApi = {
 
         const _contentStyles = await contentStyles,
             tabData = _contentStyles.tabData;
-        delete tabData[`${tab.id}`].menus[menu_command_id];
+        delete tabData[tab.id.toString(36)].menus[menu_command_id];
         _contentStyles.tabData = tabData;
     },
 
+    async setTabData(fileName, tab, [key, value]) {
+        const _contentStyles = await contentStyles,
+            tabData = _contentStyles.tabData;
+
+        if (!(tab.id.toString(36) in tabData)) {
+            throw new Error(`Tab ${tab.id} not found in contentScripts tabData.`);
+        }
+        if (typeof key !== 'string') {
+            throw new Error('INVALID_KEY');
+        }
+        tabData[tab.id.toString(36)].customData[key] = value;
+        _contentStyles.tabData = tabData;
+    },
+    async getTabData(fileName, tab, [key]) {
+        const _contentStyles = await contentStyles,
+            tabData = _contentStyles.tabData;
+        if (typeof key !== 'string') {
+            throw new Error('INVALID_KEY');
+        }
+        return tabData[tab.id.toString(36)].customData[key] ?? null;
+    },
 };
 
 
@@ -326,7 +346,7 @@ function onUserScriptMessage(message, sender, sendResponse) {
 
     if (message.type in znmUserscriptApi) {
         try {
-            const result = znmUserscriptApi[message.type](message.fileName, sender.tab, message.data, message.context);
+            const result = znmUserscriptApi[message.type](message.context.fileName, sender.tab, message.data, message.context);
             if (result instanceof Promise) {
                 result
                     .then(result => success(result))
@@ -384,6 +404,22 @@ function userScriptApiLoader(context) {
     const listeners = {};
     if (chrome.runtime.onMessage) {
         chrome.runtime.onMessage.addListener(onMessage);
+    } else {
+        /**
+         * Firefox does not support chrome.runtime.onMessage
+         * @type {chrome.runtime.Port|null}
+         */
+        let port = null;
+        try {
+            port = chrome.runtime.connect({
+                name: 'user_script_port',
+            });
+            port.onMessage.addListener((message) => {
+                onMessage(message, null);
+            });
+        } catch (e) {
+            console.error(e);
+        }
     }
     /**
      *
@@ -391,7 +427,7 @@ function userScriptApiLoader(context) {
      * @param {chrome.runtime.MessageSender} sender
      */
     function onMessage(request, sender) {
-        if (sender.id !== chrome.runtime.id || request.type !== 'userScriptEvent') return;
+        if ((sender !== null && sender.id !== chrome.runtime.id) || request.type !== 'userScriptEvent') return;
         if (!(request.eventName in listeners) || request.target !== context.fileName) return;
 
         for (const listener of listeners[request.eventName]) {
@@ -423,7 +459,7 @@ function userScriptApiLoader(context) {
     }
 
     // noinspection JSUnusedGlobalSymbols
-    return new Proxy({
+    const znmApi = new Proxy({
         ...context,
         on(eventName, listener) {
             if (!(eventName in listeners)) {
@@ -484,6 +520,7 @@ function userScriptApiLoader(context) {
         },
         ...readOnlyProxy,
     });
+    return znmApi;
 }
 
 
@@ -494,6 +531,8 @@ function userScriptApiLoader(context) {
  * @property {string} name
  * @property {string} fileName
  * @property {boolean} enabled
+ * @property {boolean} manual
+ * @property {string} [icon]
  * @property {string[]} tags
  * @property {string} script
  * @property {chrome.userScripts.RunAt} [runAt]
@@ -519,6 +558,12 @@ class ContentScripts {
     onUserScriptDataUpdatedCbList = [];
 
     /**
+     *
+     * @type {Map<number, chrome.runtime.Port>}
+     */
+    #ports=new Map()
+
+    /**
      * @private
      */
     constructor() {
@@ -526,13 +571,14 @@ class ContentScripts {
             this.#onStorageChange(changes, areaName);
         });
         chrome.runtime.onUserScriptMessage.addListener((message, sender, sendResponse) => {
-            if (sender.id !== chrome.runtime.id || !message.userScriptsId) {
+            if (sender.id !== chrome.runtime.id) return;
+            if (!message.userScriptsId) {
                 onUserScriptMessage(message, sender, sendResponse);
                 return;
             }
             try {
                 const tabData = this.#contentStyle.tabData,
-                    currentTabData = tabData[sender.tab.id];
+                    currentTabData = tabData[sender.tab.id.toString(36)];
 
                 // console.debug("[UserScript] Event from", sender.tab, message);
                 (currentTabData.executedScripts ?? []).push(message.userScriptsId);
@@ -544,21 +590,86 @@ class ContentScripts {
                 sendResponse(null);
             }
         });
+        chrome.runtime.onUserScriptConnect.addListener((port) => {
+            if (!port.sender.tab) {
+                port.disconnect();
+                return;
+            }
+
+            const oldPort = this.#ports.get(port.sender.tab.id);
+            if (oldPort) {
+                console.log('[UserScript] Port already connected on ' + port.sender.tab.id);
+                oldPort.disconnect();
+            }
+            this.#ports.set(port.sender.tab.id, port);
+            port.onDisconnect.addListener((port) => {
+                this.#ports.delete(port.sender.tab.id);
+            });
+        });
+        chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+            if (!message || typeof message !== 'object' || sender.id !== chrome.runtime.id) return;
+
+            const wrapPromise = (promise) => {
+                promise.then(result => {
+                    sendResponse({ error: false, data: result });
+                })
+                    .catch(e => {
+                        console.error(e);
+                        sendResponse({ error: true });
+                    })
+            }
+            if (message.id === 'userscript_manual_execute') {
+                if ((message.data.tabId ?? null) === null) {
+                    sendResponse({ error: 'TAB_ID_MISSING' });
+                    return;
+                }
+                const userScript = this.#userScripts.find(userScript => userScript.fileName === message.data.target);
+                if (!userScript) {
+                    sendResponse({ error: 'USERSCRIPT_NOT_FOUND' });
+                    return;
+                }
+
+                wrapPromise(this.#manuallyExecute(userScript, message.data.tabId));
+            } else if (message.id === 'user_script_panel_event') {
+                const port = this.#ports.get(message.data.tabId);
+                if (port !== undefined) {
+                    // If "saved" port connected (Firefox does not support chrome.runtime.onMessage version)
+                    try {
+                        port.postMessage({
+                            type: "userScriptEvent",
+                            target: message.data.target,
+                            eventName: message.data.eventName,
+                        });
+                        sendResponse({ error: false });
+                    } catch (e) {
+                        console.error(e);
+                        sendResponse({ error: true });
+                    }
+                } else {
+                    wrapPromise(chrome.tabs.sendMessage(message.data.tabId, {
+                        type: "userScriptEvent",
+                        target: message.data.target,
+                        eventName: message.data.eventName,
+                    }));
+                }
+            }
+        });
         chrome.webNavigation.onBeforeNavigate.addListener(async function (details) {
             // Exclude iframes
-            if (details.frameId !== 0) return;
+            if (details.tabId < 0 || details.frameId !== 0) return;
             try {
                 // console.info('[UserScripts] Tab navigation, resetting', details);
                 const _contentStyles = await contentStyles,
                     tabId = details.tabId,
                     tabData = _contentStyles.tabData ?? _contentStyles.tabNewData;
 
-                if (!(`${tabId}` in tabData)) {
+                if (!(tabId.toString(36) in tabData)) {
                     console.warn(`Tab ${tabId} not found in contentScripts tabData.`);
                     return;
                 }
-                tabData[`${tabId}`].executedScripts = [];
-                tabData[`${tabId}`].menus = [];
+                tabData[tabId.toString(36)].executedScripts = [];
+                tabData[tabId.toString(36)].menus = [];
+                tabData[tabId.toString(36)].customData = {};
                 _contentStyles.tabData = tabData;
             } catch (e) {
                 console.error(e);
@@ -677,6 +788,75 @@ class ContentScripts {
         }
     }
 
+    /**
+     *
+     * @param {UserScript} userScript
+     * @return {chrome.userScripts.RegisteredUserScript}
+     */
+    #userScriptToRegistrationOptions(userScript) {
+        const uniqSuffix = self.crypto.randomUUID().replaceAll('-', '');
+        const context = {
+            fileName: userScript.fileName,
+            tags: userScript.tags,
+        };
+
+        let specialScripts = new Map();
+        for (let grant of userScript.grant ?? []) {
+            if (['none', 'unsafeWindow'].includes(grant)) continue;
+            specialScripts.set(grant, `function ${grant}() { return znmApi_${uniqSuffix}[${JSON.stringify(grant)}].apply(this, arguments); }`);
+        }
+        const additionalParams = !specialScripts.size ? ''
+            : ', ' + Array.from(specialScripts.keys()).join(', ');
+        const additionalValues = !specialScripts.size ? ''
+            : ', ' + Array.from(specialScripts.values()).join(', ');
+
+        /**
+         *
+         * @type {chrome.userScripts.RegisteredUserScript}
+         */
+        const registrationUserScript = {
+            id: userScript.fileName,
+            runAt: userScript.runAt? userScript.runAt.replace(/-/g, '_') : undefined,
+            js: [
+                { code: `'use strict';const znmApi_${uniqSuffix} = ${userScriptApiLoader.toString()}(${JSON.stringify(context)});\n(function(znmApi, unsafeWindow, window${additionalParams}){ ${userScript.script} }).call(znmApi_${uniqSuffix}, znmApi_${uniqSuffix}, window, undefined${additionalValues});` },
+            ],
+            matches: userScript.match ?? [],
+            excludeMatches: userScript.excludeMatches ?? [],
+            // NO chrome.runtime.* access in "MAIN" world as it's not isolated anymore
+            world: 'USER_SCRIPT',
+            allFrames: !!userScript.allFrames,
+        };
+        if (userScript.sandbox === 'MAIN') {
+            // Exclude "znmApi" if running in MAIN world
+            registrationUserScript.world = userScript.sandbox;
+            registrationUserScript.js = [
+                { code: userScript.script }
+            ];
+        }
+
+        return registrationUserScript;
+    }
+
+    /**
+     *
+     * @param {UserScript} userScript
+     * @param {string} tabId
+     * @returns {Promise<any[]>}
+     */
+    async #manuallyExecute(userScript, tabId) {
+        const tab = await chrome.tabs.get(tabId);
+        const registrationOptions = this.#userScriptToRegistrationOptions(userScript);
+        return await chrome.userScripts.execute({
+            injectImmediately: true,
+            target: {
+                tabId,
+                allFrames: registrationOptions.allFrames,
+            },
+            js: registrationOptions.js,
+            world: registrationOptions.world,
+        });
+    }
+
     async #updateUserScripts() {
         const userScripts = this.userScripts;
 
@@ -707,45 +887,7 @@ class ContentScripts {
             if (!enabled) continue;
             userScriptIds.add(userScript.fileName);
 
-            const context = {
-                fileName: userScript.fileName,
-                tags: userScript.tags,
-            };
-
-            let specialScripts = new Map();
-            for (let grant of userScript.grant ?? []) {
-                if (['none', 'unsafeWindow'].includes(grant)) continue;
-                specialScripts.set(grant, `function ${grant}() { return znmApi[${JSON.stringify(grant)}].apply(this, arguments); }`);
-            }
-            const additionalParams = !specialScripts.size ? ''
-                : ', ' + Array.from(specialScripts.keys()).join(', ');
-            const additionalValues = !specialScripts.size ? ''
-                : ', ' + Array.from(specialScripts.values()).join(', ');
-
-            /**
-             *
-             * @type {chrome.userScripts.RegisteredUserScript}
-             */
-            const registrationUserScript = {
-                id: userScript.fileName,
-                runAt: userScript.runAt? userScript.runAt.replace(/-/g, '_') : undefined,
-                js: [
-                    { code: `const znmApi = ${userScriptApiLoader.toString()}(${JSON.stringify(context)});\n(function(unsafeWindow, window${additionalParams}){ ${userScript.script} }).call(znmApi, window, undefined${additionalValues});` },
-                ],
-                matches: userScript.match ?? [],
-                excludeMatches: userScript.excludeMatches ?? [],
-                // NO chrome.runtime.* access in "MAIN" world as it's not isolated anymore
-                world: 'USER_SCRIPT',
-                allFrames: !!userScript.allFrames,
-            };
-            if (userScript.sandbox === 'MAIN') {
-                // Exclude "znmApi" if running in MAIN world
-                registrationUserScript.world = userScript.sandbox;
-                registrationUserScript.js = [
-                    { code: userScript.script }
-                ];
-            }
-
+            const registrationUserScript = this.#userScriptToRegistrationOptions(userScript);
             if (currentUserScripts.has(userScript.fileName)) {
                 userScriptRegistration.push(registrationUserScript);
             } else {

@@ -171,15 +171,6 @@ section .buttonItem .ellipse {
 	display: -webkit-box;
 	-webkit-box-orient: vertical;
 }
-section .buttonItem.tabPageServerIp .title {
-	-webkit-line-clamp: 1;
-}
-section .buttonItem.tabPageServerIp.no-ip .title {
-	-webkit-line-clamp: 2;
-}
-section .buttonItem.tabPageServerIp.error {
-	word-break: break-all;
-}
 section .buttonItem.tabMover .data {
 	-webkit-line-clamp: 1;
 }
@@ -196,9 +187,24 @@ section .buttonItem.userscript .menu-action {
 	padding-top: 4px;
 	text-align: left;
 }
-section .buttonItem.userscript .menu-action .material-symbols-outlined {
+section .buttonItem.userscript .menu-action .menu-action-icon {
 	font-size: 1em;
 	margin-right: .2em;
+}
+section .buttonItem.userscript .menu-action img.menu-action-icon {
+	height: 1em;
+	width: 1em;
+}
+section .buttonItem.userscript li:has(.menu-action.icon-only) {
+	display: inline-block;
+}
+section .buttonItem.userscript .menu-action.icon-only {
+	padding: 0 4px;
+	margin: 0 4px;
+}
+section .buttonItem.userscript .menu-action.icon-only .menu-action-icon {
+	font-size: 1.75em;
+	margin-right: 0;
 }
 section .buttonItem.userscript .menu-actions {
 	list-style-type: none;

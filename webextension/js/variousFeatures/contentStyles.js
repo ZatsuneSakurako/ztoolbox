@@ -1,12 +1,9 @@
 import {i18ex} from "../translation-api.js";
 import {ContextMenusController} from "../classes/contextMenusController.js";
 import {getUserscripts} from "../classes/chrome-native.js";
-import {
-	_userStylesStoreKey,
-	_tabStylesStoreKey,
-	_userStylesStateStoreKey,
-} from "../constants.js";
+import {_tabStylesStoreKey, _userStylesStateStoreKey, _userStylesStoreKey, webRequestFilter,} from "../constants.js";
 import {contentScripts} from "./contentScripts.js";
+import {updateBadge} from "./httpStatus.js";
 
 
 /**
@@ -28,6 +25,7 @@ import {contentScripts} from "./contentScripts.js";
  * @property {string[]} matchedStyles
  * @property {string[]} injectedStyles
  * @property {RegisterMenuCommand[]} menus
+ * @property {Dict<any>} customData
  *
  */
 class ContentStyles {
@@ -218,6 +216,7 @@ class ContentStyles {
 			executedScripts: [],
 			matchedStyles: [],
 			menus: [],
+			customData: {},
 		}
 	}
 }
@@ -252,6 +251,9 @@ function userStyleInjectOpts(userStyle, tab) {
  * @param {boolean} forceRemove
  */
 export async function onTabUrl(tab, details, forceRemove) {
+	// Exclude iframes & special "tabs"
+	if (!!details && (details.frameId !== 0 || details.tabId < 0)) return;
+
 	contentStyles = await contentStyles;
 
 	let url = details?.url ?? tab.url;
@@ -290,8 +292,8 @@ export async function onTabUrl(tab, details, forceRemove) {
 	 */
 	const neededStyles = new Set();
 	const tabData = contentStyles.tabData,
-		currentTabData = tabData[`${tab.id}`] ?? contentStyles.tabNewData
-	tabData[`${tab.id}`] = currentTabData;
+		currentTabData = tabData[tab.id.toString(36)] ?? contentStyles.tabNewData
+	tabData[tab.id.toString(36)] = currentTabData;
 
 	/**
 	 * Clear old matched styles
@@ -361,7 +363,7 @@ export async function onTabUrl(tab, details, forceRemove) {
 	currentTabData.injectedStyles = currentTabData.injectedStyles.filter(function(value) {
 		return value !== undefined;
 	});
-	tabData[`${tab.id}`] = currentTabData;
+	tabData[tab.id.toString(36)] = currentTabData;
 	contentStyles.tabData = tabData;
 }
 chrome.webNavigation.onCommitted.addListener(function (details) {
@@ -376,6 +378,57 @@ chrome.webNavigation.onCommitted.addListener(function (details) {
 			.catch(console.error);
 	})()
 		.catch(console.error);
+});
+
+async function onWebRequestEvent(details) {
+	// Exclude iframes & special "tabs"
+	if (details.frameId !== 0 || details.tabId < 0) return;
+
+	await updateBadge(details.tabId, {
+		statusCode: details.statusCode,
+	}).catch(console.error);
+
+	const _contentStyles = await contentStyles,
+		tabDatas = _contentStyles.tabData,
+		tabData = tabDatas[details.tabId.toString(36)];
+	if (!tabData || !tabData.customData) return;
+
+	const requestDetails = {
+		method: details.method,
+		status: details.statusCode,
+		timeStamp: details.timeStamp,
+	};
+	if (details.ip !== undefined) {
+		requestDetails.ip = details.ip;
+	}
+	if (details.responseHeaders && details.responseHeaders.length > 0) {
+		requestDetails.responseHeaders = details.responseHeaders.map(header => {
+			return {
+				name: header.name,
+				value: header.value,
+			};
+		});
+	}
+	tabData.customData.requestDetails = requestDetails;
+	_contentStyles.tabData = tabDatas;
+}
+chrome.webRequest.onHeadersReceived.addListener(onWebRequestEvent, webRequestFilter, ['responseHeaders']);
+chrome.webRequest.onCompleted.addListener(onWebRequestEvent, webRequestFilter);
+chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
+	if (changeInfo.status === 'complete') {
+		setTimeout(async () => {
+			try {
+				const tabData = (await contentStyles).tabData[tabId.toString(36)];
+				if (!tabData || !tabData.customData) return;
+
+				await updateBadge(tab.id, {
+					statusCode: tabData.customData.requestDetails.status,
+				});
+			} catch (e) {
+				console.error(e);
+			}
+		});
+	}
 });
 
 
@@ -468,7 +521,9 @@ export async function updateStyles() {
 				excludeMatches: userscript.excludeMatches,
 				name: userscript.name,
 				fileName: userscript.fileName,
-				enabled: !userscript.meta.disabled,
+				enabled: !userscript.meta.manual && !userscript.meta.disabled,
+				manual: userscript.meta.manual,
+				icon: userscript.meta.icon,
 				tags: userscript.tags,
 				script: userscript.content,
 				allFrames: userscript.meta.allFrames,
