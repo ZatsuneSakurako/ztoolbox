@@ -384,6 +384,10 @@ async function onWebRequestEvent(details) {
 	// Exclude iframes & special "tabs"
 	if (details.frameId !== 0 || details.tabId < 0) return;
 
+	await updateBadge(details.tabId, {
+		statusCode: details.statusCode,
+	}).catch(console.error);
+
 	const _contentStyles = await contentStyles,
 		tabDatas = _contentStyles.tabData,
 		tabData = tabDatas[details.tabId.toString(36)];
