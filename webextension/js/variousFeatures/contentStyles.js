@@ -410,14 +410,20 @@ async function onWebRequestEvent(details) {
 }
 chrome.webRequest.onHeadersReceived.addListener(onWebRequestEvent, webRequestFilter, ['responseHeaders']);
 chrome.webRequest.onCompleted.addListener(onWebRequestEvent, webRequestFilter);
-chrome.tabs.onUpdated.addListener(async function (tabId, changeInfo, tab) {
+chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
 	if (changeInfo.status === 'complete') {
-		const tabData = (await contentStyles).tabData[tab.id.toString(36)];
-		if (!tabData || !tabData.customData) return;
+		setTimeout(async () => {
+			try {
+				const tabData = (await contentStyles).tabData[tabId.toString(36)];
+				if (!tabData || !tabData.customData) return;
 
-		await updateBadge(tab.id, {
-			statusCode: tabData.customData.requestDetails.status,
-		}).catch(console.error);
+				await updateBadge(tab.id, {
+					statusCode: tabData.customData.requestDetails.status,
+				});
+			} catch (e) {
+				console.error(e);
+			}
+		});
 	}
 });
 
