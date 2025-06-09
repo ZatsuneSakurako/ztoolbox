@@ -1,12 +1,9 @@
 import {i18ex} from "../translation-api.js";
 import {ContextMenusController} from "../classes/contextMenusController.js";
 import {getUserscripts} from "../classes/chrome-native.js";
-import {
-	_userStylesStoreKey,
-	_tabStylesStoreKey,
-	_userStylesStateStoreKey,
-} from "../constants.js";
+import {_tabStylesStoreKey, _userStylesStateStoreKey, _userStylesStoreKey, webRequestFilter,} from "../constants.js";
 import {contentScripts} from "./contentScripts.js";
+import {updateBadge} from "./httpStatus.js";
 
 
 /**
@@ -28,6 +25,7 @@ import {contentScripts} from "./contentScripts.js";
  * @property {string[]} matchedStyles
  * @property {string[]} injectedStyles
  * @property {RegisterMenuCommand[]} menus
+ * @property {Dict<any>} customData
  *
  */
 class ContentStyles {
@@ -218,6 +216,7 @@ class ContentStyles {
 			executedScripts: [],
 			matchedStyles: [],
 			menus: [],
+			customData: {},
 		}
 	}
 }
@@ -252,6 +251,9 @@ function userStyleInjectOpts(userStyle, tab) {
  * @param {boolean} forceRemove
  */
 export async function onTabUrl(tab, details, forceRemove) {
+	// Exclude iframes & special "tabs"
+	if (!!details && (details.frameId !== 0 || details.tabId < 0)) return;
+
 	contentStyles = await contentStyles;
 
 	let url = details?.url ?? tab.url;
@@ -376,6 +378,47 @@ chrome.webNavigation.onCommitted.addListener(function (details) {
 			.catch(console.error);
 	})()
 		.catch(console.error);
+});
+
+async function onWebRequestEvent(details) {
+	// Exclude iframes & special "tabs"
+	if (details.frameId !== 0 || details.tabId < 0) return;
+
+	const _contentStyles = await contentStyles,
+		tabDatas = _contentStyles.tabData,
+		tabData = tabDatas[`${details.tabId}`];
+	if (!tabData || !tabData.customData) return;
+
+	const requestDetails = {
+		method: details.method,
+		status: details.statusCode,
+		timeStamp: details.timeStamp,
+	};
+	if (details.ip !== undefined) {
+		requestDetails.ip = details.ip;
+	}
+	if (details.responseHeaders && details.responseHeaders.length > 0) {
+		requestDetails.responseHeaders = details.responseHeaders.map(header => {
+			return {
+				name: header.name,
+				value: header.value,
+			};
+		});
+	}
+	tabData.customData.requestDetails = requestDetails;
+	_contentStyles.tabData = tabDatas;
+}
+chrome.webRequest.onHeadersReceived.addListener(onWebRequestEvent, webRequestFilter, ['responseHeaders']);
+chrome.webRequest.onCompleted.addListener(onWebRequestEvent, webRequestFilter);
+chrome.tabs.onUpdated.addListener(async function (tabId, changeInfo, tab) {
+	if (changeInfo.status === 'complete') {
+		const tabData = (await contentStyles).tabData[`${tab.id}`];
+		if (!tabData || !tabData.customData) return;
+
+		await updateBadge(tab.id, {
+			statusCode: tabData.customData.requestDetails.status,
+		}).catch(console.error);
+	}
 });
 
 

@@ -1,7 +1,4 @@
-import {
-    _userScriptsStateStoreKey,
-    _userScriptsStoreKey
-} from "../constants.js";
+import {_userScriptsStateStoreKey, _userScriptsStoreKey} from "../constants.js";
 import {contentStyles} from "./contentStyles.js";
 import {sendNotification} from "../classes/chrome-notification.js";
 import {getUserscriptData, setUserscriptData, writeClipboard} from "../classes/chrome-native.js";
@@ -274,6 +271,27 @@ const znmUserscriptApi = {
         _contentStyles.tabData = tabData;
     },
 
+    async setTabData(fileName, tab, [key, value]) {
+        const _contentStyles = await contentStyles,
+            tabData = _contentStyles.tabData;
+
+        if (!(`${tab.id}` in tabData)) {
+            throw new Error(`Tab ${tab.id} not found in contentScripts tabData.`);
+        }
+        if (typeof key !== 'string') {
+            throw new Error('INVALID_KEY');
+        }
+        tabData[`${tab.id}`].customData[key] = value;
+        _contentStyles.tabData = tabData;
+    },
+    async getTabData(fileName, tab, [key]) {
+        const _contentStyles = await contentStyles,
+            tabData = _contentStyles.tabData;
+        if (typeof key !== 'string') {
+            throw new Error('INVALID_KEY');
+        }
+        return tabData[`${tab.id}`].customData[key] ?? null;
+    },
 };
 
 
@@ -637,7 +655,7 @@ class ContentScripts {
         });
         chrome.webNavigation.onBeforeNavigate.addListener(async function (details) {
             // Exclude iframes
-            if (details.frameId !== 0) return;
+            if (details.tabId < 0 || details.frameId !== 0) return;
             try {
                 // console.info('[UserScripts] Tab navigation, resetting', details);
                 const _contentStyles = await contentStyles,
@@ -650,6 +668,7 @@ class ContentScripts {
                 }
                 tabData[`${tabId}`].executedScripts = [];
                 tabData[`${tabId}`].menus = [];
+                tabData[`${tabId}`].customData = {};
                 _contentStyles.tabData = tabData;
             } catch (e) {
                 console.error(e);
