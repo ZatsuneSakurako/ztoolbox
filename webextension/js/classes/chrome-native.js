@@ -343,7 +343,7 @@ async function sendSocketData() {
 			 * @private
 			 */
 			const _contentStyles = await contentStyles;
-			const _tabData = _contentStyles.tabData[`${activeTab.id}`];
+			const _tabData = _contentStyles.tabData[activeTab.id.toString(36)];
 			if (_tabData && _tabData.customData && _tabData.customData.requestDetails) {
 				tabData = _tabData.customData.requestDetails;
 				tabData.pageRating = _tabData.customData.metaRating;

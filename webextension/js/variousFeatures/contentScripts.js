@@ -242,11 +242,11 @@ const znmUserscriptApi = {
         const _contentStyles = await contentStyles,
             tabData = _contentStyles.tabData;
 
-        const index = tabData[`${tab.id}`].menus.findIndex(option => option.id === menu_command_id);
+        const index = tabData[tab.id.toString(36)].menus.findIndex(option => option.id === menu_command_id);
         if (index !== -1) {
-            tabData[`${tab.id}`].menus[index] = options;
+            tabData[tab.id.toString(36)].menus[index] = options;
         } else {
-            tabData[`${tab.id}`].menus.push(options);
+            tabData[tab.id.toString(36)].menus.push(options);
         }
         _contentStyles.tabData = tabData;
 
@@ -267,7 +267,7 @@ const znmUserscriptApi = {
 
         const _contentStyles = await contentStyles,
             tabData = _contentStyles.tabData;
-        delete tabData[`${tab.id}`].menus[menu_command_id];
+        delete tabData[tab.id.toString(36)].menus[menu_command_id];
         _contentStyles.tabData = tabData;
     },
 
@@ -275,13 +275,13 @@ const znmUserscriptApi = {
         const _contentStyles = await contentStyles,
             tabData = _contentStyles.tabData;
 
-        if (!(`${tab.id}` in tabData)) {
+        if (!(tab.id.toString(36) in tabData)) {
             throw new Error(`Tab ${tab.id} not found in contentScripts tabData.`);
         }
         if (typeof key !== 'string') {
             throw new Error('INVALID_KEY');
         }
-        tabData[`${tab.id}`].customData[key] = value;
+        tabData[tab.id.toString(36)].customData[key] = value;
         _contentStyles.tabData = tabData;
     },
     async getTabData(fileName, tab, [key]) {
@@ -290,7 +290,7 @@ const znmUserscriptApi = {
         if (typeof key !== 'string') {
             throw new Error('INVALID_KEY');
         }
-        return tabData[`${tab.id}`].customData[key] ?? null;
+        return tabData[tab.id.toString(36)].customData[key] ?? null;
     },
 };
 
@@ -577,7 +577,7 @@ class ContentScripts {
             }
             try {
                 const tabData = this.#contentStyle.tabData,
-                    currentTabData = tabData[sender.tab.id];
+                    currentTabData = tabData[sender.tab.id.toString(36)];
 
                 // console.debug("[UserScript] Event from", sender.tab, message);
                 (currentTabData.executedScripts ?? []).push(message.userScriptsId);
@@ -662,13 +662,13 @@ class ContentScripts {
                     tabId = details.tabId,
                     tabData = _contentStyles.tabData ?? _contentStyles.tabNewData;
 
-                if (!(`${tabId}` in tabData)) {
+                if (!(tabId.toString(36) in tabData)) {
                     console.warn(`Tab ${tabId} not found in contentScripts tabData.`);
                     return;
                 }
-                tabData[`${tabId}`].executedScripts = [];
-                tabData[`${tabId}`].menus = [];
-                tabData[`${tabId}`].customData = {};
+                tabData[tabId.toString(36)].executedScripts = [];
+                tabData[tabId.toString(36)].menus = [];
+                tabData[tabId.toString(36)].customData = {};
                 _contentStyles.tabData = tabData;
             } catch (e) {
                 console.error(e);

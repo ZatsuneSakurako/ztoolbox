@@ -292,8 +292,8 @@ export async function onTabUrl(tab, details, forceRemove) {
 	 */
 	const neededStyles = new Set();
 	const tabData = contentStyles.tabData,
-		currentTabData = tabData[`${tab.id}`] ?? contentStyles.tabNewData
-	tabData[`${tab.id}`] = currentTabData;
+		currentTabData = tabData[tab.id.toString(36)] ?? contentStyles.tabNewData
+	tabData[tab.id.toString(36)] = currentTabData;
 
 	/**
 	 * Clear old matched styles
@@ -363,7 +363,7 @@ export async function onTabUrl(tab, details, forceRemove) {
 	currentTabData.injectedStyles = currentTabData.injectedStyles.filter(function(value) {
 		return value !== undefined;
 	});
-	tabData[`${tab.id}`] = currentTabData;
+	tabData[tab.id.toString(36)] = currentTabData;
 	contentStyles.tabData = tabData;
 }
 chrome.webNavigation.onCommitted.addListener(function (details) {
@@ -386,7 +386,7 @@ async function onWebRequestEvent(details) {
 
 	const _contentStyles = await contentStyles,
 		tabDatas = _contentStyles.tabData,
-		tabData = tabDatas[`${details.tabId}`];
+		tabData = tabDatas[details.tabId.toString(36)];
 	if (!tabData || !tabData.customData) return;
 
 	const requestDetails = {
@@ -412,7 +412,7 @@ chrome.webRequest.onHeadersReceived.addListener(onWebRequestEvent, webRequestFil
 chrome.webRequest.onCompleted.addListener(onWebRequestEvent, webRequestFilter);
 chrome.tabs.onUpdated.addListener(async function (tabId, changeInfo, tab) {
 	if (changeInfo.status === 'complete') {
-		const tabData = (await contentStyles).tabData[`${tab.id}`];
+		const tabData = (await contentStyles).tabData[tab.id.toString(36)];
 		if (!tabData || !tabData.customData) return;
 
 		await updateBadge(tab.id, {
