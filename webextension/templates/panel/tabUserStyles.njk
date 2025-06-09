@@ -36,6 +36,7 @@
 			{%- if item.data.isScriptExecuted == true -%}
 				<ul class="menu-actions">
 				{%- for menuItem in item.data.menuCommands  -%}
+				    {%- if menuItem.fileName === item.data.fileName -%}
 					<li>
 						<button class="menu-action ellipse{%- if menuItem.iconOnly %} icon-only{% endif -%}"
 								data-target="{{ item.data.fileName }}"
@@ -54,6 +55,7 @@
 							{%- if not menuItem.iconOnly -%}{{- menuItem.name -}}{%- endif -%}
 						</button>
 					</li>
+                    {%- endif -%}
 				{%- endfor -%}
 				</ul>
 			{%- else -%}
