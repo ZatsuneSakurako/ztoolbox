@@ -459,7 +459,7 @@ function userScriptApiLoader(context) {
     }
 
     // noinspection JSUnusedGlobalSymbols
-    return new Proxy({
+    const znmApi = new Proxy({
         ...context,
         on(eventName, listener) {
             if (!(eventName in listeners)) {
@@ -520,6 +520,7 @@ function userScriptApiLoader(context) {
         },
         ...readOnlyProxy,
     });
+    return znmApi;
 }
 
 
@@ -793,6 +794,7 @@ class ContentScripts {
      * @return {chrome.userScripts.RegisteredUserScript}
      */
     #userScriptToRegistrationOptions(userScript) {
+        const uniqSuffix = Math.random().toString(36).replace('.', '');
         const context = {
             fileName: userScript.fileName,
             tags: userScript.tags,
@@ -801,7 +803,7 @@ class ContentScripts {
         let specialScripts = new Map();
         for (let grant of userScript.grant ?? []) {
             if (['none', 'unsafeWindow'].includes(grant)) continue;
-            specialScripts.set(grant, `function ${grant}() { return znmApi[${JSON.stringify(grant)}].apply(this, arguments); }`);
+            specialScripts.set(grant, `function ${grant}() { return znmApi_${uniqSuffix}[${JSON.stringify(grant)}].apply(this, arguments); }`);
         }
         const additionalParams = !specialScripts.size ? ''
             : ', ' + Array.from(specialScripts.keys()).join(', ');
@@ -816,7 +818,7 @@ class ContentScripts {
             id: userScript.fileName,
             runAt: userScript.runAt? userScript.runAt.replace(/-/g, '_') : undefined,
             js: [
-                { code: `const znmApi = ${userScriptApiLoader.toString()}(${JSON.stringify(context)});\n(function(unsafeWindow, window${additionalParams}){ ${userScript.script} }).call(znmApi, window, undefined${additionalValues});` },
+                { code: `'use strict';const znmApi_${uniqSuffix} = ${userScriptApiLoader.toString()}(${JSON.stringify(context)});\n(function(znmApi, unsafeWindow, window${additionalParams}){ ${userScript.script} }).call(znmApi_${uniqSuffix}, znmApi_${uniqSuffix}, window, undefined${additionalValues});` },
             ],
             matches: userScript.match ?? [],
             excludeMatches: userScript.excludeMatches ?? [],
