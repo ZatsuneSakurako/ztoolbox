@@ -1,5 +1,8 @@
 # WIP
 * i : Move ip and meta rating data to UserScript tab data
+* \+ : Nunjuck render using socket
+* Fix : Firefox userScripts support
+* \- : Remove open-graph data
 
 # 2.6.1
 * Fix : Firefox userScripts support
