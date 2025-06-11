@@ -1,4 +1,3 @@
-import {randomId} from "../utils/randomId.js";
 import {getSyncKeys} from "./chrome-preferences.js";
 import {
 	chromeNativeSettingsStorageKey,
@@ -156,7 +155,7 @@ socket.on('ping', function (cb) {
  */
 const notificationCbMap = new Map();
 socket.on('sendNotification', (opts, cb) => {
-	const _id = randomId();
+	const _id = crypto.randomUUID();
 	const callback = (data) => {
 		notificationCbMap.delete(_id);
 		socket.off('clearNotifications', _clearNotification);

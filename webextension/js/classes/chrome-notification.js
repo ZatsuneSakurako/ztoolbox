@@ -1,7 +1,5 @@
 'use strict';
 
-import {randomId} from "../utils/randomId.js";
-
 const ALARM_NAME = 'CHROME_NOTIFICATION_CONTROLLER',
 	NOTIFICATION_STORAGE_ID = '_notification'
 ;
@@ -57,7 +55,7 @@ async function sendNotification(options, data) {
 	}
 
 	// Generate id if none provided
-	const id = options.id ?? randomId();
+	const id = options.id ?? crypto.randomUUID();
 	if ('id' in options) {
 		delete options.id;
 	}
