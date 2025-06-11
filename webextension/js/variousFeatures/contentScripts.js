@@ -1,6 +1,6 @@
 import {_userScriptsStateStoreKey, _userScriptsStoreKey} from "../constants.js";
 import {contentStyles} from "./contentStyles.js";
-import {sendNotification} from "../classes/chrome-notification.js";
+import {getBasicNotificationOptions} from "./contentScripts/chrome-notification.js";
 import {getUserscriptData, setUserscriptData, writeClipboard} from "../classes/chrome-native.js";
 import {errorToString} from "../utils/errorToString.js";
 
@@ -101,15 +101,12 @@ const znmUserscriptApi = {
         if (opts.title !== undefined && typeof opts.title !== 'string') throw new Error('INVALID TITLE');
         if (opts.image !== undefined && typeof opts.image !== 'string') throw new Error('INVALID IMAGE');
         if (opts.onclick !== undefined) throw new Error('UNSUPPORTED_ONCLICK_PARAMETER');
-        return await sendNotification({
-            'id': 'updateNotification',
-            "title": opts.title ?? context.fileName,
+
+        return await chrome.notifications.create(getBasicNotificationOptions({
+            title: opts.title ?? context.fileName,
             "message": opts.text,
             "iconUrl": opts.image,
-        }, {
-            onClickAutoClose: false,
-            onButtonClickAutoClose: false
-        });
+        }));
     },
     async openInTab(fileName, tab, data) {
         let opts = {};

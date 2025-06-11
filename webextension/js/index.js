@@ -4,7 +4,6 @@ import {default as env} from './env.js';
 
 import './classes/chrome-native.js';
 import {deletePreferences, getPreferences, getPreference, savePreference} from './classes/chrome-preferences.js';
-import {sendNotification} from "./classes/chrome-notification.js";
 
 import {checkHasUpdate} from './classes/chromeUpdateNotification.js';
 
@@ -117,17 +116,6 @@ async function onCheckUpdatesInterval() {
 			checkedAt: new Date()
 		}
 	});
-	if (hasUpdate === false) {
-		return;
-	}
-
-	sendNotification({
-		'id': 'updateNotification',
-		"title": chrome.i18n.getMessage('updateSimple'),
-		"message": chrome.i18n.getMessage('updateDetail', chrome.runtime.getManifest().name)
-	})
-		.catch(console.error)
-	;
 }
 
 chrome.alarms.onAlarm.addListener(function (alarm) {
@@ -155,7 +143,7 @@ async function onStart_deleteOldPreferences() {
 	 *
 	 * @type {Set<string>}
 	 */
-	const preferences = new Set(['serviceWorkerWhitelist', 'freshRss_showInPanel', 'panel_theme', 'launchpadAddLink', 'custom_lstu_server', '_notificationGloballyDisabled', 'showExperimented', 'showAdvanced', 'check_enabled', 'panel_height', 'panel_width', '_backgroundPage_theme_cache', '_updated', '_websitesDataStore', '_notification', 'mode', '_isVivaldi']);
+	const preferences = new Set(['serviceWorkerWhitelist', 'freshRss_showInPanel', 'panel_theme', 'launchpadAddLink', 'custom_lstu_server', '_notificationGloballyDisabled', 'showExperimented', 'showAdvanced', 'check_enabled', 'panel_height', 'panel_width', '_backgroundPage_theme_cache', '_updated', '_websitesDataStore', '_notification', 'mode', '_isVivaldi', 'notification_support']);
 
 	for (let prefId of preferences) {
 		let hasPreference = false;
@@ -175,7 +163,7 @@ async function onStart_deleteOldPreferences() {
 		}
 	}
 
-	const oldAlarms = new Set(['REFRESH_DATA', 'hourlyAlarm']),
+	const oldAlarms = new Set(['REFRESH_DATA', 'hourlyAlarm', 'CHROME_NOTIFICATION_CONTROLLER']),
 		alarms = await chrome.alarms.getAll()
 	;
 	for (let alarm of alarms) {

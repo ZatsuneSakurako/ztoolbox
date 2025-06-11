@@ -4,7 +4,6 @@ import {
 	chromeNativeConnectedStorageKey,
 	getElectronSettings
 } from "./chrome-native-settings.js";
-import {sendNotification} from "./chrome-notification.js";
 import {getCurrentTab} from "../utils/getCurrentTab.js";
 import ipRegex from "../../lib/ip-regex.js";
 import {io} from "../../lib/socket.io.esm.min.js";
@@ -149,46 +148,6 @@ socket.on('ping', function (cb) {
 	});
 });
 
-/**
- *
- * @type {Map<string, (data) => void>}
- */
-const notificationCbMap = new Map();
-socket.on('sendNotification', (opts, cb) => {
-	const _id = crypto.randomUUID();
-	const callback = (data) => {
-		notificationCbMap.delete(_id);
-		socket.off('clearNotifications', _clearNotification);
-		if (timer) {
-			clearTimeout(timer);
-		}
-		if (!!data) {
-			cb({
-				error: false,
-				result: data
-			});
-		}
-	};
-	notificationCbMap.set(_id, callback);
-	handleSendNotification(_id, opts)
-		.catch(err => {
-			console.error(err);
-			callback();
-		})
-	;
-
-	const _clearNotification = () => {
-		clearNotification(_id)
-			.catch(console.error)
-		;
-	};
-
-	let timer = null;
-	if (opts.timeoutType === 'default') {
-		timer = setTimeout(_clearNotification, 2 * 60000); // 2min
-	}
-	socket.on('clearNotifications', _clearNotification);
-});
 
 socket.on('openUrl', (url, cb) => {
 	if (!url) {
@@ -232,15 +191,6 @@ socket.on('onSettingUpdate', function (preference) {
 
 chrome.storage.onChanged.addListener(async (changes, area) => {
 	if (area === 'session' && _tabStylesStoreKey in changes) {
-		sendSocketData()
-			.catch(console.error)
-		;
-		return;
-	}
-
-	if (area !== "local") return;
-
-	if ("notification_support" in changes) {
 		sendSocketData()
 			.catch(console.error)
 		;
@@ -326,10 +276,6 @@ export async function getBrowserName() {
 }
 
 async function sendSocketData() {
-	const values = await chrome.storage.local.get([
-		'notification_support',
-	]);
-
 	let tabData = null;
 	const activeTab = await getCurrentTab()
 		.catch(console.error)
@@ -410,73 +356,12 @@ async function sendSocketData() {
 	}
 
 	socket.emit('updateSocketData', {
-		notificationSupport: values.notification_support === true,
 		userAgent: navigator.userAgent,
 		browserName: await getBrowserName(),
 		extensionId: chrome.runtime.id,
 		tabData,
 	});
 }
-
-
-
-
-
-async function clearNotification(id) {
-	console.info('clear notification : ' + id)
-	await chrome.notifications.clear('chromeNative-' + id)
-}
-async function handleSendNotification(id, opts) {
-	if (opts.timeoutType) delete opts.timeoutType;
-	await sendNotification({
-		...opts,
-		id: 'chromeNative-' + id
-	}, {
-		onClickAutoClose: false,
-		onButtonClickAutoClose: false
-	});
-}
-chrome.notifications.onClosed.addListener(function (notificationId, byUser) {
-	if (!notificationId.startsWith('chromeNative-')) return;
-
-	chrome.notifications.clear(notificationId);
-	const _id = notificationId.replace('chromeNative-', ''),
-		cb = notificationCbMap.get(_id)
-	;
-	if (cb) {
-		cb({
-			response: 'close',
-			byUser
-		});
-	}
-});
-chrome.notifications.onButtonClicked.addListener(function (notificationId, buttonIndex) {
-	if (!notificationId.startsWith('chromeNative-')) return;
-
-	chrome.notifications.clear(notificationId);
-	const _id = notificationId.replace('chromeNative-', ''),
-		cb = notificationCbMap.get(_id)
-	;
-	if (cb) {
-		cb({
-			response: 'action',
-			index: buttonIndex
-		});
-	}
-});
-chrome.notifications.onClicked.addListener(async function (notificationId) {
-	if (!notificationId.startsWith('chromeNative-')) return;
-
-	chrome.notifications.clear(notificationId);
-	const _id = notificationId.replace('chromeNative-', ''),
-		cb = notificationCbMap.get(_id)
-	;
-	if (cb) {
-		cb({
-			response: 'click'
-		});
-	}
-});
 
 
 
