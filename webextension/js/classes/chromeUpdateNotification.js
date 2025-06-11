@@ -1,7 +1,5 @@
 "use strict";
 
-import {hasFetchPermission} from "../utils/hasFetchPermission.js";
-
 export const VERSION_NUMBERS_REG =  /^(\d+)\.(\d+)\.(\d+)(?:\.(\d+))?$/;
 
 export class Version extends Array {
@@ -37,19 +35,6 @@ export class Version extends Array {
 		this.push(...arr);
 
 		return this;
-	}
-
-	/**
-	 *
-	 * @param {string} stringVersion
-	 * @return {this}
-	 */
-	setVersion(stringVersion) {
-		if (typeof str !== 'string' && VERSION_NUMBERS_REG.test(stringVersion) === false) {
-			throw 'InvalidString';
-		}
-
-		return this._setVersion(stringVersion);
 	}
 
 	/**
@@ -156,11 +141,7 @@ async function getVersions() {
  *
  * @return {Promise<boolean>}
  */
-async function checkHasUpdate() {
-	if (!(await hasFetchPermission())) {
-		return false;
-	}
-
+export async function checkHasUpdate() {
 	const currentVersion = new Version(chrome.runtime.getManifest().version),
 		versions = await getVersions()
 	;
@@ -173,10 +154,3 @@ async function checkHasUpdate() {
 
 	return false;
 }
-
-
-
-export const ChromeUpdateNotification = {
-	getVersions,
-	checkHasUpdate
-};

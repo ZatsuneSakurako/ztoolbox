@@ -31,8 +31,8 @@
 		"message": "Refresh UserScripts"
 	},
 
-	"request_all_url_permission": {
-		"message": "Grant permission to retrieve data"
+	"permission_missing": {
+		"message": "Permission(s) missing(s)"
 	},
 
 	"open_optionpage": {

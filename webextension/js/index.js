@@ -6,7 +6,7 @@ import './classes/chrome-native.js';
 import {deletePreferences, getPreferences, getPreference, savePreference} from './classes/chrome-preferences.js';
 import {sendNotification} from "./classes/chrome-notification.js";
 
-import {ChromeUpdateNotification} from './classes/chromeUpdateNotification.js';
+import {checkHasUpdate} from './classes/chromeUpdateNotification.js';
 
 import './variousFeatures/contentStyles.js';
 import './variousFeatures/contentScripts.js';
@@ -67,7 +67,7 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
 
 
 const CHECK_UPDATES_INTERVAL_NAME = 'checkUpdatesInterval',
-	CHECK_UPDATES_INTERVAL_DELAY = 10
+	CHECK_UPDATES_INTERVAL_DELAY = 120
 ;
 async function onStart_checkUpdates() {
 	if (env !== 'local') {
@@ -110,7 +110,7 @@ async function onCheckUpdatesInterval() {
 		return;
 	}
 
-	const hasUpdate = await ChromeUpdateNotification.checkHasUpdate();
+	const hasUpdate = await checkHasUpdate();
 	await chrome.storage.local.set({
 		_checkUpdate: {
 			hasUpdate,
