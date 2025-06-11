@@ -53,5 +53,5 @@
 		"url": "https://gitlab.com/ZatsuneNoMokou/ztoolbox/issues"
 	},
 	"homepage": "https://gitlab.com/ZatsuneNoMokou/ztoolbox#README",
-	"packageManager": "yarn@3.3.0"
+	"packageManager": "yarn@4.9.2"
 }
