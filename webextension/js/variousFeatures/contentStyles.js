@@ -2,6 +2,7 @@ import {getUserscripts} from "../classes/chrome-native.js";
 import {_tabStylesStoreKey, _userStylesStateStoreKey, _userStylesStoreKey, webRequestFilter,} from "../constants.js";
 import {contentScripts} from "./contentScripts.js";
 import {updateBadge} from "./httpStatus.js";
+import {errorToString} from "../utils/errorToString.js";
 
 
 /**
@@ -433,24 +434,18 @@ chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
 
 
 
-async function restartContentMenu() {
-	await chrome.contextMenus.create({
-		id: 'refreshUserscripts',
-		title: chrome.i18n.getMessage("refreshUserscripts"),
-		contexts: [ "action" ],
-	});
-}
-chrome.runtime.onStartup.addListener(function () {
-	restartContentMenu().catch(console.error);
-});
-chrome.runtime.onInstalled.addListener(function () {
-	restartContentMenu().catch(console.error);
-});
-chrome.contextMenus.onClicked.addListener(function (info) {
-	if (info.menuItemId !== 'refreshUserscripts') return;
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+	if (!message || typeof message !== 'object' || sender.id !== chrome.runtime.id) return;
 
-	updateStyles()
-		.catch(console.error);
+	if (message.id === 'refreshUserStyles') {
+		updateStyles()
+			.then(response => {
+				sendResponse({ isError: false, response });
+			})
+			.catch(error => {
+				sendResponse({ isError: true, response: errorToString(error) });
+			});
+	}
 });
 
 /**

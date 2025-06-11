@@ -1,6 +1,6 @@
 import {appendTo} from "../utils/appendTo.js";
 import {renderTemplate} from "../init-templates.js";
-import "../utils/onImageError.js";
+import "./onImageError.js";
 import {getPreference} from "../classes/chrome-preferences.js";
 import {chromeNativeConnectedStorageKey} from "../classes/chrome-native-settings.js";
 import {generateThumbnail} from "../utils/captureScreenshot.js";

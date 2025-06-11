@@ -328,17 +328,17 @@ function onUserScriptMessage(message, sender, sendResponse) {
     }
     if (typeof message !== 'object' || !message) {
         sendResponse({
-            error: true,
-            data: 'DATA_SHOULD_BE_AN_OBJECT',
+            isError: true,
+            response: 'DATA_SHOULD_BE_AN_OBJECT',
         });
         return;
     }
 
-    const success = (data) => {
-        sendResponse({error: false, data});
+    const success = (response) => {
+        sendResponse({ isError: false, response });
     };
     const error = (error) => {
-        sendResponse({ error: true, data: errorToString(error) });
+        sendResponse({ isError: true, response: errorToString(error) });
     };
 
     if (message.type in znmUserscriptApi) {
@@ -367,8 +367,8 @@ function onUserScriptMessage(message, sender, sendResponse) {
         }
 
         sendResponse({
-            error: true,
-            data: 'NOT_FOUND',
+            isError: true,
+            response: 'NOT_FOUND',
         });
     } catch (e) {
         console.error(e);
@@ -390,8 +390,8 @@ function userScriptApiLoader(context) {
             console.error(result);
             throw new Error('RESULT_SHOULD_BE_AN_OBJECT');
         }
-        if (result.error) throw new Error(result.data ?? result.error);
-        return result.data;
+        if (result.isError) throw new Error(result.response ?? result.error);
+        return result.response;
     }
 
     /**

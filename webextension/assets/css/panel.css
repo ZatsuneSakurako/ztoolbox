@@ -87,17 +87,6 @@ header button:last-child,
 header [role="button"]:last-child {
 	margin-right: 5px;
 }
-#disableNotifications::before {
-	/*noinspection CssNoGenericFontName*/
-	font-family: "Material Symbols Outlined"; /* stylelint-disable-line font-family-no-missing-generic-family-keyword */
-	font-size: 24px;
-	font-weight: normal;
-
-	content: "notifications_active";
-}
-#disableNotifications.off::before {
-	content: "notifications_off";
-}
 
 #vide,
 .vide {

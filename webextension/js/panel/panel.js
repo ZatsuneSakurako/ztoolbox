@@ -17,24 +17,6 @@ document.addEventListener('click', e => {
 	}
 });
 
-document.addEventListener('click', e => {
-	const elm = e.target.closest('#disableNotifications');
-	if (!elm) return;
-
-	chrome.storage.local.get(['notification_support'])
-		.then(async ({notification_support}) => {
-			await chrome.storage.local.set({
-				notification_support: !notification_support
-			});
-
-			updatePanelData()
-				.catch(console.error)
-			;
-		})
-		.catch(console.error)
-	;
-});
-
 document.addEventListener('click', async e => {
 	const elm = e.target.closest('#settings');
 	if (!elm) return;
@@ -47,6 +29,19 @@ document.addEventListener('click', async e => {
 			.catch(console.error)
 		;
 	}
+});
+
+document.addEventListener('click', async e => {
+	const elm = e.target.closest('#refreshUserStyles');
+	if (!elm) return;
+
+	chrome.runtime.sendMessage(chrome.runtime.id, {
+		id: 'refreshUserStyles',
+	})
+		.catch(console.error)
+		.finally(() => {
+			window.close();
+		});
 });
 
 document.addEventListener('click', async e => {
@@ -95,18 +90,6 @@ async function updatePanelData() {
 	tabUserStyles.updateData(activeTab)
 		.catch(console.error)
 	;
-
-	const {notification_support} = await chrome.storage.local.get(['notification_support']);
-
-	/**
-	 *
-	 * @type {HTMLButtonElement|null}
-	 */
-	let disableNotificationsButton = document.querySelector('button#disableNotifications');
-	if (disableNotificationsButton) {
-		disableNotificationsButton.classList.toggle('off', !notification_support ?? false);
-		disableNotificationsButton.dataset.translateTitle = !!notification_support? 'ExternalNotifications' : 'ExternalNotificationsDisabled';
-	}
 }
 
 

@@ -2,6 +2,7 @@
 * i : Simplify context menu management
 * i : Translations cleanup and move to native translations
 * i : Simply notify if permission are missing (permission to add using browser interface)
+* i : UserScript - Replace context menu with panel button to refresh
 * \- : Remove `iqdb` search
 * \- : Remove copy text link
 
