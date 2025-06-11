@@ -29,22 +29,10 @@
 		},
 		"default_popup": "/panel.html"
 	},
-	"content_scripts": [
-		{
-			"matches": [
-				"https://iqdb.org/"
-			],
-			"js": [
-				"/js/contentscripts/iqdb_search.js"
-			],
-			"run_at": "document_start"
-		}
-	],
 	"default_locale": "en",
 	"permissions": [
 		"alarms",
 		"bookmarks",
-		"clipboardWrite",
 		"contextMenus",
 		"devtools",
 		"downloads",

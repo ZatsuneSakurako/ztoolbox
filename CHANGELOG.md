@@ -1,5 +1,8 @@
 # WIP
+* i : Simplify context menu management
 * i : Translations cleanup and move to native translations
+* \- : Remove `iqdb` search
+* \- : Remove copy text link
 
 # 2.7.0
 * i : Move ip and meta rating data to UserScript tab data

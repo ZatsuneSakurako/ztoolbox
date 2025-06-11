@@ -15,21 +15,13 @@ import './devtools/devtools-background.js';
 import {isFirefox} from "./utils/browserDetect.js";
 import "./newTab/newTab-background.js";
 import "./devtools/devtools-background.js";
-if (isFirefox) {
-	import('./variousFeatures/copyTextLink.js')
-		.catch(console.error)
-	;
-	import('./variousFeatures/iqdb.js')
-		.catch(console.error)
-	;
-} else {
+
+if ('offscreen' in chrome) {
 	chrome.offscreen.createDocument({
 		url: chrome.runtime.getURL("offscreen.html"),
 		reasons: [ "WORKERS" ],
 		justification: "Service worker keepalive workaround"
-	})
-		.catch(console.error)
-	;
+	}).catch(console.error);
 }
 
 

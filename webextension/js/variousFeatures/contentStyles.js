@@ -1,4 +1,3 @@
-import {ContextMenusController} from "../classes/contextMenusController.js";
 import {getUserscripts} from "../classes/chrome-native.js";
 import {_tabStylesStoreKey, _userStylesStateStoreKey, _userStylesStoreKey, webRequestFilter,} from "../constants.js";
 import {contentScripts} from "./contentScripts.js";
@@ -441,7 +440,12 @@ async function restartContentMenu() {
 		contexts: [ "action" ],
 	});
 }
-ContextMenusController.waitInit.then(restartContentMenu);
+chrome.runtime.onStartup.addListener(function () {
+	restartContentMenu().catch(console.error);
+});
+chrome.runtime.onInstalled.addListener(function () {
+	restartContentMenu().catch(console.error);
+});
 chrome.contextMenus.onClicked.addListener(function (info) {
 	if (info.menuItemId !== 'refreshUserscripts') return;
 
