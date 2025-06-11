@@ -1,4 +1,3 @@
-import {i18ex} from "../translation-api.js";
 import {ContextMenusController} from "../classes/contextMenusController.js";
 import {getUserscripts} from "../classes/chrome-native.js";
 import {_tabStylesStoreKey, _userStylesStateStoreKey, _userStylesStoreKey, webRequestFilter,} from "../constants.js";
@@ -438,7 +437,7 @@ chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
 async function restartContentMenu() {
 	await chrome.contextMenus.create({
 		id: 'refreshUserscripts',
-		title: i18ex._("refreshUserscripts"),
+		title: chrome.i18n.getMessage("refreshUserscripts"),
 		contexts: [ "action" ],
 	});
 }

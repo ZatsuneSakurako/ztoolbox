@@ -2,8 +2,6 @@
 
 import {default as env} from './env.js';
 
-import {i18ex} from './translation-api.js';
-
 import './classes/chrome-native.js';
 import {deletePreferences, getPreferences, getPreference, savePreference} from './classes/chrome-preferences.js';
 import {sendNotification} from "./classes/chrome-notification.js";
@@ -80,8 +78,6 @@ const CHECK_UPDATES_INTERVAL_NAME = 'checkUpdatesInterval',
 	CHECK_UPDATES_INTERVAL_DELAY = 10
 ;
 async function onStart_checkUpdates() {
-	await i18ex.loadingPromise;
-
 	if (env !== 'local') {
 		// Ignore when not in "local" env
 
@@ -135,10 +131,8 @@ async function onCheckUpdatesInterval() {
 
 	sendNotification({
 		'id': 'updateNotification',
-		"title": i18ex._('updateSimple'),
-		"message": i18ex._('updateDetail', {
-			name: chrome.runtime.getManifest().name
-		})
+		"title": chrome.i18n.getMessage('updateSimple'),
+		"message": chrome.i18n.getMessage('updateDetail', chrome.runtime.getManifest().name)
 	})
 		.catch(console.error)
 	;
@@ -170,8 +164,6 @@ async function onStart_deleteOldPreferences() {
 	 * @type {Set<string>}
 	 */
 	const preferences = new Set(['serviceWorkerWhitelist', 'freshRss_showInPanel', 'panel_theme', 'launchpadAddLink', 'custom_lstu_server', '_notificationGloballyDisabled', 'showExperimented', 'showAdvanced', 'check_enabled', 'panel_height', 'panel_width', '_backgroundPage_theme_cache', '_updated', '_websitesDataStore', '_notification', 'mode', '_isVivaldi']);
-
-	await i18ex.loadingPromise;
 
 	for (let prefId of preferences) {
 		let hasPreference = false;

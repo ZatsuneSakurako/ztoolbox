@@ -9,5 +9,99 @@
 	},
 	"language": {
 		"message": "en"
+	},
+
+
+
+	"ExternalNotifications": {
+		"message": "External notification enabled"
+	},
+	"ExternalNotificationsDisabled": {
+		"message": "External notification disabled"
+	},
+
+	"openDelegatedMain": {
+		"message": "Open main section"
+	},
+	"Settings": {
+		"message": "Settings"
+	},
+
+	"refreshUserscripts": {
+		"message": "Refresh UserScripts"
+	},
+
+	"request_all_url_permission": {
+		"message": "Grant permission to retrieve data"
+	},
+
+	"open_optionpage": {
+		"message": "Open option page"
+	},
+
+	"theme_title": {
+		"message": "Panel theme"
+	},
+	"theme_description": {
+		"message": "Choose the theme of the panel"
+	},
+	"theme_dark": {
+		"message": "Dark"
+	},
+	"theme_light": {
+		"message": "Light"
+	},
+
+	"background_color_title": {
+		"message": "Panel color"
+	},
+	"background_color_description": {
+		"message": "Choose base color of the panel"
+	},
+
+	"footer_title": {
+		"message": "Addon under GPL v3 licence."
+	},
+	"footer_by": {
+		"message": "by"
+	},
+
+	"newTab_refreshLinkImage": {
+		"message": "Refresh the thumbnail"
+	},
+
+	"windowId": {
+		"message": "Window $$windowId$$",
+		"placeholders": {
+			"windowId" : {
+				"content" : "$1"
+			}
+		}
+	},
+	"newWindow": {
+		"message": "New window"
+	},
+	"window_windowId": {
+		"message": "Window $$windowId$$ \"$$window$$\"",
+		"placeholders": {
+			"windowId" : {
+				"content" : "$1"
+			},
+			"window" : {
+				"content" : "$2"
+			}
+		}
+	},
+
+	"updateSimple": {
+		"message": "Update available"
+	},
+	"updateDetail": {
+		"message": "An update of $$name$$ is available, update the local repository",
+		"placeholders": {
+			"name" : {
+				"content" : "$1"
+			}
+		}
 	}
 }

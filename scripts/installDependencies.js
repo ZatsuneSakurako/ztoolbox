@@ -32,12 +32,6 @@ if (!exist_jsLib) {
 	_cp("./node_modules/twig/twig.min.js", jsLib);
 	_cp("./node_modules/twig/twig.min.js.map", jsLib);
 
-	info("Copying i18next...");
-	_cp("./node_modules/i18next/i18next.min.js", jsLib);
-
-	info("Copying i18next-http-backend...");
-	_cp("./node_modules/i18next-http-backend/i18nextHttpBackend.js", jsLib);
-
 	info("Copying MaterialIcons (material-symbols)...");
 	_cp("./node_modules/material-symbols/material-symbols-outlined.woff2", path.normalize(`${fontPath}/material-symbols-outlined.woff2`));
 	_cp("./node_modules/material-symbols/material-symbols-rounded.woff2", path.normalize(`${fontPath}/material-symbols-rounded.woff2`));

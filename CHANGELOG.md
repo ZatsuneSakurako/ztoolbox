@@ -1,3 +1,6 @@
+# WIP
+* i : Translations cleanup and move to native translations
+
 # 2.7.0
 * i : Move ip and meta rating data to UserScript tab data
 * \+ : Nunjuck render using socket

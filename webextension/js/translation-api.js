@@ -1,10 +1,8 @@
-import {i18extended} from './classes/i18extended.js';
-
 /*		---- Nodes translation ----		*/
 function translateNodes() {
 	for (let node of document.querySelectorAll("[data-translate-id]")) {
 		if (typeof node.tagName === "string") {
-			node.textContent = i18ex._(node.dataset.translateId);
+			node.textContent = chrome.i18n.getMessage(node.dataset.translateId);
 			delete node.dataset.translateId;
 		}
 	}
@@ -15,19 +13,14 @@ function translateNodes_title() {
 		if (typeof node.tagName === "string") {
 			node.setAttribute(
 				'title',
-				i18ex._(node.dataset.translateTitle)
+				chrome.i18n.getMessage(node.dataset.translateTitle)
 			);
 			delete node.dataset.translateTitle;
 		}
 	}
 }
 
-export const i18ex = new i18extended();
-self.i18ex = i18ex;
-
 export async function loadTranslations() {
-	await i18ex.loadingPromise;
-
 	let body = document.body,
 		observer = new MutationObserver(function(mutations) {
 			mutations.forEach(function(mutation) {
@@ -59,7 +52,4 @@ export async function loadTranslations() {
 
 	// pass in the target node, as well as the observer options
 	observer.observe(body, config);
-
-	// later, you can stop observing
-	//observer.disconnect();
 }

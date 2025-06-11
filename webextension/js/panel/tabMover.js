@@ -46,9 +46,7 @@ async function update() {
 			appendTo(
 				tabMover,
 				await renderTemplate(TAB_MOVER_TEMPLATE, {
-					'title': i18ex._("windowId", {
-						"windowId": win.id
-					}),
+					'title': chrome.i18n.getMessage("windowId", win.id),
 					'windowId': win.id,
 					'tabName': win.currentTabTitle ?? '',
 					'tabsCount': win.tabs.length
@@ -63,7 +61,7 @@ async function update() {
 		appendTo(
 			tabMover,
 			await renderTemplate(TAB_MOVER_TEMPLATE, {
-				'title': i18ex._("newWindow"),
+				'title': chrome.i18n.getMessage("newWindow"),
 				'windowId': '',
 				'tabName': ''
 			})

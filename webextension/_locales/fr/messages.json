@@ -9,5 +9,99 @@
 	},
 	"language": {
 		"message": "fr"
+	},
+
+
+
+	"ExternalNotifications": {
+		"message": "Notification externes activées"
+	},
+	"ExternalNotificationsDisabled": {
+		"message": "Notification externes désactivées"
+	},
+
+	"openDelegatedMain": {
+		"message": "Ouvrir section principal"
+	},
+	"Settings": {
+		"message": "Options"
+	},
+
+	"refreshUserscripts": {
+		"message": "Rafraichir les UserScripts"
+	},
+
+	"request_all_url_permission": {
+		"message": "Accorder la permission pour récupérer des données"
+	},
+
+	"open_optionpage": {
+		"message": "Ouvrir la page d'option"
+	},
+
+	"theme_title": {
+		"message": "Thème du panel"
+	},
+	"theme_description": {
+		"message": "Choix du thème pour le panel"
+	},
+	"theme_dark": {
+		"message": "Sombre"
+	},
+	"theme_light": {
+		"message": "Clair"
+	},
+
+	"background_color_title": {
+		"message": "Couleur du panel"
+	},
+	"background_color_description": {
+		"message": "Choix de la couleur de base du panel"
+	},
+
+	"footer_title": {
+		"message": "Addon sous licence GPL v3."
+	},
+	"footer_by": {
+		"message": "par"
+	},
+
+	"newTab_refreshLinkImage": {
+		"message": "Rafraichir la miniature"
+	},
+
+	"windowId": {
+		"message": "Fenêtre $$windowId$$",
+		"placeholders": {
+			"windowId" : {
+				"content" : "$1"
+			}
+		}
+	},
+	"newWindow": {
+		"message": "Nouvelle fenêtre"
+	},
+	"window_windowId": {
+		"message": "Fenêtre $$windowId$$ \"$$window$$\"",
+		"placeholders": {
+			"windowId" : {
+				"content" : "$1"
+			},
+			"window" : {
+				"content" : "$2"
+			}
+		}
+	},
+
+	"updateSimple": {
+		"message": "Mise à jour disponible"
+	},
+	"updateDetail": {
+		"message": "Une mise à jour de $$name$$ est disponible, rafraîchir le dépôt local",
+		"placeholders": {
+			"name" : {
+				"content" : "$1"
+			}
+		}
 	}
 }

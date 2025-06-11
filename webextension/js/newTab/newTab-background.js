@@ -1,10 +1,7 @@
-import {i18ex} from "../translation-api.js";
-
 (async () => {
-	await i18ex.loadingPromise;
 	await chrome.contextMenus.create({
 		id: 'newTab_refreshLinkImage',
-		title: i18ex._("newTab_refreshLinkImage"),
+		title: chrome.i18n.getMessage("newTab_refreshLinkImage"),
 		contexts: ["link"],
 		targetUrlPatterns: ["<all_urls>"],
 		documentUrlPatterns: [
