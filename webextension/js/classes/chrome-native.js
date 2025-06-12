@@ -119,10 +119,30 @@ socket.on('ws open', function (err) {
 
 	updateStyles()
 		.catch(console.error);
+
+	getIsUpdateAvailable()
+		.then(isUpdateAvailable => {
+			if (isUpdateAvailable !== null) {
+				chrome.storage.local.set({
+					_checkUpdate: !!isUpdateAvailable
+				})
+					.catch(console.error)
+				;
+			}
+		})
+		.catch(console.error);
 });
 
 socket.on('doRestart', function () {
 	chrome.runtime.restart();
+});
+
+socket.on('updateAvailableUpdate', function (isUpdateAvailable) {
+	chrome.storage.local.set({
+		_checkUpdate: !!isUpdateAvailable
+	})
+		.catch(console.error)
+	;
 });
 
 socket.on('disconnect', function (reason, description) {
@@ -378,6 +398,19 @@ export async function ping() {
 	}
 }
 self.ping = ping;
+
+/**
+ *
+ * @return {Promise<boolean|null>}
+ */
+export async function getIsUpdateAvailable() {
+	try {
+		const {result} = await socket.timeout(timeout).emitWithAck('isUpdateAvailable');
+		return result;
+	} catch (e) {
+		console.error(e);
+	}
+}
 
 /**
  *

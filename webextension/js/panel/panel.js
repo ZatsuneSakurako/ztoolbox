@@ -4,6 +4,7 @@ import * as tabUserStyles from "./tabUserStyles.js";
 import "./requestPermission.js";
 import {chromeNativeConnectedStorageKey, getSessionNativeIsConnected} from "../classes/chrome-native-settings.js";
 import {getCurrentTab} from "../utils/getCurrentTab.js";
+import env from "../env.js";
 
 
 
@@ -105,10 +106,10 @@ async function current_version(version) {
 	//current_version_node.textContent = version;
 	current_version_node.dataset.currentVersion = version;
 
-	const lastCheck = (await chrome.storage.local.get(['_checkUpdate']))?._checkUpdate ?? {};
-	current_version_node.dataset.hasUpdate = (lastCheck.hasUpdate ?? false).toString();
-	if (!lastCheck.hasUpdate ?? false) {
-		// if no update, no text
+	const hasUpdate = !!(await chrome.storage.local.get(['_checkUpdate']))?._checkUpdate ?? false;
+	current_version_node.dataset.hasUpdate = hasUpdate.toString();
+	if (!lastCheck.hasUpdate || env !== 'local') {
+		// if no update (or not local), no text
 		current_version_node.dataset.translateTitle = '';
 	}
 }

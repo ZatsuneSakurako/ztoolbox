@@ -1,17 +1,12 @@
 'use strict';
 
-import {default as env} from './env.js';
-
 import './classes/chrome-native.js';
 import {deletePreferences, getPreferences, getPreference, savePreference} from './classes/chrome-preferences.js';
-
-import {checkHasUpdate} from './classes/chromeUpdateNotification.js';
 
 import './variousFeatures/contentStyles.js';
 import './variousFeatures/contentScripts.js';
 import './devtools/devtools-background.js';
 
-import {isFirefox} from "./utils/browserDetect.js";
 import "./newTab/newTab-background.js";
 import "./devtools/devtools-background.js";
 
@@ -65,67 +60,6 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
 
 
 
-const CHECK_UPDATES_INTERVAL_NAME = 'checkUpdatesInterval',
-	CHECK_UPDATES_INTERVAL_DELAY = 120
-;
-async function onStart_checkUpdates() {
-	if (env !== 'local') {
-		// Ignore when not in "local" env
-
-		await chrome.alarms.clear(CHECK_UPDATES_INTERVAL_NAME)
-			.catch(console.error)
-		;
-		return;
-	}
-
-	let existingAlarm = null;
-	try {
-		existingAlarm = await chrome.alarms.get(CHECK_UPDATES_INTERVAL_NAME);
-	} catch (e) {
-		console.error(e);
-	}
-
-	if (!existingAlarm || existingAlarm.periodInMinutes !== CHECK_UPDATES_INTERVAL_DELAY) {
-		await chrome.alarms.clear(CHECK_UPDATES_INTERVAL_NAME)
-			.catch(console.error)
-		;
-		chrome.alarms.create(CHECK_UPDATES_INTERVAL_NAME, {
-			'periodInMinutes': CHECK_UPDATES_INTERVAL_DELAY
-		});
-	}
-}
-
-async function onCheckUpdatesInterval() {
-	if (env !== 'local' || isFirefox) {
-		// Ignore when not in "local" env
-		return;
-	}
-
-	const lastCheck = (await chrome.storage.local.get(['_checkUpdate']))?._checkUpdate ?? {};
-	const lastCheckDate = new Date(lastCheck.checkedAt),
-		durationMinutes = (new Date() - lastCheckDate) / 60000 // date2 - date1 make milliseconds
-	;
-	if (!isNaN(durationMinutes) && durationMinutes < 6 * 60) {
-		return;
-	}
-
-	const hasUpdate = await checkHasUpdate();
-	await chrome.storage.local.set({
-		_checkUpdate: {
-			hasUpdate,
-			checkedAt: new Date()
-		}
-	});
-}
-
-chrome.alarms.onAlarm.addListener(function (alarm) {
-	if (alarm.name === CHECK_UPDATES_INTERVAL_NAME) {
-		onCheckUpdatesInterval()
-			.catch(console.error)
-		;
-	}
-});
-
 chrome.runtime.onInstalled.addListener(function (installReason) {
 	let version = chrome.runtime.getManifest().version;
 	if (version === installReason.previousVersion) {
@@ -163,7 +97,7 @@ async function onStart_deleteOldPreferences() {
 		}
 	}
 
-	const oldAlarms = new Set(['REFRESH_DATA', 'hourlyAlarm', 'CHROME_NOTIFICATION_CONTROLLER']),
+	const oldAlarms = new Set(['REFRESH_DATA', 'hourlyAlarm', 'CHROME_NOTIFICATION_CONTROLLER', 'checkUpdatesInterval']),
 		alarms = await chrome.alarms.getAll()
 	;
 	for (let alarm of alarms) {
@@ -176,17 +110,11 @@ async function onStart_deleteOldPreferences() {
 	}
 }
 chrome.runtime.onStartup.addListener(function () {
-	onStart_checkUpdates()
-		.catch(console.error)
-	;
 	onStart_deleteOldPreferences()
 		.catch(console.error)
 	;
 });
 chrome.runtime.onInstalled.addListener(function () {
-	onStart_checkUpdates()
-		.catch(console.error)
-	;
 	onStart_deleteOldPreferences()
 		.catch(console.error)
 	;
