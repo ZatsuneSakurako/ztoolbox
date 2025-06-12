@@ -106,7 +106,8 @@ async function current_version(version) {
 	//current_version_node.textContent = version;
 	current_version_node.dataset.currentVersion = version;
 
-	const hasUpdate = !!(await chrome.storage.local.get(['_checkUpdate']))?._checkUpdate ?? false;
+	const nativeConnected = !!(await chrome.storage.session.get(['_nativeConnected']))?._nativeConnected ?? false,
+		hasUpdate = nativeConnected && !!(await chrome.storage.local.get(['_checkUpdate']))?._checkUpdate ?? false;
 	current_version_node.dataset.hasUpdate = hasUpdate.toString();
 	if (!lastCheck.hasUpdate || env !== 'local') {
 		// if no update (or not local), no text
