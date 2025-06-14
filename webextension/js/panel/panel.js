@@ -92,7 +92,7 @@ async function current_version(version) {
 	const nativeConnected = !!(await chrome.storage.session.get(['_nativeConnected']))?._nativeConnected,
 		hasUpdate = nativeConnected && !!(await chrome.storage.local.get(['_checkUpdate']))?._checkUpdate;
 	current_version_node.dataset.hasUpdate = hasUpdate.toString();
-	if (!lastCheck.hasUpdate || env !== 'local') {
+	if (!hasUpdate || env !== 'local') {
 		// if no update (or not local), no text
 		current_version_node.dataset.translateTitle = '';
 	}
