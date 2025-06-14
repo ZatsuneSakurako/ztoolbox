@@ -97,16 +97,9 @@ async function onStart_deleteOldPreferences() {
 		}
 	}
 
-	const oldAlarms = new Set(['REFRESH_DATA', 'hourlyAlarm', 'CHROME_NOTIFICATION_CONTROLLER', 'checkUpdatesInterval']),
-		alarms = await chrome.alarms.getAll()
-	;
-	for (let alarm of alarms) {
-		if (oldAlarms.has(alarm.name)) {
-			console.warn(`Deleting old alarm "${alarm.name}"`)
-			await chrome.alarms.clear(alarm.name)
-				.catch(console.error)
-			;
-		}
+	if ('alarms' in chrome) {
+		await chrome.alarms.clearAll()
+			.catch(console.error);
 	}
 }
 chrome.runtime.onStartup.addListener(function () {
