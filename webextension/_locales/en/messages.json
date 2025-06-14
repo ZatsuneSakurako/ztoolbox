@@ -71,7 +71,7 @@
 	},
 
 	"windowId": {
-		"message": "Window $$windowId$$",
+		"message": "Fenêtre $WINDOW_ID$",
 		"placeholders": {
 			"windowId" : {
 				"content" : "$1"
@@ -80,28 +80,5 @@
 	},
 	"newWindow": {
 		"message": "New window"
-	},
-	"window_windowId": {
-		"message": "Window $$windowId$$ \"$$window$$\"",
-		"placeholders": {
-			"windowId" : {
-				"content" : "$1"
-			},
-			"window" : {
-				"content" : "$2"
-			}
-		}
-	},
-
-	"updateSimple": {
-		"message": "Update available"
-	},
-	"updateDetail": {
-		"message": "An update of $$name$$ is available, update the local repository",
-		"placeholders": {
-			"name" : {
-				"content" : "$1"
-			}
-		}
 	}
 }

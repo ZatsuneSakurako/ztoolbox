@@ -71,37 +71,14 @@
 	},
 
 	"windowId": {
-		"message": "Fenêtre $$windowId$$",
+		"message": "Fenêtre $WINDOW_ID$",
 		"placeholders": {
-			"windowId" : {
+			"window_id" : {
 				"content" : "$1"
 			}
 		}
 	},
 	"newWindow": {
 		"message": "Nouvelle fenêtre"
-	},
-	"window_windowId": {
-		"message": "Fenêtre $$windowId$$ \"$$window$$\"",
-		"placeholders": {
-			"windowId" : {
-				"content" : "$1"
-			},
-			"window" : {
-				"content" : "$2"
-			}
-		}
-	},
-
-	"updateSimple": {
-		"message": "Mise à jour disponible"
-	},
-	"updateDetail": {
-		"message": "Une mise à jour de $$name$$ est disponible, rafraîchir le dépôt local",
-		"placeholders": {
-			"name" : {
-				"content" : "$1"
-			}
-		}
 	}
 }
