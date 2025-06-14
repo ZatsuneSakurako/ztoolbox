@@ -122,7 +122,7 @@ export async function updateData(activeTab) {
 
 	const tabData = await dataPromise;
 	if (!tabData.userStyles.length && tabData.userScripts.length) {
-		appendTo($tabUserStyles, await nunjuckRender("panel/tabUserStyles", {
+		appendTo($tabUserStyles, await nunjuckRender("tabUserStyles", {
 			items: [
 				{
 					title: activeTab.title,
@@ -174,7 +174,7 @@ export async function updateData(activeTab) {
 		return a.title > b.title ? 1 : -1;
 	});
 
-	appendTo($tabUserStyles, await nunjuckRender("panel/tabUserStyles", renderData));
+	appendTo($tabUserStyles, await nunjuckRender("tabUserStyles", renderData));
 }
 
 document.addEventListener('click', function (ev) {
