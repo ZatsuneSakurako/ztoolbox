@@ -1,5 +1,4 @@
 import {loadTranslations} from '../translation-api.js';
-import {theme_cache_update} from '../classes/backgroundTheme.js';
 import * as tabUserStyles from "./tabUserStyles.js";
 import "./requestPermission.js";
 import {chromeNativeConnectedStorageKey, getSessionNativeIsConnected} from "../classes/chrome-native-settings.js";
@@ -67,22 +66,6 @@ chrome.storage.onChanged.addListener(async (changes, area) => {
 		location.reload();
 	}
 });
-
-
-window.theme_update = async function theme_update() {
-	let panelColorStylesheet = await theme_cache_update(document.querySelector("#generated-color-stylesheet"));
-
-	if (!!panelColorStylesheet && typeof panelColorStylesheet === "object") {
-		console.info("Theme update");
-
-		let currentThemeNode = document.querySelector("#generated-color-stylesheet");
-		currentThemeNode.remove();
-
-		document.body.dataset.theme = panelColorStylesheet.dataset.theme;
-
-		document.head.appendChild(panelColorStylesheet);
-	}
-};
 
 async function updatePanelData() {
 	console.log("Updating panel data");

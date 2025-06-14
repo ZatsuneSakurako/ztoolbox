@@ -62,18 +62,9 @@ async function baseInit() {
 }
 const baseInitPromise = baseInit();
 baseInitPromise.then(async () => {
-	const {theme_cache_update} = await import('../classes/backgroundTheme.js');
-	window.optionColorStylesheet = await theme_cache_update(document.querySelector('#generated-color-stylesheet'));
-	if (typeof optionColorStylesheet === 'object' && optionColorStylesheet !== null) {
-		console.info("Theme update");
-
-		let currentThemeNode = document.querySelector('#generated-color-stylesheet');
-		currentThemeNode.parentNode.removeChild(currentThemeNode);
-
-		document.body.dataset.theme = optionColorStylesheet.dataset.theme;
-
-		document.head.appendChild(optionColorStylesheet);
-	}
+	const {theme_update} = await import('../classes/backgroundTheme.js');
+	theme_update()
+		.catch(console.error);
 });
 
 window.onload = function () {

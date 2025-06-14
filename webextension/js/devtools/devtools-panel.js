@@ -1,4 +1,4 @@
-import {theme_cache_update} from "../classes/backgroundTheme.js";
+import {theme_update} from "../classes/backgroundTheme.js";
 import {ZJsonViewer} from "./ZJsonViewer.js";
 
 /**
@@ -25,17 +25,8 @@ function getResourceContent(resource) {
 }
 
 async function init() {
-	window.optionColorStylesheet = await theme_cache_update(document.querySelector('#generated-color-stylesheet'));
-	if (typeof optionColorStylesheet === 'object' && optionColorStylesheet !== null) {
-		console.info("Theme update");
-
-		let currentThemeNode = document.querySelector('#generated-color-stylesheet');
-		currentThemeNode.parentNode.removeChild(currentThemeNode);
-
-		document.body.dataset.theme = optionColorStylesheet.dataset.theme;
-
-		document.head.appendChild(optionColorStylesheet);
-	}
+	theme_update()
+		.catch(console.error);
 
 	const resources = await getResources(),
 		mainDoc = resources.find(resource => resource.type === 'document')
