@@ -4,6 +4,7 @@
 * i : Simply notify if permission are missing (permission to add using browser interface)
 * i : UserScript - Replace context menu with panel button to refresh
 * i : Replace update check with socket update information
+* i : Tab mover rendered using [`<template>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/template)
 * \- : Remove `iqdb` search
 * \- : Remove copy text link
 

@@ -219,8 +219,17 @@ section .buttonItem .title {
 	font-size: 1.1em;
 	font-weight: 700;
 }
-section .buttonItem .title[data-count]::after {
-	content: " (" attr(data-count) ")";
+section .buttonItem .title::before {
+	/*noinspection CssUnresolvedCustomProperty*/
+	content: var(--title, '');
+}
+section .buttonItem.with-count .title::after {
+	/*noinspection CssUnresolvedCustomProperty*/
+	content: " (" var(--count, '') ")";
+}
+section .buttonItem .data::before {
+	/*noinspection CssUnresolvedCustomProperty*/
+	content: var(--tabName, '');
 }
 #panelContent .websiteItem .websiteData {
 	padding-left: 21px;

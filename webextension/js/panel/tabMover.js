@@ -1,5 +1,3 @@
-import {renderTemplate} from '../init-templates.js';
-import {appendTo} from "../utils/appendTo.js";
 import {throttle} from "../../lib/throttle.js";
 import {getPreference} from "../classes/chrome-preferences.js";
 
@@ -41,31 +39,39 @@ async function update() {
 	while (tabMover.hasChildNodes()) {
 		tabMover.removeChild(tabMover.lastChild);
 	}
+	/**
+	 *
+	 * @type {HTMLTemplateElement}
+	 */
+	const template = document.querySelector('template#tabMoverTemplate');
 	if (browserWindows.length) {
 		for (const win of browserWindows) {
-			appendTo(
-				tabMover,
-				await renderTemplate(TAB_MOVER_TEMPLATE, {
-					'title': chrome.i18n.getMessage("windowId", win.id),
-					'windowId': win.id,
-					'tabName': win.currentTabTitle ?? '',
-					'tabsCount': win.tabs.length
-				})
-			);
+			const result = template.content.cloneNode(true);
+			/**
+			 * @type {HTMLElement}
+			 */
+			const item = result.children.item(0);
+			item.classList.add('with-count');
+			item.dataset.windowId = win.id;
+			item.style.setProperty('--title', JSON.stringify(chrome.i18n.getMessage("windowId", win.id.toString())));
+			item.style.setProperty('--tabName', JSON.stringify(win.currentTabTitle ?? ''));
+			item.style.setProperty('--count', JSON.stringify(win.tabs.length.toString()));
+
+			tabMover.append(result);
 		}
 	}
 	const shouldDisplayNewWindow = !browserWindows.length || (await getPreference('panelAlwaysShowMoveInNewWindow')
 		.catch(console.error))
 	;
 	if (shouldDisplayNewWindow) {
-		appendTo(
-			tabMover,
-			await renderTemplate(TAB_MOVER_TEMPLATE, {
-				'title': chrome.i18n.getMessage("newWindow"),
-				'windowId': '',
-				'tabName': ''
-			})
-		);
+		const result = template.content.cloneNode(true);
+		/**
+		 * @type {HTMLElement}
+		 */
+		const item = result.children.item(0);
+		item.dataset.windowId = '';
+		item.style.setProperty('--title', JSON.stringify(chrome.i18n.getMessage("newWindow")));
+		tabMover.append(result);
 	}
 
 	return true;
