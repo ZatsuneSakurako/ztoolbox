@@ -73,7 +73,7 @@
 	"windowId": {
 		"message": "Fenêtre $WINDOW_ID$",
 		"placeholders": {
-			"windowId" : {
+			"window_id" : {
 				"content" : "$1"
 			}
 		}
