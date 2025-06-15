@@ -2,7 +2,9 @@
 * i : Simplify context menu management
 * i : Translations cleanup and move to native translations
 * i : Simply notify if permission are missing (permission to add using browser interface)
-* i : UserScript - Replace context menu with panel button to refresh
+* i : UserScript :
+  * Replace context menu with panel button to refresh
+  * Replace `dayjs` with custom date functions
 * i : Replace update check with socket update information
 * i : Tab mover rendered using [`<template>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/template)
 * \- : Remove `iqdb` search

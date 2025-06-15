@@ -3,6 +3,7 @@ import {contentStyles} from "./contentStyles.js";
 import {getBasicNotificationOptions} from "./contentScripts/chrome-notification.js";
 import {getUserscriptData, setUserscriptData, writeClipboard} from "../classes/chrome-native.js";
 import {errorToString} from "../utils/errorToString.js";
+import dateUtils from '../../dateUtils.js';
 
 // noinspection JSUnusedGlobalSymbols,JSUnusedLocalSymbols
 const znmDataApi = {
@@ -376,7 +377,7 @@ function onUserScriptMessage(message, sender, sendResponse) {
     }
 }
 
-function userScriptApiLoader(context) {
+function userScriptApiLoader(context, dateUtils) {
     chrome.runtime.sendMessage({ type: 'user_script_executed', userScriptsId: context.fileName }).catch(console.error);
     const call = async function userScriptApiCall() {
         const [callName, ...args] = arguments;
@@ -458,6 +459,7 @@ function userScriptApiLoader(context) {
     // noinspection JSUnusedGlobalSymbols
     const znmApi = new Proxy({
         ...context,
+        date: dateUtils,
         on(eventName, listener) {
             if (!(eventName in listeners)) {
                 listeners[eventName] = [];
@@ -807,6 +809,12 @@ class ContentScripts {
         const additionalValues = !specialScripts.size ? ''
             : ', ' + Array.from(specialScripts.values()).join(', ');
 
+        const dateUtilsString= `{
+    "monthNames": ${JSON.stringify(dateUtils.monthNames)},
+    "monthNames2": ${JSON.stringify(dateUtils.monthNames2)},
+    ${dateUtils.parse.toString()},
+    ${dateUtils.format.toString()},
+}`;
         /**
          *
          * @type {chrome.userScripts.RegisteredUserScript}
@@ -815,7 +823,7 @@ class ContentScripts {
             id: userScript.fileName,
             runAt: userScript.runAt? userScript.runAt.replace(/-/g, '_') : undefined,
             js: [
-                { code: `'use strict';const znmApi_${uniqSuffix} = ${userScriptApiLoader.toString()}(${JSON.stringify(context)});\n(function(znmApi, unsafeWindow, window${additionalParams}){ ${userScript.script} }).call(znmApi_${uniqSuffix}, znmApi_${uniqSuffix}, window, undefined${additionalValues});` },
+                { code: `'use strict';const znmApi_${uniqSuffix} = ${userScriptApiLoader.toString()}(${JSON.stringify(context)}, ${dateUtilsString});\n(function(znmApi, unsafeWindow, window${additionalParams}){ ${userScript.script} }).call(znmApi_${uniqSuffix}, znmApi_${uniqSuffix}, window, undefined${additionalValues});` },
             ],
             matches: userScript.match ?? [],
             excludeMatches: userScript.excludeMatches ?? [],
