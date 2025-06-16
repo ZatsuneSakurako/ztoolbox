@@ -357,6 +357,29 @@ const znmUserscriptApi = {
         }
         return tabData[tab.id.toString(36)].customData[key] ?? null;
     },
+
+    /**
+     *
+     * @param {string} fileName
+     * @param {chrome.tabs.Tab} tab
+     * @returns {Promise<(chrome.windows.Window & { currentTabTitle?: string, currentTabUrl?:string, tabCount?: number })[]>}
+     */
+    async getWindows(fileName, tab) {
+        const windows = await chrome.windows.getAll({
+           populate: true,
+            windowTypes: ['normal'],
+        });
+        for (let win of windows) {
+            const activeTab = win.tabs.find(tab => {
+                return tab.active;
+            });
+            win.currentTabTitle = activeTab.title;
+            win.currentTabUrl = activeTab.url;
+            win.tabCount = win.tabs.length;
+            win.tabs = undefined;
+        }
+        return windows;
+    },
 };
 
 
