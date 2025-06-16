@@ -257,6 +257,7 @@ const znmUserscriptApi = {
      * @property {string} [icon]
      * @property {boolean} [iconOnly]
      * @property {string} [title]
+     * @property {number} [order]
      */
     /**
      *
@@ -293,7 +294,9 @@ const znmUserscriptApi = {
         const _contentStyles = await contentStyles,
             tabData = _contentStyles.tabData;
 
-        tabData[tab.id.toString(36)].menus[options.id] = options;
+        const tabDataItem = tabData[tab.id.toString(36)];
+        options.order = Object.keys(tabDataItem.menus).length;
+        tabDataItem.menus[options.id] = options;
         _contentStyles.tabData = tabData;
 
         return menu_command_id;

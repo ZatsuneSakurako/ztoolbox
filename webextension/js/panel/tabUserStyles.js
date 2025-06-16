@@ -146,7 +146,11 @@ export async function updateData(activeTab) {
 			icon = undefined
 		;
 		if ('script' in userStyle) {
-			menuCommands = Array.from(Object.values(tabData.menus));
+			menuCommands = Array.from(Object.values(tabData.menus))
+				.sort((a, b) => {
+					if (a.order === b.order) return 0;
+					return a.order > b.order ? 1 : -1;
+				});
 			isScriptExecuted = tabData.executedScripts.has(userStyle.fileName);
 			manual = userStyle.manual;
 			icon = userStyle.icon;
