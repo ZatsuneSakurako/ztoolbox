@@ -293,12 +293,7 @@ const znmUserscriptApi = {
         const _contentStyles = await contentStyles,
             tabData = _contentStyles.tabData;
 
-        const index = tabData[tab.id.toString(36)].menus.findIndex(option => option.id === menu_command_id);
-        if (index !== -1) {
-            tabData[tab.id.toString(36)].menus[index] = options;
-        } else {
-            tabData[tab.id.toString(36)].menus.push(options);
-        }
+        tabData[tab.id.toString(36)].menus[options.id] = options;
         _contentStyles.tabData = tabData;
 
         return menu_command_id;
@@ -312,13 +307,17 @@ const znmUserscriptApi = {
      * @returns {Promise<void>}
      */
     async unregisterMenuCommand(fileName, tab, data) {
-        const [menu_command_id] = data;
-        if (typeof menu_command_id !== 'string') throw new Error('INVALID MENU_COMMAND_ID');
+        if (!Array.isArray(data) || !['string', 'number'].includes(typeof data.at(0))) throw new Error(`INVALID MENU_COMMAND_ID ${JSON.stringify(data.at(0))}`);
         if (!tab) throw new Error('INVALID TAB');
 
         const _contentStyles = await contentStyles,
             tabData = _contentStyles.tabData;
-        delete tabData[tab.id.toString(36)].menus[menu_command_id];
+
+        const tabDataItem = tabData[tab.id.toString(36)];
+        for (let menuId of data) {
+            console.dir('removing in ' + menuId);
+            delete tabDataItem.menus[menuId];
+        }
         _contentStyles.tabData = tabData;
     },
 

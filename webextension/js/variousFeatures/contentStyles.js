@@ -23,7 +23,7 @@ import {errorToString} from "../utils/errorToString.js";
  * @property {string[]} executedScripts
  * @property {string[]} matchedStyles
  * @property {string[]} injectedStyles
- * @property {RegisterMenuCommand[]} menus
+ * @property {Dict<RegisterMenuCommand>} menus
  * @property {Dict<any>} customData
  *
  */
@@ -214,7 +214,7 @@ class ContentStyles {
 			injectedStyles: [],
 			executedScripts: [],
 			matchedStyles: [],
-			menus: [],
+			menus: {},
 			customData: {},
 		}
 	}

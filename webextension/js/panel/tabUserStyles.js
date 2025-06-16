@@ -49,7 +49,7 @@ export async function getTabUserStyles(tab) {
 	 * @type {Set<string> | void}
 	 */
 	let executedScripts = undefined;
-	let menus = [];
+	let menus = {};
 	try {
 		const tabData = result[_tabStylesStoreKey][tab.id.toString(36)];
 		matchedStyles = tabData.matchedStyles;
