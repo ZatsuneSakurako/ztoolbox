@@ -372,6 +372,7 @@ const znmUserscriptApi = {
             const activeTab = win.tabs.find(tab => {
                 return tab.active;
             });
+            win.isCurrentTab = win.id === tab.windowId;
             win.currentTabTitle = activeTab.title;
             win.currentTabUrl = activeTab.url;
             win.tabCount = win.tabs.length;
@@ -385,15 +386,32 @@ const znmUserscriptApi = {
      * @param {string} fileName
      * @param {chrome.tabs.Tab} tab
      * @param { [{ windowId?: number, index?: number }] } data
-     * @returns {Promise<chrome.tabs.Tab>}
+     * @returns {Promise<boolean>}
      */
     async moveTab(fileName, tab, data) {
         const [mvTabOpts] = data;
         if (typeof mvTabOpts !== 'object') throw new Error('INVALID_OPTIONS');
-        return await chrome.tabs.move(tab.id, {
-            index: mvTabOpts.index ?? ('windowId' in mvTabOpts ? -1 : tab.index),
-            windowId: mvTabOpts.windowId,
-        });
+
+        try {
+            if (!mvTabOpts.windowId || isNaN(mvTabOpts.windowId)) {
+                await chrome.windows.create({
+                    "tabId": tab.id
+                })
+                    .catch(console.error)
+                ;
+            } else {
+                await chrome.tabs.move(tab.id, {
+                    "windowId": mvTabOpts.windowId,
+                    "index": -1
+                })
+                    .catch(console.error)
+                ;
+            }
+            return true;
+        } catch (error) {
+            console.error(error);
+            return false;
+        }
     }
 };
 
@@ -772,7 +790,7 @@ class ContentScripts {
                     return;
                 }
                 tabData[tabId.toString(36)].executedScripts = [];
-                tabData[tabId.toString(36)].menus = [];
+                tabData[tabId.toString(36)].menus = {};
                 tabData[tabId.toString(36)].customData = {};
                 _contentStyles.tabData = tabData;
             } catch (e) {
