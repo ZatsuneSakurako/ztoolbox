@@ -380,6 +380,22 @@ const znmUserscriptApi = {
         }
         return windows;
     },
+
+    /**
+     *
+     * @param {string} fileName
+     * @param {chrome.tabs.Tab} tab
+     * @param { [{ windowId?: number, index?: number }] } data
+     * @returns {Promise<chrome.tabs.Tab>}
+     */
+    async moveTab(fileName, tab, data) {
+        const [mvTabOpts] = data;
+        if (typeof mvTabOpts !== 'object') throw new Error('INVALID_OPTIONS');
+        return await chrome.tabs.move(tab.id, {
+            index: mvTabOpts.index ?? ('windowId' in mvTabOpts ? -1 : tab.index),
+            windowId: mvTabOpts.windowId,
+        });
+    }
 };
 
 
