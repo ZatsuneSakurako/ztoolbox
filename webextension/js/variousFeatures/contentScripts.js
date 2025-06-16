@@ -3,7 +3,7 @@ import {contentStyles} from "./contentStyles.js";
 import {getBasicNotificationOptions} from "./contentScripts/chrome-notification.js";
 import {getUserscriptData, setUserscriptData, writeClipboard} from "../classes/chrome-native.js";
 import {errorToString} from "../utils/errorToString.js";
-import dateUtils from '../../dateUtils.js';
+import dateUtils from '../utils/dateUtils.js';
 
 // noinspection JSUnusedGlobalSymbols,JSUnusedLocalSymbols
 const znmDataApi = {
@@ -59,8 +59,23 @@ const znmDataApi = {
 };
 
 
-// noinspection JSUnusedGlobalSymbols
+
+// noinspection JSUnusedGlobalSymbols,JSUnusedLocalSymbols
 const znmUserscriptApi = {
+    /**
+     * @typedef {object} DownloadOpts
+     * @property {string} url
+     * @property {string} name
+     * @property {boolean} [saveAs]
+     * @property {Dict<string>} [headers]
+     */
+    /**
+     *
+     * @param {string} fileName
+     * @param {chrome.tabs.Tab} tab
+     * @param {[string|DownloadOpts, string|undefined, boolean|undefined]} data
+     * @returns {Promise<number>}
+     */
     async download(fileName, tab, data) {
         let opts = {};
         if (Array.isArray(data)) {
@@ -82,19 +97,31 @@ const znmUserscriptApi = {
             saveAs: opts.saveAs !== undefined ? !!opts.saveAs : undefined,
         });
     },
-    async notification(fileName, tab, data, context) {
+    /**
+     * @typedef {object} NotificationOpts
+     * @property {string} [text]
+     * @property {string} [title]
+     * @property {string} [image]
+     */
+    /**
+     *
+     * @param {string} fileName
+     * @param {chrome.tabs.Tab} tab
+     * @param {[string|NotificationOpts, string|undefined, string|undefined, any]} data
+     * @returns {Promise<string>}
+     */
+    async notification(fileName, tab, data) {
         let opts = {};
         if (Array.isArray(data)) {
             if (data.length === 2 && typeof data.at(0) === 'object') {
                 throw new Error('UNSUPPORTED_ON_DONE_PARAMETER');
             }
             const [optsOrText, title, image, onclick] = data;
-            if (optsOrText && typeof optsOrUrl === "object") {
+            if (optsOrText && typeof optsOrText === "object") {
                 opts = optsOrText;
             } else {
-                opts = {text: optsOrText, filename, saveAs};
+                opts = {text: optsOrText, title, image, onclick};
             }
-            opts = {text, title, image, onclick};
         } else {
             throw new Error('INVALID_ARGUMENTS')
         }
@@ -104,12 +131,31 @@ const znmUserscriptApi = {
         if (opts.onclick !== undefined) throw new Error('UNSUPPORTED_ONCLICK_PARAMETER');
 
         return await chrome.notifications.create(getBasicNotificationOptions({
-            title: opts.title ?? context.fileName,
+            title: opts.title ?? fileName,
             "message": opts.text,
             "iconUrl": opts.image,
         }));
     },
+    /**
+     * @typedef {object} OpenInTabOpts
+     * @property {boolean} [active]
+     * @property {number} [insert]
+     * @property {boolean} [setParent]
+     * @property {boolean} [incognito]
+     * @property {boolean} [loadInBackground]
+     */
+    /**
+     *
+     * @param {string} fileName
+     * @param {chrome.tabs.Tab} tab
+     * @param {[string, undefined | boolean | OpenInTabOpts ]} data
+     * @returns {Promise<boolean>}
+     */
     async openInTab(fileName, tab, data) {
+        /**
+         *
+         * @type { OpenInTabOpts & { url?: string } }
+         */
         let opts = {};
         if (Array.isArray(data)) {
             const [url, loadInBackgroundOrOpts] = data;
@@ -127,12 +173,19 @@ const znmUserscriptApi = {
         if (opts.setParent !== undefined) throw new Error('UNSUPPORTED_SET_PARENT_PARAMETER');
         // noinspection JSUnresolvedReference
         if (opts.incognito !== undefined) throw new Error('UNSUPPORTED_INCOGNITO_PARAMETER');
-        return await chrome.tabs.create({
+        return !!await chrome.tabs.create({
             url: opts.url,
             active: opts.loadInBackground !== undefined ? !opts.loadInBackground : undefined,
             index: opts.insert !== undefined ? opts.insert : undefined,
         });
     },
+    /**
+     *
+     * @param {string} fileName
+     * @param {chrome.tabs.Tab} tab
+     * @param {[string, { type: 'text'|'html'|'rtf', mimetype: string } ]} data
+     * @returns {Promise<boolean>}
+     */
     async setClipboard(fileName, tab, data) {
         let opts = {};
         if (Array.isArray(data)) {
@@ -269,6 +322,13 @@ const znmUserscriptApi = {
         _contentStyles.tabData = tabData;
     },
 
+    /**
+     *
+     * @param {string} fileName
+     * @param {chrome.tabs.Tab} tab
+     * @param { [string, object|null] } data
+     * @returns {Promise<void>}
+     */
     async setTabData(fileName, tab, [key, value]) {
         const _contentStyles = await contentStyles,
             tabData = _contentStyles.tabData;
@@ -282,6 +342,13 @@ const znmUserscriptApi = {
         tabData[tab.id.toString(36)].customData[key] = value;
         _contentStyles.tabData = tabData;
     },
+    /**
+     *
+     * @param {string} fileName
+     * @param {chrome.tabs.Tab} tab
+     * @param { [string] } data
+     * @returns {Promise<object|null>}
+     */
     async getTabData(fileName, tab, [key]) {
         const _contentStyles = await contentStyles,
             tabData = _contentStyles.tabData;
