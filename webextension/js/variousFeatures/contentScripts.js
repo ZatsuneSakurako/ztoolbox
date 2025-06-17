@@ -628,6 +628,7 @@ function userScriptApiLoader(context, dateUtils) {
                 styleSheet.replaceSync(css);
                 document.adoptedStyleSheets = [...document.adoptedStyleSheets, styleSheet];
             } catch (e) {
+                console.error(e);
                 call('error', `Error adding style ${e}`).catch(console.error);
             }
         },
