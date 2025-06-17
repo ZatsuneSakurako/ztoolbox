@@ -621,15 +621,18 @@ function userScriptApiLoader(context, dateUtils) {
         /**
          *
          * @param {string} css
+         * @return {CSSStyleSheet|null}
          */
         addStyle(css) {
             try {
                 const styleSheet = new CSSStyleSheet();
                 styleSheet.replaceSync(css);
                 document.adoptedStyleSheets = [...document.adoptedStyleSheets, styleSheet];
+                return styleSheet;
             } catch (e) {
                 console.error(e);
                 call('error', `Error adding style ${e}`).catch(console.error);
+                return null;
             }
         },
     }, {
