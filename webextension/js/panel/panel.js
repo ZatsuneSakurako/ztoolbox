@@ -1,11 +1,7 @@
 import {loadTranslations} from '../translation-api.js';
 import * as tabUserStyles from "./tabUserStyles.js";
-import "./requestPermission.js";
 import {chromeNativeConnectedStorageKey, getSessionNativeIsConnected} from "../classes/chrome-native-settings.js";
 import {getCurrentTab} from "../utils/getCurrentTab.js";
-import env from "../env.js";
-
-
 
 document.addEventListener('click', e => {
 	const elm = e.target.closest('[role="button"]');
@@ -89,12 +85,17 @@ async function current_version(version) {
 	//current_version_node.textContent = version;
 	current_version_node.dataset.currentVersion = version;
 
-	const nativeConnected = !!(await chrome.storage.session.get(['_nativeConnected']))?._nativeConnected,
-		hasUpdate = nativeConnected && !!(await chrome.storage.local.get(['_checkUpdate']))?._checkUpdate;
-	current_version_node.dataset.hasUpdate = hasUpdate.toString();
-	if (!hasUpdate || env !== 'local') {
-		// if no update (or not local), no text
-		current_version_node.dataset.translateTitle = '';
+	const {env} = await import("../env.js");
+	if (env === 'local') {
+		const nativeConnected = !!(await chrome.storage.session.get(['_nativeConnected']))?._nativeConnected,
+			hasUpdate = nativeConnected && !!(await chrome.storage.local.get(['_checkUpdate']))?._checkUpdate;
+
+		current_version_node.dataset.hasUpdate = hasUpdate.toString();
+
+		if (!hasUpdate) {
+			// if no update (or not local), no text
+			current_version_node.dataset.translateTitle = '';
+		}
 	}
 }
 current_version(chrome.runtime.getManifest().version)
