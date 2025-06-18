@@ -43,6 +43,7 @@ class Color {
 	}
 }
 
+export const THEME_LS_PREF_CACHE_KEY = '__theme_pref_cache';
 /**
  *
  * @type {HTMLLinkElement|null}
@@ -60,9 +61,36 @@ export async function theme_update(currentTheme, background_color) {
 	}
 
 	if (currentTheme === undefined && background_color === undefined) {
-		const options = await getPreferences("theme", "background_color");
-		currentTheme = options.get("theme") ?? 'dark'
-		background_color = options.get("background_color") ?? '#000000'
+		let optionCache = null;
+		if (self.localStorage) {
+			try {
+				optionCache = JSON.parse(self.localStorage.getItem(THEME_LS_PREF_CACHE_KEY));
+
+				currentTheme = optionCache.theme;
+				background_color = optionCache.background_color;
+			} catch (e) {
+				console.error(e);
+			}
+		}
+
+		(async () => {
+			const options = await getPreferences("theme", "background_color");
+
+			currentTheme = options.get("theme") ?? 'dark';
+			background_color = options.get("background_color") ?? '#000000';
+			theme_update(currentTheme, background_color)
+				.catch(console.error);
+
+			if (self.localStorage) {
+				localStorage.setItem(THEME_LS_PREF_CACHE_KEY, JSON.stringify({
+					theme: currentTheme,
+					background_color: background_color,
+				}));
+			}
+		})().catch(console.error)
+		if (!currentTheme || !background_color) {
+			return;
+		}
 	}
 
 	if (themeStylesheetNode !== null && currentTheme === themeStylesheetNode.dataset.theme && background_color === themeStylesheetNode.dataset.background_color) {

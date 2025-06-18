@@ -8,6 +8,7 @@
 * i : Replace update check with socket update information
 * i : Tab mover rendered using [`<template>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/template)
 * i : Optimize panel loading
+* i : Simplify theme
 * \- : Remove `iqdb` search
 * \- : Remove copy text link
 
