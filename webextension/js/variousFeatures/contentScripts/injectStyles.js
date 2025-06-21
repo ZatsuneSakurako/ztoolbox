@@ -22,6 +22,7 @@
 			return currentItem.replace(css);
 		} else {
 			const styleSheet = new CSSStyleSheet();
+			injectedStyles.set(fileName, styleSheet);
 			document.adoptedStyleSheets.push(styleSheet);
 			styleSheet.disabled = false;
 			return styleSheet.replace(css);
