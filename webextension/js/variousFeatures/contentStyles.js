@@ -14,7 +14,7 @@ import {errorToString} from "../utils/errorToString.js";
  * @property {boolean} enabled
  * @property {string[]} tags
  * @property {boolean} [allFrames]
- * @property {boolean} [asUserStyle]
+ * @property {'user'|'author'|'adoptedCss'} [injectAs]
  * @property {string} css
  */
 /**
@@ -23,6 +23,7 @@ import {errorToString} from "../utils/errorToString.js";
  * @property {string[]} executedScripts
  * @property {string[]} matchedStyles
  * @property {string[]} injectedStyles
+ * @property {string[]} injectedFromTabStyles
  * @property {Dict<RegisterMenuCommand>} menus
  * @property {Dict<any>} customData
  *
@@ -212,6 +213,7 @@ class ContentStyles {
 	get tabNewData() {
 		return {
 			injectedStyles: [],
+			injectedFromTabStyles: [],
 			executedScripts: [],
 			matchedStyles: [],
 			menus: {},
@@ -235,7 +237,7 @@ export let contentStyles = ContentStyles.load();
 function userStyleInjectOpts(userStyle, tab) {
 	return {
 		css: userStyle.css,
-		origin: userStyle.asUserStyle ? 'USER' : 'AUTHOR',
+		origin: (userStyle.injectAs ?? '').toLowerCase() === 'user' ? 'USER' : 'AUTHOR',
 		target: {
 			tabId: tab.id,
 			allFrames: userStyle.allFrames ?? false,
@@ -295,11 +297,25 @@ export async function onTabUrl(tab, details, forceRemove) {
 	tabData[tab.id.toString(36)] = currentTabData;
 
 	/**
+	 *
+	 * @type { { fileName: string, css?: string }[] }
+	 */
+	const injectFromTab = [];
+
+	/**
 	 * Clear old matched styles
 	 * @type {string[]}
 	 */
 	currentTabData.matchedStyles = [];
 	for (const matchedStyle of matchedStyles) {
+		if (matchedStyle.injectAs !== undefined && !['user', 'author', 'adoptedCss'].includes(matchedStyle.injectAs)) {
+			console.error('Unsupported "injectAs" from ' + matchedStyle.fileName);
+			continue;
+		}
+		if (matchedStyle.injectAs === 'adoptedCss' && matchedStyle.allFrames) {
+			console.error('Unsupported allFrames with adoptedCss from ' + matchedStyle.fileName);
+			continue;
+		}
 		const userStyleOpts = userStyleInjectOpts(matchedStyle, tab);
 
 		let doMatch = true;
@@ -324,19 +340,33 @@ export async function onTabUrl(tab, details, forceRemove) {
 		if (forceRemove || !doMatch || !enabled) {
 			const cssIndex = currentTabData.injectedStyles.indexOf(matchedStyle.fileName);
 			if (cssIndex >= 0) {
-				chrome.scripting.removeCSS(userStyleOpts)
-					.catch(console.error)
-				;
+				if (matchedStyle.injectAs === 'adoptedCss') {
+					injectFromTab.push({
+						fileName: matchedStyle.fileName,
+						css: undefined,
+					});
+				} else {
+					chrome.scripting.removeCSS(userStyleOpts)
+						.catch(console.error);
+				}
 				delete currentTabData.injectedStyles[cssIndex];
 			}
 			continue;
 		}
 
 		neededStyles.add(matchedStyle.fileName);
-		if (!currentTabData.injectedStyles.includes(matchedStyle.fileName)) {
-			chrome.scripting.insertCSS(userStyleOpts)
-				.catch(console.error);
+		if (!currentTabData.injectedStyles.includes(matchedStyle.fileName) || currentTabData.injectedFromTabStyles.includes(matchedStyle.fileName)) {
+			if (matchedStyle.injectAs === 'adoptedCss') {
+				injectFromTab.push({
+					fileName: matchedStyle.fileName,
+					css: matchedStyle.css,
+				});
+			} else {
+				chrome.scripting.insertCSS(userStyleOpts)
+					.catch(console.error);
+			}
 			currentTabData.injectedStyles.push(matchedStyle.fileName);
+			currentTabData.injectedFromTabStyles.push(matchedStyle.fileName);
 		}
 	}
 
@@ -351,13 +381,67 @@ export async function onTabUrl(tab, details, forceRemove) {
 				continue;
 			}
 
-			const userStyleOpts = userStyleInjectOpts(userStyle, tab);
-			chrome.scripting.removeCSS(userStyleOpts)
-				.catch(console.error)
-			;
+			if (userStyle.injectAs === 'adoptedCss') {
+				injectFromTab.push({
+					fileName: userStyle.fileName,
+					css: undefined,
+				});
+			} else {
+				const userStyleOpts = userStyleInjectOpts(userStyle, tab);
+				chrome.scripting.removeCSS(userStyleOpts)
+						.catch(console.error)
+				;
+			}
 			delete currentTabData.injectedStyles[i];
 		}
 	}
+
+
+	const action = async () => {
+		let result = await chrome.tabs.sendMessage(tab.id, {
+			id: 'updateInjectedStyles',
+			data: injectFromTab,
+		});
+		let isError = false;
+		if (result && typeof result === 'object' && 'isError' in result) {
+			isError = result.isError;
+			result = result.response;
+		}
+		console[isError ? 'error' : 'log']('[UserScript] Style from tab ' + tab.id, result);
+		return result;
+	};
+	if (injectFromTab.length) {
+		let noReply = false;
+		try {
+			// In case script already injected, post message directly
+			await action();
+		} catch (e) {
+			if (/Could not establish connection/i.test(e.toString().toLowerCase())) {
+				noReply = true;
+			} else {
+				console.error(e);
+			}
+		}
+		if (noReply) {
+			try {
+				// Inject script and post message
+				const result = await chrome.scripting.executeScript({
+					files: [ '/js/variousFeatures/contentScripts/injectStyles.js' ],
+					injectImmediately: true,
+					target: { tabId: tab.id, allFrames: false },
+				});
+				const receivedResponse = result.some(item => !!item.result);
+				if (receivedResponse) {
+					await action();
+				} else {
+					console.error('[UserScript] Style from tab ' + tab.id, result);
+				}
+			} catch (e) {
+				console.error(e);
+			}
+		}
+	}
+
 
 	currentTabData.injectedStyles = currentTabData.injectedStyles.filter(function(value) {
 		return value !== undefined;
@@ -510,7 +594,7 @@ export async function updateStyles() {
 				tags: userscript.tags,
 				css: userscript.content,
 				allFrames: userscript.meta.allFrames,
-				asUserStyle: userscript.meta.asUserStyle,
+				injectAs: userscript.meta.injectAs,
 			});
 		} else if (userscript.ext === 'js') {
 			newUserScripts.push({

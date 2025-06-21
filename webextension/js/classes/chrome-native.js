@@ -514,7 +514,7 @@ export async function showSection(sectionName) {
  * @property {string} content
  * @property {string[]} [domains]
  * @property {string[]} tags
- * @property {string[]} [matches]
+ * @property {string[]} [match]
  * @property {string[]} [excludeMatches]
  * @property {Dict<string | boolean>} meta
  */
