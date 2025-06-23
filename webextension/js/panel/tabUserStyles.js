@@ -131,11 +131,20 @@ export async function updateData(activeTab) {
 			],
 		}));
 	}
+	/**
+	 *
+	 * @type {(UserStyle|UserScript)[]}
+	 */
+	const tabDataList = [].concat(tabData.userStyles, tabData.userScripts)
+		.sort((a, b) => {
+			if (a.enabled !== b.enabled) return b.enabled ? 1 : -1;
+			return a.index - b.index;
+		});
 
 	const renderData = {
 		items: [],
 	};
-	for (let [i, userStyle] of [].concat(tabData.userStyles, tabData.userScripts).entries()) {
+	for (let [i, userStyle] of tabDataList.entries()) {
 		let menuCommands = []
 		/**
 		 *
@@ -172,11 +181,6 @@ export async function updateData(activeTab) {
 			},
 		});
 	}
-
-	renderData.items.sort((a, b) => {
-		if (a.data.enabled !== b.data.enabled) return b.data.enabled ? 1 : -1;
-		return a.title > b.title ? 1 : -1;
-	});
 
 	appendTo($tabUserStyles, await nunjuckRender("tabUserStyles", renderData));
 }

@@ -657,6 +657,7 @@ function userScriptApiLoader(context, dateUtils) {
 /**
  *
  * @typedef {object} UserScript
+ * @property {number} index
  * @property {string} name
  * @property {string} fileName
  * @property {boolean} enabled

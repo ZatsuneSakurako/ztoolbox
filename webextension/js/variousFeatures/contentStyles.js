@@ -9,6 +9,7 @@ import {errorToString} from "../utils/errorToString.js";
  *
  * @typedef {object} UserStyle
  * @property { {domain: string|string[], regex?: string, startWith?: string, endWith?: string} } url
+ * @property {number} index
  * @property {string} name
  * @property {string} fileName
  * @property {boolean} enabled
@@ -569,6 +570,45 @@ export async function updateStyles() {
 	}
 	console.debug('[UserScript]', 'updateStyles', Object.fromEntries(grouped.entries()));
 
+
+	/**
+	 * Items not in folder first,
+	 * Then sort by fileName (this contains the path)
+	 */
+	userscripts.sort((a, b) => {
+		const aInFolder = /[/\\]/.test(a.fileName),
+			bInFolder = /[/\\]/.test(b.fileName);
+		if (aInFolder !== bInFolder) return aInFolder ? 1 : -1;
+		return a.fileName.localeCompare(b.fileName);
+	});
+	/**
+	 * Save current sorting position
+	 */
+	userscripts.forEach((userscript, index) => {
+		userscript.tmpIndex = index;
+		return userscript;
+	});
+	/**
+	 * Move item that have an index in meta (meta.index starts with 0)
+	 */
+	userscripts.sort((a, b) => {
+		const aIndex = a.meta.index !== undefined ? parseInt(a.meta.index) : a.tmpIndex,
+			bIndex = b.meta.index !== undefined ? parseInt(b.meta.index) : b.tmpIndex;
+		if (aIndex === bIndex && a.meta.index !== b.meta.index) {
+			if (a.meta.index !== undefined) return -1;
+			if (b.meta.index !== undefined) return -1;
+		}
+		return aIndex - bIndex;
+	});
+	/**
+	 * Remove temporary index
+	 */
+	userscripts.forEach(userscript => {
+		delete userscript.tmpIndex;
+		return userscript;
+	});
+
+
 	/**
 	 *
 	 * @type {UserStyle[]}
@@ -579,7 +619,7 @@ export async function updateStyles() {
 	 * @type {UserScript[]}
 	 */
 	const newUserScripts = [];
-	for (let userscript of userscripts) {
+	for (let [index, userscript] of userscripts.entries()) {
 		if (userscript.ext === 'css') {
 			newUserStyles.push({
 				url: {
@@ -588,6 +628,7 @@ export async function updateStyles() {
 					endWith: userscript.meta.endWith,
 					regex: userscript.meta.regex,
 				},
+				index,
 				name: userscript.name,
 				fileName: userscript.fileName,
 				enabled: !userscript.meta.disabled,
@@ -601,6 +642,7 @@ export async function updateStyles() {
 				grant: userscript.grant,
 				match: userscript.match,
 				excludeMatches: userscript.excludeMatches,
+				index,
 				name: userscript.name,
 				fileName: userscript.fileName,
 				enabled: !userscript.meta.manual && !userscript.meta.disabled,
