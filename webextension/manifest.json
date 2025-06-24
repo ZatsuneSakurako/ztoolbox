@@ -65,7 +65,7 @@
 		"gecko": {
 			"id": "ztoolbox_dev@zatsunenomokou.eu",
 			"update_url": "https://github.com/ZatsuneNoMokou/ztoolbox/raw/master/dist/z_toolbox_dev.update.json",
-			"strict_min_version": "140.0"
+			"strict_min_version": "141.0"
 		},
 		"gecko_android": {}
 	},
