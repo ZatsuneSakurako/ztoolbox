@@ -557,9 +557,44 @@ async function updateTabStyles(userStyles, forceRemove=false) {
 }
 
 
+/**
+ *
+ * @param {string} path
+ * @return {string}
+ */
+function normalizeSlashes(path) {
+	return path.split(/[/\\]/).join('/');
+}
+
+/**
+ *
+ * @param {string} path
+ * @return { {basename?: string, dirname: string} }
+ */
+function splitDirnameAndBasename(path) {
+	const parts = path.split('/');
+	const basename = parts.pop();
+	return {
+		basename,
+		dirname: parts.join('/'),
+	};
+}
 
 export async function updateStyles() {
-	const userscripts = await getUserscripts();
+	const userscripts = (await getUserscripts())
+		.map(userscript => {
+			// Make sure to only have / as path separator
+			userscript.fileName = normalizeSlashes(userscript.fileName);
+			const {dirname, basename} = splitDirnameAndBasename(userscript.fileName);
+			userscript.dirname = dirname;
+
+			const newPath = [];
+			if (userscript.dirname) newPath.push(userscript.dirname);
+			newPath.push(userscript.name ?? basename);
+
+			userscript.sortName = newPath.join('/');
+			return userscript;
+		});
 
 	const grouped = new Map();
 	for (const userscript of userscripts) {
@@ -576,10 +611,10 @@ export async function updateStyles() {
 	 * Then sort by fileName (this contains the path)
 	 */
 	userscripts.sort((a, b) => {
-		const aInFolder = /[/\\]/.test(a.fileName),
-			bInFolder = /[/\\]/.test(b.fileName);
+		const aInFolder = a.fileName.includes('/'),
+			bInFolder = b.fileName.includes('/');
 		if (aInFolder !== bInFolder) return aInFolder ? 1 : -1;
-		return a.fileName.localeCompare(b.fileName);
+		return a.sortName.localeCompare(b.sortName);
 	});
 	/**
 	 * Save current sorting position
