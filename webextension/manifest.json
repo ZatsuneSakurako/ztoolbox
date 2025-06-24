@@ -49,18 +49,6 @@
 	"host_permissions": [
 		"<all_urls>"
 	],
-	"web_accessible_resources": [
-		{
-			"resources": [
-				"/lib/dayjs.min.js",
-				"/lib/dayjs-fr.js",
-				"/lib/dayjs-customParseFormat.js"
-			],
-			"matches": [
-				"<all_urls>"
-			]
-		}
-	],
 	"browser_specific_settings": {
 		"gecko": {
 			"id": "ztoolbox_dev@zatsunenomokou.eu",
