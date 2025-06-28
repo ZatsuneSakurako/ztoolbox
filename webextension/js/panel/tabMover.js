@@ -43,34 +43,53 @@ async function update() {
 	 *
 	 * @type {HTMLTemplateElement}
 	 */
-	const template = document.querySelector('template#tabMoverTemplate');
+	const template = document.querySelector('template#tabMoverTemplate'),
+		templateItem = document.querySelector('template#tabMoverItemTemplate');
+
+	const result = template.content.cloneNode(true);
+	/**
+	 * @type {HTMLElement}
+	 */
+	const resulItem = result.children.item(0),
+		tabList = resulItem.querySelector('.data ul.tab-list');
+	resulItem.style.setProperty('--title', JSON.stringify('Tab mover'));
+	let shouldDisplay = false;
+
 	if (browserWindows.length) {
 		for (const win of browserWindows) {
-			const result = template.content.cloneNode(true);
+			shouldDisplay = true;
 			/**
 			 * @type {HTMLElement}
 			 */
-			const item = result.children.item(0);
-			item.classList.add('with-count');
-			item.dataset.windowId = win.id;
-			item.style.setProperty('--title', JSON.stringify(chrome.i18n.getMessage("windowId", win.id.toString())));
-			item.style.setProperty('--tabName', JSON.stringify(win.currentTabTitle ?? ''));
-			item.style.setProperty('--count', JSON.stringify(win.tabs.length.toString()));
+			const resultItem = templateItem.content.cloneNode(true),
+				resultItemLi = resultItem.children.item(0);
 
-			tabMover.append(result);
+			const $button = resultItem.querySelector('button');
+			$button.dataset.windowId = win.id;
+
+			resultItemLi.style.setProperty('--title', JSON.stringify(chrome.i18n.getMessage("windowId", win.tabs.length.toString())));
+			resultItemLi.style.setProperty('--subtitle', JSON.stringify(win.currentTabTitle ?? win.id.toString()));
+
+			tabList.appendChild(resultItem);
 		}
 	}
 	const shouldDisplayNewWindow = !browserWindows.length || (await getPreference('panelAlwaysShowMoveInNewWindow')
-		.catch(console.error))
-	;
+		.catch(console.error));
+
 	if (shouldDisplayNewWindow) {
-		const result = template.content.cloneNode(true);
+		shouldDisplay = true;
 		/**
 		 * @type {HTMLElement}
 		 */
-		const item = result.children.item(0);
-		item.dataset.windowId = '';
-		item.style.setProperty('--title', JSON.stringify(chrome.i18n.getMessage("newWindow")));
+		const resultItem = templateItem.content.cloneNode(true),
+			resultItemLi = resultItem.children.item(0);
+
+		resultItemLi.style.setProperty('--title', JSON.stringify(chrome.i18n.getMessage("newWindow")));
+
+		tabList.appendChild(resultItem);
+	}
+
+	if (shouldDisplay) {
 		tabMover.append(result);
 	}
 
@@ -78,7 +97,7 @@ async function update() {
 }
 
 document.addEventListener('click', e => {
-	const elm = e.target.closest('.tabMover[data-window-id]');
+	const elm = e.target.closest('.tabMover [data-window-id]');
 	if (!elm) return;
 
 	chrome.tabs.query({
@@ -96,24 +115,21 @@ document.addEventListener('click', e => {
 				await chrome.windows.create({
 					"tabId": activeTab.id
 				})
-					.catch(console.error)
-				;
+					.catch(console.error);
 			} else {
 				await chrome.tabs.move(activeTab.id, {
 					"windowId": winId,
 					"index": -1
 				})
-					.catch(console.error)
-				;
+					.catch(console.error);
 			}
 
 			await chrome.tabs.update(activeTab.id, {
 				"active": activeTab.active
 			})
-				.catch(console.error)
-			;
+				.catch(console.error);
 
-			window.close()
+			window.close();
 		})
 		.catch(console.error)
 	;

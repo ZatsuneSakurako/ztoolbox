@@ -160,12 +160,10 @@ section .buttonItem .ellipse {
 	display: -webkit-box;
 	-webkit-box-orient: vertical;
 }
-section .buttonItem.tabMover .data {
-	-webkit-line-clamp: 1;
-}
 section .buttonItem.userscript .title .running-state {
 	float: left;
 }
+section .buttonItem.tabMover .tab-item,
 section .buttonItem.userscript .menu-action {
 	cursor: pointer;
 	font-size: 12px;
@@ -175,6 +173,12 @@ section .buttonItem.userscript .menu-action {
 	padding-top: 4px;
 	text-align: left;
 	word-break: break-all;
+}
+section .buttonItem.tabMover .tab-item {
+	padding-left: 0;
+}
+section .buttonItem.tabMover .tab-item button {
+	text-align: left;
 }
 section .buttonItem.userscript .menu-action .menu-action-icon {
 	font-size: 1em;
@@ -195,6 +199,7 @@ section .buttonItem.userscript .menu-action.icon-only .menu-action-icon {
 	font-size: 1.75em;
 	margin-right: 0;
 }
+section .buttonItem.tabMover .tab-list,
 section .buttonItem.userscript .menu-actions {
 	list-style-type: none;
 	padding: 0;
@@ -223,13 +228,10 @@ section .buttonItem .title::before {
 	/*noinspection CssUnresolvedCustomProperty*/
 	content: var(--title, '');
 }
-section .buttonItem.with-count .title::after {
+section .buttonItem .subtitle::after {
 	/*noinspection CssUnresolvedCustomProperty*/
-	content: " (" var(--count, '') ")";
-}
-section .buttonItem .data::before {
-	/*noinspection CssUnresolvedCustomProperty*/
-	content: var(--tabName, '');
+	content: var(--subtitle, '');
+	font-weight: normal;
 }
 #panelContent .websiteItem .websiteData {
 	padding-left: 21px;

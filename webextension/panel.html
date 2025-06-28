@@ -37,11 +37,21 @@
 			<div class="title" data-translate-id="permission_missing">Permission missing !</div>
 		</div>
 		<template id="tabMoverTemplate">
-			<div class="buttonItem cursor tabMover">
+			<div class="buttonItem tabMover">
 				<span class="icon material-symbols-outlined">swap_horiz</span>
 				<div class="title"></div>
-				<div class="data ellipse"></div>
+				<div class="data ellipse">
+					<ul class="tab-list"></ul>
+				</div>
 			</div>
+		</template>
+		<template id="tabMoverItemTemplate">
+			<li class="tab-item">
+				<button class="cursor ellipse" data-window-id="">
+					<span class="title"></span><br />
+					<span class="subtitle"></span>
+				</button>
+			</li>
 		</template>
 		<div id="tabMover"></div>
 		<div id="idTabUserStyles"></div>

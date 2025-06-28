@@ -71,9 +71,9 @@
 	},
 
 	"windowId": {
-		"message": "Fenêtre $WINDOW_ID$",
+		"message": "Fenêtre ($TAB_COUNT$)",
 		"placeholders": {
-			"window_id" : {
+			"tab_count" : {
 				"content" : "$1"
 			}
 		}
