@@ -810,11 +810,11 @@ class ContentScripts {
 				// console.info('[UserScripts] Tab navigation, resetting', details);
 				const _contentStyles = await contentStyles,
 					tabId = details.tabId,
-					tabData = _contentStyles.tabData ?? _contentStyles.tabNewData;
+					tabData = _contentStyles.tabData;
 
 				if (!(tabId.toString(36) in tabData)) {
-					console.warn(`Tab ${tabId} not found in contentScripts tabData.`);
-					return;
+					console.warn(`Tab ${tabId} was not found in contentScripts tabData.`);
+					tabData[tabId.toString(36)] = _contentStyles.tabNewData;
 				}
 				tabData[tabId.toString(36)].executedScripts = [];
 				tabData[tabId.toString(36)].menus = {};
