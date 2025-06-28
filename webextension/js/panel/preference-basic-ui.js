@@ -1,4 +1,4 @@
-import {getPreferences, savePreference} from './chrome-preferences.js';
+import {getPreferences, savePreference} from '../classes/chrome-preferences.js';
 
 export async function loadPreferencesNodes() {
 	const values = await getPreferences('background_color', 'theme'),
