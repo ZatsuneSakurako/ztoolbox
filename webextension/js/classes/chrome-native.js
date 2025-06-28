@@ -1,4 +1,3 @@
-import {getSyncKeys} from "./chrome-preferences.js";
 import {
 	chromeNativeSettingsStorageKey,
 	chromeNativeConnectedStorageKey,
@@ -440,9 +439,8 @@ export async function getPreferences(ids) {
 
 
 async function getSyncAllowedPreferences() {
-	const ids = getSyncKeys(),
-		output = {},
-		newPreferences = await getPreferences(ids)
+	const output = {},
+		newPreferences = await getPreferences([])
 	;
 
 	for (let [id, value] of newPreferences) {
@@ -455,19 +453,11 @@ async function getSyncAllowedPreferences() {
 	});
 }
 async function updateSyncAllowedPreferences(data) {
-	const ids = getSyncKeys(),
-		isSync = ids.includes(data.id)
-	;
-
 	if (!data.id) {
 		return;
 	}
 
-	console.log(`[NativeMessaging] onSettingUpdate${isSync ? ' (Sync included)' : ''}`, data);
-	if (!isSync) {
-		return;
-	}
-
+	console.log('[NativeMessaging] onSettingUpdate', data);
 	const {id, newValue} = data,
 		currentPreferences = await getElectronSettings()
 	;
