@@ -5,10 +5,8 @@ import {deletePreferences, getPreferences, getPreference, savePreference} from '
 
 import './variousFeatures/contentStyles.js';
 import './variousFeatures/contentScripts.js';
-import './devtools/devtools-background.js';
 
 import "./newTab/newTab-background.js";
-import "./devtools/devtools-background.js";
 
 if ('offscreen' in chrome) {
 	chrome.offscreen.createDocument({

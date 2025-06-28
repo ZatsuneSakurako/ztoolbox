@@ -18,7 +18,6 @@
 	"chrome_url_overrides": {
 		"newtab": "newTab.html"
 	},
-	"devtools_page": "devtools-page.html",
 	"action": {
 		"browser_style": false,
 		"default_icon": {
