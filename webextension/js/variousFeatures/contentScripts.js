@@ -360,6 +360,25 @@ const znmUserscriptApi = {
 		return tabData[tab.id.toString(36)].customData[key] ?? null;
 	},
 
+	async injectVariable(fileName, tab, [variableName, data]) {
+		return await chrome.scripting.executeScript({
+			target: {
+				tabId: tab.id,
+				allFrames: false
+			},
+			func: function setVariable(variableName, data) {
+				// /!\ /!\ MAIN WORLD mode /!\ /!\
+				if (variableName in window) {
+					throw new Error('VARIABLE_ALREADY_EXISTS');
+				}
+				window[variableName] = JSON.parse(data);
+				// /!\ /!\ MAIN WORLD mode /!\ /!\
+			},
+			args: [variableName, JSON.stringify(data)],
+			"world": "MAIN",
+		});
+	},
+
 	/**
 	 *
 	 * @param {string} fileName
