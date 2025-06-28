@@ -477,7 +477,7 @@ async function onWebRequestEvent(details) {
 		tabData = tabDatas[details.tabId.toString(36)];
 	if (!tabData || !tabData.customData) return;
 
-	const requestDetails = {
+	const requestDetails = tabData.customData.requestDetails ?? {
 		method: details.method,
 		status: details.statusCode,
 		timeStamp: details.timeStamp,
@@ -485,7 +485,7 @@ async function onWebRequestEvent(details) {
 	if (details.ip !== undefined) {
 		requestDetails.ip = details.ip;
 	}
-	if (details.responseHeaders && details.responseHeaders.length > 0) {
+	if (details.responseHeaders) {
 		requestDetails.responseHeaders = details.responseHeaders.map(header => {
 			return {
 				name: header.name,
