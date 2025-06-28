@@ -3,7 +3,7 @@
 import "../env.js";
 import * as browserDetect from '../utils/browserDetect.js';
 import {getSessionNativeIsConnected} from '../classes/chrome-native-settings.js';
-import {loadPreferencesNodes} from "../classes/chrome-preferences-ui.js";
+import {loadPreferencesNodes} from "./preference-basic-ui.js";
 import {theme_update, THEME_LS_PREF_CACHE_KEY} from "../classes/backgroundTheme.js";
 import "./tabUserStyles.js";
 
