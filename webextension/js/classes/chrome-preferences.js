@@ -20,7 +20,7 @@ const internalPreferences = Object.freeze([chromeNativeSettingsStorageKey]);
  * @return {Promise<Map<any, any>>}
  */
 export async function getPreferences(...prefIds) {
-	const chromeNativeConnected = await getSessionNativeIsConnected()
+	const chromeNativeConnected = getSessionNativeIsConnected()
 		.catch(console.error)
 	;
 
@@ -32,22 +32,23 @@ export async function getPreferences(...prefIds) {
 		output = new Map()
 	;
 
-	for (let [prefId, current_pref] of Object.entries(values)) {
+	let validValues = values;
+	if (await chromeNativeConnected) {
+		/**
+		 * Add chromeNativeSettings if connected, adding
+		 * chromeNativeSettings in second for higher priority
+		 */
+		validValues = { ...values, ...chromeNativeSettings };
+	}
+
+	for (let [prefId, current_pref] of Object.entries(validValues)) {
 		/*
 		 * If chromeNativeSettingsStorageKey because
 		 * when internal use, no need to return it
 		 */
-		if (!prefIds.includes(prefId)) {
+		if (internalPreferences.includes(prefId) && !prefIds.includes(prefId)) {
+			console.log('Ignoring ', prefId);
 			continue;
-		}
-
-		if (internalPreferences.includes(prefId)) {
-			output.set(prefId, current_pref);
-			continue;
-		}
-
-		if (chromeNativeConnected && prefId in chromeNativeSettings) {
-			current_pref = chromeNativeSettings[prefId];
 		}
 
 		output.set(prefId, current_pref);

@@ -7,11 +7,9 @@ import {generateThumbnail} from "../utils/captureScreenshot.js";
 import './newTab-reopenTab.js';
 import {reopenTabStateRefresh} from "./newTab-reopenTab.js";
 import {BookmarksResolver} from "./BookmarksResolver.js";
+import {newTabImagesStorage, newTabCapturesStorage} from "./newTab-settings.js";
 
-const newTabImagesStorage = '_newTabImages',
-	newTabCapturesStorage = '_newTabCaptures',
-	imageUrlAlgorithm = 'SHA-256'
-;
+const imageUrlAlgorithm = 'SHA-256';
 
 /**
  *

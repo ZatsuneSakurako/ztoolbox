@@ -2,7 +2,8 @@ export const chromeNativeSettingsStorageKey = '_nativeSettings';
 export const chromeNativeConnectedStorageKey = '_nativeConnected';
 
 export async function getElectronSettings() {
-	return (await chrome.storage.local.get([chromeNativeSettingsStorageKey])) ?? {};
+	const result = await chrome.storage.local.get([chromeNativeSettingsStorageKey]);
+	return result[chromeNativeSettingsStorageKey] ?? {};
 }
 
 export async function getSessionNativeIsConnected() {

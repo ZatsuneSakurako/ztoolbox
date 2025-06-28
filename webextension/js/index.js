@@ -1,12 +1,14 @@
 'use strict';
 
 import './classes/chrome-native.js';
-import {deletePreferences, getPreferences, getPreference, savePreference} from './classes/chrome-preferences.js';
+import {deletePreferences, getPreferences} from './classes/chrome-preferences.js';
 
 import './variousFeatures/contentStyles.js';
 import './variousFeatures/contentScripts.js';
 
 import "./newTab/newTab-background.js";
+import {chromeNativeConnectedStorageKey, chromeNativeSettingsStorageKey} from "./classes/chrome-native-settings.js";
+import {newTabCapturesStorage, newTabImagesStorage} from "./newTab/newTab-settings.js";
 
 if ('offscreen' in chrome) {
 	chrome.offscreen.createDocument({
@@ -71,28 +73,23 @@ chrome.runtime.onInstalled.addListener(function (installReason) {
 
 
 async function onStart_deleteOldPreferences() {
-	/**
-	 *
-	 * @type {Set<string>}
-	 */
-	const preferences = new Set(['serviceWorkerWhitelist', 'freshRss_showInPanel', 'panel_theme', 'launchpadAddLink', 'custom_lstu_server', '_notificationGloballyDisabled', 'showExperimented', 'showAdvanced', 'check_enabled', 'panel_height', 'panel_width', '_backgroundPage_theme_cache', '_updated', '_websitesDataStore', '_notification', 'mode', '_isVivaldi', 'notification_support', '_backgroundPage_theme_cache']);
+	const localKeyToKeep = new Set([
+		'chrome_native_token',
+		'_checkUpdate',
+		'theme',
+		'background_color',
+		chromeNativeSettingsStorageKey,
+		chromeNativeConnectedStorageKey,
+		newTabCapturesStorage,
+		newTabImagesStorage,
+	]);
 
-	for (let prefId of preferences) {
-		let hasPreference = false;
-		try {
-			const val = await chrome.storage.local.get(prefId);
-			hasPreference = prefId in val;
+	const currentLocalKeys = new Set(await chrome.storage.local.getKeys());
+	for (let key of currentLocalKeys) {
+		if (localKeyToKeep.has(key)) continue;
 
-			if (!!hasPreference && prefId === 'panel_theme') {
-				await savePreference(prefId, val);
-			}
-		} catch (e) {
-			console.error(e);
-		}
-		if (!!hasPreference) {
-			console.warn(`Deleting old preference "${prefId}"`);
-			await deletePreferences(prefId);
-		}
+		console.warn(`Deleting old preference "${key}"`);
+		await deletePreferences(key);
 	}
 
 	if ('alarms' in chrome) {
