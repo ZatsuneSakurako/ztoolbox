@@ -1,15 +1,11 @@
 import {throttle} from "../../lib/throttle.js";
 import {getPreference} from "../classes/chrome-preferences.js";
 
-
-
-const tabMover = document.querySelector('#tabMover');
 /**
  *
  * @type {chrome.windows.Window[]}
  */
 let browserWindows;
-const TAB_MOVER_TEMPLATE = 'tabMover';
 async function update() {
 	const currentBrowserWindow = await chrome.windows.getCurrent({
 		populate: false,
@@ -36,28 +32,29 @@ async function update() {
 		})
 	;
 
-	while (tabMover.hasChildNodes()) {
-		tabMover.removeChild(tabMover.lastChild);
+	/**
+	 * @type {HTMLElement}
+	 */
+	const tabMoverButton = document.querySelector('#tabMover'),
+		tabList = tabMoverButton.querySelector('ul.data.tab-list');
+	while (tabList.hasChildNodes()) {
+		tabList.removeChild(tabList.lastChild);
 	}
+
+	const panelAlwaysShowMoveInNewWindow = !!(await getPreference('panelAlwaysShowMoveInNewWindow')
+		.catch(console.error));
+	if (tabMoverButton.classList.toggle('hide', !(browserWindows.length || panelAlwaysShowMoveInNewWindow))) {
+		return;
+	}
+
 	/**
 	 *
 	 * @type {HTMLTemplateElement}
 	 */
-	const template = document.querySelector('template#tabMoverTemplate'),
-		templateItem = document.querySelector('template#tabMoverItemTemplate');
-
-	const result = template.content.cloneNode(true);
-	/**
-	 * @type {HTMLElement}
-	 */
-	const resulItem = result.children.item(0),
-		tabList = resulItem.querySelector('.data ul.tab-list');
-	resulItem.style.setProperty('--title', JSON.stringify('Tab mover'));
-	let shouldDisplay = false;
+	const templateItem = document.querySelector('template#tabMoverItemTemplate');
 
 	if (browserWindows.length) {
 		for (const win of browserWindows) {
-			shouldDisplay = true;
 			/**
 			 * @type {HTMLElement}
 			 */
@@ -73,11 +70,9 @@ async function update() {
 			tabList.appendChild(resultItem);
 		}
 	}
-	const shouldDisplayNewWindow = !browserWindows.length || (await getPreference('panelAlwaysShowMoveInNewWindow')
-		.catch(console.error));
 
+	const shouldDisplayNewWindow = !browserWindows.length || panelAlwaysShowMoveInNewWindow;
 	if (shouldDisplayNewWindow) {
-		shouldDisplay = true;
 		/**
 		 * @type {HTMLElement}
 		 */
@@ -87,10 +82,6 @@ async function update() {
 		resultItemLi.style.setProperty('--title', JSON.stringify(chrome.i18n.getMessage("newWindow")));
 
 		tabList.appendChild(resultItem);
-	}
-
-	if (shouldDisplay) {
-		tabMover.append(result);
 	}
 
 	return true;

@@ -36,41 +36,35 @@
 			<span class="icon"><span class="material-symbols-outlined">lock</span></span>
 			<div class="title" data-translate-id="permission_missing">Permission missing !</div>
 		</div>
-		<template id="tabMoverTemplate">
-			<div class="buttonItem tabMover">
-				<span class="icon material-symbols-outlined">swap_horiz</span>
-				<div class="title"></div>
-				<div class="data ellipse">
-					<ul class="tab-list"></ul>
-				</div>
-			</div>
-		</template>
 		<template id="tabMoverItemTemplate">
 			<li class="tab-item">
 				<button class="cursor ellipse" data-window-id="">
+					<span class="tab-item-icon material-symbols-outlined">tab_move</span>
 					<span class="title"></span><br />
 					<span class="subtitle"></span>
 				</button>
 			</li>
 		</template>
-		<div id="tabMover"></div>
-		<div id="idTabUserStyles"></div>
+		<div id="tabMover" class="buttonItem tabMover hide">
+			<span class="icon material-symbols-outlined">swap_horiz</span>
+			<div class="title">Tab mover</div>
+			<ul class="data tab-list"></ul>
+		</div>
+		<div id="idTabUserStyles" class="contents"></div>
 
-		<section id="preferences">
-			<div class="pref_group if-not-delegated-version">
-				<div class="preferenceContainer">
-					<label for="theme" data-translate-id="theme_title"></label>
-					<select id="theme" required>
-						<option value="dark" data-translate-id="theme_dark"></option>
-						<option value="light" data-translate-id="theme_light"></option>
-					</select>
-				</div>
-				<div class="preferenceContainer">
-					<label for="background_color" data-translate-id="background_color_title"></label>
-					<input type="color" id="background_color" required>
-				</div>
+		<div id="preferences" class="pref_group if-not-delegated-version">
+			<div class="preferenceContainer">
+				<label for="theme" data-translate-id="theme_title"></label>
+				<select id="theme" required>
+					<option value="dark" data-translate-id="theme_dark"></option>
+					<option value="light" data-translate-id="theme_light"></option>
+				</select>
 			</div>
-		</section>
+			<div class="preferenceContainer">
+				<label for="background_color" data-translate-id="background_color_title"></label>
+				<input type="color" id="background_color" required>
+			</div>
+		</div>
 	</section>
 
 	<footer>

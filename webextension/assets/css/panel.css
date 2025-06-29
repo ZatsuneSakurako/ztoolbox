@@ -96,6 +96,9 @@ header [role="button"]:last-child {
 	display: none !important;
 	visibility: hidden !important;
 }
+.contents {
+	display: contents;
+}
 body:not(.delegated-version) .if-delegated-version {
 	display: none;
 }
@@ -116,10 +119,12 @@ label[for] {
 body > section {
 	display: flex;
 	flex-direction: column;
+	row-gap: 7px;
 	height: 100%;
 	overflow-x: hidden;
 	overflow-y: auto;
-	padding: 0 10px 3px 4px;
+	scrollbar-gutter: stable;
+	padding: 2px 2px 2px 4px;
 	position: relative;
 }
 
@@ -154,6 +159,13 @@ section .buttonItem {
 	position: relative;
 	text-align: left;
 }
+body > section > .buttonItem,
+body > section > .contents > .buttonItem {
+	display: flex;
+	margin-bottom: 0;
+	margin-top: 0;
+	min-height: auto;
+}
 section .buttonItem .ellipse {
 	-webkit-line-clamp: 2;
 	overflow: hidden;
@@ -179,7 +191,9 @@ section .buttonItem.tabMover .tab-item {
 }
 section .buttonItem.tabMover .tab-item button {
 	text-align: left;
+	margin-left: 0;
 }
+section .buttonItem.tabMover .tab-item .tab-item-icon,
 section .buttonItem.userscript .menu-action .menu-action-icon {
 	font-size: 1em;
 	margin-right: .2em;
