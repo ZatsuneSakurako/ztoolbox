@@ -317,14 +317,17 @@ async function sendSocketData() {
 		}
 
 		/**
-		 * @type {undefined|TabPageServerIdData}
+		 *
+		 * @type {string|undefined}
 		 */
-		let url, domain;
-		try {
-			url = new URL(activeTab.url);
-			domain = url.hostname;
-		} catch (e) {
-			console.error(e);
+		let url = undefined, domain = undefined;
+		if (activeTab.url) {
+			try {
+				url = new URL(activeTab.url);
+				domain = url.hostname;
+			} catch (e) {
+				console.error('[sendSocketData] activeTab url : ' + JSON.stringify(activeTab.url), e);
+			}
 		}
 
 		let ipMore = false;
@@ -349,17 +352,19 @@ async function sendSocketData() {
 		 * @type {string|null}
 		 */
 		let favicon = null;
-		try {
-			// Stop if not valid url
-			new URL(activeTab.favIconUrl);
+		if (activeTab.favIconUrl) {
+			try {
+				// Stop if not valid url
+				new URL(activeTab.favIconUrl);
 
-			/**
-			 * @type {Blob}
-			 */
-			const blob = (await (await fetch(activeTab.favIconUrl)).blob());
-			favicon = await reader(blob);
-		} catch (e) {
-			console.error('[sendSocketData] ' + activeTab.favIconUrl, e);
+				/**
+				 * @type {Blob}
+				 */
+				const blob = (await (await fetch(activeTab.favIconUrl)).blob());
+				favicon = await reader(blob);
+			} catch (e) {
+				console.error('[sendSocketData] favIconUrl : ' + JSON.stringify(activeTab.favIconUrl), e);
+			}
 		}
 
 		tabData = {
