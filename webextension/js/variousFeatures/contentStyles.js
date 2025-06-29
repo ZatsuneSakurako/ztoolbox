@@ -404,18 +404,37 @@ export async function onTabUrl(tab, details, forceRemove) {
 			data: injectFromTab,
 		});
 		let isError = false;
-		if (result && typeof result === 'object' && 'isError' in result) {
+		if (result === undefined) {
+			console.warn(`[UserScript] Style from tab ${tab.id} : no reply`);
+			return null;
+		} else if (result && typeof result === 'object' && 'isError' in result) {
 			isError = result.isError;
 			result = result.response;
 		}
-		console[isError ? 'error' : 'log']('[UserScript] Style from tab ' + tab.id, result);
+		console[isError ? 'error' : 'log'](`[UserScript] Style from tab ${tab.id}`, result);
 		return result;
 	};
+	const wait = (ms) => {
+		return new Promise(resolve => setTimeout(resolve, ms));
+	}
 	if (injectFromTab.length) {
 		let noReply = false;
 		try {
 			// In case script already injected, post message directly
-			await action();
+			let result = null;
+			for (const index of [1,2,3]) { // 3 tries
+				result = await action();
+				if (result !== null) {
+					break;
+				}
+				/**
+				 * wait before next try
+				 */
+				await wait();
+			}
+			if (result === null) {
+				noReply = true;
+			}
 		} catch (e) {
 			if (/Could not establish connection/i.test(e.toString().toLowerCase())) {
 				noReply = true;

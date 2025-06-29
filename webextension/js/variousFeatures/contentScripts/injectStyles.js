@@ -46,8 +46,10 @@
 		const promises = [];
 		try {
 			for (let item of message.data) {
-				promises.push(upsertStyle(item.fileName, item.css)
-						.catch(console.error));
+				promises.push((async () => {
+					await upsertStyle(item.fileName, item.css);
+					return item.fileName;
+				})().catch(console.error));
 			}
 
 			Promise.allSettled(promises)
