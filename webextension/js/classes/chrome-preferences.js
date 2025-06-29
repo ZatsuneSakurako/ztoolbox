@@ -47,7 +47,6 @@ export async function getPreferences(...prefIds) {
 		 * when internal use, no need to return it
 		 */
 		if (internalPreferences.includes(prefId) && !prefIds.includes(prefId)) {
-			console.log('Ignoring ', prefId);
 			continue;
 		}
 
