@@ -300,6 +300,20 @@ const znmUserscriptApi = {
 		tabDataItem.menus[options.id] = options;
 		_contentStyles.tabData = tabData;
 
+		setTimeout(() => {
+			const panelPorts = getPanelPorts();
+			for (let panelPort of panelPorts) {
+				panelPort.postMessage({
+					id: 'main_has_userScriptUpdate',
+					data: {
+						tabId: tab.id,
+						userScriptId: fileName,
+						reason: 'registerMenuCommand',
+					}
+				});
+			}
+		});
+
 		return menu_command_id;
 	},
 
@@ -323,6 +337,20 @@ const znmUserscriptApi = {
 			delete tabDataItem.menus[menuId];
 		}
 		_contentStyles.tabData = tabData;
+
+		setTimeout(() => {
+			const panelPorts = getPanelPorts();
+			for (let panelPort of panelPorts) {
+				panelPort.postMessage({
+					id: 'main_has_userScriptUpdate',
+					data: {
+						tabId: tab.id,
+						userScriptId: fileName,
+						reason: 'registerMenuCommand',
+					}
+				});
+			}
+		});
 	},
 
 	/**
@@ -740,10 +768,11 @@ class ContentScripts {
 				const panelPorts = getPanelPorts();
 				for (let panelPort of panelPorts) {
 					panelPort.postMessage({
-						id: 'main_has_received_executedScript',
+						id: 'main_has_userScriptUpdate',
 						data: {
 							tabId: sender.tab.id,
 							userScriptId: message.userScriptsId,
+							reason: 'executed',
 						}
 					});
 				}

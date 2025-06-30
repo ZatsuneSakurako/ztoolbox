@@ -210,25 +210,28 @@ export async function updateData(activeTab) {
 port.onMessage.addListener(async function onMessage(message) {
 	if (!message || typeof message !== 'object') throw new Error('MESSAGE_SHOULD_BE_AN_OBJECT');
 
-	if (message.id !== 'main_has_received_executedScript') return;
+	if (message.id !== 'main_has_userScriptUpdate') return;
 
 	const {data} = message;
 	if (!currentTab || data.tabId !== currentTab.id) return;
 
+	console.log(`[UserScript] Updating ${data.userScriptId} with reason : ${data.reason}`);
 	const tabData = await getTabUserStyles(currentTab);
 	const targetUserScript = tabData.userScripts.find(userscript => {
 		return userscript.fileName === data.userScriptId
 	});
 	tabData.executedScripts.add(data.userScriptId);
 
-	if (targetUserScript) {
-		const $target = document.querySelector(`[id=${JSON.stringify(`userscript-${targetUserScript.fileName}`)}]`);
-		replaceWith($target, await nunjuckRender("tabUserStyles", {
-			items: [
-				userScriptToRenderData(targetUserScript, tabData),
-			]
-		}));
+	if (!targetUserScript) {
+		throw new Error(`[UserScript] ${data.userScriptId} not found`);
 	}
+
+	const $target = document.querySelector(`[id=${JSON.stringify(`userscript-${targetUserScript.fileName}`)}]`);
+	replaceWith($target, await nunjuckRender("tabUserStyles", {
+		items: [
+			userScriptToRenderData(targetUserScript, tabData),
+		]
+	}));
 });
 
 document.addEventListener('click', function (ev) {
