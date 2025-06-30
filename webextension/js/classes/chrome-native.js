@@ -642,16 +642,11 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
 	} else if (message.id === 'nunjuckRender') {
 		nunjuckRender(...message.data)
 			.then((data) => {
-				sendResponse({
-					isError: false,
-					response: data,
-				});
+				sendResponse({ isError: false,  response: data });
 			})
 			.catch(err => {
 				console.error(err);
-				sendResponse({
-					isError: true
-				});
+				sendResponse({ isError: true });
 			})
 		;
 		return true;
