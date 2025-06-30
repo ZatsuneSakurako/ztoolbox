@@ -26,7 +26,7 @@
 	{%- endif -%}
 	<{{ titleTag }} class="title ellipse" for="{{ item.data.id }}"
 			{%- if item.data.tags | length > 0 %} title="Tag{%- if item.data.tags | length > 1 -%}s{%- endif %} : {{ item.data.tags.join(', ') }}"{% endif -%}>
-		{%- if isExecuted != null -%}
+		{%- if isExecuted !== true -%}
 		<span class="running-state material-symbols-outlined">{%- if isScriptExecuted == true -%}
 			play_arrow
 		{%- elseif item.data.enabled -%}
