@@ -21,9 +21,10 @@ document.addEventListener('click', async e => {
 		.catch(console.error)
 	;
 	if (nativeIsConnected) {
-		sendToMain('showSection', 'settings')
-			.catch(console.error)
-		;
+		chrome.runtime.sendMessage({
+			id: 'showSection',
+			data: 'settings'
+		}).catch(console.error);
 	}
 });
 
@@ -48,9 +49,10 @@ document.addEventListener('click', async e => {
 		.catch(console.error)
 	;
 	if (nativeIsConnected) {
-		sendToMain('showSection', 'main')
-			.catch(console.error)
-		;
+		chrome.runtime.sendMessage({
+			id: 'showSection',
+			data: 'main'
+		}).catch(console.error);
 	}
 });
 

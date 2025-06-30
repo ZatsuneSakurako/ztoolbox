@@ -1,5 +1,6 @@
 'use strict';
 
+import './panelPort.js';
 import './classes/chrome-native.js';
 import {deletePreferences, getPreferences} from './classes/chrome-preferences.js';
 

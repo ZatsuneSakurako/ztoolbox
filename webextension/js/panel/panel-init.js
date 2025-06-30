@@ -5,7 +5,7 @@ import * as browserDetect from '../utils/browserDetect.js';
 import {getSessionNativeIsConnected} from '../classes/chrome-native-settings.js';
 import {loadPreferencesNodes} from "./preference-basic-ui.js";
 import {theme_update, THEME_LS_PREF_CACHE_KEY} from "../classes/backgroundTheme.js";
-import "./tabUserStyles.js";
+
 
 
 document.documentElement.classList.toggle('isFirefox', browserDetect.isFirefox);
@@ -16,20 +16,14 @@ if (browserDetect.isFirefox) {
 }
 
 
-self.sendToMain = function sendToMain(id, ...args) {
-	return new Promise((resolve, reject) => {
-		chrome.runtime.sendMessage(chrome.runtime.id, {
-			id,
-			data: [...args]
-		}, function (result) {
-			if (result.isError) {
-				reject();
-			} else {
-				resolve(result.response);
-			}
-		});
-	});
-}
+
+export const port = chrome.runtime.connect(chrome.runtime.id, {
+	name: 'panel',
+});
+import("./tabUserStyles.js")
+	.catch(console.error);
+
+
 
 async function baseInit() {
 	const chromeNativeConnected = await getSessionNativeIsConnected()

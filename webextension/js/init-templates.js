@@ -2,9 +2,17 @@
  *
  * @param {string} templateName
  * @param {object} context
+ * @return {any}
  */
-export function nunjuckRender(templateName, context) {
-	return sendToMain('nunjuckRender', { templateName, context });
+export async function nunjuckRender(templateName, context) {
+	const result = await chrome.runtime.sendMessage(chrome.runtime.id, {
+		id: 'nunjuckRender',
+		data: [
+			{ templateName, context },
+		]
+	});
+	if (result.isError) throw new Error(result.data ?? 'NUNJUCK_RENDER_ERROR')
+	return result.response;
 }
 
 
