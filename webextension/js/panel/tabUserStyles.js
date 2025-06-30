@@ -5,17 +5,24 @@ import {
 	_userStylesStateStoreKey,
 	_userStylesStoreKey
 } from "../constants.js";
-import {appendTo} from "../utils/appendTo.js";
+import {appendTo, replaceWith} from "../utils/appendTo.js";
 import {nunjuckRender} from "../init-templates.js";
 import {matchesChromePattern} from "../matchesChromePattern.js";
 import {getCurrentTab} from "../utils/getCurrentTab.js";
+import {port} from "./panel-init.js";
 
 const idTabUserStyles = 'idTabUserStyles';
 
 /**
+ * @typedef {object} getTabUserStylesResult
+ * @property {UserStyle[]} userStyles
+ * @property {Set<string>} executedScripts
+ * @property {UserScript[]} userScripts
+ */
+/**
  *
  * @param {chrome.tabs.Tab} tab
- * @returns {Promise<{ userStyles: UserStyle[], executedScripts: Set<string>, userScripts: UserScript[] }>}
+ * @returns {Promise<getTabUserStylesResult>}
  */
 export async function getTabUserStyles(tab) {
 	const result = await chrome.storage.session.get([
@@ -104,11 +111,60 @@ export async function getTabUserStyles(tab) {
 }
 
 /**
+ * @type {chrome.tabs.Tab|null}
+ */
+let currentTab = null;
+
+/**
+ *
+ * @param {UserStyle|UserScript} userStyle
+ * @param {getTabUserStylesResult} tabData
+ */
+function userScriptToRenderData(userStyle, tabData) {
+	let menuCommands = []
+	/**
+	 *
+	 * @type {boolean|undefined}
+	 */
+	let isScriptExecuted = undefined,
+		manual = undefined,
+		icon = undefined
+	;
+	if ('script' in userStyle) {
+		menuCommands = Array.from(Object.values(tabData.menus))
+			.sort((a, b) => {
+				if (a.order === b.order) return 0;
+				return a.order > b.order ? 1 : -1;
+			});
+		isScriptExecuted = tabData.executedScripts.has(userStyle.fileName);
+		manual = userStyle.manual;
+		icon = userStyle.icon;
+	}
+	return {
+		title: userStyle.name,
+		data: {
+			id: userStyle.fileName, // shouldn't find 2 identical file names
+			label: userStyle.name,
+			enabled: userStyle.enabled,
+			manual,
+			icon,
+			fileName: userStyle.fileName,
+			tags: userStyle.tags,
+			menuCommands,
+			isScriptExecuted,
+			isCss: 'css' in userStyle,
+			isScript: 'script' in userStyle,
+		},
+	};
+}
+
+/**
  *
  * @param {chrome.tabs.Tab} activeTab
  * @returns {Promise<void>}
  */
 export async function updateData(activeTab) {
+	currentTab = activeTab;
 	const dataPromise = getTabUserStyles(activeTab);
 
 	const $tabUserStyles = document.querySelector(`#${idTabUserStyles}`);
@@ -144,46 +200,36 @@ export async function updateData(activeTab) {
 	const renderData = {
 		items: [],
 	};
-	for (let [i, userStyle] of tabDataList.entries()) {
-		let menuCommands = []
-		/**
-		 *
-		 * @type {boolean|undefined}
-		 */
-		let isScriptExecuted = undefined,
-			manual = undefined,
-			icon = undefined
-		;
-		if ('script' in userStyle) {
-			menuCommands = Array.from(Object.values(tabData.menus))
-				.sort((a, b) => {
-					if (a.order === b.order) return 0;
-					return a.order > b.order ? 1 : -1;
-				});
-			isScriptExecuted = tabData.executedScripts.has(userStyle.fileName);
-			manual = userStyle.manual;
-			icon = userStyle.icon;
-		}
-		renderData.items.push({
-			title: userStyle.name,
-			data: {
-				id: `${i}-${userStyle.fileName}`,
-				label: userStyle.name,
-				enabled: userStyle.enabled,
-				manual,
-				icon,
-				fileName: userStyle.fileName,
-				tags: userStyle.tags,
-				menuCommands,
-				isScriptExecuted,
-				isCss: 'css' in userStyle,
-				isScript: 'script' in userStyle,
-			},
-		});
+	for (let userStyle of tabDataList.values()) {
+		renderData.items.push(userScriptToRenderData(userStyle, tabData));
 	}
 
 	appendTo($tabUserStyles, await nunjuckRender("tabUserStyles", renderData));
 }
+
+port.onMessage.addListener(async function onMessage(message) {
+	if (!message || typeof message !== 'object') throw new Error('MESSAGE_SHOULD_BE_AN_OBJECT');
+
+	if (message.id !== 'main_has_received_executedScript') return;
+
+	const {data} = message;
+	if (!currentTab || data.tabId !== currentTab.id) return;
+
+	const tabData = await getTabUserStyles(currentTab);
+	const targetUserScript = tabData.userScripts.find(userscript => {
+		return userscript.fileName === data.userScriptId
+	});
+	tabData.executedScripts.add(data.userScriptId);
+
+	if (targetUserScript) {
+		const $target = document.querySelector(`[id=${JSON.stringify(`userscript-${targetUserScript.fileName}`)}]`);
+		replaceWith($target, await nunjuckRender("tabUserStyles", {
+			items: [
+				userScriptToRenderData(targetUserScript, tabData),
+			]
+		}));
+	}
+});
 
 document.addEventListener('click', function (ev) {
 	const element = ev.target.closest('[data-userscript-menu-command]');
@@ -207,19 +253,17 @@ document.addEventListener('click', function (ev) {
 });
 
 document.addEventListener('click', async function (ev) {
-	const element = ev.target.closest('.userscript[data-manual-target]');
+	const element = ev.target.closest('.userscript.cursor[data-manual-target]');
 	if (!element) return;
 
-	chrome.runtime.sendMessage(chrome.runtime.id, {
+	const result = await chrome.runtime.sendMessage(chrome.runtime.id, {
 		id: 'userscript_manual_execute',
 		data: {
 			target: element.dataset.manualTarget,
 			tabId: (await getCurrentTab()).id,
 		}
-	}, function () {
-		console.log('[UserScript]', ...arguments);
-		window.close();
-	});
+	}).catch(console.error);
+	console.log('[UserScript]', result);
 });
 
 /**

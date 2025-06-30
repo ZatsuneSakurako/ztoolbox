@@ -4,6 +4,7 @@ import {getBasicNotificationOptions} from "./contentScripts/chrome-notification.
 import {getUserscriptData, setUserscriptData, writeClipboard} from "../classes/chrome-native.js";
 import {errorToString} from "../utils/errorToString.js";
 import dateUtils from '../utils/dateUtils.js';
+import {getPanelPorts} from "../panelPort.js";
 
 // noinspection JSUnusedGlobalSymbols,JSUnusedLocalSymbols
 const znmDataApi = {
@@ -721,22 +722,33 @@ class ContentScripts {
 		});
 		chrome.runtime.onUserScriptMessage.addListener((message, sender, sendResponse) => {
 			if (sender.id !== chrome.runtime.id) return;
-			if (!message.userScriptsId) {
+
+			if (message && typeof message === 'object' && message.type === 'user_script_executed') {
+				try {
+					const tabData = this.#contentStyle.tabData,
+						currentTabData = tabData[sender.tab.id.toString(36)];
+
+					(currentTabData.executedScripts ?? []).push(message.userScriptsId);
+					this.#contentStyle.tabData = tabData;
+
+					sendResponse(true);
+				} catch (e) {
+					console.error(e);
+					sendResponse(null);
+				}
+
+				const panelPorts = getPanelPorts();
+				for (let panelPort of panelPorts) {
+					panelPort.postMessage({
+						id: 'main_has_received_executedScript',
+						data: {
+							tabId: sender.tab.id,
+							userScriptId: message.userScriptsId,
+						}
+					});
+				}
+			} else {
 				onUserScriptMessage(message, sender, sendResponse);
-				return;
-			}
-			try {
-				const tabData = this.#contentStyle.tabData,
-					currentTabData = tabData[sender.tab.id.toString(36)];
-
-				// console.debug("[UserScript] Event from", sender.tab, message);
-				(currentTabData.executedScripts ?? []).push(message.userScriptsId);
-				this.#contentStyle.tabData = tabData;
-
-				sendResponse(true);
-			} catch (e) {
-				console.error(e);
-				sendResponse(null);
 			}
 		});
 		chrome.runtime.onUserScriptConnect.addListener((port) => {
