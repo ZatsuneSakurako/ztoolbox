@@ -127,7 +127,6 @@ function userScriptToRenderData(userStyle, tabData) {
 	 * @type {boolean|undefined}
 	 */
 	let isScriptExecuted = undefined,
-		manual = undefined,
 		icon = undefined
 	;
 	if ('script' in userStyle) {
@@ -137,7 +136,6 @@ function userScriptToRenderData(userStyle, tabData) {
 				return a.order > b.order ? 1 : -1;
 			});
 		isScriptExecuted = tabData.executedScripts.has(userStyle.fileName);
-		manual = userStyle.runAt === 'manual';
 		icon = userStyle.icon;
 	}
 	return {
@@ -146,7 +144,7 @@ function userScriptToRenderData(userStyle, tabData) {
 			id: userStyle.fileName, // shouldn't find 2 identical file names
 			label: userStyle.name,
 			enabled: userStyle.enabled,
-			manual,
+			runAt: userStyle.runAt,
 			icon,
 			fileName: userStyle.fileName,
 			tags: userStyle.tags,
@@ -201,6 +199,29 @@ export async function updateData(activeTab) {
 		items: [],
 	};
 	for (let userStyle of tabDataList.values()) {
+		if (userStyle.runAt === 'panel' && tabData.executedScripts.has(userStyle.fileName)) {
+			chrome.runtime.sendMessage(chrome.runtime.id, {
+				id: 'user_script_panel_event',
+				data: {
+					target: userStyle.fileName,
+					tabId: activeTab.id,
+					eventName: `panelOpened`,
+					eventData: {},
+				}
+			}).catch(console.error);
+		} else if (userStyle.runAt === 'panel') { // Then panel not yet executed
+			await chrome.runtime.sendMessage(chrome.runtime.id, {
+				id: 'userscript_manual_execute',
+				data: {
+					target: userStyle.fileName,
+					tabId: activeTab.id,
+				}
+			})
+				.then(result => {
+					console.log('[UserScript] ' + userStyle.fileName, result);
+				})
+				.catch(console.error);
+		}
 		renderData.items.push(userScriptToRenderData(userStyle, tabData));
 	}
 

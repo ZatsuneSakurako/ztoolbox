@@ -1047,7 +1047,6 @@ class ContentScripts {
 	 * @returns {Promise<any[]>}
 	 */
 	async #manuallyExecute(userScript, tabId) {
-		const tab = await chrome.tabs.get(tabId);
 		const registrationOptions = this.#userScriptToRegistrationOptions(userScript);
 		return await chrome.userScripts.execute({
 			injectImmediately: true,

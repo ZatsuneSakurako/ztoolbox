@@ -699,7 +699,7 @@ export async function updateStyles() {
 				index,
 				name: userscript.name,
 				fileName: userscript.fileName,
-				enabled: !['manual', 'panel'].includes(userscript.meta['run-at']) && !userscript.meta.disabled,
+				enabled: userscript.meta['run-at'] !== 'manual' && !userscript.meta.disabled,
 				icon: userscript.meta.icon,
 				tags: userscript.tags,
 				script: userscript.content,
