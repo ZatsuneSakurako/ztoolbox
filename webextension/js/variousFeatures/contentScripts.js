@@ -829,6 +829,7 @@ class ContentScripts {
 							type: "userScriptEvent",
 							target: message.data.target,
 							eventName: message.data.eventName,
+							data: message.data.eventData,
 						});
 						sendResponse({ error: false });
 					} catch (e) {
@@ -840,6 +841,7 @@ class ContentScripts {
 						type: "userScriptEvent",
 						target: message.data.target,
 						eventName: message.data.eventName,
+						data: message.data.eventData,
 					}));
 				}
 			}

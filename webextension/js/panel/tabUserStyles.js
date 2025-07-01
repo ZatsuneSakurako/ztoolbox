@@ -246,7 +246,11 @@ document.addEventListener('click', function (ev) {
 	if (!target || !eventName) return;
 
 	console.log(eventName, target, element.dataset.userscriptAutoClose !== undefined);
-	userScriptSendEvent(eventName, target)
+	userScriptSendEvent(eventName, target, {
+		shiftKey: ev.shiftKey,
+		altKey: ev.altKey,
+		ctrlKey: ev.ctrlKey,
+	})
 		.catch(console.error)
 		.finally(() => {
 			if (element.dataset.userscriptAutoClose !== undefined) {
@@ -273,9 +277,10 @@ document.addEventListener('click', async function (ev) {
  *
  * @param {string} eventName
  * @param {string} target
+ * @param { {shiftKey: boolean, altKey: boolean, ctrlKey: boolean } } eventData
  * @param {chrome.tabs.Tab} [tab]
  */
-async function userScriptSendEvent(eventName, target, tab) {
+async function userScriptSendEvent(eventName, target, eventData, tab) {
 	if (!tab) tab = await getCurrentTab();
 	console.info('Sending to tab ', tab, 'the event', eventName, 'for ', target);
 
@@ -285,6 +290,7 @@ async function userScriptSendEvent(eventName, target, tab) {
 			target: target,
 			tabId: tab.id,
 			eventName: `menuCommand-${eventName}`,
+			eventData,
 		}
 	});
 }
