@@ -27,7 +27,7 @@
 	{%- endif -%}
 	<{{ titleTag }} class="title ellipse" for="{{ item.data.id }}"
 			{%- if item.data.tags | length > 0 %} title="Tag{%- if item.data.tags | length > 1 -%}s{%- endif %} : {{ item.data.tags.join(', ') }}"{% endif -%}>
-		{%- if isExecuted !== true and not isRunManual -%}
+		{%- if item.data.isScript and not isRunManual and isExecuted !== true-%}
 			<span class="running-state material-symbols-outlined">
 				{%- if item.data.enabled -%}warning{%- endif -%}
 			</span>
