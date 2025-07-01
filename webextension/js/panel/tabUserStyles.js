@@ -137,7 +137,7 @@ function userScriptToRenderData(userStyle, tabData) {
 				return a.order > b.order ? 1 : -1;
 			});
 		isScriptExecuted = tabData.executedScripts.has(userStyle.fileName);
-		manual = userStyle.manual;
+		manual = userStyle.runAt === 'manual';
 		icon = userStyle.icon;
 	}
 	return {

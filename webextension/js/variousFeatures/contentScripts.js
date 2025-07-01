@@ -709,11 +709,10 @@ function userScriptApiLoader(context, dateUtils) {
  * @property {string} name
  * @property {string} fileName
  * @property {boolean} enabled
- * @property {boolean} manual
  * @property {string} [icon]
  * @property {string[]} tags
  * @property {string} script
- * @property {chrome.userScripts.RunAt} [runAt]
+ * @property {chrome.userScripts.RunAt|'manual'|'panel'} [runAt]
  * @property {string[]} [grant]
  * @property {string[]} [match]
  * @property {string[]} [excludeMatches]
