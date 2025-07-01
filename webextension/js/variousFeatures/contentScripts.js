@@ -1086,7 +1086,7 @@ class ContentScripts {
 
 		for (let userScript of userScripts) {
 			const enabled = this.userScriptStates[userScript.fileName] ?? userScript.enabled;
-			if (!enabled) continue;
+			if (!enabled || userScript.runAt === 'panel') continue;
 			userScriptIds.add(userScript.fileName);
 
 			const registrationUserScript = this.#userScriptToRegistrationOptions(userScript);
