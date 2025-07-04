@@ -120,7 +120,7 @@ section .buttonItem {
 	display: grid;
 	font-size: 14px;
 
-	gap: 8px 0;
+	gap: 0 8px;
 	grid-template-columns: 32px 1fr;
 	grid-auto-rows: minmax(calc(37px / 2), auto);
 	grid-template-areas:
