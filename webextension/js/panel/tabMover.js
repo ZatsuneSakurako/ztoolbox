@@ -3,6 +3,17 @@ import {getPreference} from "../classes/chrome-preferences.js";
 
 /**
  *
+ * @param {string} str
+ * @param {number} maxLength
+ * @return {string}
+ */
+function truncateString(str, maxLength=25) {
+	if (str.length <= maxLength) return str;
+	return str.slice(0, maxLength - 3) + '...';
+}
+
+/**
+ *
  * @type {chrome.windows.Window[]}
  */
 let browserWindows;
@@ -36,7 +47,7 @@ async function update() {
 	 * @type {HTMLElement}
 	 */
 	const tabMoverButton = document.querySelector('#tabMover'),
-		tabList = tabMoverButton.querySelector('ul.data.tab-list');
+		tabList = tabMoverButton.querySelector('ul.data.data-list');
 	while (tabList.hasChildNodes()) {
 		tabList.removeChild(tabList.lastChild);
 	}
@@ -59,14 +70,13 @@ async function update() {
 			 * @type {HTMLElement}
 			 */
 			const resultItem = templateItem.content.cloneNode(true),
-				resultItemLi = resultItem.children.item(0);
+				$button = resultItem.querySelector('button');
 
-			const $button = resultItem.querySelector('button');
+			$button.title = win.currentTabTitle ?? win.id.toString();
 			$button.dataset.windowId = win.id;
-
-			resultItemLi.style.setProperty('--title', JSON.stringify(chrome.i18n.getMessage("windowId", win.tabs.length.toString())));
-			resultItemLi.style.setProperty('--subtitle', JSON.stringify(win.currentTabTitle ?? win.id.toString()));
-
+			$button.append(
+				`${truncateString(win.currentTabTitle ?? win.id.toString())} (${win.tabs.length})`
+			);
 			tabList.appendChild(resultItem);
 		}
 	}
@@ -77,10 +87,8 @@ async function update() {
 		 * @type {HTMLElement}
 		 */
 		const resultItem = templateItem.content.cloneNode(true),
-			resultItemLi = resultItem.children.item(0);
-
-		resultItemLi.style.setProperty('--title', JSON.stringify(chrome.i18n.getMessage("newWindow")));
-
+			$button = resultItem.querySelector('button');
+		$button.append(chrome.i18n.getMessage("newWindow"));
 		tabList.appendChild(resultItem);
 	}
 

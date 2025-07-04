@@ -12,9 +12,13 @@
 
 
 {% set emptyMenuCommand = true %}
-{%- if menuItem.fileName === item.data.fileName -%}
-	{% set emptyMenuCommand = false %}
-{%- endif -%}
+{%- for menuItem in item.data.menuCommands  -%}
+	{%- if menuItem.fileName === item.data.fileName -%}
+		{% set emptyMenuCommand = false %}
+	{%- endif -%}
+{%- endfor -%}
+
+
 <div id="{{ type }}-{{ item.data.id }}" class="buttonItem{{ cursorClass }} {{ type }}{% if isExecuted === true %} is-executed{% endif %}{% if emptyMenuCommand %} no-data{% endif %}"{%- if isRunManual %} data-manual-target="{{ item.data.fileName }}"{% endif -%}>
 
 	{%- set titleTag = 'label' -%}
@@ -33,23 +37,24 @@
 	<{{ titleTag }} class="title ellipse" for="{{ item.data.id }}"
 			{%- if item.data.tags | length > 0 %} title="Tag{%- if item.data.tags | length > 1 -%}s{%- endif %} : {{ item.data.tags.join(', ') }}"{% endif -%}>
 		{%- if item.data.isScript and not isRunManual and isExecuted !== true-%}
-			<span class="running-state material-symbols-outlined">
+			<span class="float-left material-symbols-outlined">
 				{%- if item.data.enabled -%}warning{%- endif -%}
 			</span>
 		{%- endif -%}
 
 		{{- item.title -}}
 	</{{ titleTag }}>
+
 	{%- if not item.data -%}
 		<div class="data">Aucun style</div>
 	{%- elseif not emptyMenuCommand %}
 		<div class="data">
 			{%- if item.data.isScriptExecuted == true -%}
-				<ul class="menu-actions">
+				<ul class="data-list">
 				{%- for menuItem in item.data.menuCommands  -%}
 				{%- if menuItem.fileName === item.data.fileName -%}
-					<li>
-						<button class="menu-action ellipse{%- if menuItem.iconOnly %} icon-only{% endif -%}"
+					<li class="data-list-item">
+						<button class="ellipse{%- if menuItem.iconOnly %} icon-only{% endif -%}"
 								data-target="{{ item.data.fileName }}"
 								data-userscript-menu-command="{{ menuItem.id }}"
 								{%- if menuItem.title %} title="{{ menuItem.title }}"
@@ -57,9 +62,9 @@
 								{%- if menuItem.accessKey %} accesskey="{{ menuItem.accessKey }}"{%- endif -%}
 								{%- if menuItem.autoClose | default(true) %} data-userscript-auto-close=""{%- endif -%}>
 							{%- if menuItem.icon and menuItem.icon.startsWith('https://') -%}
-							<img class="menu-action-icon" src="{{ menuItem.icon }}" alt="" loading="lazy">
+							<img class="icon" src="{{ menuItem.icon }}" alt="" loading="lazy">
 							{%- else -%}
-							<span class="menu-action-icon material-symbols-outlined">
+							<span class="icon material-symbols-outlined">
 								{%- if menuItem.icon -%}{{ menuItem.icon }}{%- else -%}manufacturing{%- endif -%}
 							</span>
 							{%- endif -%}
