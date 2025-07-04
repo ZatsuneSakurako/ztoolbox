@@ -200,7 +200,7 @@ export async function updateData(activeTab) {
 	};
 	for (let userStyle of tabDataList.values()) {
 		const isScript = 'script' in userStyle;
-		if (isScript && (userStyle.runAt !== 'panel' || tabData.executedScripts.has(userStyle.fileName))) {
+		if (isScript && userStyle.enabled && (userStyle.runAt !== 'panel' || tabData.executedScripts.has(userStyle.fileName))) {
 			chrome.runtime.sendMessage(chrome.runtime.id, {
 				id: 'user_script_panel_event',
 				data: {
@@ -210,7 +210,7 @@ export async function updateData(activeTab) {
 					eventData: {},
 				}
 			}).catch(console.error);
-		} else if (isScript && userStyle.runAt === 'panel') { // Then panel not yet executed
+		} else if (isScript && userStyle.enabled && userStyle.runAt === 'panel') { // Then panel not yet executed
 			await chrome.runtime.sendMessage(chrome.runtime.id, {
 				id: 'userscript_manual_execute',
 				data: {
