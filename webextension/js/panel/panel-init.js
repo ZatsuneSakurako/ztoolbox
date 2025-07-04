@@ -30,7 +30,6 @@ async function baseInit() {
 		.catch(console.error)
 	;
 	document.body.classList.toggle('delegated-version', chromeNativeConnected);
-	document.body.classList.toggle('normal-version', !chromeNativeConnected);
 
 	/**
 	 *

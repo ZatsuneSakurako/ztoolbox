@@ -21,10 +21,6 @@ input[type='number'],
 input[type='url'],
 textarea,
 
-#tooltip {
-	color: #FFFFFF;
-	color: rgba(255, 255, 255, 0.8);
-}
 /*			---- Disabled / Hint text ----			*/
 footer {
 	color: #FFFFFF;

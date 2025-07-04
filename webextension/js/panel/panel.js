@@ -84,8 +84,7 @@ async function current_version(version) {
 	const current_version_node = document.querySelector("span#current_version");
 	if (!current_version_node) return;
 
-	//current_version_node.textContent = version;
-	current_version_node.dataset.currentVersion = version;
+	current_version_node.textContent = ` (v${version})`;
 
 	const {env} = await import("../env.js");
 	if (env === 'local') {

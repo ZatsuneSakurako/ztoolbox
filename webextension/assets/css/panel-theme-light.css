@@ -19,10 +19,6 @@ select,
 	background-color: var(--bgLight2, hsl(0, 0%, 81%)); /*#424242;*/
 }
 
-#tooltip {
-	background-color: var(--bgLight2_Opacity, hsla(0, 0%, 81%, 0.95));
-}
-
 input[type='text'],
 input[type='number'],
 input[type='url'],
@@ -59,8 +55,4 @@ header,
 .panel-item,
 footer {
 	box-shadow: 0 0 5px 0 var(--bgLight3, hsl(0, 0%, 87%));
-}
-
-#tooltip { /* stylelint-disable-line no-duplicate-selectors */
-	box-shadow: 0 0 10px 0 var(--bgLight3, hsl(0, 0%, 87%));
 }
