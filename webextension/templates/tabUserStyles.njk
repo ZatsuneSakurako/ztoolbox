@@ -26,8 +26,11 @@
 		<span class="icon material-symbols-outlined">tab</span>
 	{%- elseif isRunManual -%}
 		{%- set titleTag = 'div' -%}
-		{%- if item.data.icon -%}
+		{%- set isHttps = r/^https?:\/\/.*/ -%}
+		{%- if item.data.icon and isHttps.test(item.data.icon) -%}
 			<img class="icon" src="{{ item.data.icon }}" alt="">
+		{%- elseif item.data.icon -%}
+			<span class="icon material-symbols-outlined">{{ item.data.icon }}</span>
 		{%- else -%}
 			<span class="icon material-symbols-outlined">rocket_launch</span>
 		{%- endif -%}

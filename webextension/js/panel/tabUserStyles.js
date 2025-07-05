@@ -10,6 +10,8 @@ import {nunjuckRender} from "../init-templates.js";
 import {matchesChromePattern} from "../matchesChromePattern.js";
 import {getCurrentTab} from "../utils/getCurrentTab.js";
 import {port} from "./panel-init.js";
+import * as tabMover from "./tabMover.js";
+import {tabMoverItemId} from "./tabMover.js";
 
 const idTabUserStyles = 'idTabUserStyles';
 
@@ -155,7 +157,6 @@ function userScriptToRenderData(userStyle, tabData) {
 		title: userStyle.name,
 		data: {
 			id: userStyle.fileName, // shouldn't find 2 identical file names
-			label: userStyle.name,
 			enabled: userStyle.enabled,
 			runAt: userStyle.runAt,
 			icon,
@@ -211,6 +212,9 @@ export async function updateData(activeTab) {
 	const renderData = {
 		items: [],
 	};
+
+	renderData.items.push(await tabMover.update());
+
 	for (let userStyle of tabDataList.values()) {
 		const isEnabledScript = 'script' in userStyle && userStyle.enabled;
 
@@ -280,6 +284,17 @@ document.addEventListener('click', function (ev) {
 	const target = element.dataset.target,
 		eventName = element.dataset.userscriptMenuCommand;
 	if (!target || !eventName) return;
+
+	if (target === tabMoverItemId) {
+		tabMover.tabMover_mvTab(eventName.replace(/^tabMover-/, ''))
+			.catch(console.error)
+			.finally(() => {
+				if (element.dataset.userscriptAutoClose !== undefined) {
+					window.close();
+				}
+			});
+		return;
+	}
 
 	console.log(eventName, target, element.dataset.userscriptAutoClose !== undefined);
 	userScriptSendEvent(eventName, target, {
