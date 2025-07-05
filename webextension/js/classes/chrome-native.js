@@ -4,7 +4,6 @@ import {
 	getElectronSettings
 } from "./chrome-native-settings.js";
 import {getCurrentTab} from "../utils/getCurrentTab.js";
-import ipRegex from "../../lib/ip-regex.js";
 import {io} from "../../lib/socket.io.esm.min.js";
 import {isServiceWorker} from "../utils/browserDetect.js";
 import {contentStyles, updateStyles} from "../variousFeatures/contentStyles.js";
@@ -331,7 +330,7 @@ async function sendSocketData() {
 		}
 
 		let ipMore = false;
-		if (url && ipRegex({exact: true}).test(url.hostname)) {
+		if (url && tabData && url.hostname !== tabData.ip) {
 			ipMore = url.hostname;
 			domain = undefined;
 		}

@@ -42,9 +42,6 @@ if (!exist_jsLib) {
 		{ encoding: 'utf-8' }
 	);
 
-	info("Copying ip-regex...");
-	_cp("./node_modules/ip-regex/index.js", path.normalize(`${jsLib}/ip-regex.js`));
-
 	info("Copying socket.io-client...");
 	_cp("./node_modules/socket.io-client/dist/socket.io.esm.min.js", jsLib);
 	_cp("./node_modules/socket.io-client/dist/socket.io.esm.min.js.map", jsLib);

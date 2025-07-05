@@ -2881,13 +2881,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ip-regex@npm:^5.0.0":
-  version: 5.0.0
-  resolution: "ip-regex@npm:5.0.0"
-  checksum: 10/4098b2df89c015f1484a5946e733ec126af8c1828719d90e09f04af23ce487e1a852670e4d3f51b0dc6dfbaf7d8bfab23fd7893ca60e69833da99b7b1ee3623b
-  languageName: node
-  linkType: hard
-
 "ip@npm:^2.0.0":
   version: 2.0.0
   resolution: "ip@npm:2.0.0"
@@ -5548,7 +5541,6 @@ __metadata:
     chalk: "npm:^5.4.1"
     dotenv: "npm:^16.5.0"
     fs-extra: "npm:^11.3.0"
-    ip-regex: "npm:^5.0.0"
     klaw-sync: "npm:^7.0.0"
     material-symbols: "npm:^0.31.4"
     mocha: "npm:^11.5.0"
