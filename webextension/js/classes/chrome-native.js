@@ -573,10 +573,11 @@ export async function writeClipboard(data) {
  *
  * @param {string} templateName
  * @param {object} context
+ * @param {boolean} [async]
  * @returns {Promise<string>}
  */
-export async function nunjuckRender({templateName, context}) {
-	const data = await socket.timeout(timeout).emitWithAck('nunjuckRender', templateName, context);
+export async function nunjuckRender({templateName, context, async}) {
+	const data = await socket.timeout(timeout).emitWithAck('nunjuckRender', templateName, context, async ?? false);
 	if (data.error) throw new Error(data.error);
 	if (!('result' in data)) {
 		throw new Error(JSON.stringify(data, null, "\t"));

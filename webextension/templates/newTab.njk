@@ -28,8 +28,7 @@
 </header>
 
 
-{% macro showBookmark(bookmark) %}
-    {% set meta = getMeta(bookmark) %}
+{% macro showBookmark(bookmark, meta) %}
     <article class="newTab-item" style="{% if meta.theme_color %}--theme-color: {{ meta.theme_color }};{% endif %}{% if meta.background_color %}--background-color: {{ meta.background_color }};{% endif %}">
         <a href="{{ bookmark.url }}" class="title">
             {%- if meta._hostname -%}
@@ -43,10 +42,10 @@
         </a>
         <a href="{{ bookmark.url }}" class="hover"></a>
 
-        {% set image = meta.capture ?? meta.image %}
+        {% set image = meta.capture if meta.capture else meta.image %}
         {% if image %}<img class="background" src="{{ image }}" crossorigin="anonymous" alt="{{ bookmark.title }}" loading="lazy">{% endif %}
     </article>
-{% endmacro %}{% import _self as newTab %}
+{% endmacro %}
 
 
 <h1 class="screen-reader-text">New tab</h1>
@@ -78,12 +77,14 @@
                             {%- if childrenBookmark.children -%}
                                 <!-- Sub-folder not supported -->
                             {%- else -%}
-                                {{ newTab.showBookmark(childrenBookmark) }}
+                                {% set meta = getMeta(bookmark) | wait %}
+                                {{ showBookmark(childrenBookmark, meta) }}
                             {%- endif -%}
                         {%- endfor -%}
                     </div>
                 {%- else -%}
-                    {{ newTab.showBookmark(bookmark) }}
+                    {% set meta = getMeta(bookmark) | wait %}
+                    {{ showBookmark(bookmark, meta) }}
                 {%- endif -%}
             {%- endfor -%}
         </div>
