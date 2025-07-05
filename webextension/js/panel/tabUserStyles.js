@@ -74,6 +74,15 @@ export async function getTabUserStyles(tab) {
 		userStyleStates = result[_userStylesStateStoreKey];
 	} catch (e) {
 		console.error(e);
+	}	/**
+	 *
+	 * @type {Dict<boolean> | void}
+	 */
+	let userScriptStates = undefined;
+	try {
+		userScriptStates = result[_userScriptsStateStoreKey];
+	} catch (e) {
+		console.error(e);
 	}
 
 	return {
@@ -87,6 +96,10 @@ export async function getTabUserStyles(tab) {
 		userScripts: userScripts.filter(userScript => {
 			let matched = false;
 			if (!tab.url) return false;
+
+			if (userScriptStates !== undefined && userScript.fileName in userScriptStates) {
+				userScript.enabled = userScriptStates[userScript.fileName];
+			}
 
 			if (Array.isArray(userScript.match)) {
 				for (let match of userScript.match) {
@@ -199,8 +212,9 @@ export async function updateData(activeTab) {
 		items: [],
 	};
 	for (let userStyle of tabDataList.values()) {
-		const isScript = 'script' in userStyle;
-		if (isScript && userStyle.enabled && (userStyle.runAt !== 'panel' || tabData.executedScripts.has(userStyle.fileName))) {
+		const isEnabledScript = 'script' in userStyle && userStyle.enabled;
+
+		if (isEnabledScript && (userStyle.runAt !== 'panel' || tabData.executedScripts.has(userStyle.fileName))) {
 			chrome.runtime.sendMessage(chrome.runtime.id, {
 				id: 'user_script_panel_event',
 				data: {
@@ -210,7 +224,7 @@ export async function updateData(activeTab) {
 					eventData: {},
 				}
 			}).catch(console.error);
-		} else if (isScript && userStyle.enabled && userStyle.runAt === 'panel') { // Then panel not yet executed
+		} else if (isEnabledScript && userStyle.runAt === 'panel') { // Then panel not yet executed
 			await chrome.runtime.sendMessage(chrome.runtime.id, {
 				id: 'userscript_manual_execute',
 				data: {
