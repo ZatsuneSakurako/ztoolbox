@@ -10,9 +10,7 @@ export async function getNunjucks() {
 		await import(`../templates/templates.js`);
 
 		const nunjucks = await self.nunjucks,
-			nunjucksEnv = self.nunjucksEnv = new nunjucks.Environment({
-				//
-			});
+			nunjucksEnv = self.nunjucksEnv = new nunjucks.Environment();
 		nunjucksEnv.addFilter('type', function(variable) {
 			return typeof variable;
 		});
@@ -56,7 +54,6 @@ export async function nunjuckRender(templateName, context, async=false) {
 
 	const promiseWithResolver = Promise.withResolvers();
 	nunjucks.render(templateName + '.njk', context, function (err, result) {
-		console.dir(arguments)
 		if (err) {
 			promiseWithResolver.reject(err);
 			return;

@@ -1,4 +1,7 @@
 (async () => {
+	try {
+		await chrome.contextMenus.remove('newTab_refreshLinkImage')
+	} catch (_) {}
 	await chrome.contextMenus.create({
 		id: 'newTab_refreshLinkImage',
 		title: chrome.i18n.getMessage("newTab_refreshLinkImage"),
