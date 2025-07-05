@@ -77,13 +77,13 @@
                             {%- if childrenBookmark.children -%}
                                 <!-- Sub-folder not supported -->
                             {%- else -%}
-                                {% set meta = getMeta(bookmark) | wait %}
+                                {% set meta = bookmarksMeta[bookmark.id] %}
                                 {{ showBookmark(childrenBookmark, meta) }}
                             {%- endif -%}
                         {%- endfor -%}
                     </div>
                 {%- else -%}
-                    {% set meta = getMeta(bookmark) | wait %}
+					{% set meta = bookmarksMeta[bookmark.id] %}
                     {{ showBookmark(bookmark, meta) }}
                 {%- endif -%}
             {%- endfor -%}
