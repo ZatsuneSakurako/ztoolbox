@@ -9,10 +9,12 @@
   * Replace `dayjs` with custom date functions
   * Experiment applying styles from tab
   * Custom sort
+  * New `run-at` value : `panel`
 * i : Replace update check with socket update information
-* i : Tab mover rendered using [`<template>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/template)
-* i : Optimize panel loading
+* i : Move from Twig templates to [Nunjuck](https://mozilla.github.io/nunjucks/)
 * i : Simplify theme
+* i : Tab mover and new tab rendered using Nunjuck
+* i : Optimize panel loading
 * \- : Remove `iqdb` search
 * \- : Remove copy text link
 
