@@ -1,5 +1,5 @@
 import {appendTo} from "../utils/appendTo.js";
-import {renderTemplate} from "../init-templates.js";
+import {nunjuckRender} from "../init-templates.js";
 import "./onImageError.js";
 import {getPreference} from "../classes/chrome-preferences.js";
 import {chromeNativeConnectedStorageKey} from "../classes/chrome-native-settings.js";
@@ -132,7 +132,7 @@ async function loadSpeedDial() {
 		child.remove();
 	}
 
-	appendTo($newTabContainer, await renderTemplate('newTab', {
+	const result = await nunjuckRender('newTab', {
 		'bookmarks': [...data.entries()],
 		async getMeta(bookmark) {
 			const url = bookmark.url,
@@ -176,7 +176,8 @@ async function loadSpeedDial() {
 
 			return output;
 		},
-	}, true));
+	}, true);
+	appendTo($newTabContainer, result);
 
 
 

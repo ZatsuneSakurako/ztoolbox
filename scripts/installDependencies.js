@@ -28,9 +28,8 @@ if (!exist_jsLib) {
 	error("JS lib folder not found!");
 	process.exit(1);
 } else {
-	info("Copying twing...");
-	_cp("./node_modules/twig/twig.min.js", jsLib);
-	_cp("./node_modules/twig/twig.min.js.map", jsLib);
+	info("Copying nunjucks-slim...");
+	_cp("./node_modules/nunjucks/browser/nunjucks-slim.js", jsLib);
 
 	info("Copying MaterialIcons (material-symbols)...");
 	_cp("./node_modules/material-symbols/material-symbols-outlined.woff2", path.normalize(`${fontPath}/material-symbols-outlined.woff2`));

@@ -68,15 +68,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/runtime@npm:^7.8.4":
-  version: 7.22.6
-  resolution: "@babel/runtime@npm:7.22.6"
-  dependencies:
-    regenerator-runtime: "npm:^0.13.11"
-  checksum: 10/1d2f56797f548b009910bddf3dc04f980a9701193233145dc923f3ea87c8f88121a3c3ef1d449e9cb52a370d7d025a2243c748882d5546ff079ddf5ffe29f240
-  languageName: node
-  linkType: hard
-
 "@csstools/css-parser-algorithms@npm:^3.0.4":
   version: 3.0.5
   resolution: "@csstools/css-parser-algorithms@npm:3.0.5"
@@ -673,6 +664,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"a-sync-waterfall@npm:^1.0.0":
+  version: 1.0.1
+  resolution: "a-sync-waterfall@npm:1.0.1"
+  checksum: 10/6069080aff936c88fc32f798cc172a8b541e35b993dc5d2e43b74b6f37c522744eec107e1d475d2c624825c6cb7d2ec9ec020dbe4520578afcae74f11902daa2
+  languageName: node
+  linkType: hard
+
 "abbrev@npm:^1.0.0":
   version: 1.1.1
   resolution: "abbrev@npm:1.1.1"
@@ -972,6 +970,13 @@ __metadata:
   version: 3.0.1
   resolution: "array-union@npm:3.0.1"
   checksum: 10/47b29f88258e8f37ffb93ddaa327d4308edd950b52943c172b73558afdd3fa74cfd68816ba5aa4b894242cf281fa3c6d0362ae057e4a18bddbaedbe46ebe7112
+  languageName: node
+  linkType: hard
+
+"asap@npm:^2.0.3":
+  version: 2.0.6
+  resolution: "asap@npm:2.0.6"
+  checksum: 10/b244c0458c571945e4b3be0b14eb001bea5596f9868cc50cc711dc03d58a7e953517d3f0dad81ccde3ff37d1f074701fa76a6f07d41aaa992d7204a37b915dda
   languageName: node
   linkType: hard
 
@@ -1418,6 +1423,13 @@ __metadata:
   dependencies:
     graceful-readlink: "npm:>= 1.0.0"
   checksum: 10/65d08cbbf0ce36d3326e4904b8b8be1571547e96ae33834a7296fc84ab2d703c4b9f4ac2836ab8a7d33b145b545d20ac820f67bfef52cca021dbc8fbdf960686
+  languageName: node
+  linkType: hard
+
+"commander@npm:^5.1.0":
+  version: 5.1.0
+  resolution: "commander@npm:5.1.0"
+  checksum: 10/3e2ef5c003c5179250161e42ce6d48e0e69a54af970c65b7f985c70095240c260fd647453efd4c2c5a31b30ce468f373dc70f769c2f54a2c014abc4792aaca28
   languageName: node
   linkType: hard
 
@@ -2347,13 +2359,6 @@ __metadata:
   version: 3.3.3
   resolution: "flatted@npm:3.3.3"
   checksum: 10/8c96c02fbeadcf4e8ffd0fa24983241e27698b0781295622591fc13585e2f226609d95e422bcf2ef044146ffacb6b68b1f20871454eddf75ab3caa6ee5f4a1fe
-  languageName: node
-  linkType: hard
-
-"foreachasync@npm:^3.0.0":
-  version: 3.0.0
-  resolution: "foreachasync@npm:3.0.0"
-  checksum: 10/21bd394f1db54a89a03b5351a07abe318ebb90756364adefafcfccf98c37b92cbe6b95f09909e0c398661f7ccccfa05119d7dbe4c2c58a680e7cdfd7d9009fca
   languageName: node
   linkType: hard
 
@@ -3315,13 +3320,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"locutus@npm:^2.0.11":
-  version: 2.0.16
-  resolution: "locutus@npm:2.0.16"
-  checksum: 10/e66662730d4bf4db073d810daf2281eca306908ef77e4e596474bba258ff452618d0382fe8b6d9e2edce1bb4ef12fbb4ee44c501e450ce2a861e3a73e92dc9cb
-  languageName: node
-  linkType: hard
-
 "lodash.merge@npm:^4.6.2":
   version: 4.6.2
   resolution: "lodash.merge@npm:4.6.2"
@@ -3478,15 +3476,6 @@ __metadata:
     braces: "npm:^3.0.3"
     picomatch: "npm:^2.3.1"
   checksum: 10/6bf2a01672e7965eb9941d1f02044fad2bd12486b5553dc1116ff24c09a8723157601dc992e74c911d896175918448762df3b3fd0a6b61037dd1a9766ddfbf58
-  languageName: node
-  linkType: hard
-
-"minimatch@npm:3.0.x":
-  version: 3.0.8
-  resolution: "minimatch@npm:3.0.8"
-  dependencies:
-    brace-expansion: "npm:^1.1.7"
-  checksum: 10/6df5373cb1ea79020beb6887ff5576c58cfabcfd32c5a65c2cf58f326e4ee8eae84f129e5fa50b8a4347fa1d1e583f931285c9fb3040d984bdfb5109ef6607ec
   languageName: node
   linkType: hard
 
@@ -3799,6 +3788,24 @@ __metadata:
   dependencies:
     boolbase: "npm:^1.0.0"
   checksum: 10/5386d035c48438ff304fe687704d93886397349d1bed136de97aeae464caba10e8ffac55a04b215b86b3bc8897f33e0a5aa1045a9d8b2f251ae61b2a3ad3e450
+  languageName: node
+  linkType: hard
+
+"nunjucks@npm:^3.2.4":
+  version: 3.2.4
+  resolution: "nunjucks@npm:3.2.4"
+  dependencies:
+    a-sync-waterfall: "npm:^1.0.0"
+    asap: "npm:^2.0.3"
+    commander: "npm:^5.1.0"
+  peerDependencies:
+    chokidar: ^3.3.0
+  peerDependenciesMeta:
+    chokidar:
+      optional: true
+  bin:
+    nunjucks-precompile: bin/precompile
+  checksum: 10/8decb8bb762501aa1a44366acff50ab9d4ff9e57034455e62056b4ac117da40140e1f34f2270c38884f1a5b84b7d97c4afcb2e8c789ddd09f4dcfe71ce7b56bf
   languageName: node
   linkType: hard
 
@@ -4319,13 +4326,6 @@ __metadata:
   version: 0.2.0
   resolution: "real-require@npm:0.2.0"
   checksum: 10/ddf44ee76301c774e9c9f2826da8a3c5c9f8fc87310f4a364e803ef003aa1a43c378b4323051ced212097fff1af459070f4499338b36a7469df1d4f7e8c0ba4c
-  languageName: node
-  linkType: hard
-
-"regenerator-runtime@npm:^0.13.11":
-  version: 0.13.11
-  resolution: "regenerator-runtime@npm:0.13.11"
-  checksum: 10/d493e9e118abef5b099c78170834f18540c4933cedf9bfabc32d3af94abfb59a7907bd7950259cbab0a929ebca7db77301e8024e5121e6482a82f78283dfd20c
   languageName: node
   linkType: hard
 
@@ -5079,20 +5079,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"twig@npm:^1.17.1":
-  version: 1.17.1
-  resolution: "twig@npm:1.17.1"
-  dependencies:
-    "@babel/runtime": "npm:^7.8.4"
-    locutus: "npm:^2.0.11"
-    minimatch: "npm:3.0.x"
-    walk: "npm:2.3.x"
-  bin:
-    twigjs: bin/twigjs
-  checksum: 10/5910c05e481fb90c0c2207754a5510ed0171d65aa628998366d54c802f7eeff37a15b86b53cb2fd706cb448414e63d6a7dbfd1cbdd78ecbaad3becb0e8d2175c
-  languageName: node
-  linkType: hard
-
 "type-check@npm:^0.4.0, type-check@npm:~0.4.0":
   version: 0.4.0
   resolution: "type-check@npm:0.4.0"
@@ -5202,15 +5188,6 @@ __metadata:
   bin:
     uuid: dist/bin/uuid
   checksum: 10/9a5f7aa1d6f56dd1e8d5f2478f855f25c645e64e26e347a98e98d95781d5ed20062d6cca2eecb58ba7c84bc3910be95c0451ef4161906abaab44f9cb68ffbdd1
-  languageName: node
-  linkType: hard
-
-"walk@npm:2.3.x":
-  version: 2.3.15
-  resolution: "walk@npm:2.3.15"
-  dependencies:
-    foreachasync: "npm:^3.0.0"
-  checksum: 10/79dcd1749e2d78bacabb745cb2239fc98e64abc58bcb024a238cdf9158343a7b725dfba1a561fc6193e903829ff74f2d8212d691eb540fd1a5e23a7cf8552b86
   languageName: node
   linkType: hard
 
@@ -5575,11 +5552,11 @@ __metadata:
     klaw-sync: "npm:^7.0.0"
     material-symbols: "npm:^0.31.4"
     mocha: "npm:^11.5.0"
+    nunjucks: "npm:^3.2.4"
     sass: "npm:1.89.0"
     socket.io-client: "npm:^4.8.1"
     stylelint: "npm:^16.20.0"
     stylelint-config-recommended: "npm:^16.0.0"
-    twig: "npm:^1.17.1"
     web-ext: "npm:^8.7.1"
     web-ext-types: "npm:^3.2.1"
   languageName: unknown
