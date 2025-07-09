@@ -12,6 +12,7 @@ import {errorToString} from "../utils/errorToString.js";
  * @property {number} index
  * @property {string} name
  * @property {string} fileName
+ * @property { {baseId: string, ext: string} } [splitFilename]
  * @property {boolean} enabled
  * @property {string[]} tags
  * @property {boolean} [allFrames]
@@ -674,6 +675,7 @@ export async function updateStyles() {
 	 */
 	const newUserScripts = [];
 	for (let [index, userscript] of userscripts.entries()) {
+		const result = /^(?<baseId>.*)\.user\.(?<ext>\w+)$/.exec(userscript.fileName);
 		if (userscript.ext === 'css') {
 			newUserStyles.push({
 				url: {
@@ -685,6 +687,7 @@ export async function updateStyles() {
 				index,
 				name: userscript.name,
 				fileName: userscript.fileName,
+				splitFilename: result?.groups,
 				enabled: !userscript.meta.disabled,
 				tags: userscript.tags,
 				css: userscript.content,
@@ -699,6 +702,7 @@ export async function updateStyles() {
 				index,
 				name: userscript.name,
 				fileName: userscript.fileName,
+				splitFilename: result?.groups,
 				enabled: userscript.meta['run-at'] !== 'manual' && !userscript.meta.disabled,
 				icon: userscript.meta.icon,
 				tags: userscript.tags,

@@ -708,6 +708,7 @@ function userScriptApiLoader(context, dateUtils) {
  * @property {number} index
  * @property {string} name
  * @property {string} fileName
+ * @property { {baseId: string, ext: string} } [splitFilename]
  * @property {boolean} enabled
  * @property {string} [icon]
  * @property {string[]} tags
