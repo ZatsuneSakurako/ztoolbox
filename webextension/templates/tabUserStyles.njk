@@ -45,6 +45,8 @@
 			</span>
 		{%- endif -%}
 
+		{% if item.data.isCss %}<img class="icon" src="/assets/img/Official_CSS_Logo.svg" alt="css" loading="lazy" />{% endif %}
+		{% if item.data.isScript %}<img class="icon" src="/assets/img/JavaScript-logo.png" alt="js" loading="lazy" />{% endif %}
 		{{- item.title -}}
 	</{{ titleTag }}>
 
