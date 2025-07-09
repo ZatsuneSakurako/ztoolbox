@@ -84,6 +84,12 @@ label[for] {
 .float-left {
  float: left;
 }
+.icon {
+	font-size: 1em;
+	height: 1em;
+	margin-right: .2em;
+	width: 1em;
+}
 .ellipse {
 	/*noinspection CssUnresolvedCustomProperty*/
 	-webkit-line-clamp: var(--ellipse-clamp, 2);
@@ -177,11 +183,8 @@ section .buttonItem .data-list-item button {
 	word-break: break-all;
 }
 section .buttonItem .data-list-item button .icon {
-	font-size: 1em;
-	height: 1em;
 	margin-right: .2em;
 	text-align: center;
-	width: 1em;
 }
 section .buttonItem .data-list-item button.icon-only {
 	padding: 0 4px;
