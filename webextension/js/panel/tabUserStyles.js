@@ -258,7 +258,10 @@ function debounceWithArgumentPreserving(func, wait) {
 	return function(...args) {
 		clearTimeout(timeout);
 		argsCalled.push(args);
-		timeout = setTimeout(() => func.apply(this, argsCalled), wait);
+		timeout = setTimeout(() => {
+			const newArgs = argsCalled.splice(0, argsCalled.length);
+			func.apply(this, newArgs);
+		}, wait);
 	};
 }
 
@@ -286,7 +289,7 @@ const onUserScriptUpdate = debounceWithArgumentPreserving(async function onUserS
 			]
 		}));
 	}
-}, 500);
+}, 100);
 
 port.onMessage.addListener(async function onMessage(message) {
 	if (!message || typeof message !== 'object') throw new Error('MESSAGE_SHOULD_BE_AN_OBJECT');
