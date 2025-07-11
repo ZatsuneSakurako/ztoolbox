@@ -247,6 +247,47 @@ export async function updateData(activeTab) {
 	appendTo($tabUserStyles, await nunjuckRender("tabUserStyles", renderData));
 }
 
+/**
+ *
+ * @param {(function(any[]): void)} func
+ * @param {number} wait
+ * @return {(function(any[][]): void)}
+ */
+function debounceWithArgumentPreserving(func, wait) {
+	let timeout, argsCalled = [];
+	return function(...args) {
+		clearTimeout(timeout);
+		argsCalled.push(args);
+		timeout = setTimeout(() => func.apply(this, argsCalled), wait);
+	};
+}
+
+const onUserScriptUpdate = debounceWithArgumentPreserving(async function onUserScriptUpdate(...args) {
+	const tabData = await getTabUserStyles(currentTab),
+		userScriptIds = new Set();
+	for (let [userScriptId] of args) {
+		userScriptIds.add(userScriptId);
+		tabData.executedScripts.add(userScriptId);
+	}
+
+	for (let userScriptId of userScriptIds) {
+		const targetUserScript = tabData.userScripts.find(userscript => {
+			return userscript.fileName === userScriptId
+		});
+
+		if (!targetUserScript) {
+			throw new Error(`[UserScript] ${userScriptId} not found`);
+		}
+
+		const $target = document.querySelector(`[id=${JSON.stringify(`userscript-${targetUserScript.fileName}`)}]`);
+		replaceWith($target, await nunjuckRender("tabUserStyles", {
+			items: [
+				userScriptToRenderData(targetUserScript, tabData),
+			]
+		}));
+	}
+}, 500);
+
 port.onMessage.addListener(async function onMessage(message) {
 	if (!message || typeof message !== 'object') throw new Error('MESSAGE_SHOULD_BE_AN_OBJECT');
 
@@ -256,22 +297,7 @@ port.onMessage.addListener(async function onMessage(message) {
 	if (!currentTab || data.tabId !== currentTab.id) return;
 
 	console.log(`[UserScript] Updating ${data.userScriptId} with reason : ${data.reason}`);
-	const tabData = await getTabUserStyles(currentTab);
-	const targetUserScript = tabData.userScripts.find(userscript => {
-		return userscript.fileName === data.userScriptId
-	});
-	tabData.executedScripts.add(data.userScriptId);
-
-	if (!targetUserScript) {
-		throw new Error(`[UserScript] ${data.userScriptId} not found`);
-	}
-
-	const $target = document.querySelector(`[id=${JSON.stringify(`userscript-${targetUserScript.fileName}`)}]`);
-	replaceWith($target, await nunjuckRender("tabUserStyles", {
-		items: [
-			userScriptToRenderData(targetUserScript, tabData),
-		]
-	}));
+	onUserScriptUpdate(data.userScriptId);
 });
 
 document.addEventListener('click', function (ev) {
