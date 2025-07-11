@@ -126,7 +126,7 @@ section .buttonItem {
 	display: grid;
 	font-size: 14px;
 
-	gap: 0 8px;
+	gap: 2px 8px;
 	grid-template-columns: 32px 1fr;
 	grid-auto-rows: minmax(calc(37px / 2), auto);
 	grid-template-areas:
@@ -173,12 +173,13 @@ section .buttonItem .data-list-item:has(button.icon-only) {
 	display: inline-block;
 }
 section .buttonItem .data-list-item button {
+	align-items: center;
 	cursor: pointer;
+	display: flex;
 	font-size: 12px;
+	justify-content: flex-start;
 	margin: 0;
-	padding-bottom: 4px;
-	padding-left: .8em;
-	padding-top: 4px;
+	padding: 4px 0;
 	text-align: left;
 	word-break: break-all;
 }
