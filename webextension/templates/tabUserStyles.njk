@@ -3,13 +3,7 @@
 {%- set type = 'userstyle' if item.data.isCss else 'userscript' -%}
 {%- set isExecuted = item.data.isScriptExecuted | default(null) -%}
 
-{%- set cursorClass = ' cursor' -%}
 {%- set isRunManual = item.data.isScript and item.data.runAt == 'manual'  -%}
-{%- if isRunManual and isExecuted === true -%}
-	{#- remove class if manual script already executed -#}
-	{%- set cursorClass = '' -%}
-{%- endif -%}
-
 
 {% set emptyMenuCommand = true %}
 {%- for menuItem in item.data.menuCommands  -%}
@@ -19,7 +13,7 @@
 {%- endfor -%}
 
 
-<div id="{{ type }}-{{ item.data.id }}" class="buttonItem{{ cursorClass }} {{ type }}{% if isExecuted === true %} is-executed{% endif %}{% if emptyMenuCommand %} no-data{% endif %}"{%- if isRunManual %} data-manual-target="{{ item.data.fileName }}"{% endif -%}>
+<div id="{{ type }}-{{ item.data.id }}" class="buttonItem {{ type }}{% if isExecuted === true %} is-executed{% endif %}{% if emptyMenuCommand %} no-data{% endif %}"{%- if isRunManual %} data-manual-target="{{ item.data.fileName }}"{% endif -%}>
 
 	{%- set titleTag = 'label' -%}
 	{%- if not item.data -%}
