@@ -1,4 +1,4 @@
-# WIP
+# 3.0.0
 * i : Minimum version Firefox 141
 * i : Simplify context menu management
 * i : Simplify preference management
