@@ -41,12 +41,15 @@
 
 		{% if item.data.isCss %}<img class="icon" src="/assets/img/Official_CSS_Logo.svg" alt="css" loading="lazy" />{% endif %}
 		{% if item.data.isScript %}<img class="icon" src="/assets/img/JavaScript-logo.png" alt="js" loading="lazy" />{% endif %}
-		{{- item.title -}}
+
+		{%- if item.title -%}
+			{{- item.title -}}
+		{%- elseif not item.data -%}
+			Aucun style
+		{%- endif -%}
 	</{{ titleTag }}>
 
-	{%- if not item.data -%}
-		<div class="data">Aucun style</div>
-	{%- elseif not emptyMenuCommand %}
+	{%- if not emptyMenuCommand %}
 		<div class="data">
 			{%- if item.data.isScriptExecuted == true -%}
 				<ul class="data-list">
