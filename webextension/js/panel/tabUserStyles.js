@@ -189,16 +189,19 @@ export async function updateData(activeTab) {
 	}
 
 	const tabData = await dataPromise;
-	if (!tabData.userStyles.length && tabData.userScripts.length) {
+	if (!tabData.userStyles.length && !tabData.userScripts.length) {
 		appendTo($tabUserStyles, await nunjuckRender("tabUserStyles", {
 			items: [
 				{
 					title: activeTab.title,
 					data: false,
-				}
+				},
+				await tabMover.update()
 			],
 		}));
+		return;
 	}
+
 	/**
 	 *
 	 * @type {(UserStyle|UserScript)[]}
