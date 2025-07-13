@@ -11,13 +11,10 @@
 	},
 	"devDependencies": {
 		"@types/chrome": "^0.0.323",
-		"@types/fs-extra": "^11.0.4",
 		"@types/socket.io-client": "^3.0.0",
-		"@types/twig": "^1.12.16",
 		"chai": "^5.2.0",
 		"chalk": "^5.4.1",
 		"dotenv": "^16.5.0",
-		"fs-extra": "^11.3.0",
 		"mocha": "^11.5.0",
 		"sass": "1.89.0",
 		"stylelint": "^16.20.0",
@@ -33,7 +30,7 @@
 		"update": "npm run postinstall"
 	},
 	"engines": {
-		"node": ">16.0.0"
+		"node": ">=22.0.0"
 	},
 	"webExt": {
 		"ignoreFiles": []

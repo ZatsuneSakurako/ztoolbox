@@ -551,29 +551,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/fs-extra@npm:^11.0.4":
-  version: 11.0.4
-  resolution: "@types/fs-extra@npm:11.0.4"
-  dependencies:
-    "@types/jsonfile": "npm:*"
-    "@types/node": "npm:*"
-  checksum: 10/acc4c1eb0cde7b1f23f3fe6eb080a14832d8fa9dc1761aa444c5e2f0f6b6fa657ed46ebae32fb580a6700fc921b6165ce8ac3e3ba030c3dd15f10ad4dd4cae98
-  languageName: node
-  linkType: hard
-
 "@types/har-format@npm:*":
   version: 1.2.4
   resolution: "@types/har-format@npm:1.2.4"
   checksum: 10/92f0c898b6ebbee616064a3f749704d5f76c09c024101de1d64121992c048cfc2a770e8352a9138bcdda1626c35469ace7f1d1d6cda139ce47dcba8dc2217dc9
-  languageName: node
-  linkType: hard
-
-"@types/jsonfile@npm:*":
-  version: 6.1.1
-  resolution: "@types/jsonfile@npm:6.1.1"
-  dependencies:
-    "@types/node": "npm:*"
-  checksum: 10/0f8fe0a9221a00e8413cffba723dfe16553868724b830237256fb0052ecd5cac96498189d1235a001cfa815f352008261c9ceb373f0aa58227f891e0c7a12c4d
   languageName: node
   linkType: hard
 
@@ -597,13 +578,6 @@ __metadata:
   dependencies:
     socket.io-client: "npm:*"
   checksum: 10/6eef7529afc1d732fb4091864aa6396a2f676ad25eda0035dd1f2c228cbcaf8520b15236ee0f2c714e061307eeab2b6c8edad637bc83a317c326ae70729d88b0
-  languageName: node
-  linkType: hard
-
-"@types/twig@npm:^1.12.16":
-  version: 1.12.16
-  resolution: "@types/twig@npm:1.12.16"
-  checksum: 10/97d674f5dcd4b74da7425857ce11b9ebe9cb8393fcee3524340c4ec65416d26c891caeda61c857941f8bfb9150e634d7bc34705e1fadade520aac52b4b85ae38
   languageName: node
   linkType: hard
 
@@ -2339,17 +2313,6 @@ __metadata:
     jsonfile: "npm:^6.0.1"
     universalify: "npm:^2.0.0"
   checksum: 10/0579bf6726a4cd054d4aa308f10b483f52478bb16284f32cf60b4ce0542063d551fca1a08a2af365e35db21a3fa5a06cf2a6ed614004b4368982bc754cb816b3
-  languageName: node
-  linkType: hard
-
-"fs-extra@npm:^11.3.0":
-  version: 11.3.0
-  resolution: "fs-extra@npm:11.3.0"
-  dependencies:
-    graceful-fs: "npm:^4.2.0"
-    jsonfile: "npm:^6.0.1"
-    universalify: "npm:^2.0.0"
-  checksum: 10/c9fe7b23dded1efe7bbae528d685c3206477e20cc60e9aaceb3f024f9b9ff2ee1f62413c161cb88546cc564009ab516dec99e9781ba782d869bb37e4fe04a97f
   languageName: node
   linkType: hard
 
@@ -5422,13 +5385,10 @@ __metadata:
   resolution: "ztoolbox@workspace:."
   dependencies:
     "@types/chrome": "npm:^0.0.323"
-    "@types/fs-extra": "npm:^11.0.4"
     "@types/socket.io-client": "npm:^3.0.0"
-    "@types/twig": "npm:^1.12.16"
     chai: "npm:^5.2.0"
     chalk: "npm:^5.4.1"
     dotenv: "npm:^16.5.0"
-    fs-extra: "npm:^11.3.0"
     material-symbols: "npm:^0.31.4"
     mocha: "npm:^11.5.0"
     nunjucks: "npm:^3.2.4"

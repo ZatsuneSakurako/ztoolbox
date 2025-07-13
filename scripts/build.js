@@ -1,6 +1,6 @@
 import nunjucks from 'nunjucks';
 import path from "node:path";
-import fs from "fs-extra";
+import * as fs from "node:fs";
 
 
 const nunjucksEnv = new nunjucks.Environment([]);

@@ -1,12 +1,10 @@
-import fs from "fs-extra";
-import path from "path";
+import * as fs from "node:fs";
+import * as path from "node:path";
 import sass from "sass";
 
 import {cp} from "./common/file-operations.js";
 import {info, error} from "./common/custom-console.js";
 import {projectRootDir} from "./projectRootDir.js";
-import {execSync} from "./common/custom-child-process.js";
-import * as child_process from "child_process";
 
 const fontPath = path.join(projectRootDir, './webextension/assets/fonts/'),
 	jsLib = path.join(projectRootDir, './webextension/lib/')
@@ -23,7 +21,7 @@ function _cp(src, dest) {
 }
 
 
-const exist_jsLib = fs.pathExistsSync(jsLib);
+const exist_jsLib = fs.existsSync(jsLib);
 if (!exist_jsLib) {
 	error("JS lib folder not found!");
 	process.exit(1);
