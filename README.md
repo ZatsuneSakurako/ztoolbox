@@ -5,6 +5,8 @@ Web Extension to test various things.
 
 The icon of the web extension is made from https://pixabay.com/photo-1674891/ (in [CC0 Public Domain](https://pixabay.com/fr/service/terms/#usage)).
 
+Due to Firefox choices (regarding UserScript api for exemple), the 2.7.0 will be the last signed release for now.
+
 Sources:
 - socket.io from https://github.com/socketio/socket.io (License MIT).
 - Nunjucks from https://github.com/mozilla/nunjucks (license BSD 2-Clause "Simplified" License).
