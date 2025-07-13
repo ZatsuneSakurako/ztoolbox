@@ -1,37 +1,22 @@
 'use strict';
 
-import {default as env} from './env.js';
-
-import {i18ex} from './translation-api.js';
-
+import './panelPort.js';
 import './classes/chrome-native.js';
-import {deletePreferences, getPreferences, getPreference, savePreference} from './classes/chrome-preferences.js';
-import {sendNotification} from "./classes/chrome-notification.js";
-
-import {ChromeUpdateNotification} from './classes/chromeUpdateNotification.js';
+import {deletePreferences, getPreferences} from './classes/chrome-preferences.js';
 
 import './variousFeatures/contentStyles.js';
 import './variousFeatures/contentScripts.js';
-import './devtools/devtools-background.js';
 
-import {isFirefox} from "./utils/browserDetect.js";
 import "./newTab/newTab-background.js";
-import "./devtools/devtools-background.js";
-if (isFirefox) {
-	import('./variousFeatures/copyTextLink.js')
-		.catch(console.error)
-	;
-	import('./variousFeatures/iqdb.js')
-		.catch(console.error)
-	;
-} else {
+import {chromeNativeConnectedStorageKey, chromeNativeSettingsStorageKey} from "./classes/chrome-native-settings.js";
+import {newTabCapturesStorage, newTabImagesStorage} from "./newTab/newTab-settings.js";
+
+if ('offscreen' in chrome) {
 	chrome.offscreen.createDocument({
 		url: chrome.runtime.getURL("offscreen.html"),
 		reasons: [ "WORKERS" ],
 		justification: "Service worker keepalive workaround"
-	})
-		.catch(console.error)
-	;
+	}).catch(console.error);
 }
 
 
@@ -76,82 +61,6 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
 
 
 
-const CHECK_UPDATES_INTERVAL_NAME = 'checkUpdatesInterval',
-	CHECK_UPDATES_INTERVAL_DELAY = 10
-;
-async function onStart_checkUpdates() {
-	await i18ex.loadingPromise;
-
-	if (env !== 'local') {
-		// Ignore when not in "local" env
-
-		await chrome.alarms.clear(CHECK_UPDATES_INTERVAL_NAME)
-			.catch(console.error)
-		;
-		return;
-	}
-
-	let existingAlarm = null;
-	try {
-		existingAlarm = await chrome.alarms.get(CHECK_UPDATES_INTERVAL_NAME);
-	} catch (e) {
-		console.error(e);
-	}
-
-	if (!existingAlarm || existingAlarm.periodInMinutes !== CHECK_UPDATES_INTERVAL_DELAY) {
-		await chrome.alarms.clear(CHECK_UPDATES_INTERVAL_NAME)
-			.catch(console.error)
-		;
-		chrome.alarms.create(CHECK_UPDATES_INTERVAL_NAME, {
-			'periodInMinutes': CHECK_UPDATES_INTERVAL_DELAY
-		});
-	}
-}
-
-async function onCheckUpdatesInterval() {
-	if (env !== 'local' || isFirefox) {
-		// Ignore when not in "local" env
-		return;
-	}
-
-	const lastCheck = (await chrome.storage.local.get(['_checkUpdate']))?._checkUpdate ?? {};
-	const lastCheckDate = new Date(lastCheck.checkedAt),
-		durationMinutes = (new Date() - lastCheckDate) / 60000 // date2 - date1 make milliseconds
-	;
-	if (!isNaN(durationMinutes) && durationMinutes < 6 * 60) {
-		return;
-	}
-
-	const hasUpdate = await ChromeUpdateNotification.checkHasUpdate();
-	await chrome.storage.local.set({
-		_checkUpdate: {
-			hasUpdate,
-			checkedAt: new Date()
-		}
-	});
-	if (hasUpdate === false) {
-		return;
-	}
-
-	sendNotification({
-		'id': 'updateNotification',
-		"title": i18ex._('updateSimple'),
-		"message": i18ex._('updateDetail', {
-			name: chrome.runtime.getManifest().name
-		})
-	})
-		.catch(console.error)
-	;
-}
-
-chrome.alarms.onAlarm.addListener(function (alarm) {
-	if (alarm.name === CHECK_UPDATES_INTERVAL_NAME) {
-		onCheckUpdatesInterval()
-			.catch(console.error)
-		;
-	}
-});
-
 chrome.runtime.onInstalled.addListener(function (installReason) {
 	let version = chrome.runtime.getManifest().version;
 	if (version === installReason.previousVersion) {
@@ -165,56 +74,36 @@ chrome.runtime.onInstalled.addListener(function (installReason) {
 
 
 async function onStart_deleteOldPreferences() {
-	/**
-	 *
-	 * @type {Set<string>}
-	 */
-	const preferences = new Set(['serviceWorkerWhitelist', 'freshRss_showInPanel', 'panel_theme', 'launchpadAddLink', 'custom_lstu_server', '_notificationGloballyDisabled', 'showExperimented', 'showAdvanced', 'check_enabled', 'panel_height', 'panel_width', '_backgroundPage_theme_cache', '_updated', '_websitesDataStore', '_notification', 'mode', '_isVivaldi']);
+	const localKeyToKeep = new Set([
+		'chrome_native_token',
+		'_checkUpdate',
+		'theme',
+		'background_color',
+		chromeNativeSettingsStorageKey,
+		chromeNativeConnectedStorageKey,
+		newTabCapturesStorage,
+		newTabImagesStorage,
+	]);
 
-	await i18ex.loadingPromise;
+	const currentLocalKeys = new Set(Object.keys(await chrome.storage.local.get()));
+	for (let key of currentLocalKeys) {
+		if (localKeyToKeep.has(key)) continue;
 
-	for (let prefId of preferences) {
-		let hasPreference = false;
-		try {
-			const val = await chrome.storage.local.get(prefId);
-			hasPreference = prefId in val;
-
-			if (!!hasPreference && prefId === 'panel_theme') {
-				await savePreference(prefId, val);
-			}
-		} catch (e) {
-			console.error(e);
-		}
-		if (!!hasPreference) {
-			console.warn(`Deleting old preference "${prefId}"`);
-			await deletePreferences(prefId);
-		}
+		console.warn(`Deleting old preference "${key}"`);
+		await deletePreferences(key);
 	}
 
-	const oldAlarms = new Set(['REFRESH_DATA', 'hourlyAlarm']),
-		alarms = await chrome.alarms.getAll()
-	;
-	for (let alarm of alarms) {
-		if (oldAlarms.has(alarm.name)) {
-			console.warn(`Deleting old alarm "${alarm.name}"`)
-			await chrome.alarms.clear(alarm.name)
-				.catch(console.error)
-			;
-		}
+	if ('alarms' in chrome) {
+		await chrome.alarms.clearAll()
+			.catch(console.error);
 	}
 }
 chrome.runtime.onStartup.addListener(function () {
-	onStart_checkUpdates()
-		.catch(console.error)
-	;
 	onStart_deleteOldPreferences()
 		.catch(console.error)
 	;
 });
 chrome.runtime.onInstalled.addListener(function () {
-	onStart_checkUpdates()
-		.catch(console.error)
-	;
 	onStart_deleteOldPreferences()
 		.catch(console.error)
 	;

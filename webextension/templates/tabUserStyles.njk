@@ -1,0 +1,84 @@
+{%- for item in items -%}
+
+{%- set type = 'userstyle' if item.data.isCss else 'userscript' -%}
+{%- set isExecuted = item.data.isScriptExecuted | default(null) -%}
+
+{%- set isRunManual = item.data.isScript and item.data.runAt == 'manual'  -%}
+
+{% set emptyMenuCommand = true %}
+{%- for menuItem in item.data.menuCommands  -%}
+	{%- if menuItem.fileName === item.data.fileName -%}
+		{% set emptyMenuCommand = false %}
+	{%- endif -%}
+{%- endfor -%}
+
+
+<div id="{{ type }}-{{ item.data.id }}" class="buttonItem {{ type }}{% if isExecuted === true %} is-executed{% endif %}{% if emptyMenuCommand %} no-data{% endif %}"{%- if isRunManual %} data-manual-target="{{ item.data.fileName }}"{% endif -%}>
+
+	{%- set titleTag = 'label' -%}
+	{%- if not item.data -%}
+		<span class="icon material-symbols-outlined">tab</span>
+	{%- elseif isRunManual -%}
+		{%- set titleTag = 'div' -%}
+		{%- set isHttps = r/^https?:\/\/.*/ -%}
+		{%- if item.data.icon and isHttps.test(item.data.icon) -%}
+			<img class="icon" src="{{ item.data.icon }}" alt="">
+		{%- elseif item.data.icon -%}
+			<span class="icon material-symbols-outlined">{{ item.data.icon }}</span>
+		{%- else -%}
+			<span class="icon material-symbols-outlined">rocket_launch</span>
+		{%- endif -%}
+	{%- else -%}
+		<input class="icon" type="checkbox" name="userStyle-{{ item.data.id }}" value="{{ item.data.fileName }}" id="{{ item.data.id }}"{% if item.data.enabled %} checked{% endif %} />
+	{%- endif -%}
+	<{{ titleTag }} class="title ellipse" for="{{ item.data.id }}"
+			{%- if item.data.tags | length > 0 %} title="Tag{%- if item.data.tags | length > 1 -%}s{%- endif %} : {{ item.data.tags.join(', ') }}"{% endif -%}>
+		{%- if item.data.isScript and not isRunManual and isExecuted !== true-%}
+			<span class="float-left material-symbols-outlined">
+				{%- if item.data.enabled -%}warning{%- endif -%}
+			</span>
+		{%- endif -%}
+
+		{% if item.data.isCss %}<img class="icon" src="/assets/img/Official_CSS_Logo.svg" alt="css" loading="lazy" />{% endif %}
+		{% if item.data.isScript %}<img class="icon" src="/assets/img/JavaScript-logo.png" alt="js" loading="lazy" />{% endif %}
+		{{- item.title -}}
+	</{{ titleTag }}>
+
+	{%- if not item.data -%}
+		<div class="data">Aucun style</div>
+	{%- elseif not emptyMenuCommand %}
+		<div class="data">
+			{%- if item.data.isScriptExecuted == true -%}
+				<ul class="data-list">
+				{%- for menuItem in item.data.menuCommands  -%}
+				{%- if menuItem.fileName === item.data.fileName -%}
+					<li class="data-list-item">
+						<button class="ellipse{%- if menuItem.iconOnly %} icon-only{% endif -%}"
+								data-target="{{ item.data.fileName }}"
+								data-userscript-menu-command="{{ menuItem.id }}"
+								{%- if menuItem.title %} title="{{ menuItem.title }}"
+								{%- else %} title="{{ menuItem.name }}"{%- endif -%}
+								{%- if menuItem.accessKey %} accesskey="{{ menuItem.accessKey }}"{%- endif -%}
+								{%- if menuItem.autoClose | default(true) %} data-userscript-auto-close=""{%- endif -%}>
+							{%- if menuItem.icon and menuItem.icon.startsWith('https://') -%}
+							<img class="icon" src="{{ menuItem.icon }}" alt="" loading="lazy">
+							{%- else -%}
+							<span class="icon material-symbols-outlined">
+								{%- if menuItem.icon -%}{{ menuItem.icon }}{%- else -%}manufacturing{%- endif -%}
+							</span>
+							{%- endif -%}
+							{%- if not menuItem.iconOnly -%}{{- menuItem.name -}}{%- endif -%}
+						</button>
+					</li>
+				{%- endif -%}
+				{%- endfor -%}
+				</ul>
+			{%- elseif isRunManual -%}
+				<div>&nbsp;</div>
+			{%- else -%}
+				<label class="d-block" for="{{ item.data.id }}">&nbsp;</label>
+			{%- endif -%}
+		</div>
+	{%- endif -%}
+</div>
+{%- endfor -%}

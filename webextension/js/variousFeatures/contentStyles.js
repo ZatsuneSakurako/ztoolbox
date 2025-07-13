@@ -1,21 +1,22 @@
-import {i18ex} from "../translation-api.js";
-import {ContextMenusController} from "../classes/contextMenusController.js";
 import {getUserscripts} from "../classes/chrome-native.js";
 import {_tabStylesStoreKey, _userStylesStateStoreKey, _userStylesStoreKey, webRequestFilter,} from "../constants.js";
 import {contentScripts} from "./contentScripts.js";
 import {updateBadge} from "./httpStatus.js";
+import {errorToString} from "../utils/errorToString.js";
 
 
 /**
  *
  * @typedef {object} UserStyle
  * @property { {domain: string|string[], regex?: string, startWith?: string, endWith?: string} } url
+ * @property {number} index
  * @property {string} name
  * @property {string} fileName
+ * @property { {baseId: string, ext: string} } [splitFilename]
  * @property {boolean} enabled
  * @property {string[]} tags
  * @property {boolean} [allFrames]
- * @property {boolean} [asUserStyle]
+ * @property {'user'|'author'|'adoptedCss'} [injectAs]
  * @property {string} css
  */
 /**
@@ -24,7 +25,8 @@ import {updateBadge} from "./httpStatus.js";
  * @property {string[]} executedScripts
  * @property {string[]} matchedStyles
  * @property {string[]} injectedStyles
- * @property {RegisterMenuCommand[]} menus
+ * @property {string[]} injectedFromTabStyles
+ * @property {Dict<RegisterMenuCommand>} menus
  * @property {Dict<any>} customData
  *
  */
@@ -213,9 +215,10 @@ class ContentStyles {
 	get tabNewData() {
 		return {
 			injectedStyles: [],
+			injectedFromTabStyles: [],
 			executedScripts: [],
 			matchedStyles: [],
-			menus: [],
+			menus: {},
 			customData: {},
 		}
 	}
@@ -236,7 +239,7 @@ export let contentStyles = ContentStyles.load();
 function userStyleInjectOpts(userStyle, tab) {
 	return {
 		css: userStyle.css,
-		origin: userStyle.asUserStyle ? 'USER' : 'AUTHOR',
+		origin: (userStyle.injectAs ?? '').toLowerCase() === 'user' ? 'USER' : 'AUTHOR',
 		target: {
 			tabId: tab.id,
 			allFrames: userStyle.allFrames ?? false,
@@ -296,11 +299,25 @@ export async function onTabUrl(tab, details, forceRemove) {
 	tabData[tab.id.toString(36)] = currentTabData;
 
 	/**
+	 *
+	 * @type { { fileName: string, css?: string }[] }
+	 */
+	const injectFromTab = [];
+
+	/**
 	 * Clear old matched styles
 	 * @type {string[]}
 	 */
 	currentTabData.matchedStyles = [];
 	for (const matchedStyle of matchedStyles) {
+		if (matchedStyle.injectAs !== undefined && !['user', 'author', 'adoptedCss'].includes(matchedStyle.injectAs)) {
+			console.error('Unsupported "injectAs" from ' + matchedStyle.fileName);
+			continue;
+		}
+		if (matchedStyle.injectAs === 'adoptedCss' && matchedStyle.allFrames) {
+			console.error('Unsupported allFrames with adoptedCss from ' + matchedStyle.fileName);
+			continue;
+		}
 		const userStyleOpts = userStyleInjectOpts(matchedStyle, tab);
 
 		let doMatch = true;
@@ -325,19 +342,33 @@ export async function onTabUrl(tab, details, forceRemove) {
 		if (forceRemove || !doMatch || !enabled) {
 			const cssIndex = currentTabData.injectedStyles.indexOf(matchedStyle.fileName);
 			if (cssIndex >= 0) {
-				chrome.scripting.removeCSS(userStyleOpts)
-					.catch(console.error)
-				;
+				if (matchedStyle.injectAs === 'adoptedCss') {
+					injectFromTab.push({
+						fileName: matchedStyle.fileName,
+						css: undefined,
+					});
+				} else {
+					chrome.scripting.removeCSS(userStyleOpts)
+						.catch(console.error);
+				}
 				delete currentTabData.injectedStyles[cssIndex];
 			}
 			continue;
 		}
 
 		neededStyles.add(matchedStyle.fileName);
-		if (!currentTabData.injectedStyles.includes(matchedStyle.fileName)) {
-			chrome.scripting.insertCSS(userStyleOpts)
-				.catch(console.error);
+		if (!currentTabData.injectedStyles.includes(matchedStyle.fileName) || currentTabData.injectedFromTabStyles.includes(matchedStyle.fileName)) {
+			if (matchedStyle.injectAs === 'adoptedCss') {
+				injectFromTab.push({
+					fileName: matchedStyle.fileName,
+					css: matchedStyle.css,
+				});
+			} else {
+				chrome.scripting.insertCSS(userStyleOpts)
+					.catch(console.error);
+			}
 			currentTabData.injectedStyles.push(matchedStyle.fileName);
+			currentTabData.injectedFromTabStyles.push(matchedStyle.fileName);
 		}
 	}
 
@@ -352,13 +383,86 @@ export async function onTabUrl(tab, details, forceRemove) {
 				continue;
 			}
 
-			const userStyleOpts = userStyleInjectOpts(userStyle, tab);
-			chrome.scripting.removeCSS(userStyleOpts)
-				.catch(console.error)
-			;
+			if (userStyle.injectAs === 'adoptedCss') {
+				injectFromTab.push({
+					fileName: userStyle.fileName,
+					css: undefined,
+				});
+			} else {
+				const userStyleOpts = userStyleInjectOpts(userStyle, tab);
+				chrome.scripting.removeCSS(userStyleOpts)
+						.catch(console.error)
+				;
+			}
 			delete currentTabData.injectedStyles[i];
 		}
 	}
+
+
+	const action = async () => {
+		let result = await chrome.tabs.sendMessage(tab.id, {
+			id: 'updateInjectedStyles',
+			data: injectFromTab,
+		});
+		let isError = false;
+		if (result === undefined) {
+			console.warn(`[UserScript] Style from tab ${tab.id} : no reply`);
+			return null;
+		} else if (result && typeof result === 'object' && 'isError' in result) {
+			isError = result.isError;
+			result = result.response;
+		}
+		console[isError ? 'error' : 'log'](`[UserScript] Style from tab ${tab.id}`, result);
+		return result;
+	};
+	const wait = (ms) => {
+		return new Promise(resolve => setTimeout(resolve, ms));
+	}
+	if (injectFromTab.length) {
+		let noReply = false;
+		try {
+			// In case script already injected, post message directly
+			let result = null;
+			for (const index of [1,2,3]) { // 3 tries
+				result = await action();
+				if (result !== null) {
+					break;
+				}
+				/**
+				 * wait before next try
+				 */
+				await wait();
+			}
+			if (result === null) {
+				noReply = true;
+			}
+		} catch (e) {
+			if (/Could not establish connection/i.test(e.toString().toLowerCase())) {
+				noReply = true;
+			} else {
+				console.error(e);
+			}
+		}
+		if (noReply) {
+			try {
+				// Inject script and post message
+				const result = await chrome.scripting.executeScript({
+					files: [ '/js/variousFeatures/contentScripts/injectStyles.js' ],
+					injectImmediately: true,
+					target: { tabId: tab.id, allFrames: false },
+				});
+				const receivedResponse = result.some(item => !!item.result);
+				if (receivedResponse) {
+					await action();
+				} else {
+					console.error('[UserScript] Style from tab ' + tab.id, result);
+				}
+			} catch (e) {
+				console.error(e);
+			}
+		}
+	}
+
 
 	currentTabData.injectedStyles = currentTabData.injectedStyles.filter(function(value) {
 		return value !== undefined;
@@ -393,7 +497,7 @@ async function onWebRequestEvent(details) {
 		tabData = tabDatas[details.tabId.toString(36)];
 	if (!tabData || !tabData.customData) return;
 
-	const requestDetails = {
+	const requestDetails = tabData.customData.requestDetails ?? {
 		method: details.method,
 		status: details.statusCode,
 		timeStamp: details.timeStamp,
@@ -401,7 +505,7 @@ async function onWebRequestEvent(details) {
 	if (details.ip !== undefined) {
 		requestDetails.ip = details.ip;
 	}
-	if (details.responseHeaders && details.responseHeaders.length > 0) {
+	if (details.responseHeaders) {
 		requestDetails.responseHeaders = details.responseHeaders.map(header => {
 			return {
 				name: header.name,
@@ -422,7 +526,7 @@ chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
 				if (!tabData || !tabData.customData) return;
 
 				await updateBadge(tab.id, {
-					statusCode: tabData.customData.requestDetails.status,
+					statusCode: tabData.customData.requestDetails?.status,
 				});
 			} catch (e) {
 				console.error(e);
@@ -435,19 +539,18 @@ chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
 
 
 
-async function restartContentMenu() {
-	await chrome.contextMenus.create({
-		id: 'refreshUserscripts',
-		title: i18ex._("refreshUserscripts"),
-		contexts: [ "action" ],
-	});
-}
-ContextMenusController.waitInit.then(restartContentMenu);
-chrome.contextMenus.onClicked.addListener(function (info) {
-	if (info.menuItemId !== 'refreshUserscripts') return;
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+	if (!message || typeof message !== 'object' || sender.id !== chrome.runtime.id) return;
 
-	updateStyles()
-		.catch(console.error);
+	if (message.id === 'refreshUserStyles') {
+		updateStyles()
+			.then(response => {
+				sendResponse({ isError: false, response });
+			})
+			.catch(error => {
+				sendResponse({ isError: true, response: errorToString(error) });
+			});
+	}
 });
 
 /**
@@ -474,9 +577,44 @@ async function updateTabStyles(userStyles, forceRemove=false) {
 }
 
 
+/**
+ *
+ * @param {string} path
+ * @return {string}
+ */
+function normalizeSlashes(path) {
+	return path.split(/[/\\]/).join('/');
+}
+
+/**
+ *
+ * @param {string} path
+ * @return { {basename?: string, dirname: string} }
+ */
+function splitDirnameAndBasename(path) {
+	const parts = path.split('/');
+	const basename = parts.pop();
+	return {
+		basename,
+		dirname: parts.join('/'),
+	};
+}
 
 export async function updateStyles() {
-	const userscripts = await getUserscripts();
+	const userscripts = (await getUserscripts())
+		.map(userscript => {
+			// Make sure to only have / as path separator
+			userscript.fileName = normalizeSlashes(userscript.fileName);
+			const {dirname, basename} = splitDirnameAndBasename(userscript.fileName);
+			userscript.dirname = dirname;
+
+			const newPath = [];
+			if (userscript.dirname) newPath.push(userscript.dirname);
+			newPath.push(userscript.name ?? basename);
+
+			userscript.sortName = newPath.join('/');
+			return userscript;
+		});
 
 	const grouped = new Map();
 	for (const userscript of userscripts) {
@@ -486,6 +624,45 @@ export async function updateStyles() {
 		grouped.set(tag, groupList);
 	}
 	console.debug('[UserScript]', 'updateStyles', Object.fromEntries(grouped.entries()));
+
+
+	/**
+	 * Items not in folder first,
+	 * Then sort by fileName (this contains the path)
+	 */
+	userscripts.sort((a, b) => {
+		const aInFolder = a.fileName.includes('/'),
+			bInFolder = b.fileName.includes('/');
+		if (aInFolder !== bInFolder) return aInFolder ? 1 : -1;
+		return a.sortName.localeCompare(b.sortName);
+	});
+	/**
+	 * Save current sorting position
+	 */
+	userscripts.forEach((userscript, index) => {
+		userscript.tmpIndex = index;
+		return userscript;
+	});
+	/**
+	 * Move item that have an index in meta (meta.index starts with 0)
+	 */
+	userscripts.sort((a, b) => {
+		const aIndex = a.meta.index !== undefined ? parseInt(a.meta.index) : a.tmpIndex,
+			bIndex = b.meta.index !== undefined ? parseInt(b.meta.index) : b.tmpIndex;
+		if (aIndex === bIndex && a.meta.index !== b.meta.index) {
+			if (a.meta.index !== undefined) return -1;
+			if (b.meta.index !== undefined) return -1;
+		}
+		return aIndex - bIndex;
+	});
+	/**
+	 * Remove temporary index
+	 */
+	userscripts.forEach(userscript => {
+		delete userscript.tmpIndex;
+		return userscript;
+	});
+
 
 	/**
 	 *
@@ -497,7 +674,8 @@ export async function updateStyles() {
 	 * @type {UserScript[]}
 	 */
 	const newUserScripts = [];
-	for (let userscript of userscripts) {
+	for (let [index, userscript] of userscripts.entries()) {
+		const result = /^(?<baseId>.*)\.user\.(?<ext>\w+)$/.exec(userscript.fileName);
 		if (userscript.ext === 'css') {
 			newUserStyles.push({
 				url: {
@@ -506,23 +684,26 @@ export async function updateStyles() {
 					endWith: userscript.meta.endWith,
 					regex: userscript.meta.regex,
 				},
+				index,
 				name: userscript.name,
 				fileName: userscript.fileName,
+				splitFilename: result?.groups,
 				enabled: !userscript.meta.disabled,
 				tags: userscript.tags,
 				css: userscript.content,
 				allFrames: userscript.meta.allFrames,
-				asUserStyle: userscript.meta.asUserStyle,
+				injectAs: userscript.meta.injectAs,
 			});
 		} else if (userscript.ext === 'js') {
 			newUserScripts.push({
 				grant: userscript.grant,
 				match: userscript.match,
 				excludeMatches: userscript.excludeMatches,
+				index,
 				name: userscript.name,
 				fileName: userscript.fileName,
-				enabled: !userscript.meta.manual && !userscript.meta.disabled,
-				manual: userscript.meta.manual,
+				splitFilename: result?.groups,
+				enabled: userscript.meta['run-at'] !== 'manual' && !userscript.meta.disabled,
 				icon: userscript.meta.icon,
 				tags: userscript.tags,
 				script: userscript.content,

@@ -4,7 +4,7 @@
 	"short_name": "ZToolBoxDev",
 	"description": "__MSG_extShortDesc__",
 	"author": "Zatsune No Mokou",
-	"version": "2.7.0",
+	"version": "3.0.0",
 	"icons": {
 		"16": "/icon_16.png",
 		"48": "/icon_48.png",
@@ -18,7 +18,6 @@
 	"chrome_url_overrides": {
 		"newtab": "newTab.html"
 	},
-	"devtools_page": "devtools-page.html",
 	"action": {
 		"browser_style": false,
 		"default_icon": {
@@ -29,24 +28,11 @@
 		},
 		"default_popup": "/panel.html"
 	},
-	"content_scripts": [
-		{
-			"matches": [
-				"https://iqdb.org/"
-			],
-			"js": [
-				"/js/contentscripts/iqdb_search.js"
-			],
-			"run_at": "document_start"
-		}
-	],
 	"default_locale": "en",
 	"permissions": [
 		"alarms",
 		"bookmarks",
-		"clipboardWrite",
 		"contextMenus",
-		"devtools",
 		"downloads",
 		"notifications",
 		"offscreen",
@@ -62,25 +48,5 @@
 	"host_permissions": [
 		"<all_urls>"
 	],
-	"web_accessible_resources": [
-		{
-			"resources": [
-				"/lib/dayjs.min.js",
-				"/lib/dayjs-fr.js",
-				"/lib/dayjs-customParseFormat.js"
-			],
-			"matches": [
-				"<all_urls>"
-			]
-		}
-	],
-	"browser_specific_settings": {
-		"gecko": {
-			"id": "ztoolbox_dev@zatsunenomokou.eu",
-			"update_url": "https://github.com/ZatsuneNoMokou/ztoolbox/raw/master/dist/z_toolbox_dev.update.json",
-			"strict_min_version": "140.0"
-		},
-		"gecko_android": {}
-	},
 	"minimum_chrome_version": "134.0"
 }

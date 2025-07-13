@@ -1,13 +1,9 @@
-import {randomId} from "../utils/randomId.js";
-import {getSyncKeys} from "./chrome-preferences.js";
 import {
 	chromeNativeSettingsStorageKey,
 	chromeNativeConnectedStorageKey,
 	getElectronSettings
 } from "./chrome-native-settings.js";
-import {sendNotification} from "./chrome-notification.js";
 import {getCurrentTab} from "../utils/getCurrentTab.js";
-import ipRegex from "../../lib/ip-regex.js";
 import {io} from "../../lib/socket.io.esm.min.js";
 import {isServiceWorker} from "../utils/browserDetect.js";
 import {contentStyles, updateStyles} from "../variousFeatures/contentStyles.js";
@@ -121,10 +117,30 @@ socket.on('ws open', function (err) {
 
 	updateStyles()
 		.catch(console.error);
+
+	getIsUpdateAvailable()
+		.then(isUpdateAvailable => {
+			if (isUpdateAvailable !== null) {
+				chrome.storage.local.set({
+					_checkUpdate: !!isUpdateAvailable
+				})
+					.catch(console.error)
+				;
+			}
+		})
+		.catch(console.error);
 });
 
 socket.on('doRestart', function () {
 	chrome.runtime.restart();
+});
+
+socket.on('updateAvailableUpdate', function (isUpdateAvailable) {
+	chrome.storage.local.set({
+		_checkUpdate: !!isUpdateAvailable
+	})
+		.catch(console.error)
+	;
 });
 
 socket.on('disconnect', function (reason, description) {
@@ -150,46 +166,6 @@ socket.on('ping', function (cb) {
 	});
 });
 
-/**
- *
- * @type {Map<string, (data) => void>}
- */
-const notificationCbMap = new Map();
-socket.on('sendNotification', (opts, cb) => {
-	const _id = randomId();
-	const callback = (data) => {
-		notificationCbMap.delete(_id);
-		socket.off('clearNotifications', _clearNotification);
-		if (timer) {
-			clearTimeout(timer);
-		}
-		if (!!data) {
-			cb({
-				error: false,
-				result: data
-			});
-		}
-	};
-	notificationCbMap.set(_id, callback);
-	handleSendNotification(_id, opts)
-		.catch(err => {
-			console.error(err);
-			callback();
-		})
-	;
-
-	const _clearNotification = () => {
-		clearNotification(_id)
-			.catch(console.error)
-		;
-	};
-
-	let timer = null;
-	if (opts.timeoutType === 'default') {
-		timer = setTimeout(_clearNotification, 2 * 60000); // 2min
-	}
-	socket.on('clearNotifications', _clearNotification);
-});
 
 socket.on('openUrl', (url, cb) => {
 	if (!url) {
@@ -233,15 +209,6 @@ socket.on('onSettingUpdate', function (preference) {
 
 chrome.storage.onChanged.addListener(async (changes, area) => {
 	if (area === 'session' && _tabStylesStoreKey in changes) {
-		sendSocketData()
-			.catch(console.error)
-		;
-		return;
-	}
-
-	if (area !== "local") return;
-
-	if ("notification_support" in changes) {
 		sendSocketData()
 			.catch(console.error)
 		;
@@ -327,10 +294,6 @@ export async function getBrowserName() {
 }
 
 async function sendSocketData() {
-	const values = await chrome.storage.local.get([
-		'notification_support',
-	]);
-
 	let tabData = null;
 	const activeTab = await getCurrentTab()
 		.catch(console.error)
@@ -353,18 +316,21 @@ async function sendSocketData() {
 		}
 
 		/**
-		 * @type {undefined|TabPageServerIdData}
+		 *
+		 * @type {string|undefined}
 		 */
-		let url, domain;
-		try {
-			url = new URL(activeTab.url);
-			domain = url.hostname;
-		} catch (e) {
-			console.error(e);
+		let url = undefined, domain = undefined;
+		if (activeTab.url) {
+			try {
+				url = new URL(activeTab.url);
+				domain = url.hostname;
+			} catch (e) {
+				console.error('[sendSocketData] activeTab url : ' + JSON.stringify(activeTab.url), e);
+			}
 		}
 
 		let ipMore = false;
-		if (url && ipRegex({exact: true}).test(url.hostname)) {
+		if (url && tabData && url.hostname !== tabData.ip) {
 			ipMore = url.hostname;
 			domain = undefined;
 		}
@@ -385,17 +351,19 @@ async function sendSocketData() {
 		 * @type {string|null}
 		 */
 		let favicon = null;
-		try {
-			// Stop if not valid url
-			new URL(activeTab.favIconUrl);
+		if (activeTab.favIconUrl) {
+			try {
+				// Stop if not valid url
+				new URL(activeTab.favIconUrl);
 
-			/**
-			 * @type {Blob}
-			 */
-			const blob = (await (await fetch(activeTab.favIconUrl)).blob());
-			favicon = await reader(blob);
-		} catch (e) {
-			console.error('[sendSocketData] ' + activeTab.favIconUrl, e);
+				/**
+				 * @type {Blob}
+				 */
+				const blob = (await (await fetch(activeTab.favIconUrl)).blob());
+				favicon = await reader(blob);
+			} catch (e) {
+				console.error('[sendSocketData] favIconUrl : ' + JSON.stringify(activeTab.favIconUrl), e);
+			}
 		}
 
 		tabData = {
@@ -411,73 +379,12 @@ async function sendSocketData() {
 	}
 
 	socket.emit('updateSocketData', {
-		notificationSupport: values.notification_support === true,
 		userAgent: navigator.userAgent,
 		browserName: await getBrowserName(),
 		extensionId: chrome.runtime.id,
 		tabData,
 	});
 }
-
-
-
-
-
-async function clearNotification(id) {
-	console.info('clear notification : ' + id)
-	await chrome.notifications.clear('chromeNative-' + id)
-}
-async function handleSendNotification(id, opts) {
-	if (opts.timeoutType) delete opts.timeoutType;
-	await sendNotification({
-		...opts,
-		id: 'chromeNative-' + id
-	}, {
-		onClickAutoClose: false,
-		onButtonClickAutoClose: false
-	});
-}
-chrome.notifications.onClosed.addListener(function (notificationId, byUser) {
-	if (!notificationId.startsWith('chromeNative-')) return;
-
-	chrome.notifications.clear(notificationId);
-	const _id = notificationId.replace('chromeNative-', ''),
-		cb = notificationCbMap.get(_id)
-	;
-	if (cb) {
-		cb({
-			response: 'close',
-			byUser
-		});
-	}
-});
-chrome.notifications.onButtonClicked.addListener(function (notificationId, buttonIndex) {
-	if (!notificationId.startsWith('chromeNative-')) return;
-
-	chrome.notifications.clear(notificationId);
-	const _id = notificationId.replace('chromeNative-', ''),
-		cb = notificationCbMap.get(_id)
-	;
-	if (cb) {
-		cb({
-			response: 'action',
-			index: buttonIndex
-		});
-	}
-});
-chrome.notifications.onClicked.addListener(async function (notificationId) {
-	if (!notificationId.startsWith('chromeNative-')) return;
-
-	chrome.notifications.clear(notificationId);
-	const _id = notificationId.replace('chromeNative-', ''),
-		cb = notificationCbMap.get(_id)
-	;
-	if (cb) {
-		cb({
-			response: 'click'
-		});
-	}
-});
 
 
 
@@ -494,6 +401,19 @@ export async function ping() {
 	}
 }
 self.ping = ping;
+
+/**
+ *
+ * @return {Promise<boolean|null>}
+ */
+export async function getIsUpdateAvailable() {
+	try {
+		const {result} = await socket.timeout(timeout).emitWithAck('isUpdateAvailable');
+		return result;
+	} catch (e) {
+		console.error(e);
+	}
+}
 
 /**
  *
@@ -523,9 +443,8 @@ export async function getPreferences(ids) {
 
 
 async function getSyncAllowedPreferences() {
-	const ids = getSyncKeys(),
-		output = {},
-		newPreferences = await getPreferences(ids)
+	const output = {},
+		newPreferences = await getPreferences([])
 	;
 
 	for (let [id, value] of newPreferences) {
@@ -538,19 +457,11 @@ async function getSyncAllowedPreferences() {
 	});
 }
 async function updateSyncAllowedPreferences(data) {
-	const ids = getSyncKeys(),
-		isSync = ids.includes(data.id)
-	;
-
 	if (!data.id) {
 		return;
 	}
 
-	console.log(`[NativeMessaging] onSettingUpdate${isSync ? ' (Sync included)' : ''}`, data);
-	if (!isSync) {
-		return;
-	}
-
+	console.log('[NativeMessaging] onSettingUpdate', data);
 	const {id, newValue} = data,
 		currentPreferences = await getElectronSettings()
 	;
@@ -597,7 +508,7 @@ export async function showSection(sectionName) {
  * @property {string} content
  * @property {string[]} [domains]
  * @property {string[]} tags
- * @property {string[]} [matches]
+ * @property {string[]} [match]
  * @property {string[]} [excludeMatches]
  * @property {Dict<string | boolean>} meta
  */
@@ -661,10 +572,11 @@ export async function writeClipboard(data) {
  *
  * @param {string} templateName
  * @param {object} context
+ * @param {boolean} [async]
  * @returns {Promise<string>}
  */
-export async function nunjuckRender({templateName, context}) {
-	const data = await socket.timeout(timeout).emitWithAck('nunjuckRender', templateName, context);
+export async function nunjuckRender({templateName, context, async}) {
+	const data = await socket.timeout(timeout).compress(true).emitWithAck('nunjuckRender', templateName, context, async ?? false);
 	if (data.error) throw new Error(data.error);
 	if (!('result' in data)) {
 		throw new Error(JSON.stringify(data, null, "\t"));
@@ -730,16 +642,11 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
 	} else if (message.id === 'nunjuckRender') {
 		nunjuckRender(...message.data)
 			.then((data) => {
-				sendResponse({
-					isError: false,
-					response: data,
-				});
+				sendResponse({ isError: false,  response: data });
 			})
 			.catch(err => {
 				console.error(err);
-				sendResponse({
-					isError: true
-				});
+				sendResponse({ isError: true });
 			})
 		;
 		return true;

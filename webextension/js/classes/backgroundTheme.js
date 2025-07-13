@@ -1,7 +1,6 @@
 'use strict';
 
 import {getPreferences} from './chrome-preferences.js';
-import {default as env} from '../env.js';
 import {chromeNativeConnectedStorageKey} from "./chrome-native-settings.js";
 
 class Color {
@@ -44,46 +43,68 @@ class Color {
 	}
 }
 
+export const THEME_LS_PREF_CACHE_KEY = '__theme_pref_cache';
 /**
  *
- * @param {HTMLStyleElement|null} [colorStylesheetNode]
+ * @type {HTMLLinkElement|null}
+ */
+let themeStylesheetNode = null;
+/**
+ *
  * @param {string} [currentTheme]
  * @param {string} [background_color]
- * @return {Promise<HTMLStyleElement|null>}
+ * @return {Promise<void>}
  */
-export async function theme_cache_update(colorStylesheetNode, currentTheme, background_color) {
+export async function theme_update(currentTheme, background_color) {
+	if (!themeStylesheetNode) {
+		themeStylesheetNode = document.querySelector('#theme-stylesheet');
+	}
+
 	if (currentTheme === undefined && background_color === undefined) {
-		const options = await getPreferences("theme", "background_color");
-		currentTheme = options.get("theme") ?? 'dark'
-		background_color = options.get("background_color") ?? '#000000'
-	}
+		let optionCache = null;
+		if (self.localStorage) {
+			try {
+				optionCache = JSON.parse(self.localStorage.getItem(THEME_LS_PREF_CACHE_KEY));
 
-	const chromeStorage = await chrome.storage.session.get(['_backgroundPage_theme_cache']);
-	let _cache = chromeStorage._backgroundPage_theme_cache ?? null;
-	if (!_cache || typeof _cache !== 'object') {
-		_cache = null;
-	} else {
-		if (_cache.version !== chrome.runtime.getManifest().version) {
-			_cache = null;
-		} else if (env === 'local' && new Date().toLocaleDateString() !== new Date(_cache._createdAt).toLocaleDateString()) {
-			_cache = null;
+				currentTheme = optionCache.theme;
+				background_color = optionCache.background_color;
+			} catch (e) {
+				console.error(e);
+			}
+		}
+
+		(async () => {
+			const options = await getPreferences("theme", "background_color");
+
+			currentTheme = options.get("theme") ?? 'dark';
+			background_color = options.get("background_color") ?? '#000000';
+			theme_update(currentTheme, background_color)
+				.catch(console.error);
+
+			if (self.localStorage) {
+				localStorage.setItem(THEME_LS_PREF_CACHE_KEY, JSON.stringify({
+					theme: currentTheme,
+					background_color: background_color,
+				}));
+			}
+		})().catch(console.error)
+		if (!currentTheme || !background_color) {
+			return;
 		}
 	}
 
-	if (_cache !== null && colorStylesheetNode !== null && currentTheme === _cache.theme && background_color === _cache.background_color) {
-		if (currentTheme === colorStylesheetNode.dataset.theme && background_color === colorStylesheetNode.dataset.background_color) {
-			console.info("Loaded theme is already good");
-			return null;
-		} else {
-			console.info("Using chrome storage theme cache");
+	if (themeStylesheetNode !== null && currentTheme === themeStylesheetNode.dataset.theme && background_color === themeStylesheetNode.dataset.background_color) {
+		console.info("Loaded theme is already good");
+		return;
+	} else if (themeStylesheetNode && currentTheme !== themeStylesheetNode.dataset.theme) {
+		console.info("Changing stylesheet href");
+		themeStylesheetNode.href = themeStylesheetNode.href.replace(/-(dark|light)/i, `-${currentTheme}`);
+		themeStylesheetNode.dataset.theme = currentTheme;
+	}
 
-			const styleElement = document.createElement("style");
-			styleElement.id = "generated-color-stylesheet";
-			styleElement.textContent = _cache.style;
-			styleElement.dataset.theme = currentTheme;
-			styleElement.dataset.background_color = background_color;
-			return styleElement.cloneNode(true);
-		}
+
+	if (themeStylesheetNode && background_color === themeStylesheetNode.dataset.background_color) {
+		console.info("Theme color is already good");
 	}
 
 
@@ -106,49 +127,23 @@ export async function theme_cache_update(colorStylesheetNode, currentTheme, back
 		}
 	}
 
+	const light0 = values[0],
+		light1 = values[1],
+		light2 = values[2],
+		light3 = values[3],
+		invBaseColor_hue = (baseColor_hsl.H - 360/2 * ((baseColor_hsl.H < 360/2)? 1 : -1)),
+		invBaseColor_light = (currentTheme === "dark")? "77%" : "33%";
 
-	const {renderTemplate} = await import('../init-templates.js');
-	const style = await renderTemplate('backgroundTheme', {
-		"isDarkTheme": (currentTheme === "dark"),
-		"isLightTheme": (currentTheme === "light"),
-		"baseColor_hsl": baseColor_hsl,
-		"light0": values[0],
-		"light1": values[1],
-		"light2": values[2],
-		"light3": values[3],
-		"invBaseColor_hue": ''+(baseColor_hsl.H - 360/2 * ((baseColor_hsl.H < 360/2)? 1 : -1)),
-		"invBaseColor_light": (currentTheme === "dark")? "77%" : "33%"
-	});
+	const root = document.documentElement;
+	root.style.setProperty('--bgLight0', `hsl(${baseColor_hsl.H}, ${baseColor_hsl.S}, ${light0})`);
+	root.style.setProperty('--bgLight1', `hsl(${baseColor_hsl.H}, ${baseColor_hsl.S}, ${light1})`);
+	root.style.setProperty('--bgLight2', `hsl(${baseColor_hsl.H}, ${baseColor_hsl.S}, ${light2})`);
+	root.style.setProperty('--bgLight2_Opacity', `hsla${baseColor_hsl.H}, ${baseColor_hsl.S}, ${light2}, 0.95)`);
+	root.style.setProperty('--bgLight3', `hsl(${baseColor_hsl.H}, ${baseColor_hsl.S}, ${light3})`);
+	root.style.setProperty('--InvColor', `hsl(${invBaseColor_hue}, ${baseColor_hsl.S}, ${invBaseColor_light})`);
 
-	await chrome.storage.session.set({
-		_backgroundPage_theme_cache: {
-			_createdAt: new Date().toISOString(),
-			theme: currentTheme,
-			background_color: background_color,
-			style: style,
-			version: chrome.runtime.getManifest().version
-		}
-	});
-
-	const styleElement = document.createElement("style");
-	styleElement.id = "generated-color-stylesheet";
-	styleElement.textContent = style;
-	styleElement.dataset.theme = currentTheme;
-	styleElement.dataset.background_color = background_color;
-	//console.log(baseColor.rgbCode());
-	return styleElement.cloneNode(true);
-}
-
-export async function theme_update() {
-	let panelColorStylesheet = await theme_cache_update(document.querySelector("#generated-color-stylesheet"));
-
-	if (typeof panelColorStylesheet === "object" && panelColorStylesheet !== null) {
-		console.info("Theme update");
-
-		let currentThemeNode = document.querySelector("#generated-color-stylesheet");
-		currentThemeNode.parentNode.removeChild(currentThemeNode);
-
-		document.head.appendChild(panelColorStylesheet);
+	if (themeStylesheetNode && themeStylesheetNode.dataset.background_color) {
+		themeStylesheetNode.dataset.background_color = background_color;
 	}
 }
 

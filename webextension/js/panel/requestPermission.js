@@ -1,19 +1,32 @@
-import {hasFetchPermission, requestFetchPermission} from "../utils/hasFetchPermission.js";
-
 const btnSelector = '#requestPermissionItem';
 
-document.addEventListener('click', async function (ev) {
-	const target = ev.target.closest(btnSelector);
-	if (!target) return;
+async function hasFetchPermission(...hostList) {
+	try {
+		return await chrome.permissions.contains({
+			origins: hostList.length ? hostList : ['<all_urls>'],
+			permissions: [
+				'webRequest'
+			]
+		});
+	} catch (e) {
+		console.error(e);
+		return false;
+	}
+}
 
-	await requestFetchPermission()
-		.catch(console.error)
-	;
-	chrome.runtime.reload();
-});
+async function hasUserScriptPermission() {
+	try {
+		return await chrome.permissions.contains({
+			permissions: [ 'userScripts' ]
+		});
+	} catch (e) {
+		console.error(e);
+		return false;
+	}
+}
 
 async function updateBtnState() {
-	const permission = await hasFetchPermission();
+	const permission = (await hasFetchPermission()) && (await hasUserScriptPermission());
 	const $btn = document.querySelector(btnSelector);
 	$btn.classList.toggle('hide', !!permission);
 }

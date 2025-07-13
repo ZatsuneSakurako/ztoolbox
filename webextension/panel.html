@@ -6,15 +6,18 @@
 
 	<title>Z-Toolbox - Panel</title>
 
+	<link rel="preload" href="assets/fonts/material-symbols-outlined.woff2" as="font" crossorigin="anonymous" />
+	<link rel="preload" href="assets/css/panel-text-color-white.css" as="style" />
+	<link rel="preload" href="js/panel/panel-init.js" as="script" crossorigin="anonymous" />
+	<link rel="preload" href="js/classes/chrome-preferences.js" as="script" crossorigin="anonymous" />
+
+	<link rel="stylesheet" href="assets/css/custom-scrollbar.css" type="text/css" />
 	<link rel="stylesheet" type="text/css" media="all" href="assets/css/inputs.css" />
 	<link rel="stylesheet" type="text/css" media="all" href="assets/css/panel.css" />
-	<style id="search-cssSelector">/* Will be loaded later */</style>
-	<link id="generated-color-stylesheet" rel="stylesheet" type="text/css" media="all" data-theme="dark" data-background_color="#000000" href="assets/css/panel-theme-dark.css" />
+	<link id="theme-stylesheet" rel="stylesheet" media="all" data-theme="dark" data-background_color="#000000" href="assets/css/panel-theme-dark.css" />
 
 	<!-- 		Google Material Design - Symbol fonts 		-->
 	<link rel="stylesheet" type="text/css" media="all" href="assets/fonts/material-symbols.css" />
-
-	<link rel="stylesheet" href="assets/css/custom-scrollbar.css" type="text/css" />
 </head>
 <body class="page-panel">
 	<header>
@@ -22,46 +25,43 @@
 		<a href="newTab.html" class="if-delegated-version" role="button" target="_blank">
 			<span class="material-symbols-outlined">new_window</span>
 		</a>
-		<button id="disableNotifications" class="if-delegated-version"></button>
+		<button id="refreshUserStyles" class="if-delegated-version" data-translate-title="refreshUserscripts">
+			<span class="material-symbols-outlined">refresh</span>
+		</button>
 		<button id="settings" class="hide" data-translate-title="Settings"><span class="material-symbols-outlined">settings</span></button>
 	</header>
 
 	<section id="panelContent">
-		<div id="requestPermissionItem" class="buttonItem cursor hide">
-			<span class="icon"><span class="material-symbols-outlined">download</span></span>
-			<div class="title" data-translate-id="request-all-url-permission">Grant permission to retrieve data</div>
+		<div id="requestPermissionItem" class="buttonItem hide">
+			<span class="icon"><span class="material-symbols-outlined">lock</span></span>
+			<div class="title" data-translate-id="permission_missing">Permission missing !</div>
 		</div>
-		<div id="tabMover"></div>
-		<div id="idTabUserStyles"></div>
+		<div id="idTabUserStyles" class="d-contents"></div>
 
-		<section id="preferences">
-			<div class="pref_group if-not-delegated-version">
-				<div class="preferenceContainer">
-					<label for="theme"></label>
-					<select id="theme" required>
-						<option value="dark"></option>
-						<option value="light"></option>
-					</select>
-				</div>
-				<div class="preferenceContainer">
-					<label for="background_color"></label>
-					<input type="color" id="background_color" required>
-				</div>
+		<div id="preferences" class="pref_group if-normal-version">
+			<div class="preferenceContainer">
+				<label for="theme" data-translate-id="theme_title"></label>
+				<select id="theme" required>
+					<option value="dark" data-translate-id="theme_dark"></option>
+					<option value="light" data-translate-id="theme_light"></option>
+				</select>
 			</div>
-		</section>
+			<div class="preferenceContainer">
+				<label for="background_color" data-translate-id="background_color_title"></label>
+				<input type="color" id="background_color" required>
+			</div>
+		</div>
 	</section>
 
 	<footer>
+		<span data-translate-id="footer_title">Addon under GPL v3 licence</span>
 		<div>
-			<span data-translate-id="footer_title">Addon under GPL v3 licence</span>
-			<div>
-				<span data-translate-id="footer_by">By</span><!--
-				--> <a href="https://gitlab.com/u/ZatsuneNoMokou/" target="_blank">ZatsuneNoMokou</a><!--
-				--> <span id="current_version" data-translate-title="updateSimple"></span>
-			</div>
+			<span data-translate-id="footer_by">By</span><!--
+			--> <a href="https://github.com/ZatsuneNoMokou/" target="_blank">ZatsuneNoMokou</a><!--
+			--> <span id="current_version"></span>
 		</div>
 	</footer>
 
-	<script id="panelInit" src="js/panel/panel-init.js"></script>
+	<script id="panelInit" src="js/panel/panel-init.js" defer async type="module"></script>
 </body>
 </html>

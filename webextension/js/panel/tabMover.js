@@ -1,18 +1,23 @@
-import {renderTemplate} from '../init-templates.js';
-import {appendTo} from "../utils/appendTo.js";
-import {throttle} from "../../lib/throttle.js";
 import {getPreference} from "../classes/chrome-preferences.js";
 
+/**
+ *
+ * @param {string} str
+ * @param {number} maxLength
+ * @return {string}
+ */
+function truncateString(str, maxLength=25) {
+	if (str.length <= maxLength) return str;
+	return str.slice(0, maxLength - 3) + '...';
+}
 
-
-const tabMover = document.querySelector('#tabMover');
 /**
  *
  * @type {chrome.windows.Window[]}
  */
 let browserWindows;
-const TAB_MOVER_TEMPLATE = 'tabMover';
-async function update() {
+export const tabMoverItemId = '__tabMover';
+export async function update() {
 	const currentBrowserWindow = await chrome.windows.getCurrent({
 		populate: false,
 		windowTypes: ["normal"]
@@ -38,82 +43,97 @@ async function update() {
 		})
 	;
 
-	while (tabMover.hasChildNodes()) {
-		tabMover.removeChild(tabMover.lastChild);
+	/**
+	 * @type {HTMLElement}
+	 */
+	const tabMoverButton = document.querySelector('#userscript-__tabMover');
+
+	const panelAlwaysShowMoveInNewWindow = !!(await getPreference('panelAlwaysShowMoveInNewWindow')
+		.catch(console.error));
+	if (!(browserWindows.length || panelAlwaysShowMoveInNewWindow)) {
+		tabMoverButton && tabMoverButton.remove();
+		return;
 	}
+
+	/**
+	 *
+	 * @type {RegisterMenuCommand[]}
+	 */
+	const menuCommands = [];
 	if (browserWindows.length) {
 		for (const win of browserWindows) {
-			appendTo(
-				tabMover,
-				await renderTemplate(TAB_MOVER_TEMPLATE, {
-					'title': i18ex._("windowId", {
-						"windowId": win.id
-					}),
-					'windowId': win.id,
-					'tabName': win.currentTabTitle ?? '',
-					'tabsCount': win.tabs.length
-				})
-			);
+			menuCommands.push({
+				id: 'tabMover-' + win.id,
+				fileName: tabMoverItemId,
+				order: menuCommands.length,
+
+				name: `${truncateString(win.currentTabTitle ?? win.id.toString())} (${win.tabs.length})`,
+				title: win.currentTabTitle ?? win.id.toString(),
+				icon: 'tab_move',
+				autoClose: false,
+			});
 		}
 	}
-	const shouldDisplayNewWindow = !browserWindows.length || (await getPreference('panelAlwaysShowMoveInNewWindow')
-		.catch(console.error))
-	;
+	const shouldDisplayNewWindow = !browserWindows.length || panelAlwaysShowMoveInNewWindow;
 	if (shouldDisplayNewWindow) {
-		appendTo(
-			tabMover,
-			await renderTemplate(TAB_MOVER_TEMPLATE, {
-				'title': i18ex._("newWindow"),
-				'windowId': '',
-				'tabName': ''
-			})
-		);
+		menuCommands.push({
+			id: 'tabMover-newWindow',
+			fileName: tabMoverItemId,
+			order: menuCommands.length,
+
+			name: chrome.i18n.getMessage("newWindow"),
+			icon: 'tab_move',
+			autoClose: false,
+		});
 	}
 
-	return true;
+	return {
+		title: 'Tab mover',
+		data: {
+			id: tabMoverItemId,
+			enabled: true,
+			runAt: 'manual',
+			icon: 'swap_horiz',
+			fileName: tabMoverItemId,
+			tags: [],
+			menuCommands,
+			isScriptExecuted: true,
+			isCss: false,
+			isScript: true,
+		},
+	};
 }
 
-document.addEventListener('click', e => {
-	const elm = e.target.closest('.tabMover[data-window-id]');
-	if (!elm) return;
+/**
+ *
+ * @param {string} windowId
+ */
+export async function tabMover_mvTab(windowId) {
+	const [activeTab] = await chrome.tabs.query({ currentWindow: true, active: true });
+	if (!activeTab) {
+		console.warn('no active tab found');
+		return;
+	}
 
-	chrome.tabs.query({
-		currentWindow: true,
-		active: true
-	})
-		.then(async ([activeTab]) => {
-			if (!activeTab) {
-				console.warn('no active tab found');
-				return;
-			}
-
-			const winId = parseInt(elm.dataset.windowId);
-			if (!winId || isNaN(winId)) {
-				await chrome.windows.create({
-					"tabId": activeTab.id
-				})
-					.catch(console.error)
-				;
-			} else {
-				await chrome.tabs.move(activeTab.id, {
-					"windowId": winId,
-					"index": -1
-				})
-					.catch(console.error)
-				;
-			}
-
-			await chrome.tabs.update(activeTab.id, {
-				"active": activeTab.active
-			})
-				.catch(console.error)
-			;
-
-			window.close()
+	const winId = parseInt(windowId);
+	if (!winId || isNaN(winId)) {
+		await chrome.windows.create({
+			"tabId": activeTab.id
 		})
-		.catch(console.error)
-	;
-});
+			.catch(console.error);
+	} else {
+		await chrome.tabs.move(activeTab.id, {
+			"windowId": winId,
+			"index": -1
+		})
+			.catch(console.error);
+	}
+
+	await chrome.tabs.update(activeTab.id, {
+		"active": activeTab.active
+	})
+		.catch(console.error);
+}
 
 document.addEventListener('click', async e => {
 	const elm = e.target.closest('.tabMover[data-browser-name]');
@@ -141,24 +161,4 @@ document.addEventListener('click', async e => {
 			window.close();
 		}
 	});
-});
-
-
-
-const _update = throttle(() => {
-	update()
-		.catch(console.error)
-	;
-}, 50);
-
-_update();
-
-chrome.windows.onCreated.addListener(_update);
-chrome.windows.onRemoved.addListener(_update);
-chrome.windows.onFocusChanged.addListener(_update);
-chrome.tabs.onUpdated.addListener(function (info, changeInfo, tab) {
-	if (tab.active === true && ((changeInfo.hasOwnProperty("status") && changeInfo.status === "complete") || changeInfo.hasOwnProperty("title"))) {
-		// Only update context menu if the active tab have a "complete" load
-		_update();
-	}
 });

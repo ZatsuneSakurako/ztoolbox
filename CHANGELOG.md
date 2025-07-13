@@ -1,3 +1,23 @@
+# 3.0.0
+* i : Minimum version Firefox 141
+* i : Simplify context menu management
+* i : Simplify preference management
+* i : Translations cleanup and move to native translations
+* i : Simply notify if permission are missing (permission to add using browser interface)
+* i : UserScript :
+  * Replace context menu with panel button to refresh
+  * Replace `dayjs` with custom date functions
+  * Experiment applying styles from tab
+  * Custom sort
+  * New `run-at` value : `panel`
+* i : Replace update check with socket update information
+* i : Move from Twig templates to [Nunjuck](https://mozilla.github.io/nunjucks/)
+* i : Simplify theme
+* i : Tab mover and new tab rendered using Nunjuck
+* i : Optimize panel loading
+* \- : Remove `iqdb` search
+* \- : Remove copy text link
+
 # 2.7.0
 * i : Move ip and meta rating data to UserScript tab data
 * \+ : Nunjuck render using socket

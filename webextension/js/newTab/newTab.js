@@ -1,17 +1,15 @@
 import {appendTo} from "../utils/appendTo.js";
-import {renderTemplate} from "../init-templates.js";
-import "../utils/onImageError.js";
+import {nunjuckRender} from "../init-templates.js";
+import "./onImageError.js";
 import {getPreference} from "../classes/chrome-preferences.js";
 import {chromeNativeConnectedStorageKey} from "../classes/chrome-native-settings.js";
 import {generateThumbnail} from "../utils/captureScreenshot.js";
 import './newTab-reopenTab.js';
 import {reopenTabStateRefresh} from "./newTab-reopenTab.js";
 import {BookmarksResolver} from "./BookmarksResolver.js";
+import {newTabImagesStorage, newTabCapturesStorage} from "./newTab-settings.js";
 
-const newTabImagesStorage = '_newTabImages',
-	newTabCapturesStorage = '_newTabCaptures',
-	imageUrlAlgorithm = 'SHA-256'
-;
+const imageUrlAlgorithm = 'SHA-256';
 
 /**
  *
@@ -95,7 +93,7 @@ async function loadSpeedDial() {
 	 *
 	 * @type {Map<string, string|null|Promise<string>>}
 	 */
-	const newImages =newTabImages ? new Map(Object.entries(newTabImages)) : new Map();
+	const newImages = newTabImages ? new Map(Object.entries(newTabImages)) : new Map();
 	if (data) {
 		for (let [, newTabData] of data) {
 			for (let child of newTabData.children) {
@@ -134,51 +132,81 @@ async function loadSpeedDial() {
 		child.remove();
 	}
 
-	appendTo($newTabContainer, await renderTemplate('newTab', {
+
+
+
+
+	/**
+	 *
+	 * @param {chrome.bookmarks.BookmarkTreeNode} bookmark
+	 * @return {Promise<{ capture?: string, _hostname?: string|null, image?: string, theme_color?: string, background_color?: string, favicon?: string }>}
+	 */
+	const getMeta = async function getMeta(bookmark) {
+		const url = bookmark.url,
+			checksum = await generateChecksum(url, imageUrlAlgorithm),
+			output = {}
+		;
+
+		if (newTabCaptures && typeof newTabCaptures[checksum] === 'string' ) {
+			output.capture = newTabCaptures[checksum];
+		}
+
+		output._hostname = null;
+		try {
+			output._hostname = new URL(url).hostname;
+		} catch (_) {}
+		if (!newTabImages[checksum]) return output;
+
+
+
+		const imagePropertyNames = new Set([
+			"og:image",
+			"og:image:url",
+			"og:image:secure_url",
+			"twitter:image"
+		]);
+		for (let imagePropertyName of imagePropertyNames) {
+			const value = newTabImages[checksum][imagePropertyName];
+			if (!!value) {
+				output.image = (new URL(value, url)).toString();
+			}
+		}
+
+		if (newTabImages[checksum]._manifest) {
+			const manifest = newTabImages[checksum]._manifest;
+			output.theme_color = manifest.theme_color ?? manifest['theme-color'];
+			output.background_color = manifest.background_color;
+
+			const favicon = Array.isArray(manifest.icons) ? manifest.icons.at(0) : null;
+			output.favicon = !!favicon ? (new URL(favicon.src, url)).toString() : null;
+		}
+
+		return output;
+	}
+
+	const promises = [],
+		bookmarksMeta = {};
+	const loadBookmarkMetas = (bookmarks) => {
+		for (const bookmark of bookmarks) {
+			promises.push((async () => {
+				bookmarksMeta[bookmark.id] = await getMeta(bookmark);
+			})())
+
+			if (Array.isArray(bookmark.children)) {
+				loadBookmarkMetas(bookmark.children);
+			}
+		}
+	}
+	loadBookmarkMetas(Array.from(data.values()));
+
+	await Promise.allSettled(promises)
+		.catch(console.error);
+
+	const result = await nunjuckRender('newTab', {
 		'bookmarks': [...data.entries()],
-		async getMeta(bookmark) {
-			const url = bookmark.url,
-				checksum = await generateChecksum(url, imageUrlAlgorithm),
-				output = {}
-			;
-
-			if (newTabCaptures && typeof newTabCaptures[checksum] === 'string' ) {
-				output.capture = newTabCaptures[checksum];
-			}
-
-			output._hostname = null;
-			try {
-				output._hostname = new URL(url).hostname;
-			} catch (_) {}
-			if (!newTabImages[checksum]) return output;
-
-
-
-			const imagePropertyNames = new Set([
-				"og:image",
-				"og:image:url",
-				"og:image:secure_url",
-				"twitter:image"
-			]);
-			for (let imagePropertyName of imagePropertyNames) {
-				const value = newTabImages[checksum][imagePropertyName];
-				if (!!value) {
-					output.image = (new URL(value, url)).toString();
-				}
-			}
-
-			if (newTabImages[checksum]._manifest) {
-				const manifest = newTabImages[checksum]._manifest;
-				output.theme_color = manifest.theme_color ?? manifest['theme-color'];
-				output.background_color = manifest.background_color;
-
-				const favicon = Array.isArray(manifest.icons) ? manifest.icons.at(0) : null;
-				output.favicon = !!favicon ? (new URL(favicon.src, url)).toString() : null;
-			}
-
-			return output;
-		},
-	}, true));
+		bookmarksMeta,
+	}, true);
+	appendTo($newTabContainer, result);
 
 
 

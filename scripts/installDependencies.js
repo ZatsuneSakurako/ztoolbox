@@ -28,15 +28,8 @@ if (!exist_jsLib) {
 	error("JS lib folder not found!");
 	process.exit(1);
 } else {
-	info("Copying twing...");
-	_cp("./node_modules/twig/twig.min.js", jsLib);
-	_cp("./node_modules/twig/twig.min.js.map", jsLib);
-
-	info("Copying i18next...");
-	_cp("./node_modules/i18next/i18next.min.js", jsLib);
-
-	info("Copying i18next-http-backend...");
-	_cp("./node_modules/i18next-http-backend/i18nextHttpBackend.js", jsLib);
+	info("Copying nunjucks-slim...");
+	_cp("./node_modules/nunjucks/browser/nunjucks-slim.js", jsLib);
 
 	info("Copying MaterialIcons (material-symbols)...");
 	_cp("./node_modules/material-symbols/material-symbols-outlined.woff2", path.normalize(`${fontPath}/material-symbols-outlined.woff2`));
@@ -49,15 +42,7 @@ if (!exist_jsLib) {
 		{ encoding: 'utf-8' }
 	);
 
-	info("Copying ip-regex...");
-	_cp("./node_modules/ip-regex/index.js", path.normalize(`${jsLib}/ip-regex.js`));
-
 	info("Copying socket.io-client...");
 	_cp("./node_modules/socket.io-client/dist/socket.io.esm.min.js", jsLib);
 	_cp("./node_modules/socket.io-client/dist/socket.io.esm.min.js.map", jsLib);
-
-	info("Copying dayjs...");
-	_cp("./node_modules/dayjs/dayjs.min.js", jsLib);
-	_cp("./node_modules/dayjs/locale/fr.js", path.normalize(`${jsLib}/dayjs-fr.js`));
-	_cp("./node_modules/dayjs/plugin/customParseFormat.js", path.normalize(`${jsLib}/dayjs-customParseFormat.js`));
 }
