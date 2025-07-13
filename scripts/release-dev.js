@@ -53,14 +53,32 @@ function errorHandler(promise) {
 
 
 async function init() {
-	const fileTarget = `./z-toolbox_dev-${pJson.version}.zip`;
+	const fileTarget = `./z-toolbox_dev-${pJson.version}.zip`,
+		fileTargetFirefox = `./z-toolbox_dev-firefox-${pJson.version}.zip`;
 	if (await fs.pathExists(path.join(pwd, fileTarget))) {
 		throwException(`Zip package already exist for version ${pJson.version}!`);
 	}
+	if (await fs.pathExists(path.join(pwd, fileTargetFirefox))) {
+		throwException(`Zip package already exist for Firefox version ${pJson.version}!`);
+	}
 
-	const webExtManifestJsonPath = path.join(pwd, './webextension/manifest.json'),
-		manifestJson = fs.readJsonSync(webExtManifestJsonPath, {encoding: 'utf8'})
-	;
+
+
+	/**
+	 *
+	 * @type { { readonly manifestOverrides?: function(manifestJson: object): object, readonly publishRelease?: function(firefoxReleaseFilePath:string, manifestJson:object): Promise<void> } }
+	 */
+	let localRelease = undefined;
+	if (fs.existsSync(`${import.meta.dirname}/release-dev.loc.js`)) {
+		localRelease = await import("./release-dev.loc.js");
+	}
+
+
+
+
+
+	const webExtManifestJsonPath = path.join(pwd, './webextension/manifest.json');
+	let manifestJson = fs.readJsonSync(webExtManifestJsonPath, {encoding: 'utf8'});
 
 	manifestJson.version = pJson.version;
 	fs.writeJsonSync(webExtManifestJsonPath, manifestJson, {
@@ -78,7 +96,7 @@ async function init() {
 	await errorHandler(fs.mkdir(tmpPath));
 
 	echo("Copying into tmp folder");
-	await errorHandler(exec("cd " + pwd + " && cp -rt tmp ./webextension/_locales ./webextension/assets ./webextension/js ./webextension/lib ./webextension/locales ./webextension/templates ./webextension/*.html ./webextension/icon*.png ./webextension/LICENSE ./webextension/manifest.json"));
+	await errorHandler(exec("cd " + pwd + " && cp -rt tmp ./webextension/_locales ./webextension/assets ./webextension/js ./webextension/lib ./webextension/templates ./webextension/*.html ./webextension/icon*.png ./webextension/LICENSE ./webextension/manifest.json"));
 
 
 
@@ -114,15 +132,24 @@ async function init() {
 		console.error(e);
 	}
 
-	await errorHandler(webExt.cmd.build({
-		sourceDir: path.resolve(pwd, './tmp'),
-		artifactsDir: '.',
-		ignoreFiles: ignoredFiles,
-		filename: `z-toolbox_dev-${pJson.version}.zip`,
-		overwriteDest: true
-	}, {
-		shouldExitProgram: false,
-	}));
+
+
+	if (localRelease && localRelease.skipDefaultZip === true) {
+		warning("Skipping default zip creation");
+	} else {
+		await errorHandler(webExt.cmd.build({
+			sourceDir: path.resolve(pwd, './tmp'),
+			artifactsDir: '.',
+			ignoreFiles: ignoredFiles,
+			filename: `z-toolbox_dev-${pJson.version}.zip`,
+			overwriteDest: true
+		}, {
+			shouldExitProgram: false,
+		}));
+	}
+
+
+
 
 	echo('Firefox manifest v3 overrides...');
 	delete manifestJson['key'];
@@ -151,43 +178,45 @@ async function init() {
 		"extension_pages": "default-src 'self' data: http://* https://* moz-extension://* chrome://* ws://localhost:42080 http://localhost:42080; script-src 'self'; style-src 'self' chrome://* moz-extension://* 'unsafe-inline';"
 	};
 
+	if (localRelease && typeof localRelease.manifestOverrides === 'function') {
+		info('Local release manifest overrides...');
+		manifestJson = await localRelease.manifestOverrides(manifestJson) ?? manifestJson;
+	} else {
+		manifestJson.browser_specific_settings = {
+			"browser_specific_settings": {
+				"gecko": {
+					"id": "ztoolbox_dev@zatsunenomokou.eu",
+					"update_url": "https://github.com/ZatsuneNoMokou/ztoolbox/raw/master/dist/z_toolbox_dev.update.json",
+					"strict_min_version": "141.0"
+				},
+				"gecko_android": {}
+			},
+		};
+	}
+
 	fs.writeJsonSync(path.join(pwd, './tmp/manifest.json'), manifestJson, {
 		encoding: 'utf-8',
 		spaces: "\t",
 		EOL: "\n"
 	});
 
-	fs.writeJsonSync(path.join(pwd, './dist/z_toolbox_dev.update.json'), {
-		"addons": {
-			"ztoolbox_dev@zatsunenomokou.eu": {
-				"updates": [
-					{ "version": manifestJson.version,
-						"update_link": "https://github.com/ZatsuneNoMokou/ztoolbox/raw/master/dist/z_toolbox_dev.xpi",
-						"applications": {
-							"gecko": { "strict_min_version": manifestJson.browser_specific_settings.gecko.strict_min_version },
-							"gecko_android": {}
-						}
-					}
-				]
-			}
-		}
-	}, {
-		encoding: 'utf-8',
-		spaces: "\t",
-		EOL: "\n"
-	});
-
+	const firefoxReleaseFilePath = `z-toolbox_dev-firefox-${pJson.version}.zip`;
 	await errorHandler(webExt.cmd.build({
 		sourceDir: path.resolve(pwd, './tmp'),
 		artifactsDir: '.',
 		ignoreFiles: ignoredFiles,
-		filename: `z-toolbox_dev-firefox-${pJson.version}.zip`,
+		filename: firefoxReleaseFilePath,
 		overwriteDest: true
 	}, {
 		shouldExitProgram: false,
 	}));
 
-	if (!!process.env.FIREFOX_API_KEY && !!process.env.FIREFOX_API_SECRET) {
+
+
+	if (localRelease && typeof localRelease.publishRelease === 'function') {
+		info('Local release...');
+		await localRelease.publishRelease(path.normalize(`${pwd}/${firefoxReleaseFilePath}`), manifestJson);
+	} else if (!!process.env.FIREFOX_API_KEY && !!process.env.FIREFOX_API_SECRET) {
 		info('Firefox signing...');
 		/**
 		 *
@@ -219,6 +248,27 @@ async function init() {
 		}
 
 		if (!signedXpi) {
+			fs.writeJsonSync(path.join(pwd, './dist/z_toolbox_dev.update.json'), {
+				"addons": {
+					"ztoolbox_dev@zatsunenomokou.eu": {
+						"updates": [
+							{ "version": manifestJson.version,
+								"update_link": "https://github.com/ZatsuneNoMokou/ztoolbox/raw/master/dist/z_toolbox_dev.xpi",
+								"applications": {
+									"gecko": { "strict_min_version": manifestJson.browser_specific_settings.gecko.strict_min_version },
+									"gecko_android": {}
+								}
+							}
+						]
+					}
+				}
+			}, {
+				encoding: 'utf-8',
+				spaces: "\t",
+				EOL: "\n"
+			});
+
+
 			// Example file name : z_toolbox_dev-0.17.1-an+fx.xpi
 			const xpiFiles = fs.readdirSync(pwd, {
 					encoding: "utf8",
@@ -240,6 +290,8 @@ async function init() {
 			});
 		}
 	}
+
+
 
 	await errorHandler(fs.remove(tmpPath));
 }
