@@ -1,3 +1,6 @@
+# 3.0.1
+* Fix : Userstyle when nothing available
+
 # 3.0.0
 * i : Minimum version Firefox 141
 * i : Simplify context menu management
