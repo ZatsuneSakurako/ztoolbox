@@ -748,7 +748,7 @@ class ContentScripts {
 		chrome.storage.onChanged.addListener((changes, areaName) => {
 			this.#onStorageChange(changes, areaName);
 		});
-		chrome.runtime.onUserScriptMessage.addListener((message, sender, sendResponse) => {
+		chrome.runtime.onUserScriptMessage?.addListener((message, sender, sendResponse) => {
 			if (sender.id !== chrome.runtime.id) return;
 
 			if (message && typeof message === 'object' && message.type === 'user_script_executed') {
@@ -780,7 +780,7 @@ class ContentScripts {
 				onUserScriptMessage(message, sender, sendResponse);
 			}
 		});
-		chrome.runtime.onUserScriptConnect.addListener((port) => {
+		chrome.runtime.onUserScriptConnect?.addListener((port) => {
 			if (!port.sender.tab) {
 				port.disconnect();
 				return;

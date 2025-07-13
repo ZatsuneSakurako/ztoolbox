@@ -85,7 +85,7 @@ async function onStart_deleteOldPreferences() {
 		newTabImagesStorage,
 	]);
 
-	const currentLocalKeys = new Set(await chrome.storage.local.getKeys());
+	const currentLocalKeys = new Set(Object.keys(await chrome.storage.local.get()));
 	for (let key of currentLocalKeys) {
 		if (localKeyToKeep.has(key)) continue;
 
