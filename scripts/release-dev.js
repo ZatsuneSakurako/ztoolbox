@@ -2,7 +2,6 @@ import fs from "fs-extra";
 import path from "path";
 import webExt from "web-ext";
 import {exec as _exec} from "child_process";
-import klawSync from "klaw-sync";
 import "dotenv/config";
 import {error, info, success, warning} from "./common/custom-console.js";
 import {projectRootDir as pwd} from "./projectRootDir.js";
@@ -75,8 +74,6 @@ async function init() {
 
 
 
-
-
 	const webExtManifestJsonPath = path.join(pwd, './webextension/manifest.json');
 	let manifestJson = fs.readJsonSync(webExtManifestJsonPath, {encoding: 'utf8'});
 
@@ -100,29 +97,7 @@ async function init() {
 
 
 
-	echo('Handling **/*.prod.* files...');
-
-	const prodFilePathRegex = /\.prod(\..+)$/;
-
-	const prodFiles = klawSync(tmpPath, {
-		nodir: true,
-		filter: item => {
-			return item.stats.isDirectory() || prodFilePathRegex.test(item.path)
-		}
-	});
-
-	const prodPromises = prodFiles.map(fileObj => {
-		return fs.move(fileObj.path, fileObj.path.replace(prodFilePathRegex, '$1'), {
-			overwrite: true
-		});
-	});
-
-	await Promise.all(prodPromises);
-
-
-
 	const ignoredFiles = [];
-
 	try {
 		const packageJson = fs.readJSONSync(path.resolve(process.cwd(), './package.json'));
 		if (Array.isArray(packageJson.webExt.ignoreFiles)) {
@@ -147,7 +122,6 @@ async function init() {
 			shouldExitProgram: false,
 		}));
 	}
-
 
 
 

@@ -1,3 +1,6 @@
+# WIP
+* \- : Remove `*.prod.` system in the release script and remove `klaw-sync` dependency
+
 # 3.0.1
 * Fix : Userstyle when nothing available
 
