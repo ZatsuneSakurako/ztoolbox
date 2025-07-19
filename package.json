@@ -19,6 +19,7 @@
 		"sass": "1.89.0",
 		"stylelint": "^16.20.0",
 		"stylelint-config-recommended": "^16.0.0",
+		"user-agent-data-types": "^0.4.2",
 		"web-ext": "^8.8.0",
 		"web-ext-types": "^3.2.1"
 	},

@@ -16,6 +16,7 @@ import {_tabStylesStoreKey} from "../constants.js";
  * @type {string|null}
  */
 let chrome_native_token = null;
+// noinspection JSUnusedGlobalSymbols
 const socket = io('ws://localhost:42080', {
 	reconnectionDelay: 2000,
 	reconnectionDelayMax: 10000,
@@ -232,10 +233,8 @@ chrome.windows.onFocusChanged.addListener(async function onFocusChanged(windowId
 
 	const tabs = await chrome.tabs.query({
 		windowId
-	})
-		.catch(console.error)
-	;
-	if (!tabs.length) {
+	}).catch(console.error);
+	if (!tabs || !tabs.length) {
 		return;
 	}
 	// chrome.windows.onFocusChanged.removeListener(onFocusChanged);
@@ -246,7 +245,7 @@ chrome.windows.onFocusChanged.addListener(async function onFocusChanged(windowId
 		.catch(console.error)
 	;
 });
-chrome.tabs.onActivated.addListener(async function onFocusChanged(windowId) {
+chrome.tabs.onActivated.addListener(async function onFocusChanged(_) {
 	await sendSocketData()
 		.catch(console.error)
 	;
@@ -263,11 +262,15 @@ export async function getBrowserName() {
 		}
 	}
 
+	/**
+	 * @type {chrome.bookmarks.BookmarkTreeNode}
+	 */
 	const firstBookmark = (await chrome.bookmarks.getTree()).at(0);
 	let browserName;
 	/**
 	 * Properties "speeddial" and "bookmarkbar" should only exist in Vivaldi
 	 */
+	// noinspection JSUnresolvedReference no types, vivaldi only
 	if (firstBookmark.speeddial !== undefined && firstBookmark.bookmarkbar !== undefined) {
 		browserName = 'Vivaldi';
 	} else {
@@ -306,6 +309,10 @@ async function sendSocketData() {
 			 * @private
 			 */
 			const _contentStyles = await contentStyles;
+			/**
+			 *
+			 * @type {UserStyleTabData}
+			 */
 			const _tabData = _contentStyles.tabData[activeTab.id.toString(36)];
 			if (_tabData && _tabData.customData && _tabData.customData.requestDetails) {
 				tabData = _tabData.customData.requestDetails;
@@ -317,9 +324,14 @@ async function sendSocketData() {
 
 		/**
 		 *
+		 * @type {URL|undefined}
+		 */
+		let url = undefined;
+		/**
+		 *
 		 * @type {string|undefined}
 		 */
-		let url = undefined, domain = undefined;
+		let domain = undefined;
 		if (activeTab.url) {
 			try {
 				url = new URL(activeTab.url);

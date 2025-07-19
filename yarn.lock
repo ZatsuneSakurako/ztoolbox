@@ -5036,6 +5036,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"user-agent-data-types@npm:^0.4.2":
+  version: 0.4.2
+  resolution: "user-agent-data-types@npm:0.4.2"
+  checksum: 10/0c448b820b70eb99f64ce611ddda70ff3a5af4bfe0b02e4fcae72bb8377710593358657413399daf583622c63a50e024b11d8947d1136ddeca01d6b066f963ad
+  languageName: node
+  linkType: hard
+
 "util-deprecate@npm:^1.0.1, util-deprecate@npm:^1.0.2, util-deprecate@npm:~1.0.1":
   version: 1.0.2
   resolution: "util-deprecate@npm:1.0.2"
@@ -5396,6 +5403,7 @@ __metadata:
     socket.io-client: "npm:^4.8.1"
     stylelint: "npm:^16.20.0"
     stylelint-config-recommended: "npm:^16.0.0"
+    user-agent-data-types: "npm:^0.4.2"
     web-ext: "npm:^8.8.0"
     web-ext-types: "npm:^3.2.1"
   languageName: unknown
