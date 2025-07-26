@@ -1,4 +1,5 @@
 # WIP
+* Fix : Remove some IDE related warnings
 * \- : Remove `*.prod.` system in the release script and remove `klaw-sync` dependency
 
 # 3.0.1
