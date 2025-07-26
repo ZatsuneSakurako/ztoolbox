@@ -669,10 +669,17 @@ function userScriptApiLoader(context, dateUtils) {
 		/**
 		 *
 		 * @param {string} css
-		 * @return {CSSStyleSheet|null}
+		 * @param {boolean=true} [useAdoptedStyle]
+		 * @return {CSSStyleSheet|HTMLStyleElement|null}
 		 */
-		addStyle(css) {
+		addStyle(css, useAdoptedStyle = true) {
 			try {
+				if (!useAdoptedStyle) {
+					const styleSheet = document.createElement('style');
+					styleSheet.textContent = css;
+					document.head.appendChild(styleSheet);
+					return styleSheet;
+				}
 				const styleSheet = new CSSStyleSheet();
 				styleSheet.replaceSync(css);
 				document.adoptedStyleSheets = [...document.adoptedStyleSheets, styleSheet];

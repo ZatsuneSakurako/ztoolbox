@@ -2,6 +2,7 @@ import {loadTranslations} from '../translation-api.js';
 import * as tabUserStyles from "./tabUserStyles.js";
 import {chromeNativeConnectedStorageKey, getSessionNativeIsConnected} from "../classes/chrome-native-settings.js";
 import {getCurrentTab} from "../utils/getCurrentTab.js";
+import * as browserDetect from '../utils/browserDetect.js';
 
 document.addEventListener('click', e => {
 	const elm = e.target.closest('[role="button"]');
@@ -86,8 +87,7 @@ async function current_version(version) {
 
 	current_version_node.textContent = ` (v${version})`;
 
-	const {env} = await import("../env.js");
-	if (env === 'local') {
+	if (browserDetect.isChrome) {
 		const nativeConnected = !!(await chrome.storage.session.get(['_nativeConnected']))?._nativeConnected,
 			hasUpdate = nativeConnected && !!(await chrome.storage.local.get(['_checkUpdate']))?._checkUpdate;
 

@@ -1,8 +1,7 @@
-import fs from "fs-extra";
-import path from "path";
+import * as fs from "node:fs";
+import * as path from "node:path";
 import webExt from "web-ext";
 import {exec as _exec} from "child_process";
-import klawSync from "klaw-sync";
 import "dotenv/config";
 import {error, info, success, warning} from "./common/custom-console.js";
 import {projectRootDir as pwd} from "./projectRootDir.js";
@@ -55,10 +54,10 @@ function errorHandler(promise) {
 async function init() {
 	const fileTarget = `./z-toolbox_dev-${pJson.version}.zip`,
 		fileTargetFirefox = `./z-toolbox_dev-firefox-${pJson.version}.zip`;
-	if (await fs.pathExists(path.join(pwd, fileTarget))) {
+	if (fs.existsSync(path.normalize(`${pwd}/${fileTarget}`))) {
 		throwException(`Zip package already exist for version ${pJson.version}!`);
 	}
-	if (await fs.pathExists(path.join(pwd, fileTargetFirefox))) {
+	if (fs.existsSync(path.normalize(`${pwd}/${fileTargetFirefox}`))) {
 		throwException(`Zip package already exist for Firefox version ${pJson.version}!`);
 	}
 
@@ -66,7 +65,7 @@ async function init() {
 
 	/**
 	 *
-	 * @type { { readonly manifestOverrides?: function(manifestJson: object): object, readonly publishRelease?: function(firefoxReleaseFilePath:string, manifestJson:object): Promise<void> } }
+	 * @type { { skipDefaultZip: boolean, readonly manifestOverrides?: function(manifestJson: object, pJson:Readonly<object>): object, readonly publishRelease?: function(firefoxReleaseFilePath:string, manifestJson:object): Promise<void> } }
 	 */
 	let localRelease = undefined;
 	if (fs.existsSync(`${import.meta.dirname}/release-dev.loc.js`)) {
@@ -75,56 +74,28 @@ async function init() {
 
 
 
-
-
-	const webExtManifestJsonPath = path.join(pwd, './webextension/manifest.json');
-	let manifestJson = fs.readJsonSync(webExtManifestJsonPath, {encoding: 'utf8'});
+	const webExtManifestJsonPath = path.normalize(`${pwd}/webextension/manifest.json`);
+	let manifestJson = JSON.parse(fs.readFileSync(webExtManifestJsonPath, 'utf8'));
 
 	manifestJson.version = pJson.version;
-	fs.writeJsonSync(webExtManifestJsonPath, manifestJson, {
-		encoding: 'utf8',
-		spaces: "\t",
-		EOL: "\n"
-	});
+	fs.writeFileSync(webExtManifestJsonPath, JSON.stringify(manifestJson, null, '\t'), 'utf8');
 
 
-	const tmpPath = path.join(pwd, "./tmp");
-	if (await fs.pathExists(tmpPath)) {
+	const tmpPath = path.normalize(`${pwd}/tmp`);
+	if (fs.existsSync(tmpPath)) {
 		warning("Temporary folder already exist, deleting...");
-		await errorHandler(fs.remove(tmpPath));
+		fs.rmSync(tmpPath, { recursive: true });
 	}
-	await errorHandler(fs.mkdir(tmpPath));
+	fs.mkdirSync(tmpPath);
 
 	echo("Copying into tmp folder");
 	await errorHandler(exec("cd " + pwd + " && cp -rt tmp ./webextension/_locales ./webextension/assets ./webextension/js ./webextension/lib ./webextension/templates ./webextension/*.html ./webextension/icon*.png ./webextension/LICENSE ./webextension/manifest.json"));
 
 
 
-	echo('Handling **/*.prod.* files...');
-
-	const prodFilePathRegex = /\.prod(\..+)$/;
-
-	const prodFiles = klawSync(tmpPath, {
-		nodir: true,
-		filter: item => {
-			return item.stats.isDirectory() || prodFilePathRegex.test(item.path)
-		}
-	});
-
-	const prodPromises = prodFiles.map(fileObj => {
-		return fs.move(fileObj.path, fileObj.path.replace(prodFilePathRegex, '$1'), {
-			overwrite: true
-		});
-	});
-
-	await Promise.all(prodPromises);
-
-
-
 	const ignoredFiles = [];
-
 	try {
-		const packageJson = fs.readJSONSync(path.resolve(process.cwd(), './package.json'));
+		const packageJson = await import('../package.json');
 		if (Array.isArray(packageJson.webExt.ignoreFiles)) {
 			ignoredFiles.push(...packageJson.webExt.ignoreFiles);
 		}
@@ -147,7 +118,6 @@ async function init() {
 			shouldExitProgram: false,
 		}));
 	}
-
 
 
 
@@ -180,24 +150,23 @@ async function init() {
 
 	if (localRelease && typeof localRelease.manifestOverrides === 'function') {
 		info('Local release manifest overrides...');
-		manifestJson = await localRelease.manifestOverrides(manifestJson) ?? manifestJson;
-	} else {
+		manifestJson = await localRelease.manifestOverrides(manifestJson, pJson) ?? manifestJson;
+	}
+	if (!manifestJson.browser_specific_settings) {
 		manifestJson.browser_specific_settings = {
 			"browser_specific_settings": {
 				"gecko": {
 					"id": "ztoolbox_dev@zatsunenomokou.eu",
 					"update_url": "https://github.com/ZatsuneNoMokou/ztoolbox/raw/master/dist/z_toolbox_dev.update.json",
-					"strict_min_version": "141.0"
+					"strict_min_version": pJson.engines.firefox,
 				},
 				"gecko_android": {}
 			},
 		};
 	}
 
-	fs.writeJsonSync(path.join(pwd, './tmp/manifest.json'), manifestJson, {
-		encoding: 'utf-8',
-		spaces: "\t",
-		EOL: "\n"
+	fs.writeFileSync(path.normalize(`${pwd}/tmp/manifest.json`), JSON.stringify(manifestJson, null, '\t'), {
+		encoding: 'utf8',
 	});
 
 	const firefoxReleaseFilePath = `z-toolbox_dev-firefox-${pJson.version}.zip`;
@@ -248,14 +217,14 @@ async function init() {
 		}
 
 		if (!signedXpi) {
-			fs.writeJsonSync(path.join(pwd, './dist/z_toolbox_dev.update.json'), {
+			fs.writeFileSync(path.normalize(`${pwd}/dist/z_toolbox_dev.update.json`), {
 				"addons": {
 					"ztoolbox_dev@zatsunenomokou.eu": {
 						"updates": [
 							{ "version": manifestJson.version,
 								"update_link": "https://github.com/ZatsuneNoMokou/ztoolbox/raw/master/dist/z_toolbox_dev.xpi",
 								"applications": {
-									"gecko": { "strict_min_version": manifestJson.browser_specific_settings.gecko.strict_min_version },
+									"gecko": { "strict_min_version": pJson.engines.firefox },
 									"gecko_android": {}
 								}
 							}
@@ -264,8 +233,6 @@ async function init() {
 				}
 			}, {
 				encoding: 'utf-8',
-				spaces: "\t",
-				EOL: "\n"
 			});
 
 
@@ -285,15 +252,13 @@ async function init() {
 		if (!signedXpi || !fs.existsSync(signedXpi)) {
 			error('Firefox signing : Could not find the signed file');
 		} else {
-			fs.moveSync(signedXpi, pwd + '/dist/z_toolbox_dev.xpi', {
-				overwrite: true
-			});
+			fs.renameSync(signedXpi, `${pwd}/dist/z_toolbox_dev.xpi`);
 		}
 	}
 
 
 
-	await errorHandler(fs.remove(tmpPath));
+	fs.rmSync(tmpPath, { recursive: true });
 }
 
 await init();

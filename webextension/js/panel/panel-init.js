@@ -1,6 +1,5 @@
 'use strict';
 
-import "../env.js";
 import * as browserDetect from '../utils/browserDetect.js';
 import {getSessionNativeIsConnected} from '../classes/chrome-native-settings.js';
 import {loadPreferencesNodes} from "./preference-basic-ui.js";

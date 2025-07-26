@@ -243,38 +243,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@jsonjoy.com/base64@npm:^1.1.1":
-  version: 1.1.2
-  resolution: "@jsonjoy.com/base64@npm:1.1.2"
-  peerDependencies:
-    tslib: 2
-  checksum: 10/d76bb58eff841c090d9bf69a073611ffa73c40a664ccbcea689f65961f57d7b24051269d06b437e4f6204285d6ba92f50f587c5e95c5f9e4f10b36a2ed4cd0c8
-  languageName: node
-  linkType: hard
-
-"@jsonjoy.com/json-pack@npm:^1.0.3":
-  version: 1.2.0
-  resolution: "@jsonjoy.com/json-pack@npm:1.2.0"
-  dependencies:
-    "@jsonjoy.com/base64": "npm:^1.1.1"
-    "@jsonjoy.com/util": "npm:^1.1.2"
-    hyperdyperid: "npm:^1.2.0"
-    thingies: "npm:^1.20.0"
-  peerDependencies:
-    tslib: 2
-  checksum: 10/5b4f01bf195e314c19c5669a7bad968a814f0ed6b9e16a669b08081db0ed9f66fe3c3b2e3e0b67281b4f90910338f6beeae6b51bda9198590d29b39d1ea69755
-  languageName: node
-  linkType: hard
-
-"@jsonjoy.com/util@npm:^1.1.2, @jsonjoy.com/util@npm:^1.3.0":
-  version: 1.6.0
-  resolution: "@jsonjoy.com/util@npm:1.6.0"
-  peerDependencies:
-    tslib: 2
-  checksum: 10/6f2fd06aa9fb8b6bde1301e30aef0115bb728eff4dc73ab3402f11f0674a58f0a96411c0eeeb9ef2ed28e5aca3a9dc8138a5de784e62d1d53a3200731f7a0379
-  languageName: node
-  linkType: hard
-
 "@keyv/serialize@npm:^1.0.3":
   version: 1.0.3
   resolution: "@keyv/serialize@npm:1.0.3"
@@ -583,38 +551,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/fs-extra@npm:^11.0.4":
-  version: 11.0.4
-  resolution: "@types/fs-extra@npm:11.0.4"
-  dependencies:
-    "@types/jsonfile": "npm:*"
-    "@types/node": "npm:*"
-  checksum: 10/acc4c1eb0cde7b1f23f3fe6eb080a14832d8fa9dc1761aa444c5e2f0f6b6fa657ed46ebae32fb580a6700fc921b6165ce8ac3e3ba030c3dd15f10ad4dd4cae98
-  languageName: node
-  linkType: hard
-
 "@types/har-format@npm:*":
   version: 1.2.4
   resolution: "@types/har-format@npm:1.2.4"
   checksum: 10/92f0c898b6ebbee616064a3f749704d5f76c09c024101de1d64121992c048cfc2a770e8352a9138bcdda1626c35469ace7f1d1d6cda139ce47dcba8dc2217dc9
-  languageName: node
-  linkType: hard
-
-"@types/jsonfile@npm:*":
-  version: 6.1.1
-  resolution: "@types/jsonfile@npm:6.1.1"
-  dependencies:
-    "@types/node": "npm:*"
-  checksum: 10/0f8fe0a9221a00e8413cffba723dfe16553868724b830237256fb0052ecd5cac96498189d1235a001cfa815f352008261c9ceb373f0aa58227f891e0c7a12c4d
-  languageName: node
-  linkType: hard
-
-"@types/klaw-sync@npm:^6.0.5":
-  version: 6.0.5
-  resolution: "@types/klaw-sync@npm:6.0.5"
-  dependencies:
-    "@types/node": "npm:*"
-  checksum: 10/618a985280e4d8d451d8208d85b7df31bc5af8f17f2501cbbe57bedd1b6eb0d297ac6ac2ad2ea4dddf7f9b96f34aac1af7f635cf7c42f276e016c3854de8b9d2
   languageName: node
   linkType: hard
 
@@ -638,13 +578,6 @@ __metadata:
   dependencies:
     socket.io-client: "npm:*"
   checksum: 10/6eef7529afc1d732fb4091864aa6396a2f676ad25eda0035dd1f2c228cbcaf8520b15236ee0f2c714e061307eeab2b6c8edad637bc83a317c326ae70729d88b0
-  languageName: node
-  linkType: hard
-
-"@types/twig@npm:^1.12.16":
-  version: 1.12.16
-  resolution: "@types/twig@npm:1.12.16"
-  checksum: 10/97d674f5dcd4b74da7425857ce11b9ebe9cb8393fcee3524340c4ec65416d26c891caeda61c857941f8bfb9150e634d7bc34705e1fadade520aac52b4b85ae38
   languageName: node
   linkType: hard
 
@@ -2383,17 +2316,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"fs-extra@npm:^11.3.0":
-  version: 11.3.0
-  resolution: "fs-extra@npm:11.3.0"
-  dependencies:
-    graceful-fs: "npm:^4.2.0"
-    jsonfile: "npm:^6.0.1"
-    universalify: "npm:^2.0.0"
-  checksum: 10/c9fe7b23dded1efe7bbae528d685c3206477e20cc60e9aaceb3f024f9b9ff2ee1f62413c161cb88546cc564009ab516dec99e9781ba782d869bb37e4fe04a97f
-  languageName: node
-  linkType: hard
-
 "fs-minipass@npm:^2.0.0, fs-minipass@npm:^2.1.0":
   version: 2.1.0
   resolution: "fs-minipass@npm:2.1.0"
@@ -2604,7 +2526,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"graceful-fs@npm:^4.1.11, graceful-fs@npm:^4.1.2, graceful-fs@npm:^4.1.6, graceful-fs@npm:^4.2.0":
+"graceful-fs@npm:^4.1.2, graceful-fs@npm:^4.1.6, graceful-fs@npm:^4.2.0":
   version: 4.2.6
   resolution: "graceful-fs@npm:4.2.6"
   checksum: 10/04e1001c3994b1429136b8cd3123416c6ba423a19ff472a8b57b54c3158c8334b7dcfe9ae0bdad4705ba207697a5983808d18a3d7073a12171a1f3ef6aa8fb1b
@@ -2739,13 +2661,6 @@ __metadata:
   dependencies:
     ms: "npm:^2.0.0"
   checksum: 10/9c7a74a2827f9294c009266c82031030eae811ca87b0da3dceb8d6071b9bde22c9f3daef0469c3c533cc67a97d8a167cd9fc0389350e5f415f61a79b171ded16
-  languageName: node
-  linkType: hard
-
-"hyperdyperid@npm:^1.2.0":
-  version: 1.2.0
-  resolution: "hyperdyperid@npm:1.2.0"
-  checksum: 10/64abb5568ff17aa08ac0175ae55e46e22831c5552be98acdd1692081db0209f36fff58b31432017b4e1772c178962676a2cc3c54e4d5d7f020d7710cec7ad7a6
   languageName: node
   linkType: hard
 
@@ -3228,16 +3143,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"klaw-sync@npm:^7.0.0":
-  version: 7.0.0
-  resolution: "klaw-sync@npm:7.0.0"
-  dependencies:
-    graceful-fs: "npm:^4.1.11"
-    memfs: "npm:^4.17.0"
-  checksum: 10/404f839e146ae535048eb1d9296ecc617582e582f433eb17fd4a2c07339d98aa159c5f4d3b4619963ecc6e03ba216d98cda71ecfa0c1c79ccbf15671e6c57963
-  languageName: node
-  linkType: hard
-
 "known-css-properties@npm:^0.36.0":
   version: 0.36.0
   resolution: "known-css-properties@npm:0.36.0"
@@ -3423,18 +3328,6 @@ __metadata:
   version: 2.12.2
   resolution: "mdn-data@npm:2.12.2"
   checksum: 10/854e41715a9358e69f9a530117cd6ca7e71d06176469de8d70b1e629753b6827f5bd730995c16ad3750f3c9bad92230f8e4e178de2b34926b05f5205d27d76af
-  languageName: node
-  linkType: hard
-
-"memfs@npm:^4.17.0":
-  version: 4.17.2
-  resolution: "memfs@npm:4.17.2"
-  dependencies:
-    "@jsonjoy.com/json-pack": "npm:^1.0.3"
-    "@jsonjoy.com/util": "npm:^1.3.0"
-    tree-dump: "npm:^1.0.1"
-    tslib: "npm:^2.0.0"
-  checksum: 10/105175204e74e836460fbf18e431bc24def3f5ea7ecd94d644f35992dc28b5a4c5f425849dd5f342878ef0ba032508c05b2756e026491635a59fc7f631cbfcde
   languageName: node
   linkType: hard
 
@@ -5006,15 +4899,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"thingies@npm:^1.20.0":
-  version: 1.21.0
-  resolution: "thingies@npm:1.21.0"
-  peerDependencies:
-    tslib: ^2
-  checksum: 10/5c3954b67391d1432c252cb7089f29480e2164f06987a63d83c9747aa6999bfc313d6edfce71ed967316a3378dfcaf38f35ea77aaa5d423edaf776b8ff854f83
-  languageName: node
-  linkType: hard
-
 "thread-stream@npm:^2.0.0":
   version: 2.2.0
   resolution: "thread-stream@npm:2.2.0"
@@ -5053,22 +4937,6 @@ __metadata:
   dependencies:
     is-number: "npm:^7.0.0"
   checksum: 10/10dda13571e1f5ad37546827e9b6d4252d2e0bc176c24a101252153ef435d83696e2557fe128c4678e4e78f5f01e83711c703eef9814eb12dab028580d45980a
-  languageName: node
-  linkType: hard
-
-"tree-dump@npm:^1.0.1":
-  version: 1.0.3
-  resolution: "tree-dump@npm:1.0.3"
-  peerDependencies:
-    tslib: 2
-  checksum: 10/cf382e61cfb5e3ff8f03425b5bc1923e8f0e385b3a02f43d9d0a32d09da9984477e0f2a7698628662263d1d3f1af17e33486c77ff454978f0f9f07fb5d1fe9a2
-  languageName: node
-  linkType: hard
-
-"tslib@npm:^2.0.0":
-  version: 2.8.1
-  resolution: "tslib@npm:2.8.1"
-  checksum: 10/3e2e043d5c2316461cb54e5c7fe02c30ef6dccb3384717ca22ae5c6b5bc95232a6241df19c622d9c73b809bea33b187f6dbc73030963e29950c2141bc32a79f7
   languageName: node
   linkType: hard
 
@@ -5165,6 +5033,13 @@ __metadata:
   dependencies:
     punycode: "npm:^2.1.0"
   checksum: 10/b271ca7e3d46b7160222e3afa3e531505161c9a4e097febae9664e4b59912f4cbe94861361a4175edac3a03fee99d91e44b6a58c17a634bc5a664b19fc76fbcb
+  languageName: node
+  linkType: hard
+
+"user-agent-data-types@npm:^0.4.2":
+  version: 0.4.2
+  resolution: "user-agent-data-types@npm:0.4.2"
+  checksum: 10/0c448b820b70eb99f64ce611ddda70ff3a5af4bfe0b02e4fcae72bb8377710593358657413399daf583622c63a50e024b11d8947d1136ddeca01d6b066f963ad
   languageName: node
   linkType: hard
 
@@ -5517,15 +5392,10 @@ __metadata:
   resolution: "ztoolbox@workspace:."
   dependencies:
     "@types/chrome": "npm:^0.0.323"
-    "@types/fs-extra": "npm:^11.0.4"
-    "@types/klaw-sync": "npm:^6.0.5"
     "@types/socket.io-client": "npm:^3.0.0"
-    "@types/twig": "npm:^1.12.16"
     chai: "npm:^5.2.0"
     chalk: "npm:^5.4.1"
     dotenv: "npm:^16.5.0"
-    fs-extra: "npm:^11.3.0"
-    klaw-sync: "npm:^7.0.0"
     material-symbols: "npm:^0.31.4"
     mocha: "npm:^11.5.0"
     nunjucks: "npm:^3.2.4"
@@ -5533,6 +5403,7 @@ __metadata:
     socket.io-client: "npm:^4.8.1"
     stylelint: "npm:^16.20.0"
     stylelint-config-recommended: "npm:^16.0.0"
+    user-agent-data-types: "npm:^0.4.2"
     web-ext: "npm:^8.8.0"
     web-ext-types: "npm:^3.2.1"
   languageName: unknown

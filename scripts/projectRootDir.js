@@ -1,4 +1,3 @@
-import { dirname, normalize } from 'path';
-import { fileURLToPath } from 'url';
+import { normalize } from 'path';
 
-export const projectRootDir = normalize(dirname(fileURLToPath(import.meta.url)) + '/..');
+export const projectRootDir = normalize(import.meta.dirname + '/..');
