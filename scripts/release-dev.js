@@ -65,7 +65,7 @@ async function init() {
 
 	/**
 	 *
-	 * @type { { skipDefaultZip: boolean, readonly manifestOverrides?: function(manifestJson: object): object, readonly publishRelease?: function(firefoxReleaseFilePath:string, manifestJson:object): Promise<void> } }
+	 * @type { { skipDefaultZip: boolean, readonly manifestOverrides?: function(manifestJson: object, pJson:Readonly<object>): object, readonly publishRelease?: function(firefoxReleaseFilePath:string, manifestJson:object): Promise<void> } }
 	 */
 	let localRelease = undefined;
 	if (fs.existsSync(`${import.meta.dirname}/release-dev.loc.js`)) {
@@ -150,14 +150,15 @@ async function init() {
 
 	if (localRelease && typeof localRelease.manifestOverrides === 'function') {
 		info('Local release manifest overrides...');
-		manifestJson = await localRelease.manifestOverrides(manifestJson) ?? manifestJson;
-	} else {
+		manifestJson = await localRelease.manifestOverrides(manifestJson, pJson) ?? manifestJson;
+	}
+	if (!manifestJson.browser_specific_settings) {
 		manifestJson.browser_specific_settings = {
 			"browser_specific_settings": {
 				"gecko": {
 					"id": "ztoolbox_dev@zatsunenomokou.eu",
 					"update_url": "https://github.com/ZatsuneNoMokou/ztoolbox/raw/master/dist/z_toolbox_dev.update.json",
-					"strict_min_version": "141.0"
+					"strict_min_version": pJson.engines.firefox,
 				},
 				"gecko_android": {}
 			},
@@ -223,7 +224,7 @@ async function init() {
 							{ "version": manifestJson.version,
 								"update_link": "https://github.com/ZatsuneNoMokou/ztoolbox/raw/master/dist/z_toolbox_dev.xpi",
 								"applications": {
-									"gecko": { "strict_min_version": manifestJson.browser_specific_settings.gecko.strict_min_version },
+									"gecko": { "strict_min_version": pJson.engines.firefox },
 									"gecko_android": {}
 								}
 							}

@@ -31,7 +31,8 @@
 		"update": "npm run postinstall"
 	},
 	"engines": {
-		"node": ">=22.0.0"
+		"node": ">=22.0.0",
+		"firefox": "141.0"
 	},
 	"webExt": {
 		"ignoreFiles": []
