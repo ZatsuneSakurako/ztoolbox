@@ -2,6 +2,7 @@
 * i : Minimum version Firefox 142
 * \+ : Allow UserScript to inject style in classic style tag
 * Fix : Remove some IDE related warnings
+* Fix : Accent problem in date functions
 * \- : Remove `*.prod.` system in the release script and remove `klaw-sync` dependency
 
 # 3.0.1

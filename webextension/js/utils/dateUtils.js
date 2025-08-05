@@ -18,11 +18,12 @@ const dateUtils = {
     parse(dateString, formatString, language='en') {
         const monthMap = Object.fromEntries(this.monthNames[language].map((name, i) => [name, i]));
         const monthMap2 = Object.fromEntries(this.monthNames2[language].map((name, i) => [name, i]));
+        const accents = "àáâãäåæçèéêëìíîïðñòóôõöøùúûüýþÿ";
 
         const formatMap = {
             'MM': '(?<month>\\d{1,2})', // Month as MM
-            'MMM': '(?<month>[A-Za-z]{3})', // Month as MMM
-            'MMMM': '(?<month>[A-Za-z]+?)', // Month as MMMM
+            'MMM': `(?<month>[A-Za-z${accents}]{3})`, // Month as MMM
+            'MMMM': `(?<month>[A-Za-z${accents}]+?)`, // Month as MMMM
             'DD': '(?<day>\\d{1,2})', // Day as DD
             'D': '(?<day>\\d{1,2})', // Day as D
             'YYYY': '(?<year>\\d{4})', // Year as YYYY
