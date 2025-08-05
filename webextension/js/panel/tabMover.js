@@ -70,7 +70,7 @@ export async function update() {
 				name: `${truncateString(win.currentTabTitle ?? win.id.toString())} (${win.tabs.length})`,
 				title: win.currentTabTitle ?? win.id.toString(),
 				icon: 'tab_move',
-				autoClose: false,
+				autoClose: true,
 			});
 		}
 	}
@@ -83,7 +83,7 @@ export async function update() {
 
 			name: chrome.i18n.getMessage("newWindow"),
 			icon: 'tab_move',
-			autoClose: false,
+			autoClose: true,
 		});
 	}
 
