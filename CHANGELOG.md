@@ -5,6 +5,7 @@
 * Fix : Remove some IDE related warnings
 * Fix : Accent problem in date functions
 * \- : Remove `*.prod.` system in the release script and remove `klaw-sync` dependency
+* i : Firefox [StorageArea.getKeys()](https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/storage/StorageArea/getKeys) support
 
 # 3.0.1
 * Fix : Userstyle when nothing available
