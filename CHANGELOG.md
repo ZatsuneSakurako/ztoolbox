@@ -1,5 +1,6 @@
 # WIP
-* i : Minimum version Firefox 142
+* i : Minimum version Chrome/Chromium 137
+* i : Minimum version Firefox 143
 * \+ : Allow UserScript to inject style in classic style tag
 * \+ : Auto-close panel when clicking on tab mover actions
 * Fix : Remove some IDE related warnings
