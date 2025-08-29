@@ -12,6 +12,16 @@ export function matchesChromePattern(urlString, patternString) {
 		patternString = "*://*/*";
 	}
 
+	const wildcardHostRegex = /^((?:\*|\w+):\/\/)\*\./;
+	if (wildcardHostRegex.test(patternString)) {
+		// Patch *.host that should match *.google.com values like https://google.com
+		patternString = patternString.replace(wildcardHostRegex, '$1{:subdomain.}*');
+	}
+	if (patternString[patternString.length - 1] !== '*') {
+		// Patch additional chars at the end of the url
+		patternString += '*';
+	}
+
 	let parsedUrl;
 	try {
 		parsedUrl = new URL(urlString);
@@ -37,34 +47,5 @@ export function matchesChromePattern(urlString, patternString) {
 		// console.error("Invalid pattern:", patternString, e);
 		return false; // Invalid pattern
 	}
-	if (urlPattern.exec(urlString) !== null) return true;
-
-
-	if (patternString[patternString.length - 1] !== '/') {
-		try {
-			urlPattern = new URLPattern(patternString + '/');
-			if (urlPattern.exec(urlString) !== null) return true;
-		} catch (e) {
-			console.error("Invalid pattern (pattern/ patch) :", patternString, e);
-		}
-	}
-	if (patternString[patternString.length - 1] !== '*') {
-		try {
-			urlPattern = new URLPattern(patternString + '*');
-			if (urlPattern.exec(urlString) !== null) return true;
-		} catch (e) {
-			console.error("Invalid pattern (pattern* patch) :", patternString, e);
-		}
-	}
-	const wildcardHostRegex = /^((?:\*|\w+):\/\/)\*\./;
-	if (/^(\*|\w+):\/\/\*\./.test(patternString)) {
-		try {
-			urlPattern = new URLPattern(patternString.replace(wildcardHostRegex, '$1'));
-			if (urlPattern.exec(urlString) !== null) return true;
-		} catch (e) {
-			console.error("Invalid pattern (*.host patch) :", patternString, e);
-		}
-	}
-
-	return false;
+	return !!urlPattern.test(urlString);
 }
