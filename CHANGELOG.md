@@ -1,4 +1,4 @@
-# WIP
+# 3.2.1
 * Fix : `adoptedStyleSheets` support under Firefox
 
 # 3.2.0
