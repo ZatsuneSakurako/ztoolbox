@@ -23,7 +23,15 @@
 		} else {
 			const styleSheet = new CSSStyleSheet();
 			injectedStyles.set(fileName, styleSheet);
-			document.adoptedStyleSheets.push(styleSheet);
+
+			if ('wrappedJSObject' in document) {
+				const sheets = document.wrappedJSObject.adoptedStyleSheets.slice();
+				sheets.push(styleSheet);
+				document.wrappedJSObject.adoptedStyleSheets = sheets;
+			} else {
+				document.adoptedStyleSheets.push(styleSheet);
+			}
+
 			styleSheet.disabled = false;
 			return styleSheet.replace(css);
 		}

@@ -1,3 +1,6 @@
+# 3.2.1
+* Fix : `adoptedStyleSheets` support under Firefox
+
 # 3.2.0
 * i : Minimum version Chrome/Chromium 137
 * i : Minimum version Firefox 143
