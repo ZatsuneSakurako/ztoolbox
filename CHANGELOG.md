@@ -1,12 +1,15 @@
-# WIP
+# 3.2.0
 * i : Minimum version Chrome/Chromium 137
 * i : Minimum version Firefox 143
-* \+ : Allow UserScript to inject style in classic style tag
-* \+ : Auto-close panel when clicking on tab mover actions
-* Fix : Remove some IDE related warnings
-* Fix : Accent problem in date functions
-* \- : Remove `*.prod.` system in the release script and remove `klaw-sync` dependency
 * i : Firefox [StorageArea.getKeys()](https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/storage/StorageArea/getKeys) support
+* \+ : Auto-close panel when clicking on tab mover actions
+* Fix : Accent problem in date functions
+
+# 3.1.0
+* i : Minimum version Firefox 142
+* \+ : Allow UserScript to inject style in classic style tag
+* Fix : Remove some IDE related warnings
+* \- : Remove `*.prod.` system in the release script and remove `klaw-sync` dependency
 
 # 3.0.1
 * Fix : Userstyle when nothing available
