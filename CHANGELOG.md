@@ -1,3 +1,6 @@
+# WIP
+* i : New tab bookmark data loading refactoring
+
 # 3.2.1
 * Fix : `adoptedStyleSheets` support under Firefox
 
