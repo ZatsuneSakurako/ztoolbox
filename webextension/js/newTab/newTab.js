@@ -118,6 +118,7 @@ async function loadSpeedDial() {
 	} catch (e) {
 		console.error(e);
 	}
+	newTabImages = newTabImages ?? {};
 
 
 
@@ -127,15 +128,6 @@ async function loadSpeedDial() {
 	 */
 	const bookmarksMeta = {};
 
-	/**
-	 *
-	 * @type {Map<string, string|null|Promise<string>>}
-	 */
-	/**
-	 *
-	 * @type {Map<string, Dict<string | null>|null>}
-	 */
-	const newImages = newTabImages ? new Map(Object.entries(newTabImages)) : new Map();
 	let dataFetchingRequired = false;
 	/**
 	 *
@@ -148,20 +140,19 @@ async function loadSpeedDial() {
 
 		for (let bookmark of bookmarks.values()) {
 			if (bookmark.children) {
-				promises.push(loadBookmarksMetaData(bookmark.children));
+				promises.push(loadBookmarksMetaData(bookmark.children, fetchData));
 			}
 
 			if (!bookmark.url) continue;
 			bookmark.checksum = await generateChecksum(bookmark.url, imageUrlAlgorithm);
 			if (bookmark.checksum in bookmarksMeta) continue;
 
-			const existingData = newImages.get(bookmark.checksum);
+			const existingData = newTabImages[bookmark.checksum];
 			if (existingData !== undefined) {
 				bookmarksMeta[bookmark.checksum] = existingData;
 				continue;
 			}
 
-			dataFetchingRequired = true;
 			const output = bookmarksMeta[bookmark.checksum] = {};
 			output._hostname = null;
 			try {
@@ -170,15 +161,18 @@ async function loadSpeedDial() {
 
 			if (fetchData) {
 				try {
-					const seoMetaData = await fetchSeoMetaData(bookmark.url)
-						.catch(console.error);
+					const seoMetaData = (await fetchSeoMetaData(bookmark.url)
+						.catch(console.error)) ?? null;
 					newTabImages[bookmark.checksum] = seoMetaData;
-					newImages.set(bookmark.checksum, seoMetaData ?? null);
+					if (seoMetaData === null) {
+						continue;
+					}
 				} catch (e) {
 					console.error(e);
 					continue;
 				}
 			} else {
+				dataFetchingRequired = true;
 				continue;
 			}
 
@@ -228,10 +222,13 @@ async function loadSpeedDial() {
 	if (dataFetchingRequired) {
 		console.info('fetching data...');
 
+		for (const key of Object.keys(bookmarksMeta)) {
+			delete bookmarksMeta[key];
+		}
+
 		await loadBookmarksMetaData(data, true)
 			.catch(console.error);
 
-		newTabImages = Object.fromEntries(newImages);
 		await chrome.storage.local.set({
 			[newTabImagesStorage]: newTabImages
 		})

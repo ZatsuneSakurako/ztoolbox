@@ -1,3 +1,6 @@
+# WIP
+* Fix : Fix new tab data loading
+
 # 3.3.1
 * Fix : New tab bookmark rendering before loading data
 
