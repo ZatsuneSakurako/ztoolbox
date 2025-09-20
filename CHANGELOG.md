@@ -1,4 +1,4 @@
-# WIP
+# 3.3.0
 * i : Minimum version Chrome/Chromium 138
 * i : Minimum version Firefox 144
 * i : New tab bookmark data loading refactoring
