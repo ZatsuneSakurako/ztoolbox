@@ -32,7 +32,7 @@
 	},
 	"engines": {
 		"node": ">=22.0.0",
-		"firefox": "143.0"
+		"firefox": "144.0"
 	},
 	"webExt": {
 		"ignoreFiles": []
