@@ -4,7 +4,7 @@
 	"short_name": "ZToolBoxDev",
 	"description": "__MSG_extShortDesc__",
 	"author": "Zatsune No Mokou",
-	"version": "3.2.1",
+	"version": "3.3.0",
 	"icons": {
 		"16": "/icon_16.png",
 		"48": "/icon_48.png",
@@ -48,5 +48,5 @@
 	"host_permissions": [
 		"<all_urls>"
 	],
-	"minimum_chrome_version": "137.0"
+	"minimum_chrome_version": "138.0"
 }

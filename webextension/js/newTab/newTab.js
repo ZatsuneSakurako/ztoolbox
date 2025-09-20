@@ -89,31 +89,88 @@ async function loadSpeedDial() {
 	}
 
 
+
+	/**
+	 *
+	 * @type { Dict<{ capture?: string, _hostname?: string|null, image?: string, theme_color?: string, background_color?: string, favicon?: string }> }
+	 */
+	const bookmarksMeta = {};
+
 	/**
 	 *
 	 * @type {Map<string, string|null|Promise<string>>}
 	 */
+	/**
+	 *
+	 * @type {Map<string, Dict<string | null>|null>}
+	 */
 	const newImages = newTabImages ? new Map(Object.entries(newTabImages)) : new Map();
 	if (data) {
-		for (let [, newTabData] of data) {
-			for (let child of newTabData.children) {
-				const bookmarkUrlChecksum = await generateChecksum(child.url, imageUrlAlgorithm);
-				if (newImages.has(bookmarkUrlChecksum)) {
-					continue;
+		/**
+		 *
+		 * @param {Map<string, chrome.bookmarks.BookmarkTreeNode>} bookmarks
+		 * @return {Promise<void>}
+		 */
+		const loadBookmarksMetaData = async function(bookmarks) {
+			const promises = [];
+
+			for (let bookmark of bookmarks.values()) {
+				if (bookmark.children) {
+					promises.push(loadBookmarksMetaData(bookmark.children));
 				}
 
-				newImages.set(bookmarkUrlChecksum, (async () => {
-					return await fetchSeoMetaData(child.url);
-				})());
-			}
-		}
+				if (!bookmark.url) continue;
+				bookmark.checksum = await generateChecksum(bookmark.url, imageUrlAlgorithm);
+				if (bookmark.checksum in bookmarksMeta) continue;
 
-		for (let [key, value] of newImages) {
-			if (value instanceof Promise) {
-				value = (await value.catch(console.error)) ?? null;
+				const existingData = newImages.get(bookmark.checksum);
+				if (existingData !== undefined) {
+					bookmarksMeta[bookmark.checksum] = existingData;
+					continue;
+				} else {
+					const seoMetaData = await fetchSeoMetaData(bookmark.url)
+						.catch(console.error);
+					newImages.set(bookmark.checksum, seoMetaData ?? null);
+				}
+
+				const output = bookmarksMeta[bookmark.checksum] = {};
+				output._hostname = null;
+				try {
+					output._hostname = new URL(bookmark.url).hostname;
+				} catch (_) {}
+
+				if (!newTabImages[bookmark.checksum]) continue;
+
+				const imagePropertyNames = new Set([
+					"og:image",
+					"og:image:url",
+					"og:image:secure_url",
+					"twitter:image"
+				]);
+				for (let imagePropertyName of imagePropertyNames) {
+					const value = newTabImages[bookmark.checksum][imagePropertyName];
+					if (!!value) {
+						output.image = (new URL(value, bookmark.url)).toString();
+					}
+				}
+
+				if (newTabImages[bookmark.checksum]._manifest) {
+					const manifest = newTabImages[bookmark.checksum]._manifest;
+					output.theme_color = manifest.theme_color ?? manifest['theme-color'];
+					output.background_color = manifest.background_color;
+
+					const favicon = Array.isArray(manifest.icons) ? manifest.icons.at(0) : null;
+					output.favicon = !!favicon ? (new URL(favicon.src, bookmark.url)).toString() : null;
+				}
+
+				newTabImages[bookmark.checksum] = output;
 			}
-			newImages.set(key, value);
-		}
+
+			await Promise.allSettled(promises);
+		};
+
+		await loadBookmarksMetaData(data)
+			.catch(console.error);
 
 		newTabImages = Object.fromEntries(newImages);
 		await chrome.storage.local.set({
@@ -127,6 +184,7 @@ async function loadSpeedDial() {
 	}
 
 
+
 	// Copy node list as we are removing them
 	for (let child of [...$newTabContainer.children]) {
 		child.remove();
@@ -134,77 +192,10 @@ async function loadSpeedDial() {
 
 
 
-
-
-	/**
-	 *
-	 * @param {chrome.bookmarks.BookmarkTreeNode} bookmark
-	 * @return {Promise<{ capture?: string, _hostname?: string|null, image?: string, theme_color?: string, background_color?: string, favicon?: string }>}
-	 */
-	const getMeta = async function getMeta(bookmark) {
-		const url = bookmark.url,
-			checksum = await generateChecksum(url, imageUrlAlgorithm),
-			output = {}
-		;
-
-		if (newTabCaptures && typeof newTabCaptures[checksum] === 'string' ) {
-			output.capture = newTabCaptures[checksum];
-		}
-
-		output._hostname = null;
-		try {
-			output._hostname = new URL(url).hostname;
-		} catch (_) {}
-		if (!newTabImages[checksum]) return output;
-
-
-
-		const imagePropertyNames = new Set([
-			"og:image",
-			"og:image:url",
-			"og:image:secure_url",
-			"twitter:image"
-		]);
-		for (let imagePropertyName of imagePropertyNames) {
-			const value = newTabImages[checksum][imagePropertyName];
-			if (!!value) {
-				output.image = (new URL(value, url)).toString();
-			}
-		}
-
-		if (newTabImages[checksum]._manifest) {
-			const manifest = newTabImages[checksum]._manifest;
-			output.theme_color = manifest.theme_color ?? manifest['theme-color'];
-			output.background_color = manifest.background_color;
-
-			const favicon = Array.isArray(manifest.icons) ? manifest.icons.at(0) : null;
-			output.favicon = !!favicon ? (new URL(favicon.src, url)).toString() : null;
-		}
-
-		return output;
-	}
-
-	const promises = [],
-		bookmarksMeta = {};
-	const loadBookmarkMetas = (bookmarks) => {
-		for (const bookmark of bookmarks) {
-			promises.push((async () => {
-				bookmarksMeta[bookmark.id] = await getMeta(bookmark);
-			})())
-
-			if (Array.isArray(bookmark.children)) {
-				loadBookmarkMetas(bookmark.children);
-			}
-		}
-	}
-	loadBookmarkMetas(Array.from(data.values()));
-
-	await Promise.allSettled(promises)
-		.catch(console.error);
-
 	const result = await nunjuckRender('newTab', {
 		'bookmarks': [...data.entries()],
 		bookmarksMeta,
+		newTabCaptures,
 	}, true);
 	appendTo($newTabContainer, result);
 
@@ -215,6 +206,11 @@ async function loadSpeedDial() {
 	;
 }
 
+/**
+ *
+ * @param {string} url
+ * @return {Promise<Dict<string|null>|null>}
+ */
 async function fetchSeoMetaData(url) {
 	const response = await fetch(url);
 	if (!response.ok) return null;

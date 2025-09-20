@@ -95,7 +95,11 @@ async function init() {
 
 	const ignoredFiles = [];
 	try {
-		const packageJson = await import('../package.json');
+		const packageJson = (await import('../package.json', {
+			with: {
+				type: 'json',
+			}
+		})).default;
 		if (Array.isArray(packageJson.webExt.ignoreFiles)) {
 			ignoredFiles.push(...packageJson.webExt.ignoreFiles);
 		}

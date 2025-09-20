@@ -42,7 +42,7 @@
         </a>
         <a href="{{ bookmark.url }}" class="hover"></a>
 
-        {% set image = meta.capture if meta.capture else meta.image %}
+        {% set image = newTabCaptures[bookmark.checksum] if newTabCaptures[bookmark.checksum] else meta.image %}
         {% if image %}<img class="background" src="{{ image }}" crossorigin="anonymous" alt="{{ bookmark.title }}" loading="lazy">{% endif %}
     </article>
 {% endmacro %}
