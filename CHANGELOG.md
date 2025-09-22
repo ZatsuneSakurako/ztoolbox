@@ -1,3 +1,7 @@
+# WIP
+* i : Optimize new tab loading
+* i : Optimize panel loading
+
 # 3.3.2
 * Fix : Fix new tab data loading
 
