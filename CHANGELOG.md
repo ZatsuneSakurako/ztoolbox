@@ -1,6 +1,7 @@
 # WIP
 * i : Optimize new tab loading
 * i : Optimize panel loading
+* i : Refactor panel css using [CSS nesting](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_nesting/Using_CSS_nesting)
 
 # 3.3.2
 * Fix : Fix new tab data loading
