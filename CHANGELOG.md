@@ -1,4 +1,4 @@
-# WIP
+# 3.4.0
 * i : Minimum version Firefox 146
 * i : Optimize new tab loading
 * i : Optimize panel loading
