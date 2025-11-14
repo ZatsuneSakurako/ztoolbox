@@ -1,6 +1,5 @@
 import * as fs from "node:fs";
 import * as path from "node:path";
-import sass from "sass";
 
 import {cp} from "./common/file-operations.js";
 import {info, error} from "./common/custom-console.js";
@@ -34,9 +33,11 @@ if (!exist_jsLib) {
 	_cp("./node_modules/material-symbols/material-symbols-rounded.woff2", path.normalize(`${fontPath}/material-symbols-rounded.woff2`));
 	_cp("./node_modules/material-symbols/material-symbols-sharp.woff2", path.normalize(`${fontPath}/material-symbols-sharp.woff2`));
 	fs.writeFileSync(
-		path.join(projectRootDir, './webextension/assets/fonts/material-symbols.css'), sass.compile("./node_modules/material-symbols/index.scss").css
+		path.join(projectRootDir, './webextension/assets/fonts/material-symbols.css'),
+		fs.readFileSync("./node_modules/material-symbols/index.css", { encoding: "utf-8" })
 			.replace(/ {2}/g, '\t')
-			.replace(/(font-family: "Material Symbols \w+?";)/g, '/*noinspection CssNoGenericFontName*/\n\t$1 /* stylelint-disable-line font-family-no-missing-generic-family-keyword */'),
+			.replace(/(font-family: "Material Symbols \w+?";)/g, '/*noinspection CssNoGenericFontName*/\n\t$1 /* stylelint-disable-line font-family-no-missing-generic-family-keyword */')
+			.trim(),
 		{ encoding: 'utf-8' }
 	);
 

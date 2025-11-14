@@ -1,3 +1,7 @@
+# WIP
+* i : Upgrade libraries
+* \- : Remove sass dependency (Using Material Symbol css file directly)
+
 # 3.4.0
 * i : Minimum version Firefox 146
 * i : Optimize new tab loading
