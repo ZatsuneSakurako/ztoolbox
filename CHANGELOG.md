@@ -1,4 +1,5 @@
 # WIP
+* i : Minimum version Firefox 146
 * i : Optimize new tab loading
 * i : Optimize panel loading
 * i : Refactor panel css using [CSS nesting](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_nesting/Using_CSS_nesting)
