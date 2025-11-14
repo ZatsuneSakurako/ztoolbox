@@ -23,7 +23,9 @@ export class BookmarksResolver {
 	get #mainTree() {
 		if (!this.#bookmarkTree) throw new Error('BOOKMARKS_NOT_LOADED');
 		return this.#bookmarkTree.find(item => {
-			return item.id === '2' || item.id === 'menu________'
+			return item.folderType === "other" // chrome-based
+				||
+				item.id === 'menu________' // firefox
 		}) ?? null;
 	}
 
