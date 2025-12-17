@@ -1,4 +1,5 @@
 # WIP
+* i : Minimum version Firefox 147
 * i : Upgrade libraries
 * \- : Remove sass dependency (Using Material Symbol css file directly)
 
