@@ -1,6 +1,7 @@
 # WIP
 * i : Minimum version Firefox 147
 * i : Upgrade libraries
+* Fix : Problem in French with short months in date functions
 * \- : Remove sass dependency (Using Material Symbol css file directly)
 
 # 3.4.0
