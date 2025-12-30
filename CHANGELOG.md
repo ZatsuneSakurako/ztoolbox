@@ -1,6 +1,7 @@
 # WIP
 * i : Minimum version Firefox 147
 * i : Upgrade libraries
+* \+ : Add slugify utility function to `znmApi`
 * Fix : Problem in French with short months in date functions
 * \- : Remove sass dependency (Using Material Symbol CSS file directly)
 
