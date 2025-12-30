@@ -1,8 +1,15 @@
+# 3.5.0
+* i : Minimum version Firefox 147
+* i : Upgrade libraries
+* \+ : Add slugify utility function to `znmApi`
+* Fix : Problem in French with short months in date functions
+* \- : Remove sass dependency (Using Material Symbol CSS file directly)
+
 # 3.4.0
 * i : Minimum version Firefox 146
 * i : Optimize new tab loading
 * i : Optimize panel loading
-* i : Refactor panel css using [CSS nesting](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_nesting/Using_CSS_nesting)
+* i : Refactor panel CSS using [CSS nesting](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_nesting/Using_CSS_nesting)
 * Fix : New tab in Chromium browsers
 
 # 3.3.2
@@ -235,7 +242,7 @@
 * Fix : tabMover - update on load on Chrome browsers
 
 # 1.3.3
-* Fix : tabMover - Auto-close popup with openurl
+* Fix : tabMover - Auto-close popup with `openurl`
 
 # 1.3.2
 * Fix : tabMover - Fix duplicate items
@@ -285,7 +292,7 @@
 * fix : deviantArt - fix data url
 
 # 0.20.0
-* \+ : Settings to display or not FreshRss in panel
+* \+ : Settings to display or not FreshRSS in panel
 * \- : Clean old translations
 * Fix : FreshRSS with no data (no URL)
 
@@ -519,7 +526,7 @@
 * Fix : Addon auto updater
 
 # 0.0.3
-* Fix : Disabled Tooltip, causing strange Firefox behaviour
+* Fix : Disabled Tooltip, causing strange Firefox behavior
 	* Not shown correctly
 	* Other panels from others addons not showing correctly
 
