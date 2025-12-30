@@ -1,4 +1,4 @@
-# WIP
+# 3.5.0
 * i : Minimum version Firefox 147
 * i : Upgrade libraries
 * \+ : Add slugify utility function to `znmApi`
