@@ -93,53 +93,41 @@ export async function theme_update(currentTheme, background_color) {
 		}
 	}
 
-	if (themeStylesheetNode !== null && currentTheme === themeStylesheetNode.dataset.theme && background_color === themeStylesheetNode.dataset.background_color) {
-		console.info("Loaded theme is already good");
-		return;
-	} else if (themeStylesheetNode && currentTheme !== themeStylesheetNode.dataset.theme) {
-		console.info("Changing stylesheet href");
-		themeStylesheetNode.href = themeStylesheetNode.href.replace(/-(dark|light)/i, `-${currentTheme}`);
-		themeStylesheetNode.dataset.theme = currentTheme;
-	}
-
-
-	if (themeStylesheetNode && background_color === themeStylesheetNode.dataset.background_color) {
-		console.info("Theme color is already good");
-	}
-
-
 	const baseColor = new Color(background_color),
 		baseColor_hsl = baseColor.getHSL(),
 		baseColor_L = JSON.parse(baseColor_hsl.L.replace("%",""))/100
 	;
 	let values;
 	if (currentTheme === "dark") {
-		if (baseColor_L > 0.5 || baseColor_L < 0.1) {
-			values = ["19%","13%","26%","13%"];
+		if (baseColor_L > 0.5 || baseColor_L < 0.25) {
+			values = ['35%', '25%', '45%'];
 		} else {
-			values = [(baseColor_L + 0.06) * 100 + "%", baseColor_L * 100 + "%", (baseColor_L + 0.13) * 100 + "%", baseColor_L * 100 + "%"];
+			values = [`${baseColor_L * 100}%`, `${(baseColor_L - 0.1) * 100}%`, `${(baseColor_L + 0.15) * 100}%`];
 		}
 	} else if (currentTheme === "light") {
-		if (baseColor_L < 0.5 /*|| baseColor_L > 0.9*/) {
-			values = ["87%","74%","81%","87%"];
+		if (baseColor_L < 0.5 || baseColor_L > 0.75) {
+			values = ['65%', '40%', '80%'];
 		} else {
-			values = [baseColor_L * 100 + "%", (baseColor_L - 0.13) * 100 + "%", (baseColor_L - 0.06) * 100 + "%", baseColor_L * 100 + "%"];
+			values = [`${baseColor_L * 100}%`, `${(baseColor_L - 0.25) * 100}%`, `${(baseColor_L + 0.25) * 100}%`];
 		}
 	}
 
-	const light0 = values[0],
-		light1 = values[1],
-		light2 = values[2],
-		light3 = values[3],
+	const primary = values[0],
+		primaryDark = values[1],
+		primaryLight = values[2],
 		invBaseColor_hue = (baseColor_hsl.H - 360/2 * ((baseColor_hsl.H < 360/2)? 1 : -1)),
 		invBaseColor_light = (currentTheme === "dark")? "77%" : "33%";
 
+	console.dir([
+		primary,
+		primaryDark,
+		primaryLight,
+	])
 	const root = document.documentElement;
-	root.style.setProperty('--bgLight0', `hsl(${baseColor_hsl.H}, ${baseColor_hsl.S}, ${light0})`);
-	root.style.setProperty('--bgLight1', `hsl(${baseColor_hsl.H}, ${baseColor_hsl.S}, ${light1})`);
-	root.style.setProperty('--bgLight2', `hsl(${baseColor_hsl.H}, ${baseColor_hsl.S}, ${light2})`);
-	root.style.setProperty('--bgLight2_Opacity', `hsla${baseColor_hsl.H}, ${baseColor_hsl.S}, ${light2}, 0.95)`);
-	root.style.setProperty('--bgLight3', `hsl(${baseColor_hsl.H}, ${baseColor_hsl.S}, ${light3})`);
+	root.classList.toggle('light', currentTheme === 'light');
+	root.style.setProperty('--primary-color', `hsl(${baseColor_hsl.H}, ${baseColor_hsl.S}, ${primary})`);
+	root.style.setProperty('--primary-color-dark', `hsl(${baseColor_hsl.H}, ${baseColor_hsl.S}, ${primaryDark})`);
+	root.style.setProperty('--primary-color-light', `hsl(${baseColor_hsl.H}, ${baseColor_hsl.S}, ${primaryLight})`);
 	root.style.setProperty('--InvColor', `hsl(${invBaseColor_hue}, ${baseColor_hsl.S}, ${invBaseColor_light})`);
 
 	if (themeStylesheetNode && themeStylesheetNode.dataset.background_color) {
