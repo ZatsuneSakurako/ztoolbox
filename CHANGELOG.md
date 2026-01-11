@@ -1,5 +1,5 @@
 # WIP
-* i : Style rework
+* i : Theme rework
 
 # 3.5.0
 * i : Minimum version Firefox 147
