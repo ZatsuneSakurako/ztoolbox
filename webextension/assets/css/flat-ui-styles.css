@@ -225,6 +225,13 @@ input[type]:invalid {
 	border: 1px solid #F44335;
 }
 
+textarea:disabled,
+input[type]:disabled,
+button:disabled {
+	cursor: not-allowed;
+	opacity: 0.5;
+}
+
 
 
 /* Number/Date Input Styles */
