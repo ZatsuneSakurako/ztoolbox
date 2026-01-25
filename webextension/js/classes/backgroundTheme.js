@@ -118,11 +118,6 @@ export async function theme_update(currentTheme, background_color) {
 		invBaseColor_hue = (baseColor_hsl.H - 360/2 * ((baseColor_hsl.H < 360/2)? 1 : -1)),
 		invBaseColor_light = (currentTheme === "dark")? "77%" : "33%";
 
-	console.dir([
-		primary,
-		primaryDark,
-		primaryLight,
-	])
 	const root = document.documentElement;
 	root.classList.toggle('light', currentTheme === 'light');
 	root.style.setProperty('--primary-color', `hsl(${baseColor_hsl.H}, ${baseColor_hsl.S}, ${primary})`);
