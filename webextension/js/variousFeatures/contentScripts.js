@@ -241,7 +241,7 @@ const znmUserscriptApi = {
 			if (tab !== undefined) {
 				exceptTab.push(tab.id);
 			}
-			await triggerUserScriptDataUpdated(fileName, newData ?? {}, new Set(exceptTab));
+			await ContentScripts.instance.triggerUserScriptDataUpdated(fileName, newData ?? {}, new Set(exceptTab));
 		} catch (error) {
 			console.error(error);
 		}
@@ -468,28 +468,6 @@ const znmUserscriptApi = {
 };
 
 
-/**
- *
- * @param {string} fileName
- * @param {Dict<any>} newData
- * @param {Set<number>} [exceptTabs]
- * @returns {Promise<void>}
- */
-async function triggerUserScriptDataUpdated(fileName, newData, exceptTabs) {
-	const tabs = await chrome.tabs.query({
-		windowType: 'normal'
-	});
-	for (let tab of tabs) {
-		if (exceptTabs && exceptTabs.has(tab.id)) continue;
-		await chrome.tabs.sendMessage(tab.id, {
-			type: "userScriptEvent",
-			target: fileName,
-			eventName: 'dataUpdated',
-			data: [newData],
-		})
-			.catch(console.error);
-	}
-}
 
 /**
  *
@@ -745,8 +723,8 @@ class ContentScripts {
 	onUserScriptDataUpdatedCbList = [];
 
 	/**
-	 *
-	 * @type {Map<number, chrome.runtime.Port>}
+	 * Map<tabId base36, Port>
+	 * @type {Map<string, chrome.runtime.Port>}
 	 */
 	#ports=new Map()
 
@@ -795,14 +773,14 @@ class ContentScripts {
 				return;
 			}
 
-			const oldPort = this.#ports.get(port.sender.tab.id);
+			const oldPort = this.#ports.get(port.sender.tab.id.toString(36));
 			if (oldPort) {
 				console.log('[UserScript] Port already connected on ' + port.sender.tab.id);
 				oldPort.disconnect();
 			}
-			this.#ports.set(port.sender.tab.id, port);
+			this.#ports.set(port.sender.tab.id.toString(36), port);
 			port.onDisconnect.addListener((port) => {
-				this.#ports.delete(port.sender.tab.id);
+				this.#ports.delete(port.sender.tab.id.toString(36));
 			});
 		});
 		chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
@@ -829,8 +807,9 @@ class ContentScripts {
 				}
 
 				wrapPromise(this.#manuallyExecute(userScript, message.data.tabId));
+				return true;
 			} else if (message.id === 'user_script_panel_event') {
-				const port = this.#ports.get(message.data.tabId);
+				const port = this.#ports.get(message.data.tabId.toString(36));
 				if (port !== undefined) {
 					// If "saved" port connected (Firefox does not support chrome.runtime.onMessage version)
 					try {
@@ -852,6 +831,7 @@ class ContentScripts {
 						eventName: message.data.eventName,
 						data: message.data.eventData,
 					}));
+					return true;
 				}
 			}
 		});
@@ -882,7 +862,12 @@ class ContentScripts {
 				console.error(e);
 			}
 		});
-		this.onUserScriptDataUpdatedCbList.push(triggerUserScriptDataUpdated);
+
+		const _this = this;
+		this.onUserScriptDataUpdatedCbList.push(() => {
+			_this.triggerUserScriptDataUpdated()
+				.catch(console.error);
+		});
 	}
 
 	// noinspection SpellCheckingInspection
@@ -1134,6 +1119,42 @@ class ContentScripts {
 
 
 		console.log('[UserScript] Now registered UserScripts', await chrome.userScripts.getScripts());
+	}
+
+
+
+
+	/**
+	 *
+	 * @param {string} fileName
+	 * @param {Dict<any>} newData
+	 * @param {Set<number>} [exceptTabs]
+	 * @returns {Promise<void>}
+	 */
+	async triggerUserScriptDataUpdated(fileName, newData, exceptTabs) {
+		const tabs = await chrome.tabs.query({
+			windowType: 'normal'
+		});
+		const message = {
+			type: "userScriptEvent",
+			target: fileName,
+			eventName: 'dataUpdated',
+			data: [newData],
+		};
+
+		if (this.#ports.size) {
+			for (let [_tabId, port] of this.#ports) {
+				const tabId = parseInt(_tabId, 36);
+				if (exceptTabs && exceptTabs.has(tabId)) continue;
+				port.postMessage(message);
+			}
+			return;
+		}
+		for (let tab of tabs) {
+			if (exceptTabs && exceptTabs.has(tab.id)) continue;
+			await chrome.tabs.sendMessage(tab.id, message)
+				.catch(console.error);
+		}
 	}
 }
 
