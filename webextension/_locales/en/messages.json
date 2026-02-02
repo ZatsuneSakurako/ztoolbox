@@ -69,6 +69,9 @@
 	"newTab_refreshLinkImage": {
 		"message": "Refresh the thumbnail"
 	},
+	"none": {
+		"message": "None"
+	},
 
 	"windowId": {
 		"message": "Fenêtre ($TAB_COUNT$)",

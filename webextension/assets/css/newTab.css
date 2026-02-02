@@ -26,7 +26,35 @@ body {
 			margin-bottom: 0;
 			margin-top: 0;
 		}
+
+		fieldset {
+			align-items: center;
+
+			&.reopenWindow {
+				border: none;
+				padding: 0;
+
+				label[for="reopenWindow"] {
+					margin-right: .5rem;
+				}
+				select#reopenWindow {
+					margin: 0;
+
+					selectedcontent {
+						.material-symbols-outlined {
+							display: none !important;
+						}
+					}
+				}
+			}
+		}
+			justify-content: center;
 	}
+}
+
+.flex-row {
+	display: flex;
+	flex-direction: row;
 }
 h2 {
 	text-align: center;
