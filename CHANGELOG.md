@@ -1,5 +1,6 @@
 # WIP
 * i : Theme rework
+* i : Now use native [util.styleText](https://nodejs.org/api/util.html#utilstyletextformat-text-options) instead of `chalk`
 
 # 3.5.0
 * i : Minimum version Firefox 147
