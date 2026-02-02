@@ -83,6 +83,7 @@ document.addEventListener('change', function onReopenWindowChange(ev) {
 		.catch(console.error)
 		.finally(() => {
 			selectedItem.remove();
+			el.value = '';
 			reopenTabStateRefresh()
 				.catch(console.error);
 		});
