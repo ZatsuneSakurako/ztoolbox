@@ -951,13 +951,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"chalk@npm:^5.6.2":
-  version: 5.6.2
-  resolution: "chalk@npm:5.6.2"
-  checksum: 10/1b2f48f6fba1370670d5610f9cd54c391d6ede28f4b7062dd38244ea5768777af72e5be6b74fb6c6d54cb84c4a2dff3f3afa9b7cb5948f7f022cfd3d087989e0
-  languageName: node
-  linkType: hard
-
 "cheerio-select@npm:^2.1.0":
   version: 2.1.0
   resolution: "cheerio-select@npm:2.1.0"
@@ -4500,7 +4493,6 @@ __metadata:
     "@types/chrome": "npm:^0.1.32"
     "@types/socket.io-client": "npm:^3.0.0"
     chai: "npm:^6.2.1"
-    chalk: "npm:^5.6.2"
     dotenv: "npm:^17.2.3"
     material-symbols: "npm:^0.40.2"
     mocha: "npm:^11.7.5"

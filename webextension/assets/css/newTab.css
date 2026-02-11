@@ -1,26 +1,60 @@
 :root {
 	--defaultSpace: 20px;
 }
+* {
+	box-sizing: border-box;
+}
 body {
 	display: grid;
 	font-family: Ubuntu, Tahoma, sans-serif;
 	height: 100vh;
 	grid-template-columns: 100%;
 	grid-template-rows: fit-content(50px) 1fr;
+
+	&.page-newTab header {
+		display: flex;
+		margin-left: auto;
+		padding: 8px;
+		position: sticky;
+		right: 10%;
+		text-align: center;
+		top: 0;
+		width: 80%;
+		z-index: 1;
+
+		button {
+			margin-bottom: 0;
+			margin-top: 0;
+		}
+
+		fieldset {
+			align-items: center;
+
+			&.reopenWindow {
+				border: none;
+				padding: 0;
+
+				label[for="reopenWindow"] {
+					margin-right: .5rem;
+				}
+				select#reopenWindow {
+					margin: 0;
+
+					selectedcontent {
+						.material-symbols-outlined {
+							display: none !important;
+						}
+					}
+				}
+			}
+		}
+			justify-content: center;
+	}
 }
-* {
-	box-sizing: border-box;
-}
-body.page-newTab header {
+
+.flex-row {
 	display: flex;
-	margin-left: auto;
-	padding: 8px;
-	position: sticky;
-	right: 10%;
-	text-align: center;
-	top: 0;
-	width: 80%;
-	z-index: 1;
+	flex-direction: row;
 }
 h2 {
 	text-align: center;
@@ -58,7 +92,7 @@ button[disabled],
 ul[role="tablist"] {
 	align-items: center;
 	display: flex;
-	font-size: 1rem;
+	font-size: 1.6rem;
 	flex: 1;
 	flex-wrap: nowrap;
 	gap: 20px;

@@ -1,11 +1,11 @@
-import chalk from "chalk";
+import {styleText} from "node:util";
 
 /**
  *
  * @param {string} msg
  */
 export function error(msg) {
-	return console.log(chalk.bold.red(msg));
+	return console.log(styleText(['bold', 'red'], msg));
 }
 
 /**
@@ -13,7 +13,7 @@ export function error(msg) {
  * @param {string} msg
  */
 export function warning(msg) {
-	return console.log(chalk.yellow(msg));
+	return console.log(styleText('yellow', msg));
 }
 
 /**
@@ -21,7 +21,7 @@ export function warning(msg) {
  * @param {string} msg
  */
 export function info(msg) {
-	return console.log(chalk.blueBright(msg));
+	return console.log(styleText('blueBright', msg));
 }
 
 /**
@@ -29,5 +29,5 @@ export function info(msg) {
  * @param {string} msg
  */
 export function success(msg) {
-	return console.log(chalk.green(msg));
+	return console.log(styleText('green', msg));
 }

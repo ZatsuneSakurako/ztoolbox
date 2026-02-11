@@ -23,7 +23,18 @@
         </li>
         {%- endfor -%}
     </ul>
-    <button id="reopenWindow" disabled><span class="material-symbols-outlined">reopen_window</span></button>
+
+	<fieldset class="reopenWindow flex-row">
+		<label for="reopenWindow"><span class="material-symbols-outlined">reopen_window</span></label>
+		<select name="reopenWindow" id="reopenWindow">
+			<button><selectedcontent></selectedcontent></button>
+			<option value="" disabled selected>
+				<span class="material-symbols-outlined" aria-hidden="true">reopen_window</span>
+				<span data-translate-id="none"></span>
+			</option>
+		</select>
+	</fieldset>
+
     <button id="refreshThumbnails"><span class="material-symbols-outlined">frame_reload</span></button>
 </header>
 

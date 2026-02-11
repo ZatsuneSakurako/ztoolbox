@@ -1,6 +1,6 @@
 {
 	"name": "ztoolbox",
-	"version": "3.5.0",
+	"version": "3.6.0",
 	"private": true,
 	"description": "Web Extension to test various things.",
 	"type": "module",
@@ -13,7 +13,6 @@
 		"@types/chrome": "^0.1.32",
 		"@types/socket.io-client": "^3.0.0",
 		"chai": "^6.2.1",
-		"chalk": "^5.6.2",
 		"dotenv": "^17.2.3",
 		"mocha": "^11.7.5",
 		"stylelint": "^16.26.1",
