@@ -133,6 +133,10 @@ footer {
 
 main,
 section {
+	.fui-list {
+		width: 100%;
+	}
+
 	.buttonItem {
 		width: 100%;
 	}
