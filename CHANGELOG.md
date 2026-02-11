@@ -1,4 +1,4 @@
-# WIP
+# 3.6.1
 * Fix : Main list width
 
 # 3.6.0
