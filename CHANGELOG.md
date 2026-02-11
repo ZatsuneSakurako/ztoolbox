@@ -1,4 +1,4 @@
-# WIP
+# 3.6.0
 * i : Theme rework
 * i : Now use native [util.styleText](https://nodejs.org/api/util.html#utilstyletextformat-text-options) instead of `chalk`
 * \+ : Replace the button to re-open last session by a `select`
