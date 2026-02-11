@@ -134,6 +134,11 @@ footer {
 main,
 section {
 	.buttonItem {
+		width: 100%;
+	}
+
+	.buttonItem,
+	.md-list-item {
 		display: grid;
 		font-size: 14px;
 
@@ -149,7 +154,6 @@ section {
 		padding: 7px;
 		position: relative;
 		text-align: left;
-		width: 100%;
 
 		&.no-data {
 			grid-template-areas: "icon title";
