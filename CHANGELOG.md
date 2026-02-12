@@ -1,3 +1,6 @@
+# WIP
+* \+ : Theme rework : Better list
+
 # 3.6.1
 * Fix : Main list width
 
