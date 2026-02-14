@@ -369,7 +369,6 @@ hr {
 /* List Styles */
 .fui-list {
 	border-radius: 4px;
-	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 	display: grid;
 	grid-template-columns: 1fr;
 	gap: 0;
@@ -394,13 +393,14 @@ hr {
 		}
 	}
 
+	&:not(.fui-list_no-shadow) {
+		box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+	}
+
 	& > li,
 	& > .fui-list-item {
 		border-bottom: 1px solid #ddd;
 
-		&:last-child {
-			border-bottom: none;
-		}
 		&:is(:hover, :focus) {
 			background-color: var(--primary-color-light);
 		}
@@ -418,7 +418,6 @@ hr {
 		.fui-list-item-secondary {
 			color: rgba(var(--text-color), 0.6);
 			font-size: 1.4rem;
-			/*color: #666;*/
 		}
 	}
 
@@ -427,6 +426,12 @@ hr {
 		 height: 40px;
 		 border-radius: 50%;
 		 margin-right: 1rem;
+	}
+}
+
+@media (max-width: 479px) {
+	.fui-list > .fui-list-item:last-of-type {
+		border-bottom: none;
 	}
 }
 
