@@ -1,5 +1,6 @@
 # WIP
-* \+ : Theme rework : Better list
+* \+ : Theme rework : Better list and buttons
+* i : Cleaning panel styles
 
 # 3.6.1
 * Fix : Main list width
