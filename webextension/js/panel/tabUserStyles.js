@@ -343,7 +343,7 @@ document.addEventListener('click', function (ev) {
 });
 
 document.addEventListener('click', async function (ev) {
-	const element = ev.target.closest('.userscript.cursor[data-manual-target]');
+	const element = ev.target.closest('.userscript[data-manual-target]:not(.is-executed)');
 	if (!element) return;
 
 	const result = await chrome.runtime.sendMessage(chrome.runtime.id, {
