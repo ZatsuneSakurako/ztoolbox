@@ -10,15 +10,6 @@ async function getLastClosed() {
 
 /**
  *
- * @param {string} sessionId
- * @return {Promise<void>}
- */
-async function reopenLastClosed(sessionId) {
-	await chrome.sessions.restore(sessionId);
-}
-
-/**
- *
  * @type {ReturnType<typeof setTimeout>|null}
  */
 let reopenTabStateRefresh_timer = null;
@@ -50,8 +41,7 @@ async function _reopenTabStateRefresh() {
 
 	const $clearOption = $reopenWindow.options.namedItem('clear');
 	if ($clearOption) {
-		$clearOption.disabled = typeof chrome.sessions.forgetClosedWindow === 'function';
-		// $clearOption.disabled = typeof chrome.sessions.forgetClosedWindow !== 'function';
+		$clearOption.disabled = typeof chrome.sessions.forgetClosedWindow !== 'function';
 	}
 
 
@@ -103,7 +93,7 @@ document.addEventListener('change', function onReopenWindowChange(ev) {
 
 			if (option.dataset.tab !== undefined) {
 				if (typeof chrome.sessions.forgetClosedTab === 'function') {
-					promises.push(chrome.sessions.forgetClosedTab(option.value, option.dataset.window));
+					promises.push(chrome.sessions.forgetClosedTab(parseFloat(option.dataset.window), option.value));
 				} else {
 					promises.push(Promise.reject('chrome.sessions.forgetClosedTab not supported'));
 				}
@@ -123,9 +113,11 @@ document.addEventListener('change', function onReopenWindowChange(ev) {
 			.catch(console.error)
 			.finally(() => {
 				el.disabled = false;
-				el.value = '';
-				reopenTabStateRefresh()
-					.catch(console.error);
+				el.options.item(0).selected = true;
+				setTimeout(() => {
+					reopenTabStateRefresh()
+						.catch(console.error);
+				});
 			});
 		return;
 	} else if (!selectedItem.value) {
