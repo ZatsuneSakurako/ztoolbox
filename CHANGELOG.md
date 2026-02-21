@@ -1,5 +1,6 @@
 # WIP
-* \+ : Theme rework : Better list and buttons
+* \+ : Theme rework: Better list and buttons
+* \+ : Added a "Clear" option to the recently closed sessions dropdown to remove all recently closed sessions (only supported by Firefox currently)
 * i : Cleaning panel styles
 
 # 3.6.1
