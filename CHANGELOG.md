@@ -1,5 +1,5 @@
 # WIP
-* +: Theme rework: Better list and buttons
+* +: Theme rework – Better list and buttons
 * +: Added a "Clear" option to the recently closed sessions dropdown to remove all recently closed sessions (only supported by Firefox currently)
 * i: Cleaning panel styles
 
@@ -16,7 +16,7 @@
 * i: Upgrade libraries
 * +: Add slugify utility function to `znmApi`
 * Fix: Problem in French with short months in date functions
-* -: Remove sass dependency (Using Material Symbol CSS file directly)
+* -: Remove sass dependency (Using `Material Symbol` CSS file directly)
 
 # 3.4.0
 * i: Minimum version Firefox 146
@@ -48,12 +48,12 @@
 
 # 3.1.0
 * i: Minimum version Firefox 142
-* +: Allow UserScript to inject style in classic style tag
-* Fix: Remove some IDE related warnings
+* +: Allow UserScript to inject style in a classic style tag
+* Fix: Remove some IDE-related warnings
 * -: Remove `*.prod.` system in the release script and remove `klaw-sync` dependency
 
 # 3.0.1
-* Fix: UserStyle when nothing available
+* Fix: UserStyle when nothing is available
 
 # 3.0.0
 * i: Minimum version Firefox 141
@@ -62,18 +62,18 @@
 * i: Translations cleanup and move to native translations
 * i: Notify if permission is missing (permission to add using browser interface)
 * i: UserScript :
-  * Replace context menu with panel button to refresh
-  * Replace `dayjs` with custom date functions
-  * Experiment applying styles from tab
-  * Custom sort
-  * New `run-at` value : `panel`
+	* Replace the context menu with a panel button to refresh
+	* Replace `dayjs` with custom date functions
+	* Experiment applying styles from the tab
+	* Custom sort
+	* New `run-at` value : `panel`
 * i: Replace update check with socket update information
 * i: Move from Twig templates to [Nunjuck](https://mozilla.github.io/nunjucks/)
 * i: Simplify theme
 * i: Tab mover and new tab rendered using Nunjuck
 * i: Optimize panel loading
 * -: Remove `iqdb` search
-* -: Remove copy text link
+* -: Remove the copy text link feature
 
 # 2.7.0
 * i: Move ip and meta rating data to UserScript tab data
@@ -85,7 +85,7 @@
 * Fix: Firefox userScripts support
 
 # 2.6.0
-* Feat : System to apply scripts to websites
+* +: System to apply scripts to websites
 
 # 2.5.3
 * Fix: System to apply styles to websites
@@ -103,10 +103,10 @@
 # 2.4.0
 * i: Minimum version Chrome/Chromium 131
 * i: Minimum version Firefox 137
-* +: Support of the folders in bookmarks first depth in new tab
+* +: Support of the folders in bookmarks first depth in the new tab page
 * +: Trigger writing JSON into page variable from [webRequest.onHeadersReceived](https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/webRequest/onHeadersReceived) instead of [devtools](https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/devtools) (Chrome Only)
-* Fix: Load new bookmark metadata when loading new tab
-* Fix: Lazy loading missing on background image in new tab
+* Fix: Load new bookmark metadata when loading the new tab page
+* Fix: Lazy loading missing on background image in the new tab page
 * +: Fix HTTP status data missing handling
 
 # 2.3.4
@@ -114,7 +114,7 @@
 
 # 2.3.3
 * Fix: Fix socket response to `openUrl`
-* Fix: Better folder name support when using array (bookmark path) in new tab
+* Fix: Better folder name support when using an array (bookmark path) in the new tab page
 * -: Remove QR code
 
 # 2.3.2
@@ -123,17 +123,17 @@
 * Fix: Font on new tab page and devtools section
 
 # 2.3.1
-* Fix: Refresh data when getting connected to web socket in new tab
+* Fix: Refresh data when getting connected to a web socket in the new tab page
 
 # 2.3.0
-* +: Setting to display new window button even if there is another window for the tab mover
-* +: Path-like resolving with bookmarks for new tab, and setting to customize folders to display in new tab
+* +: Setting to display a new window button even if there is another window for the tab mover
+* +: Path‑like resolving with bookmarks for the new tab page, and setting to customize folders to display in the new tab page
 
 # 2.2.0
 * +: Capture page system for the new tab page
 * +: Restore the last closed tab button for the new tab page
 * +: JSON view test in devtools (Chrome Only)
-* Fix: Blank with new tab page  
+* Fix: Blank with the new tab page
 
 # 2.1.0
 * i: Move from `Material Icons` to `Material Symbols`
@@ -158,7 +158,7 @@
 * +: Better non-200 HTTP status badge handling
 
 # 1.18.1
-* Fix: Fix non-200 HTTP status badge on Firefox
+* Fix: Fix the non-200 HTTP status badge on Firefox
 
 # 1.18.0
 * i: Use [`navigator.userAgentData.brands`](https://developer.mozilla.org/en-US/docs/Web/API/User-Agent_Client_Hints_API) to get the browser name (native messaging)
@@ -171,10 +171,10 @@
 * Fix: Fix DNSlytics icon
 
 # 1.16.0
-* -: Remove feature for YouTube to remove playlist parameter 
+* -: Remove the feature for YouTube to remove the playlist parameter 
 
 # 1.15.1
-* \Fix : Get and display page meta rating data on Firefox
+* Fix: Get and display page meta-rating data on Firefox
 
 # 1.15.0
 * +: Get and display page meta rating data
@@ -185,12 +185,12 @@
 * -: Cleaning unused events (chrome runtime)
 
 # 1.13.0
-* +: Add button in panel to open main section (delegated only)
-* -: Remove "native" tab mover from panel (delegated only)
+* +: Add a button in the panel to open the main section (delegated only)
+* -: Remove the "native" tab mover from the panel (delegated only)
 
 # 1.12.0
-* \i : Equivalent to opening url in another browser in native messaging (closing active tab url)
-* Fix: Display of main OpenGraph data
+* i: Equivalent to opening url in another browser in native messaging (closing active tab url)
+* Fix: Display of the main OpenGraph data
 
 # 1.11.0
 * -: Remove `mode` setting, replaced by an automatic mode (equivalent to delegated mode if connected)
@@ -199,28 +199,28 @@
 * Fix: Native messaging - Send `null` when no window opened/focused
 
 # 1.10.0
-* Fix: Display of main OpenGraph data (now external management only)
-* Fix: Native messaging – Open url in another browser (avoid loading tab list when not in delegated mode)
+* Fix: Display of the main OpenGraph data (now external management only)
+* Fix: Native messaging – Open url in another browser (avoid loading a tab list when not in delegated mode)
 * -: Remove `tabPageServerIp_alias` setting
-* -: Remove option page
+* -: Remove the option page
 
 # 1.9.0
-* -: Display of main OpenGraph data (now external management only)
+* -: Display of the main OpenGraph data (now external management only)
 
 # 1.8.0
-* +: Get and display main OpenGraph data
+* +: Get and display the main OpenGraph data
 
 # 1.7.3
-* Fix: Detect if tab url hostname is an ip
+* Fix: Detect if the tab url hostname is an ip
 
 # 1.7.2
-* Fix: Detect if tab url hostname is an ip
+* Fix: Detect if the tab url hostname is an ip
 
 # 1.7.1
 * +: Add DNS Checker link on errored pages
 
 # 1.7.0
-* +: Add DNS Checker link with Page IP / Status display
+* +: Add a DNS Checker link with Page IP / Status display
 
 # 1.6.2
 * i: Panel size
@@ -238,10 +238,10 @@
 * Fix: Avoid native port connexion in panel
 
 # 1.5.0
-* -: Refresh data : Remove websites data (remove display and extension storage) and notification from extension (now external management only)
+* -: Refresh data – Remove websites data (remove display and extension storage) and notification from extension (now external management only)
 
 # 1.4.2
-* Fix: Update external state when changing "check enable"
+* Fix: Update the external state when changing "check enable"
 
 # 1.4.1
 * Fix: Syntax error with Firefox
@@ -252,7 +252,7 @@
 * +: Let external request websites refresh (deviantArt/FreshRSS), using existing "check enable" preference
 * -: Simplified mode (deviantArt/FreshRSS disabled)
 * -: Delete disable notification mode, replace with external notification support
-* Fix: tabMover - update on load on Chrome browsers
+* Fix: tabMover - update on load event on Chrome browsers
 
 # 1.3.3
 * Fix: tabMover - Auto-close popup with `openurl`
@@ -283,7 +283,7 @@
 * +: Page IP / Status display
 * +: Simplified mode (deviantArt/FreshRSS disabled)
 * +: Delegated/External mode (external settings)
-* fix: Panel : sizing, tab title overflow
+* fix: Panel – sizing, tab title overflow
 * fix: deviantArt / FreshRSS refresh alarm missing periodic data
 * fix: deviantArt - use watch page as data URL
 * fix: Preferences - load and import of JSON settings
@@ -305,7 +305,7 @@
 * fix: deviantArt - fix data url
 
 # 0.20.0
-* +: Settings to display or not FreshRSS in panel
+* +: Settings to display or not FreshRSS in a panel
 * -: Clean old translations
 * Fix: FreshRSS with no data (no URL)
 
@@ -323,8 +323,8 @@
   * untrackMe
   * PWA
   * Hourly Alarm
-* i: Copy text link now for Firefox only
-* i: Less message dependencies between panel and main
+* i: `Copy text link` now for Firefox only
+* i: Fewer message dependencies between panel and main
 * i: WIP native messaging
 * fix: Fix badge refresh
 
@@ -352,7 +352,7 @@
 * -: Remove perfect-scrollbar, now using native scrollbars
 
 # 0.15.0
-* +: Copy text link / copy tab title
+* +: `Copy text link` / copy tab title
 * i: Various fix / cleanup
 
 # 0.14.1
@@ -371,15 +371,15 @@
 * Fix: RSS/Atom feed detection of links and titles
 
 # 0.12.0
-* +: Search image with IQDB from context menu
-* -: Delete Twitch content script
+* +: Search image with IQDB from a context menu
+* -: Delete the Twitch content script
 
 # 0.11.3
 * Fix: Fix deviantArt update
 
 # 0.11.2
 * -: "Not logged" notification with deviantArt launched every checked
-* -: Twitch channel created will stop working after 13th of September, avoid unnecessary errors
+* -: Twitch channel created will stop working after the 13th of September, avoid unnecessary errors
 
 # 0.11.1
 * Fix: New deviantArt support (no folder url yet)
@@ -387,162 +387,11 @@
 # 0.11.0
 * i: Detect RSS links like /feeds/*.xml
 * -: Stop using buttons on notification when it is not necessary
-* Fix: Remove spaces from link of RSS links with [trim()](https://developer.mozilla.org//docs/Web/JavaScript/Reference/Global_Objects/String/Trim)
+* Fix: Remove spaces from the link of RSS links with [trim()](https://developer.mozilla.org//docs/Web/JavaScript/Reference/Global_Objects/String/Trim)
 
 # 0.10.0
-* i: Refactor with open without playlist
+* i: Refactor with open without a playlist
 * Fix: URL with i18next
 
 # 0.9.0
 * +: RSS Feeds detection
-
-# 0.8.1
-* Fix: Link cleaning
-
-# 0.8.0
-* Fix: Muted pause
-
-# 0.7.3
-* Fix: Twitch now use [History API](https://developer.mozilla.org/en-US/docs/Web/API/History_API)
-
-# 0.7.2
-* +: RSS Feeds refresh
-* +: RSS Feeds messages
-* Fix: Panel - Keep display order between deviantArt and RSS Feed
-
-# 0.7.1
-* + : RSS Feeds refresh
-
-# 0.7.0
-* +: RSS Feeds detection
-* +: Translation fix
-
-# 0.6.8
-* Fix: deviantArt profile url
-
-# 0.6.7
-* Fix: Translations
-* i: ZDK updates
-
-# 0.6.6
-* i: ZDK Loading
-
-# 0.6.5
-* i: ZDK updates
-* Fix: WIP android support
-
-# 0.6.4
-* Fix: Twitch channel created on video page
-
-# 0.6.3
-* i: ZDK updates
-* Fix: deviantArt if incorrect request answer
-
-# 0.6.2
-* Fix: Page context menu wrongly showing YouTube Playlist one
-* Fix: Reworked Twitch content script, now supporting channel currently hosting on page load
-
-# 0.6.1
-* Fix: Panel no longer able to open tabs
-
-# 0.6.0
-* i: Moved function to open tab if not already exist to ZDK
-* +: Add link in Launchpad index page to go to PPA page
-* Fix: ChromePreferences - Export file name
-* Fix CSS code style
-
-# 0.5.4
-* i: ZDK update
-	* +: \[ZDK] Promise based setTimeout
-	* +: \[ZDK] getPageSize to get the current page size
-	* +: \[ZDK] hasTouch to detect pages with touch screen
-* Fix: openTabIfNotExist using wrong arguments on [browser.tabs.query()](https://developer.mozilla.org//Add-ons/WebExtensions/API/tabs/query)
-
-# 0.5.3
-* i: Use Moment.js to get next hour instead of self-made function
-
-# 0.5.2
-* Fix: Hourly alarm – Hour formats and definition
-* Fix: No sound on the notifications, on Firefox (user setting might be required)
-
-# 0.5.1
-* Fix: Do not sync the hourly alarm sound file
-
-# 0.5.0
-* i: ZDK update
-	* +: \[ZDK] loadBlob can now read as text with a second argument
-	* +: \[ChromePreferences] Core to import/export from/to file
-	* +: \[ZDK] Simulate click, now needed by ChromePreferences
-	* +: \[ChromePreferences] New setting type : File
-	* +: \[ChromeNotificationController] Sound support on notifications, using [notifications.onShown](https://developer.mozilla.org//Add-ons/WebExtensions/API/notifications/onShown) to begin it, when supported
-* Fix: Exclude private windows for windowsContextMenu
-* Fix: Hourly alarm – Wrong parameter to define next alarm
-
-# 0.4.0
-* i: Moved hourly alarm to a class
-* i: Hourly alarm
-	* +: Vocal notifications
-	* Fix: Cleaning hourly alarms before enabling it
-	* Fix: Risk of several onAlarm listeners
-	* Fix: Respect the globally disabled notifications state
-* Fix: Missing setting to enable vocal notifications
-* Fix: Localization for vocal notification language of refresh-data
-
-# 0.3.2
-* Fix: Hourly alarm, debug that was not supposed to be committed
-
-# 0.3.1
-* Fix: Hourly alarm, Firefox sending undefined with [`alarms.get()`](https://developer.mozilla.org//Add-ons/WebExtensions/API/alarms/get) if nothing to return
-
-# 0.3.0
-* i: Moved "feature" script to a dedicated folder
-* +: Hourly alarm (disabled by default) using Web Extensions's [alarms](https://developer.mozilla.org//Add-ons/WebExtensions/API/alarms)
-* Fix: sendDataToMain id in option page
-
-# 0.2.1
-* Fix: Context menu text
-* Fix: Refresh limiter
-
-# 0.2.0
-* +: Open link to other window
-* Fix: Moved tab keep its original active state
-
-# 0.1.0
-* +: Context menu to move a tab of window
-* i: ZDK update
-	* i: JSDoc added on some functions
-	* +: ZDK.stringEllipse()
-
-# 0.0.10
-* +: Update panel data on data refresh end
-
-# 0.0.9
-* Fix: deviantArt loading
-* Fix: ZDK consoleMsg
-
-# 0.0.8
-* Fix: Disable label change on addon button
-* Fix: Disable notifications
-
-# 0.0.7
-* +: Replaced Tooltip system with OpenTip
-* +: deviantArt notification checking imported from [z-Notifier](https://gitlab.com/ZatsuneNoMokou/znotifier)
-* Fix: ZDK Request now use mapToObj from itself
-
-# 0.0.6
-* +: Twitch channel created (Was formerly a Greasemonkey)
-
-# 0.0.5
-* Fix: Addon version display in panel
-
-# 0.0.4
-* Fix: Addon auto updater
-
-# 0.0.3
-* Fix: Disabled Tooltip, causing strange Firefox behavior
-	* Not shown correctly
-	* Other panels from others addons not showing correctly
-
-# 0.0.1-0.0.2
-* +: Addon auto updater
-* i: Initial version
