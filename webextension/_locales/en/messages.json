@@ -72,6 +72,9 @@
 	"none": {
 		"message": "None"
 	},
+	"clear": {
+		"message": "Clear"
+	},
 
 	"windowId": {
 		"message": "Fenêtre ($TAB_COUNT$)",

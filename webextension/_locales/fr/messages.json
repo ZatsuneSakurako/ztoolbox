@@ -72,6 +72,9 @@
 	"none": {
 		"message": "Aucun"
 	},
+	"clear": {
+		"message": "Nettoyer"
+	},
 
 	"windowId": {
 		"message": "Fenêtre ($TAB_COUNT$)",

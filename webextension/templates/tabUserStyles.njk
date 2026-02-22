@@ -13,7 +13,7 @@
 {%- endfor -%}
 
 
-<div id="{{ type }}-{{ item.data.id }}" class="fui-list-item {{ type }}{% if isExecuted === true %} is-executed{% endif %}{% if emptyMenuCommand %} no-data{% endif %}"{%- if isRunManual %} data-manual-target="{{ item.data.fileName }}"{% endif -%}>
+<div id="{{ type }}-{{ item.data.id }}" class="fui-list-item {{ type }}{% if isExecuted === true %} is-executed{% endif %}{% if emptyMenuCommand %} no-data{% endif %}{%- if isRunManual %} cursor{% endif -%}"{%- if isRunManual %} data-manual-target="{{ item.data.fileName }}"{% endif -%}>
 
 	{%- set titleTag = 'label' -%}
 	{%- if not item.data -%}
