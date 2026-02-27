@@ -1,5 +1,6 @@
 # WIP
 * fix: Theme rework – Fixing some spaces with a CSS reset
+* fix: UserScript button spaces
 
 # 3.7.0
 * +: Theme rework – Better list and buttons

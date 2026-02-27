@@ -169,7 +169,7 @@ section {
 			display: flex;
 			flex-direction: row;
 			flex-wrap: wrap;
-			gap: 2px 8px;
+			gap: 2px 4px;
 			list-style-type: none;
 			padding: 0;
 			margin-block-start: 0;
@@ -183,7 +183,7 @@ section {
 			font-size: 12px;
 			justify-content: flex-start;
 			margin: 0;
-			padding: 4px 0;
+			padding: 0;
 			text-align: left;
 			word-break: break-all;
 
