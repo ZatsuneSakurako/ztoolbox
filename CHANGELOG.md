@@ -4,7 +4,7 @@
 * i: Cleaning panel styles
 
 # 3.6.1
-* Fix: Main list width
+* fix: Main list width
 
 # 3.6.0
 * i: Theme rework
@@ -15,21 +15,21 @@
 * i: Minimum version Firefox 147
 * i: Upgrade libraries
 * +: Add slugify utility function to `znmApi`
-* Fix: Problem in French with short months in date functions
-* -: Remove sass dependency (Using `Material Symbol` CSS file directly)
+* fix: Problem in French with short months in date functions
+* -: Remove sass dependency (Using `Material Symbols` CSS file directly)
 
 # 3.4.0
 * i: Minimum version Firefox 146
 * i: Optimize new tab loading
 * i: Optimize panel loading
 * i: Refactor panel CSS using [CSS nesting](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_nesting/Using_CSS_nesting)
-* Fix: New tab in Chromium browsers
+* fix: New tab in Chromium browsers
 
 # 3.3.2
-* Fix: Fix new tab data loading
+* fix: Fix new tab data loading
 
 # 3.3.1
-* Fix: New tab bookmark rendering before loading data
+* fix: New tab bookmark rendering before loading data
 
 # 3.3.0
 * i: Minimum version Chrome/Chromium 138
@@ -37,23 +37,23 @@
 * i: New tab bookmark data loading refactoring
 
 # 3.2.1
-* Fix: `adoptedStyleSheets` support under Firefox
+* fix: `adoptedStyleSheets` support under Firefox
 
 # 3.2.0
 * i: Minimum version Chrome/Chromium 137
 * i: Minimum version Firefox 143
 * i: Firefox [StorageArea.getKeys()](https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/storage/StorageArea/getKeys) support
 * +: Auto-close panel when clicking on tab mover actions
-* Fix: Accent problem in date functions
+* fix: Accent problem in date functions
 
 # 3.1.0
 * i: Minimum version Firefox 142
 * +: Allow UserScript to inject style in a classic style tag
-* Fix: Remove some IDE-related warnings
+* fix: Remove some IDE-related warnings
 * -: Remove `*.prod.` system in the release script and remove `klaw-sync` dependency
 
 # 3.0.1
-* Fix: UserStyle when nothing is available
+* fix: UserStyle when nothing is available
 
 # 3.0.0
 * i: Minimum version Firefox 141
@@ -68,33 +68,33 @@
 	* Custom sort
 	* New `run-at` value : `panel`
 * i: Replace update check with socket update information
-* i: Move from Twig templates to [Nunjuck](https://mozilla.github.io/nunjucks/)
+* i: Move from Twig templates to [Nunjucks](https://mozilla.github.io/nunjucks/)
 * i: Simplify theme
-* i: Tab mover and new tab rendered using Nunjuck
+* i: Tab mover and new tab rendered using Nunjucks
 * i: Optimize panel loading
 * -: Remove `iqdb` search
 * -: Remove the copy text link feature
 
 # 2.7.0
 * i: Move ip and meta rating data to UserScript tab data
-* +: Nunjuck render using socket
-* Fix: Firefox userScripts support
+* +: Nunjucks render using socket
+* fix: Firefox userScripts support
 * -: Remove open-graph data
 
 # 2.6.1
-* Fix: Firefox userScripts support
+* fix: Firefox userScripts support
 
 # 2.6.0
 * +: System to apply scripts to websites
 
 # 2.5.3
-* Fix: System to apply styles to websites
+* fix: System to apply styles to websites
 
 # 2.5.2
-* Fix: System to apply styles to websites
+* fix: System to apply styles to websites
 
 # 2.5.1
-* Fix: System to apply styles to websites
+* fix: System to apply styles to websites
 
 # 2.5.0
 * i: Minimum version Firefox 138
@@ -105,25 +105,25 @@
 * i: Minimum version Firefox 137
 * +: Support of the folders in bookmarks first depth in the new tab page
 * +: Trigger writing JSON into page variable from [webRequest.onHeadersReceived](https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/webRequest/onHeadersReceived) instead of [devtools](https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/devtools) (Chrome Only)
-* Fix: Load new bookmark metadata when loading the new tab page
-* Fix: Lazy loading missing on background image in the new tab page
+* fix: Load new bookmark metadata when loading the new tab page
+* fix: Lazy loading missing on background image in the new tab page
 * +: Fix HTTP status data missing handling
 
 # 2.3.4
 * i: Minimum version Firefox 135
 
 # 2.3.3
-* Fix: Fix socket response to `openUrl`
-* Fix: Better folder name support when using an array (bookmark path) in the new tab page
+* fix: Fix socket response to `openUrl`
+* fix: Better folder name support when using an array (bookmark path) in the new tab page
 * -: Remove QR code
 
 # 2.3.2
 * i: Minimum version Chrome/Chromium 130
 * i: Minimum version Firefox 134
-* Fix: Font on new tab page and devtools section
+* fix: Font on new tab page and devtools section
 
 # 2.3.1
-* Fix: Refresh data when getting connected to a web socket in the new tab page
+* fix: Refresh data when getting connected to a web socket in the new tab page
 
 # 2.3.0
 * +: Setting to display a new window button even if there is another window for the tab mover
@@ -133,32 +133,32 @@
 * +: Capture page system for the new tab page
 * +: Restore the last closed tab button for the new tab page
 * +: JSON view test in devtools (Chrome Only)
-* Fix: Blank with the new tab page
+* fix: Blank with the new tab page
 
 # 2.1.0
 * i: Move from `Material Icons` to `Material Symbols`
 * +: New tab page
-* Fix: Better Vivaldi detection for WebSocket (using speed dial and bookmark bar properties)
+* fix: Better Vivaldi detection for WebSocket (using speed dial and bookmark bar properties)
 
 # 2.0.2
-* Fix: Syntax error in Firefox
+* fix: Syntax error in Firefox
 
 # 2.0.1
-* Fix: WebSocket not connecting in Firefox
+* fix: WebSocket not connecting in Firefox
 
 # 2.0.0
 * i: Replace [Chrome Native Messaging](https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/Native_messaging) with a [WebSocket](https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API) managed by [socket.io](https://socket.io)
 
 # 1.20.0
 * i: Minimum version Firefox 131 and Chrome 126
-* i: Librairies update
-* Fix: Fix StyleLint errors
+* i: Libraries update
+* fix: Fix StyleLint errors
 
 # 1.19.0
 * +: Better non-200 HTTP status badge handling
 
 # 1.18.1
-* Fix: Fix the non-200 HTTP status badge on Firefox
+* fix: Fix the non-200 HTTP status badge on Firefox
 
 # 1.18.0
 * i: Use [`navigator.userAgentData.brands`](https://developer.mozilla.org/en-US/docs/Web/API/User-Agent_Client_Hints_API) to get the browser name (native messaging)
@@ -167,14 +167,14 @@
 
 # 1.17.0
 * +: DNS report with DNSlytics
-* Fix: Fix DNS Checker icon title
-* Fix: Fix DNSlytics icon
+* fix: Fix DNS Checker icon title
+* fix: Fix DNSlytics icon
 
 # 1.16.0
-* -: Remove the feature for YouTube to remove the playlist parameter 
+* -: Remove the feature for YouTube to remove the playlist parameter
 
 # 1.15.1
-* Fix: Get and display page meta-rating data on Firefox
+* fix: Get and display page meta-rating data on Firefox
 
 # 1.15.0
 * +: Get and display page meta rating data
@@ -190,17 +190,17 @@
 
 # 1.12.0
 * i: Equivalent to opening url in another browser in native messaging (closing active tab url)
-* Fix: Display of the main OpenGraph data
+* fix: Display of the main OpenGraph data
 
 # 1.11.0
 * -: Remove `mode` setting, replaced by an automatic mode (equivalent to delegated mode if connected)
 
 # 1.10.1
-* Fix: Native messaging - Send `null` when no window opened/focused
+* fix: Native messaging - Send `null` when no window opened/focused
 
 # 1.10.0
-* Fix: Display of the main OpenGraph data (now external management only)
-* Fix: Native messaging – Open url in another browser (avoid loading a tab list when not in delegated mode)
+* fix: Display of the main OpenGraph data (now external management only)
+* fix: Native messaging – Open url in another browser (avoid loading a tab list when not in delegated mode)
 * -: Remove `tabPageServerIp_alias` setting
 * -: Remove the option page
 
@@ -211,10 +211,10 @@
 * +: Get and display the main OpenGraph data
 
 # 1.7.3
-* Fix: Detect if the tab url hostname is an ip
+* fix: Detect if the tab url hostname is an ip
 
 # 1.7.2
-* Fix: Detect if the tab url hostname is an ip
+* fix: Detect if the tab url hostname is an ip
 
 # 1.7.1
 * +: Add DNS Checker link on errored pages
@@ -224,7 +224,7 @@
 
 # 1.6.2
 * i: Panel size
- 
+
 # 1.6.1
 * +: Chrome native - clear notification
 
@@ -235,16 +235,16 @@
 * -: Remove `appendTo` last argument `document`, not needed anymore
 * -: Remove website data loading
 * -: `JSON5` and `openTabIfNotExist` not needed anymore
-* Fix: Avoid native port connexion in panel
+* fix: Avoid native port connexion in panel
 
 # 1.5.0
 * -: Refresh data – Remove websites data (remove display and extension storage) and notification from extension (now external management only)
 
 # 1.4.2
-* Fix: Update the external state when changing "check enable"
+* fix: Update the external state when changing "check enable"
 
 # 1.4.1
-* Fix: Syntax error with Firefox
+* fix: Syntax error with Firefox
 
 # 1.4.0
 * i: Update librairies
@@ -252,21 +252,21 @@
 * +: Let external request websites refresh (deviantArt/FreshRSS), using existing "check enable" preference
 * -: Simplified mode (deviantArt/FreshRSS disabled)
 * -: Delete disable notification mode, replace with external notification support
-* Fix: tabMover - update on load event on Chrome browsers
+* fix: tabMover - update on load event on Chrome browsers
 
 # 1.3.3
-* Fix: tabMover - Auto-close popup with `openurl`
+* fix: tabMover - Auto-close popup with `openurl`
 
 # 1.3.2
-* Fix: tabMover - Fix duplicate items
+* fix: tabMover - Fix duplicate items
 
 # 1.3.1
-* Fix: Native messaging – Open url in another browser (check error)
+* fix: Native messaging – Open url in another browser (check error)
 
 # 1.3.0
 * +: deviantArt - Ignore "tier" notification
 * +: Native messaging – Open url in another browser
-* Fix: Change deviantArt favicon url 
+* fix: Change deviantArt favicon url
 
 # 1.2.0
 * +: Native messaging – Change port id and code cleaning
@@ -290,12 +290,12 @@
 * -: Delete browser polyfill
 * -: Delete ZDK
 * -: Delete features :
-  * Amazon share
-  * FreshRSS iframe mode
-  * Launchpad add link
-  * Lstu
-  * Service worker
-  * Setting sync buttons / WIP support Dropbox sync
+	* Amazon share
+	* FreshRSS iframe mode
+	* Launchpad add link
+	* Lstu
+	* Service worker
+	* Setting sync buttons / WIP support Dropbox sync
 
 # 0.20.2
 * fix: deviantArt - change login url
@@ -307,7 +307,7 @@
 # 0.20.0
 * +: Settings to display or not FreshRSS in a panel
 * -: Clean old translations
-* Fix: FreshRSS with no data (no URL)
+* fix: FreshRSS with no data (no URL)
 
 # 0.19.0
 * +: Lstu
@@ -317,12 +317,12 @@
 * +: Fresh RSS
 * -: Clean unused ZDK features
 * -: Delete features :
-  * muted-pause
-  * RSS links
-  * Twitch points
-  * untrackMe
-  * PWA
-  * Hourly Alarm
+	* muted-pause
+	* RSS links
+	* Twitch points
+	* untrackMe
+	* PWA
+	* Hourly Alarm
 * i: `Copy text link` now for Firefox only
 * i: Fewer message dependencies between panel and main
 * i: WIP native messaging
@@ -345,7 +345,7 @@
 * +: WIP service worker blocker
 * +: Add identification to notification to let a new notification "overwrite" the previous same type
 * +: Move background theme cache to localStorage, instead of keeping it in the background page
-* -: Remove setting to store Twitch client id 
+* -: Remove setting to store Twitch client id
 
 # 0.16.0
 * i: Update dependencies
@@ -368,30 +368,30 @@
 * i: Minimum Chrome version 73, because using [String.prototype.matchAll()](https://developer.mozilla.org/fr/docs/Web/JavaScript/Reference/Objets_globaux/String/matchAll)
 * i: deviantArt now use [fetch api](https://developer.mozilla.org/docs/Web/API/Fetch_API)
 * +: Amazon share link easier, into clipboard
-* Fix: RSS/Atom feed detection of links and titles
+* fix: RSS/Atom feed detection of links and titles
 
 # 0.12.0
 * +: Search image with IQDB from a context menu
 * -: Delete the Twitch content script
 
 # 0.11.3
-* Fix: Fix deviantArt update
+* fix: Fix deviantArt update
 
 # 0.11.2
 * -: "Not logged" notification with deviantArt launched every checked
 * -: Twitch channel created will stop working after the 13th of September, avoid unnecessary errors
 
 # 0.11.1
-* Fix: New deviantArt support (no folder url yet)
+* fix: New deviantArt support (no folder url yet)
 
 # 0.11.0
 * i: Detect RSS links like /feeds/*.xml
 * -: Stop using buttons on notification when it is not necessary
-* Fix: Remove spaces from the link of RSS links with [trim()](https://developer.mozilla.org//docs/Web/JavaScript/Reference/Global_Objects/String/Trim)
+* fix: Remove spaces from the link of RSS links with [trim()](https://developer.mozilla.org//docs/Web/JavaScript/Reference/Global_Objects/String/Trim)
 
 # 0.10.0
 * i: Refactor with open without a playlist
-* Fix: URL with i18next
+* fix: URL with i18next
 
 # 0.9.0
 * +: RSS Feeds detection
