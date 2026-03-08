@@ -1,5 +1,5 @@
 import {appendTo} from "../utils/appendTo.js";
-import {nunjuckRender} from "../init-templates.js";
+import {nunjucksRender} from "../init-templates.js";
 import "./onImageError.js";
 import {getPreference} from "../classes/chrome-preferences.js";
 import {chromeNativeConnectedStorageKey} from "../classes/chrome-native-settings.js";
@@ -7,7 +7,7 @@ import {generateThumbnail} from "../utils/captureScreenshot.js";
 import './newTab-reopenTab.js';
 import {reopenTabStateRefresh} from "./newTab-reopenTab.js";
 import {BookmarksResolver} from "./BookmarksResolver.js";
-import {newTabImagesStorage, newTabCapturesStorage} from "./newTab-settings.js";
+import {newTabCapturesStorage, newTabImagesStorage} from "./newTab-settings.js";
 
 const imageUrlAlgorithm = 'SHA-256';
 
@@ -75,7 +75,7 @@ async function renderNewTab({$newTabContainer, data, bookmarksMeta, newTabCaptur
 		child.remove();
 	}
 
-	const result = await nunjuckRender('newTab', {
+	const result = await nunjucksRender('newTab', {
 		'bookmarks': [...data.entries()],
 		bookmarksMeta,
 		newTabCaptures,
