@@ -1,4 +1,6 @@
-# WIP
+# 3.7.1
+* i: Minimum version Firefox 148
+* i: Minimum version Chrome/Chromium 145
 * fix: Theme rework – Fixing some spaces with a CSS reset
 * fix: UserScript button spaces
 * fix: Nunjucks spelling
