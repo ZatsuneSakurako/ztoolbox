@@ -6,7 +6,7 @@ import {
 	_userStylesStoreKey
 } from "../constants.js";
 import {appendTo, replaceWith} from "../utils/appendTo.js";
-import {nunjuckRender} from "../init-templates.js";
+import {nunjucksRender} from "../init-templates.js";
 import {matchesChromePattern} from "../matchesChromePattern.js";
 import {getCurrentTab} from "../utils/getCurrentTab.js";
 import {port} from "./panel-init.js";
@@ -190,7 +190,7 @@ export async function updateData(activeTab) {
 
 	const tabData = await dataPromise;
 	if (!tabData.userStyles.length && !tabData.userScripts.length) {
-		appendTo($tabUserStyles, await nunjuckRender("tabUserStyles", {
+		appendTo($tabUserStyles, await nunjucksRender("tabUserStyles", {
 			items: [
 				{
 					title: activeTab.title,
@@ -247,7 +247,7 @@ export async function updateData(activeTab) {
 		renderData.items.push(userScriptToRenderData(userStyle, tabData));
 	}
 
-	appendTo($tabUserStyles, await nunjuckRender("tabUserStyles", renderData));
+	appendTo($tabUserStyles, await nunjucksRender("tabUserStyles", renderData));
 }
 
 /**
@@ -286,7 +286,7 @@ const onUserScriptUpdate = debounceWithArgumentPreserving(async function onUserS
 		}
 
 		const $target = document.querySelector(`[id=${JSON.stringify(`userscript-${targetUserScript.fileName}`)}]`);
-		replaceWith($target, await nunjuckRender("tabUserStyles", {
+		replaceWith($target, await nunjucksRender("tabUserStyles", {
 			items: [
 				userScriptToRenderData(targetUserScript, tabData),
 			]

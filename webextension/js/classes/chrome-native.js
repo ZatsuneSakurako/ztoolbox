@@ -1,6 +1,6 @@
 import {
-	chromeNativeSettingsStorageKey,
 	chromeNativeConnectedStorageKey,
+	chromeNativeSettingsStorageKey,
 	getElectronSettings
 } from "./chrome-native-settings.js";
 import {getCurrentTab} from "../utils/getCurrentTab.js";
@@ -587,8 +587,8 @@ export async function writeClipboard(data) {
  * @param {boolean} [async]
  * @returns {Promise<string>}
  */
-export async function nunjuckRender({templateName, context, async}) {
-	const data = await socket.timeout(timeout).compress(true).emitWithAck('nunjuckRender', templateName, context, async ?? false);
+export async function nunjucksRender({templateName, context, async}) {
+	const data = await socket.timeout(timeout).compress(true).emitWithAck('nunjucksRender', templateName, context, async ?? false);
 	if (data.error) throw new Error(data.error);
 	if (!('result' in data)) {
 		throw new Error(JSON.stringify(data, null, "\t"));
@@ -651,8 +651,8 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
 			})
 		;
 		return true;
-	} else if (message.id === 'nunjuckRender') {
-		nunjuckRender(...message.data)
+	} else if (message.id === 'nunjucksRender') {
+		nunjucksRender(...message.data)
 			.then((data) => {
 				sendResponse({ isError: false,  response: data });
 			})

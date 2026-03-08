@@ -34,11 +34,11 @@ export async function getNunjucks() {
  * @param {boolean} [async]
  * @return {any}
  */
-export async function nunjuckRender(templateName, context, async=false) {
+export async function nunjucksRender(templateName, context, async=false) {
 	const isConnected = await getSessionNativeIsConnected();
 	if (isConnected) {
 		const result = await chrome.runtime.sendMessage(chrome.runtime.id, {
-			id: 'nunjuckRender',
+			id: 'nunjucksRender',
 			data: [
 				{ templateName, context, async },
 			]
