@@ -31,10 +31,6 @@ html.isFirefox body {
 button {
 	background-color: unset;
 }
-header button,
-.buttonItem {
-	background-color: var(--primary-color);
-}
 
 button,
 [role="button"] {
@@ -56,6 +52,11 @@ header {
 	a {
 		text-decoration: none;
 	}
+}
+
+header button,
+.buttonItem {
+	background-color: var(--primary-color);
 }
 
 .hide {
@@ -136,6 +137,18 @@ section {
 			grid-area: title;
 		}
 
+		> .icon {
+			grid-area: icon;
+
+			align-items: center;
+			display: flex;
+			font-size: 32px;
+			height: 100%;
+			justify-content: center;
+			margin: 0;
+			width: 100%;
+		}
+
 		> .title {
 			align-items: center;
 			display: flex;
@@ -150,20 +163,6 @@ section {
 		.data {
 			grid-area: data;
 		}
-
-		> .icon {
-			grid-area: icon;
-
-			align-items: center;
-			display: flex;
-			font-size: 32px;
-			height: 100%;
-			justify-content: center;
-			margin: 0;
-			width: 100%;
-		}
-
-
 
 		.data-list {
 			display: flex;
