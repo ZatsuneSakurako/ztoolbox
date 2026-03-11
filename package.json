@@ -23,7 +23,7 @@
 	},
 	"scripts": {
 		"build": "node ./scripts/build.js",
-		"postinstall": "node ./scripts/installDependencies.js",
+		"postinstall": "./scripts/installDependencies.sh",
 		"release:dev": "yarn build && node ./scripts/release-dev.js",
 		"test": "node scripts/test.js",
 		"update": "npm run postinstall"

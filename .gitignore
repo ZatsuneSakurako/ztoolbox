@@ -1,6 +1,7 @@
 z-toolbox_dev-*.zip
 /z_toolbox_dev.update.json
 /scripts/release-dev.loc.js
+/target
 .goutputstream*
 .env
 *.nex
