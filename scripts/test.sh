@@ -28,17 +28,17 @@ error() {
     echo -e "${RED}✗ $1${NC}" >&2
 }
 
-# Get current directory (equivalent to pwd variable)
-pwd=$(pwd)
+# Get the project root directory (assuming this script is in the project root or adjust the path)
+PROJECT_ROOT_DIR="$(readlink -f "$(pwd)")"
 
-info "Current dir: ${pwd}\n"
+info "Current dir: ${PROJECT_ROOT_DIR}\n"
 
 warning "${WARNING_CHAR} Test only cover linting with CSS (with Stylelint), and web-ext for now ${WARNING_CHAR}\n"
 
 info "Testing CSS..."
 
 # Test CSS with stylelint
-if ! yarn dlx stylelint --config-basedir "${pwd}" --default-severity warning "webextension/**/*.css" --formatter verbose; then
+if ! yarn dlx stylelint --config "./stylelint.config.mjs" --config-basedir "./webextension" --quiet "./webextension/**/*.css"; then
     error "Stylelint failed"
     exit 1
 fi
