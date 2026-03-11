@@ -1,70 +1,54 @@
-import stylelint from "stylelint";
-import {error, info, success, warning} from "./common/custom-console.js";
-import {execSync} from "./common/custom-child-process.js";
-import { projectRootDir as pwd } from "./projectRootDir.js";
+#!/bin/bash
 
-const WARNING_CHAR="⚠",
-	SUCCESS_CHAR="✅"
-;
+# Color/emoji definitions
+WARNING_CHAR="⚠"
+SUCCESS_CHAR="✅"
 
+# ANSI color codes
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+BLUE='\033[0;36m'
+NC='\033[0m' # No Color
 
-(async function () {
-	info(`Current dir: ${pwd}\n`);
+# Custom console functions
+info() {
+    echo -e "${BLUE}ℹ $1${NC}"
+}
 
-	warning(`${WARNING_CHAR} Test only cover linting with CSS (with Stylelint), and web-ext for now ${WARNING_CHAR}\n`);
+warning() {
+    echo -e "${YELLOW}$1${NC}"
+}
 
-	info(`Testing CSS...`);
+success() {
+    echo -e "${GREEN}$1${NC}"
+}
 
-	let result = null,
-		result_error = null
-	;
+error() {
+    echo -e "${RED}✗ $1${NC}" >&2
+}
 
-	try{
-		result = await stylelint.lint({
-			"configBasedir": pwd,
-			"defaultSeverity": "warning",
-			"files": "webextension/**/*.css",
-			"formatter": "verbose"
-		})
-			.catch(error)
-		;
-	} catch (err){
-		result_error = err;
-	}
+# Get current directory (equivalent to pwd variable)
+pwd=$(pwd)
 
-	if(result_error){
-		error("Error thrown :");
-		error(result_error);
-		process.exit(1);
-		return;
-	} else if(result.errored){
-		error(result.output);
-		process.exit(1);
-		return;
-	}
+info "Current dir: ${pwd}\n"
 
-	result = null;
-	result_error = null;
+warning "${WARNING_CHAR} Test only cover linting with CSS (with Stylelint), and web-ext for now ${WARNING_CHAR}\n"
 
+info "Testing CSS..."
 
-	info(`Testing web-ext lint...`);
+# Test CSS with stylelint
+if ! yarn dlx stylelint --config-basedir "${pwd}" --default-severity warning "webextension/**/*.css" --formatter verbose; then
+    error "Stylelint failed"
+    exit 1
+fi
 
-	try {
-		result = execSync("web-ext lint --self-hosted --source-dir ./webextension", true);
-	} catch (err) {
-		result_error = err;
-	}
+info "Testing web-ext lint..."
 
-	if(result_error){
-		error("Error thrown :");
-		error(result_error);
-		process.exit(1);
-		return;
-	}
+# Test with web-ext
+if ! web-ext lint --self-hosted --source-dir ./webextension; then
+    error "web-ext lint failed"
+    exit 1
+fi
 
-	result = null;
-	result_error = null;
-
-	success(`\n${SUCCESS_CHAR} No errors`);
-	process.exit(0);
-})();
+success "\n${SUCCESS_CHAR} No errors"
