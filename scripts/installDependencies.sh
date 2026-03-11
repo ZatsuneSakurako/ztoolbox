@@ -1,47 +1,47 @@
-import * as fs from "node:fs";
-import * as path from "node:path";
+#!/bin/bash
 
-import {cp} from "./common/file-operations.js";
-import {info, error} from "./common/custom-console.js";
-import {projectRootDir} from "./projectRootDir.js";
+# Get the project root directory (assuming this script is in the project root or adjust the path)
+PROJECT_ROOT_DIR="$(readlink -f "$(pwd)")"
 
-const fontPath = path.join(projectRootDir, './webextension/assets/fonts/'),
-	jsLib = path.join(projectRootDir, './webextension/lib/')
-;
+FONT_PATH="$PROJECT_ROOT_DIR/webextension/assets/fonts/"
+JS_LIB="$PROJECT_ROOT_DIR/webextension/lib/"
 
-/**
- *
- * @param {string} src
- * @param {string} dest
- * @private
- */
-function _cp(src, dest) {
-	return cp(path.join(projectRootDir, src), dest);
+# Color output functions
+info() {
+    echo -e "\033[36m[INFO]\033[0m $1"
 }
 
-
-const exist_jsLib = fs.existsSync(jsLib);
-if (!exist_jsLib) {
-	error("JS lib folder not found!");
-	process.exit(1);
-} else {
-	info("Copying nunjucks-slim...");
-	_cp("./node_modules/nunjucks/browser/nunjucks-slim.js", jsLib);
-
-	info("Copying MaterialIcons (material-symbols)...");
-	_cp("./node_modules/material-symbols/material-symbols-outlined.woff2", path.normalize(`${fontPath}/material-symbols-outlined.woff2`));
-	_cp("./node_modules/material-symbols/material-symbols-rounded.woff2", path.normalize(`${fontPath}/material-symbols-rounded.woff2`));
-	_cp("./node_modules/material-symbols/material-symbols-sharp.woff2", path.normalize(`${fontPath}/material-symbols-sharp.woff2`));
-	fs.writeFileSync(
-		path.join(projectRootDir, './webextension/assets/fonts/material-symbols.css'),
-		fs.readFileSync("./node_modules/material-symbols/index.css", { encoding: "utf-8" })
-			.replace(/ {2}/g, '\t')
-			.replace(/(font-family: "Material Symbols \w+?";)/g, '/*noinspection CssNoGenericFontName*/\n\t$1 /* stylelint-disable-line font-family-no-missing-generic-family-keyword */')
-			.trim(),
-		{ encoding: 'utf-8' }
-	);
-
-	info("Copying socket.io-client...");
-	_cp("./node_modules/socket.io-client/dist/socket.io.esm.min.js", jsLib);
-	_cp("./node_modules/socket.io-client/dist/socket.io.esm.min.js.map", jsLib);
+error() {
+    echo -e "\033[31m[ERROR]\033[0m $1" >&2
 }
+
+# Copy function wrapper
+_cp() {
+    local src="$1"
+    local dest="$2"
+    cp "$PROJECT_ROOT_DIR/$src" "$dest"
+}
+
+# Check if JS lib folder exists
+if [ ! -d "$JS_LIB" ]; then
+    error "JS lib folder not found!"
+    exit 1
+else
+    info "Copying nunjucks-slim..."
+    _cp "./node_modules/nunjucks/browser/nunjucks-slim.js" "$JS_LIB"
+
+    info "Copying MaterialIcons (material-symbols)..."
+    _cp "./node_modules/material-symbols/material-symbols-outlined.woff2" "$FONT_PATH/material-symbols-outlined.woff2"
+    _cp "./node_modules/material-symbols/material-symbols-rounded.woff2" "$FONT_PATH/material-symbols-rounded.woff2"
+    _cp "./node_modules/material-symbols/material-symbols-sharp.woff2" "$FONT_PATH/material-symbols-sharp.woff2"
+
+    # Create the CSS file with transformations
+    cat "$PROJECT_ROOT_DIR/node_modules/material-symbols/index.css" | \
+        sed 's/  /\t/g' | \
+        sed 's/\(font-family: "Material Symbols [^"]*";\)/\/\*noinspection CssNoGenericFontName*\/\n\t\1 \/* stylelint-disable-line font-family-no-missing-generic-family-keyword *\//g' | \
+        sed -e :a -e '/^\s*$/d;N;ba' > "$PROJECT_ROOT_DIR/webextension/assets/fonts/material-symbols.css"
+
+    info "Copying socket.io-client..."
+    _cp "./node_modules/socket.io-client/dist/socket.io.esm.min.js" "$JS_LIB"
+    _cp "./node_modules/socket.io-client/dist/socket.io.esm.min.js.map" "$JS_LIB"
+fi
