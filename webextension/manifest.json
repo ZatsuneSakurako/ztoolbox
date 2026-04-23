@@ -48,5 +48,5 @@
 	"host_permissions": [
 		"<all_urls>"
 	],
-	"minimum_chrome_version": "144.0"
+	"minimum_chrome_version": "146.0"
 }

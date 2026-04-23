@@ -1,3 +1,6 @@
+# WIP
+* i: Minimum version Chrome/Chromium 146
+
 # 3.7.1
 * i: Minimum version Firefox 148
 * i: Minimum version Chrome/Chromium 145
