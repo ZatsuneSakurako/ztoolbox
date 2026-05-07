@@ -9,7 +9,7 @@ import path from "path";
  */
 export function cp(src, dest) {
 	if(fs.existsSync(dest) && fs.lstatSync(dest).isDirectory()){
-		dest = path.resolve(dest, "./" + path.basename(src));
+		dest = path.normalize(`${dest}./${path.basename(src)}`);
 	}
 
 	return fs.copyFileSync(src, dest);
