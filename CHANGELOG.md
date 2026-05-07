@@ -1,4 +1,4 @@
-# WIP
+# 3.7.2
 * i: Minimum version Chrome/Chromium 146
 * fix: UserScript messages with Firefox (still some issues, but works better)
 
