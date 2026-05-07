@@ -476,16 +476,19 @@ const znmUserscriptApi = {
  * @param {(response?: any) => void} sendResponse
  */
 function onUserScriptMessage(message, sender, sendResponse) {
+	// CRITICAL: Return true to keep the channel open for async responses in Firefox
+	const keepAlive = true;
+
 	if (sender.id !== chrome.runtime.id) {
 		sendResponse(null);
-		return;
+		return keepAlive;
 	}
 	if (typeof message !== 'object' || !message) {
 		sendResponse({
 			isError: true,
 			response: 'DATA_SHOULD_BE_AN_OBJECT',
 		});
-		return;
+		return keepAlive;
 	}
 
 	const success = (response) => {
@@ -510,14 +513,14 @@ function onUserScriptMessage(message, sender, sendResponse) {
 			console.error(err);
 			error(err);
 		}
-		return;
+		return keepAlive;
 	}
 
 	try {
 		if (message.type in console) {
 			console[message.type](`[UserScript] ${message.type} from ${message.context.fileName} :`, ...message.data);
 			success(true);
-			return;
+			return keepAlive;
 		}
 
 		sendResponse({
@@ -528,17 +531,72 @@ function onUserScriptMessage(message, sender, sendResponse) {
 		console.error(e);
 		errorToString(e ?? new Error('UNKNOWN_ERROR'));
 	}
+	return keepAlive;
 }
 
 function userScriptApiLoader(context, dateUtils, slugify) {
 	chrome.runtime.sendMessage({ type: 'user_script_executed', userScriptsId: context.fileName }).catch(console.error);
+
+
+	/**
+	 * Firefox does not support chrome.runtime.onMessage
+	 * @type {chrome.runtime.Port|null}
+	 * @private
+	 */
+	let _port = null;
+	let useRuntimeMessage = true;
+	/**
+	 *
+	 * @return {chrome.runtime.Port}
+	 */
+	const getPort = () => {
+		if (!_port || _port.error) {
+			_port = chrome.runtime.connect({
+				name: `user_script_port_${context.fileName}-${crypto.randomUUID()}`,
+			});
+			_port.onMessage.addListener((message) => {
+				onMessage(message, null);
+			});
+			_port.onDisconnect.addListener(() => {
+				_port = null;
+			});
+		}
+		return _port;
+	};
 	const call = async function userScriptApiCall() {
 		const [callName, ...args] = arguments;
-		const result = await chrome.runtime.sendMessage({
+
+		const messageData = {
 			type: callName,
 			context: context,
 			data: args,
-		});
+		};
+
+		let result;
+		if (useRuntimeMessage) {
+			result = await chrome.runtime.sendMessage(messageData);
+		} else {
+			result = await new Promise((resolve, reject) => {
+				const port = getPort(),
+					messageId = messageData.messageId = crypto.randomUUID();
+
+				const handler = (result) => {
+					if (result.messageId === messageId) {
+						port.onMessage.removeListener(handler);
+						resolve(result);
+					}
+				};
+				port.onMessage.addListener(handler);
+				port.postMessage(messageData);
+
+				// Safety timeout
+				setTimeout(() => {
+					port.onMessage.removeListener(handler);
+					reject(new Error('PORT_TIMEOUT'));
+				}, 30_000);
+			})
+		}
+
 		if (!result) return result;
 		if (typeof result !== 'object') {
 			console.error(result);
@@ -556,18 +614,9 @@ function userScriptApiLoader(context, dateUtils, slugify) {
 	if (chrome.runtime.onMessage) {
 		chrome.runtime.onMessage.addListener(onMessage);
 	} else {
-		/**
-		 * Firefox does not support chrome.runtime.onMessage
-		 * @type {chrome.runtime.Port|null}
-		 */
-		let port = null;
+		useRuntimeMessage = false;
 		try {
-			port = chrome.runtime.connect({
-				name: 'user_script_port',
-			});
-			port.onMessage.addListener((message) => {
-				onMessage(message, null);
-			});
+			getPort();
 		} catch (e) {
 			console.error(e);
 		}
@@ -726,7 +775,7 @@ class ContentScripts {
 	 * Map<tabId base36, Port>
 	 * @type {Map<string, chrome.runtime.Port>}
 	 */
-	#ports=new Map()
+	#ports=new Map();
 
 	/**
 	 * @private
@@ -767,6 +816,10 @@ class ContentScripts {
 				onUserScriptMessage(message, sender, sendResponse);
 			}
 		});
+		/*
+		 * Firefox MV3 Port Fallback Handler
+		 * This handles messages sent via the Port instead of chrome.runtime.sendMessage directly
+		 */
 		chrome.runtime.onUserScriptConnect?.addListener((port) => {
 			if (!port.sender.tab) {
 				port.disconnect();
@@ -782,9 +835,23 @@ class ContentScripts {
 			port.onDisconnect.addListener((port) => {
 				this.#ports.delete(port.sender.tab.id.toString(36));
 			});
+			port.onMessage.addListener(async (message) => {
+				if (!message || typeof message !== 'object' || !message.messageId) {
+					console.error('[UserScript] Invalid message received', message);
+					return;
+				}
+
+				onUserScriptMessage(message, port.sender, function sendResponse(data) {
+					data.messageId = message.messageId;
+					port.postMessage(data);
+				});
+			});
 		});
 		chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 			if (!message || typeof message !== 'object' || sender.id !== chrome.runtime.id) return;
+
+			// CRITICAL: Ensure we return true for async operations
+			const keepAlive = true;
 
 			const wrapPromise = (promise) => {
 				promise.then(result => {
@@ -798,16 +865,16 @@ class ContentScripts {
 			if (message.id === 'userscript_manual_execute') {
 				if ((message.data.tabId ?? null) === null) {
 					sendResponse({ error: 'TAB_ID_MISSING' });
-					return;
+					return keepAlive;
 				}
 				const userScript = this.#userScripts.find(userScript => userScript.fileName === message.data.target);
 				if (!userScript) {
 					sendResponse({ error: 'USERSCRIPT_NOT_FOUND' });
-					return;
+					return keepAlive;
 				}
 
 				wrapPromise(this.#manuallyExecute(userScript, message.data.tabId));
-				return true;
+				return keepAlive;
 			} else if (message.id === 'user_script_panel_event') {
 				const port = this.#ports.get(message.data.tabId.toString(36));
 				if (port !== undefined) {
@@ -820,9 +887,11 @@ class ContentScripts {
 							data: message.data.eventData,
 						});
 						sendResponse({ error: false });
+						return keepAlive;
 					} catch (e) {
 						console.error(e);
 						sendResponse({ error: true });
+						return keepAlive;
 					}
 				} else {
 					wrapPromise(chrome.tabs.sendMessage(message.data.tabId, {
@@ -831,7 +900,7 @@ class ContentScripts {
 						eventName: message.data.eventName,
 						data: message.data.eventData,
 					}));
-					return true;
+					return keepAlive;
 				}
 			}
 		});
