@@ -1153,7 +1153,8 @@ class ContentScripts {
 			if (!enabled) continue;
 			if (userScript.runAt === 'panel') {
 				if (userScriptPanelDisabled) {
-					console.warn(`UserScript ${userScript.fileName} runAt is "panel" but this mode is unavailable. Enabling it anyway.`);
+					console.warn(`UserScript ${userScript.fileName} runAt is "panel" but this mode is unavailable. Enabling it anyway in document_idle runAt instead.`);
+					userScript.runAt = 'document_idle';
 				} else {
 					continue;
 				}
