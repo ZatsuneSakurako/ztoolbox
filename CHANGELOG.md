@@ -1,3 +1,6 @@
+# 3.7.3
+* fix: UserScript `run-at` "panel" value not supported with Firefox (running them in `document_idle` instead)
+
 # 3.7.2
 * i: Minimum version Chrome/Chromium 146
 * fix: UserScript messages with Firefox (still some issues, but works better)
