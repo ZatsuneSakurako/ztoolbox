@@ -3,7 +3,7 @@ import {
 	_userScriptsStateStoreKey,
 	_userScriptsStoreKey,
 	_userStylesStateStoreKey,
-	_userStylesStoreKey
+	_userStylesStoreKey, userScriptPanelDisabled
 } from "../constants.js";
 import {appendTo, replaceWith} from "../utils/appendTo.js";
 import {nunjucksRender} from "../init-templates.js";
@@ -219,30 +219,30 @@ export async function updateData(activeTab) {
 	renderData.items.push(await tabMover.update());
 
 	for (let userStyle of tabDataList.values()) {
-		const isEnabledScript = 'script' in userStyle && userStyle.enabled;
-
-		if (isEnabledScript && (userStyle.runAt !== 'panel' || tabData.executedScripts.has(userStyle.fileName))) {
-			chrome.runtime.sendMessage(chrome.runtime.id, {
-				id: 'user_script_panel_event',
-				data: {
-					target: userStyle.fileName,
-					tabId: activeTab.id,
-					eventName: `panelOpened`,
-					eventData: {},
-				}
-			}).catch(console.error);
-		} else if (isEnabledScript && userStyle.runAt === 'panel') { // Then panel not yet executed
-			await chrome.runtime.sendMessage(chrome.runtime.id, {
-				id: 'userscript_manual_execute',
-				data: {
-					target: userStyle.fileName,
-					tabId: activeTab.id,
-				}
-			})
-				.then(result => {
-					console.log('[UserScript] ' + userStyle.fileName, result);
+		if ('script' in userStyle && userStyle.enabled) {
+			if (tabData.executedScripts.has(userStyle.fileName)) {
+				chrome.runtime.sendMessage(chrome.runtime.id, {
+					id: 'user_script_panel_event',
+					data: {
+						target: userStyle.fileName,
+						tabId: activeTab.id,
+						eventName: `panelOpened`,
+						eventData: {},
+					}
+				}).catch(console.error);
+			} else if (!userScriptPanelDisabled && userStyle.runAt === 'panel') {
+				await chrome.runtime.sendMessage(chrome.runtime.id, {
+					id: 'userscript_manual_execute',
+					data: {
+						target: userStyle.fileName,
+						tabId: activeTab.id,
+					}
 				})
-				.catch(console.error);
+					.then(result => {
+						console.log('[UserScript] ' + userStyle.fileName, result);
+					})
+					.catch(console.error);
+			}
 		}
 		renderData.items.push(userScriptToRenderData(userStyle, tabData));
 	}
