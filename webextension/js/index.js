@@ -19,12 +19,12 @@ if ('offscreen' in chrome) {
 		justification: "Service worker keepalive workaround"
 	}).catch(console.error);
 
-	if (isFirefox()) {
+	if (isFirefox) {
 		console.warn('%cFIREFOX Offscreen API available', 'font-size: 42px; color: red; font-weight: bold;');
 	}
 }
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-	// If message comes from content script
+	// If message comes from keep-alive content script
 	if (message.type !== "HEARTBEAT") return;
 
 	console.debug("Background woke up! Received update  ", message.data);
