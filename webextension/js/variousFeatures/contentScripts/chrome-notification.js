@@ -33,18 +33,20 @@ export function getBasicNotificationOptions(options) {
 	const notificationOpts = {
 		type: 'basic',
 		id: options.id ?? crypto.randomUUID(),
+		iconUrl: typeof options.iconUrl === 'string' && !!options.iconUrl ? options.iconUrl : undefined,
+		message: typeof options.message === 'string' && !!options.message ? options.message : undefined,
 	};
-	if (!options.iconUrl || typeof options.iconUrl !== "string" || options.iconUrl === "") {
+	if (!notificationOpts.iconUrl || typeof notificationOpts.iconUrl !== "string" || notificationOpts.iconUrl === "") {
 		const iconUrl = getIcon();
 		if (iconUrl !== undefined) {
-			options.iconUrl = iconUrl;
+			notificationOpts.iconUrl = iconUrl;
 		}
 	}
-	if (!options.title || typeof options.title !== 'string') {
-		options.title = chrome.runtime.getManifest().name;
+	if (!notificationOpts.title || typeof notificationOpts.title !== 'string') {
+		notificationOpts.title = chrome.runtime.getManifest().name;
 	}
-	if (!options.contextMessage || typeof options.contextMessage !== 'string') {
-		options.contextMessage = chrome.runtime.getManifest().name;
+	if (!notificationOpts.contextMessage || typeof notificationOpts.contextMessage !== 'string') {
+		notificationOpts.contextMessage = chrome.runtime.getManifest().name;
 	}
 	return notificationOpts;
 }

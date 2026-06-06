@@ -1,4 +1,4 @@
-import {_userScriptsStateStoreKey, _userScriptsStoreKey} from "../constants.js";
+import {_userScriptsStateStoreKey, _userScriptsStoreKey, userScriptPanelDisabled} from "../constants.js";
 import {contentStyles} from "./contentStyles.js";
 import {getBasicNotificationOptions} from "./contentScripts/chrome-notification.js";
 import {getUserscriptData, setUserscriptData, writeClipboard} from "../classes/chrome-native.js";
@@ -132,11 +132,14 @@ const znmUserscriptApi = {
 		if (opts.image !== undefined && typeof opts.image !== 'string') throw new Error('INVALID IMAGE');
 		if (opts.onclick !== undefined) throw new Error('UNSUPPORTED_ONCLICK_PARAMETER');
 
-		return await chrome.notifications.create(getBasicNotificationOptions({
+		opts = getBasicNotificationOptions({
 			title: opts.title ?? fileName,
 			"message": opts.text,
 			"iconUrl": opts.image,
-		}));
+		});
+		const id = opts.id;
+		delete opts.id;
+		return await chrome.notifications.create(id, opts);
 	},
 	/**
 	 * @typedef {object} OpenInTabOpts
@@ -669,6 +672,12 @@ function userScriptApiLoader(context, dateUtils, slugify) {
 			}
 			listeners[eventName].push(listener);
 		},
+		listeners(eventName) {
+			if (!(eventName in listeners)) {
+				return Object.freeze([]);
+			}
+			return Object.freeze(Array.from(listeners[eventName]));
+		},
 		off(eventName, listener) {
 			if (!(eventName in listeners)) return;
 
@@ -687,6 +696,13 @@ function userScriptApiLoader(context, dateUtils, slugify) {
 			const [name, callback, ...args] = arguments;
 			// Keep callback and does not send it to registerMenuCommand
 			const menu_command_id = await call.call(this, 'registerMenuCommand', name, ...args);
+
+			// In case the menu was already registered, remove it before
+			if (znmApi.listeners(`menuCommand-${menu_command_id}`).length > 0) {
+				console.warn(`menuCommand-${menu_command_id} was already registered, removing old listeners`);
+				znmApi.off(`menuCommand-${menu_command_id}`);
+			}
+
 			znmApi.on(`menuCommand-${menu_command_id}`, callback);
 			return menu_command_id;
 		},
@@ -1150,7 +1166,15 @@ class ContentScripts {
 
 		for (let userScript of userScripts) {
 			const enabled = this.userScriptStates[userScript.fileName] ?? userScript.enabled;
-			if (!enabled || userScript.runAt === 'panel') continue;
+			if (!enabled) continue;
+			if (userScript.runAt === 'panel') {
+				if (userScriptPanelDisabled) {
+					console.warn(`UserScript ${userScript.fileName} runAt is "panel" but this mode is unavailable. Enabling it anyway in document_idle runAt instead.`);
+					userScript.runAt = 'document_idle';
+				} else {
+					continue;
+				}
+			}
 			userScriptIds.add(userScript.fileName);
 
 			const registrationUserScript = this.#userScriptToRegistrationOptions(userScript);

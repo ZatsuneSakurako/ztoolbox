@@ -1,3 +1,11 @@
+# 3.7.4
+* fix: UserScript `registerMenuCommand` does not remove old listeners when re-registering a menu with an existing `id`
+* fix: Notification support (misused `id`)
+* fix: Keep the background page alive in Firefox (offscreen API not yet supported)
+
+# 3.7.3
+* fix: UserScript `run-at` "panel" value not supported with Firefox (running them in `document_idle` instead)
+
 # 3.7.2
 * i: Minimum version Chrome/Chromium 146
 * fix: UserScript messages with Firefox (still some issues, but works better)

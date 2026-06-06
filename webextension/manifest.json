@@ -4,7 +4,7 @@
 	"short_name": "ZToolBoxDev",
 	"description": "__MSG_extShortDesc__",
 	"author": "Zatsune No Mokou",
-	"version": "3.7.2",
+	"version": "3.7.4",
 	"icons": {
 		"16": "/icon_16.png",
 		"48": "/icon_48.png",
@@ -32,6 +32,7 @@
 	"permissions": [
 		"alarms",
 		"bookmarks",
+		"clipboardWrite",
 		"contextMenus",
 		"downloads",
 		"notifications",
