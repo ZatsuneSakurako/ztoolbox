@@ -1,3 +1,6 @@
+# WIP
+* fix: UserScript `registerMenuCommand` does not remove old listeners when re-registering a menu with an existing `id`
+
 # 3.7.3
 * fix: UserScript `run-at` "panel" value not supported with Firefox (running them in `document_idle` instead)
 

@@ -669,6 +669,12 @@ function userScriptApiLoader(context, dateUtils, slugify) {
 			}
 			listeners[eventName].push(listener);
 		},
+		listeners(eventName) {
+			if (!(eventName in listeners)) {
+				return Object.freeze([]);
+			}
+			return Object.freeze(Array.from(listeners[eventName]));
+		},
 		off(eventName, listener) {
 			if (!(eventName in listeners)) return;
 
@@ -687,6 +693,13 @@ function userScriptApiLoader(context, dateUtils, slugify) {
 			const [name, callback, ...args] = arguments;
 			// Keep callback and does not send it to registerMenuCommand
 			const menu_command_id = await call.call(this, 'registerMenuCommand', name, ...args);
+
+			// In case the menu was already registered, remove it before
+			if (znmApi.listeners(`menuCommand-${menu_command_id}`).length > 0) {
+				console.warn(`menuCommand-${menu_command_id} was already registered, removing old listeners`);
+				znmApi.off(`menuCommand-${menu_command_id}`);
+			}
+
 			znmApi.on(`menuCommand-${menu_command_id}`, callback);
 			return menu_command_id;
 		},
