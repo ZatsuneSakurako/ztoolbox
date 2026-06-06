@@ -1,4 +1,4 @@
-# WIP
+# 3.7.4
 * fix: UserScript `registerMenuCommand` does not remove old listeners when re-registering a menu with an existing `id`
 * fix: Notification support (misused `id`)
 * fix: Keep the background page alive in Firefox (offscreen API not yet supported)
