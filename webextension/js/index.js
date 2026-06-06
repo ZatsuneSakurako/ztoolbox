@@ -24,7 +24,7 @@ if ('offscreen' in chrome) {
 	}
 }
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-	// If message comes from content script
+	// If message comes from keep-alive content script
 	if (message.type !== "HEARTBEAT") return;
 
 	console.debug("Background woke up! Received update  ", message.data);
