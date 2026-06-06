@@ -10,6 +10,7 @@ import './variousFeatures/contentScripts.js';
 import "./newTab/newTab-background.js";
 import {chromeNativeConnectedStorageKey, chromeNativeSettingsStorageKey} from "./classes/chrome-native-settings.js";
 import {newTabCapturesStorage, newTabImagesStorage} from "./newTab/newTab-settings.js";
+import {isFirefox} from "./utils/browserDetect.js";
 
 if ('offscreen' in chrome) {
 	chrome.offscreen.createDocument({
@@ -17,7 +18,22 @@ if ('offscreen' in chrome) {
 		reasons: [ "WORKERS" ],
 		justification: "Service worker keepalive workaround"
 	}).catch(console.error);
+
+	if (isFirefox()) {
+		console.warn('%cFIREFOX Offscreen API available', 'font-size: 42px; color: red; font-weight: bold;');
+	}
 }
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+	// If message comes from content script
+	if (message.type !== "HEARTBEAT") return;
+
+	console.debug("Background woke up! Received update  ", message.data);
+	const key = `last_update_${sender.tab.id}`;
+	browser.storage.local.set({
+		[key]: message.data
+	});
+	sendResponse({status: "saved"});
+});
 
 
 

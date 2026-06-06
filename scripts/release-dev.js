@@ -130,6 +130,11 @@ async function init() {
 	manifestJson.background = {
 		"page": "/index.html",
 	};
+	manifestJson.content_scripts = manifestJson.content_scripts ?? [];
+	manifestJson.content_scripts.push({
+		"matches": ["<all_urls>"],
+		"js": ["js/firefox_keep-alive.js"]
+	});
 
 	const manifestPermissions = new Set(manifestJson.permissions ?? []),
 		optionalPermissions = new Set(manifestJson.optional_permissions ?? [])
