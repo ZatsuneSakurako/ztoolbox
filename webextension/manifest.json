@@ -32,6 +32,7 @@
 	"permissions": [
 		"alarms",
 		"bookmarks",
+		"clipboardWrite",
 		"contextMenus",
 		"downloads",
 		"notifications",

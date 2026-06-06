@@ -132,11 +132,14 @@ const znmUserscriptApi = {
 		if (opts.image !== undefined && typeof opts.image !== 'string') throw new Error('INVALID IMAGE');
 		if (opts.onclick !== undefined) throw new Error('UNSUPPORTED_ONCLICK_PARAMETER');
 
-		return await chrome.notifications.create(getBasicNotificationOptions({
+		opts = getBasicNotificationOptions({
 			title: opts.title ?? fileName,
 			"message": opts.text,
 			"iconUrl": opts.image,
-		}));
+		});
+		const id = opts.id;
+		delete opts.id;
+		return await chrome.notifications.create(id, opts);
 	},
 	/**
 	 * @typedef {object} OpenInTabOpts
