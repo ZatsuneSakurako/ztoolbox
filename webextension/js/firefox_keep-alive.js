@@ -4,16 +4,14 @@ let lastTimeSent = 0;
 setInterval(() => {
 	const now = Date.now();
 
-	// Only send it if at least 5 seconds passed since last SEND (not last receive)
-	if (now - lastTimeSent < 5000) return;
-
-	const currentData = {
-		[Math.random().toString(36)]: new Date().getTime(),
-	};
+	// Only send it if at least 20 seconds passed since last SEND (not last receive)
+	if (now - lastTimeSent < 20_000) return;
 
 	chrome.runtime.sendMessage({
 		type: "HEARTBEAT",
-		data: { ...currentData, missed_ticks: 0 } // Add logic to detect gaps if needed
+		data: {
+			[Math.random().toString(36)]: new Date().getTime(),
+		}
 	})
 		.then(() => {
 			lastTimeSent = now;
