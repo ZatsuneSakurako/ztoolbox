@@ -19,7 +19,7 @@ if ('offscreen' in chrome) {
 		justification: "Service worker keepalive workaround"
 	}).catch(console.error);
 
-	if (isFirefox()) {
+	if (isFirefox) {
 		console.warn('%cFIREFOX Offscreen API available', 'font-size: 42px; color: red; font-weight: bold;');
 	}
 }
