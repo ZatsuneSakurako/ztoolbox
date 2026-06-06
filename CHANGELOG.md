@@ -1,3 +1,6 @@
+# 3.7.5
+* fix: `isFirefox` error in `index.js`
+
 # 3.7.4
 * fix: UserScript `registerMenuCommand` does not remove old listeners when re-registering a menu with an existing `id`
 * fix: Notification support (misused `id`)
