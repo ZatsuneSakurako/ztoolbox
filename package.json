@@ -1,6 +1,6 @@
 {
 	"name": "ztoolbox",
-	"version": "3.7.5",
+	"version": "3.8.0",
 	"private": true,
 	"description": "Web Extension to test various things.",
 	"type": "module",
@@ -29,7 +29,7 @@
 	},
 	"engines": {
 		"node": ">=24.0.0",
-		"firefox": "148.0"
+		"firefox": "154.0"
 	},
 	"webExt": {
 		"ignoreFiles": []

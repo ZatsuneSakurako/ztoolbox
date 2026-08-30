@@ -1,4 +1,4 @@
-import {_userScriptsStateStoreKey, _userScriptsStoreKey, userScriptPanelDisabled} from "../constants.js";
+import {_userScriptsStateStoreKey, _userScriptsStoreKey} from "../constants.js";
 import {contentStyles} from "./contentStyles.js";
 import {getBasicNotificationOptions} from "./contentScripts/chrome-notification.js";
 import {getUserscriptData, setUserscriptData, writeClipboard} from "../classes/chrome-native.js";
@@ -1168,12 +1168,7 @@ class ContentScripts {
 			const enabled = this.userScriptStates[userScript.fileName] ?? userScript.enabled;
 			if (!enabled) continue;
 			if (userScript.runAt === 'panel') {
-				if (userScriptPanelDisabled) {
-					console.warn(`UserScript ${userScript.fileName} runAt is "panel" but this mode is unavailable. Enabling it anyway in document_idle runAt instead.`);
-					userScript.runAt = 'document_idle';
-				} else {
-					continue;
-				}
+				continue;
 			}
 			userScriptIds.add(userScript.fileName);
 

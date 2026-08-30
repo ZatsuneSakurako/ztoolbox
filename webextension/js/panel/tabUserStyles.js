@@ -3,7 +3,7 @@ import {
 	_userScriptsStateStoreKey,
 	_userScriptsStoreKey,
 	_userStylesStateStoreKey,
-	_userStylesStoreKey, userScriptPanelDisabled
+	_userStylesStoreKey,
 } from "../constants.js";
 import {appendTo, replaceWith} from "../utils/appendTo.js";
 import {nunjucksRender} from "../init-templates.js";
@@ -230,7 +230,7 @@ export async function updateData(activeTab) {
 						eventData: {},
 					}
 				}).catch(console.error);
-			} else if (!userScriptPanelDisabled && userStyle.runAt === 'panel') {
+			} else if (userStyle.runAt === 'panel') {
 				await chrome.runtime.sendMessage(chrome.runtime.id, {
 					id: 'userscript_manual_execute',
 					data: {
