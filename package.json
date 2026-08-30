@@ -29,7 +29,7 @@
 	},
 	"engines": {
 		"node": ">=24.0.0",
-		"firefox": "148.0"
+		"firefox": "154.0"
 	},
 	"webExt": {
 		"ignoreFiles": []
