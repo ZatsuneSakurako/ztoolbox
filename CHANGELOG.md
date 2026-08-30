@@ -1,4 +1,4 @@
-# WIP
+# 3.8.0
 * i: Minimum version Firefox 154
 * \+: UserScript `run-at` "panel" value is now supported with Firefox
 * 
