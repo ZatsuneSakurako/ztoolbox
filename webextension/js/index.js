@@ -7,9 +7,7 @@ import {deletePreferences, getPreferences} from './classes/chrome-preferences.js
 import './variousFeatures/contentStyles.js';
 import './variousFeatures/contentScripts.js';
 
-import "./newTab/newTab-background.js";
 import {chromeNativeConnectedStorageKey, chromeNativeSettingsStorageKey} from "./classes/chrome-native-settings.js";
-import {newTabCapturesStorage, newTabImagesStorage} from "./newTab/newTab-settings.js";
 import {isFirefox} from "./utils/browserDetect.js";
 
 if ('offscreen' in chrome) {
@@ -97,8 +95,6 @@ async function onStart_deleteOldPreferences() {
 		'background_color',
 		chromeNativeSettingsStorageKey,
 		chromeNativeConnectedStorageKey,
-		newTabCapturesStorage,
-		newTabImagesStorage,
 	]);
 
 	const currentLocalKeys = new Set(await chrome.storage.local.getKeys());
