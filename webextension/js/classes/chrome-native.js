@@ -251,7 +251,7 @@ chrome.tabs.onActivated.addListener(async function onFocusChanged(_) {
 	;
 });
 
-export async function getBrowserName() {
+async function getBrowserName() {
 	if (!!navigator?.userAgentData) {
 		const searchedBrands = new Set(['vivaldi', 'firefox', 'opera', 'brave'])
 		const browserBrand = navigator.userAgentData.brands
@@ -404,7 +404,7 @@ async function sendSocketData() {
 
 const timeout = 5000;
 
-export async function ping() {
+async function ping() {
 	try {
 		const {result} = await socket.timeout(timeout).emitWithAck('ping');
 		console.info('[NativeMessaging] ping :', result);
@@ -418,23 +418,13 @@ self.ping = ping;
  *
  * @return {Promise<boolean|null>}
  */
-export async function getIsUpdateAvailable() {
+async function getIsUpdateAvailable() {
 	try {
 		const {result} = await socket.timeout(timeout).emitWithAck('isUpdateAvailable');
 		return result;
 	} catch (e) {
 		console.error(e);
 	}
-}
-
-/**
- *
- * @param {string} id
- * @return {Promise<*>}
- */
-export async function getPreference(id) {
-	const {result} = await socket.timeout(timeout).emitWithAck('getPreference', id);
-	return result.value;
 }
 
 /**
@@ -494,7 +484,7 @@ async function updateSyncAllowedPreferences(data) {
  *
  * @return {Promise<*[]>}
  */
-export async function getDefaultValues() {
+async function getDefaultValues() {
 	const {result} = await socket.timeout(timeout).emitWithAck('getDefaultValues');
 	return result;
 }

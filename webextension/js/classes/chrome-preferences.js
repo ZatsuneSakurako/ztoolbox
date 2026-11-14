@@ -56,11 +56,6 @@ export async function getPreferences(...prefIds) {
 	return output;
 }
 
-export async function getPreference(prefId) {
-	const values = await getPreferences(prefId);
-	return values.get(prefId);
-}
-
 /**
  *
  * @param {...string} prefIds

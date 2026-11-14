@@ -26,7 +26,7 @@ const idTabUserStyles = 'idTabUserStyles';
  * @param {chrome.tabs.Tab} tab
  * @returns {Promise<getTabUserStylesResult>}
  */
-export async function getTabUserStyles(tab) {
+async function getTabUserStyles(tab) {
 	const result = await chrome.storage.session.get([
 		_userStylesStoreKey,
 		_tabStylesStoreKey,

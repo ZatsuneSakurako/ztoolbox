@@ -1,5 +1,3 @@
-import {getPreference} from "../classes/chrome-preferences.js";
-
 /**
  *
  * @param {string} str
@@ -47,10 +45,7 @@ export async function update() {
 	 * @type {HTMLElement}
 	 */
 	const tabMoverButton = document.querySelector('#userscript-__tabMover');
-
-	const panelAlwaysShowMoveInNewWindow = !!(await getPreference('panelAlwaysShowMoveInNewWindow')
-		.catch(console.error));
-	if (!(browserWindows.length || panelAlwaysShowMoveInNewWindow)) {
+	if (!(browserWindows.length)) {
 		tabMoverButton && tabMoverButton.remove();
 		return;
 	}
@@ -74,8 +69,7 @@ export async function update() {
 			});
 		}
 	}
-	const shouldDisplayNewWindow = !browserWindows.length || panelAlwaysShowMoveInNewWindow;
-	if (shouldDisplayNewWindow) {
+	if (!browserWindows.length) {
 		menuCommands.push({
 			id: 'tabMover-newWindow',
 			fileName: tabMoverItemId,

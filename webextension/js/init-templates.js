@@ -4,7 +4,7 @@ import {getSessionNativeIsConnected} from "./classes/chrome-native-settings.js";
  *
  * @return {Promise<nunjucks.Environment>}
  */
-export async function getNunjucks() {
+async function getNunjucks() {
 	if (!self.nunjucks) {
 		await import('../lib/nunjucks-slim.js');
 		await import(`../templates/templates.js`);

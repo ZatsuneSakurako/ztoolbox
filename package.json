@@ -14,6 +14,7 @@
 		"@types/socket.io-client": "^3.0.0",
 		"chai": "^6.2.1",
 		"dotenv": "^17.2.3",
+		"fallow": "^3.43.0",
 		"mocha": "^11.7.5",
 		"stylelint": "^17.4.0",
 		"stylelint-config-recommended": "^18.0.0",

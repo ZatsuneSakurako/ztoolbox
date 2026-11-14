@@ -252,7 +252,7 @@ function userStyleInjectOpts(userStyle, tab) {
  * @param {chrome.tabs.TabChangeInfo|chrome.webNavigation.WebNavigationParentedCallbackDetails|undefined} details
  * @param {boolean} forceRemove
  */
-export async function onTabUrl(tab, details, forceRemove) {
+async function onTabUrl(tab, details, forceRemove) {
 	// Exclude iframes & special "tabs"
 	if (!!details && (details.frameId !== 0 || details.tabId < 0)) return;
 

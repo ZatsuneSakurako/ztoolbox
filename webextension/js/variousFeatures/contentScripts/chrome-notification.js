@@ -2,7 +2,7 @@
  *
  * @returns {string|undefined}
  */
-export function getIcon() {
+function getIcon() {
 	const manifestIcons = chrome.runtime.getManifest().icons;
 	let iconSize;
 	if (manifestIcons.hasOwnProperty("128")) {
