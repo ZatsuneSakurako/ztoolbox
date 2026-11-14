@@ -345,20 +345,6 @@ document.addEventListener('click', function (ev) {
 		});
 });
 
-document.addEventListener('click', async function (ev) {
-	const element = ev.target.closest('.userscript[data-manual-target]:not(.is-executed)');
-	if (!element) return;
-
-	const result = await chrome.runtime.sendMessage(chrome.runtime.id, {
-		id: 'userscript_manual_execute',
-		data: {
-			target: element.dataset.manualTarget,
-			tabId: (await getCurrentTab()).id,
-		}
-	}).catch(console.error);
-	console.log('[UserScript]', result);
-});
-
 /**
  *
  * @param {string} eventName

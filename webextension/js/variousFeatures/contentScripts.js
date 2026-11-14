@@ -765,7 +765,7 @@ function userScriptApiLoader(context, dateUtils, slugify) {
  * @property {string} [icon]
  * @property {string[]} tags
  * @property {string} script
- * @property {chrome.userScripts.RunAt|'manual'|'panel'} [runAt]
+ * @property {chrome.userScripts.RunAt|'panel'} [runAt]
  * @property {string[]} [grant]
  * @property {string[]} [match]
  * @property {string[]} [excludeMatches]

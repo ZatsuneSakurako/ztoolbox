@@ -3,6 +3,7 @@
 * \- : Remove new tab page
 * i : Simplify tab mover
 * i : Code cleaning
+* \- : UserScript manual `run-at` support removed
 
 # 3.8.0
 * i: Minimum version Firefox 154

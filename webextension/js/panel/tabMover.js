@@ -73,7 +73,7 @@ export async function update() {
 		data: {
 			id: tabMoverItemId,
 			enabled: true,
-			runAt: 'manual',
+			runAt: 'panel',
 			icon: 'swap_horiz',
 			fileName: tabMoverItemId,
 			tags: [],
