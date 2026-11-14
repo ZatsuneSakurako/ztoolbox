@@ -216,7 +216,10 @@ export async function updateData(activeTab) {
 		items: [],
 	};
 
-	renderData.items.push(await tabMover.update());
+	const tabMoverData = await tabMover.update();
+	if (tabMoverData) {
+		renderData.items.push(tabMoverData);
+	}
 
 	for (let userStyle of tabDataList.values()) {
 		if ('script' in userStyle && userStyle.enabled) {
