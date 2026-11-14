@@ -1,6 +1,8 @@
 # WIP
 * \- : Remove HTTP status badge
 * \- : Remove new tab page
+* i : Simplify tab mover
+* i : Code cleaning
 
 # 3.8.0
 * i: Minimum version Firefox 154
