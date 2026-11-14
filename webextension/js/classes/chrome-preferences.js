@@ -1,66 +1,37 @@
-import {chromeNativeSettingsStorageKey, getSessionNativeIsConnected} from "./chrome-native-settings.js";
-
-export async function savePreference(prefId, value) {
-	return await chrome.storage.local.set({
-		[prefId]: value
-	})
-		.catch(console.error)
-	;
-}
-
-/**
- *
- * @type {string[]}
- */
-const internalPreferences = Object.freeze([chromeNativeSettingsStorageKey]);
-
 /**
  *
  * @param {...string[]} prefIds
  * @return {Promise<Map<any, any>>}
  */
 export async function getPreferences(...prefIds) {
-	const chromeNativeConnected = getSessionNativeIsConnected()
-		.catch(console.error)
-	;
-
-	const preferenceIdList = new Set(prefIds);
-	preferenceIdList.add(chromeNativeSettingsStorageKey);
-
-	const values = await chrome.storage.local.get([...preferenceIdList]),
-		chromeNativeSettings = values[chromeNativeSettingsStorageKey],
-		output = new Map()
-	;
-
-	let validValues = values;
-	if (await chromeNativeConnected) {
-		/**
-		 * Add chromeNativeSettings if connected, adding
-		 * chromeNativeSettings in second for higher priority
-		 */
-		validValues = { ...values, ...chromeNativeSettings };
-	}
-
-	for (let [prefId, current_pref] of Object.entries(validValues)) {
-		/*
-		 * If chromeNativeSettingsStorageKey because
-		 * when internal use, no need to return it
-		 */
-		if (internalPreferences.includes(prefId) && !prefIds.includes(prefId)) {
-			continue;
+	const output = new Map();
+	try {
+		const response = await chrome.runtime.sendMessage({
+			id: 'getPreferences',
+			data: {
+				preferences: prefIds,
+			},
+		});
+		if (response && typeof response === 'object' && 'preferences' in response) {
+			for (const [id, value] of Object.entries(response.preferences)) {
+				output.set(id, value);
+			}
+		} else {
+			// noinspection ExceptionCaughtLocallyJS
+			throw new Error(response, 'UNEXPECTED_RESPONSE');
 		}
-
-		output.set(prefId, current_pref);
+	} catch (e) {
+		console.error(e);
 	}
-
 	return output;
 }
 
-/**
- *
- * @param {...string} prefIds
- * @returns {Promise<void>}
- */
-export function deletePreferences(...prefIds) {
-	return chrome.storage.local.remove(prefIds)
+export async function getBackgroundNativeIsConnected() {
+	try {
+		const response = await chrome.runtime.sendMessage({ id: 'isNativeConnected', data: {} });
+		return response === true;
+	} catch (e) {
+		console.error(e);
+	}
+	return false;
 }

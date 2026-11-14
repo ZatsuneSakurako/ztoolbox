@@ -9,7 +9,7 @@ import {appendTo, replaceWith} from "../utils/appendTo.js";
 import {nunjucksRender} from "../init-templates.js";
 import {matchesChromePattern} from "../matchesChromePattern.js";
 import {getCurrentTab} from "../utils/getCurrentTab.js";
-import {port} from "./panel-init.js";
+import {port} from "./panel-port.js";
 import * as tabMover from "./tabMover.js";
 import {tabMoverItemId} from "./tabMover.js";
 

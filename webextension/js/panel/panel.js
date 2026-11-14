@@ -1,8 +1,9 @@
 import {loadTranslations} from '../translation-api.js';
 import * as tabUserStyles from "./tabUserStyles.js";
-import {chromeNativeConnectedStorageKey, getSessionNativeIsConnected} from "../classes/chrome-native-settings.js";
+import {getBackgroundNativeIsConnected} from "../classes/chrome-preferences.js";
 import {getCurrentTab} from "../utils/getCurrentTab.js";
 import * as browserDetect from '../utils/browserDetect.js';
+import {port} from "./panel-port.js";
 
 document.addEventListener('click', e => {
 	const elm = e.target.closest('[role="button"]');
@@ -18,9 +19,8 @@ document.addEventListener('click', async e => {
 	const elm = e.target.closest('#settings');
 	if (!elm) return;
 
-	const nativeIsConnected = await getSessionNativeIsConnected()
-		.catch(console.error)
-	;
+	const nativeIsConnected = await getBackgroundNativeIsConnected()
+		.catch(console.error);
 	if (nativeIsConnected) {
 		chrome.runtime.sendMessage({
 			id: 'showSection',
@@ -46,9 +46,8 @@ document.addEventListener('click', async e => {
 	const elm = e.target.closest('#openDelegatedMain');
 	if (!elm) return;
 
-	const nativeIsConnected = await getSessionNativeIsConnected()
-		.catch(console.error)
-	;
+	const nativeIsConnected = await getBackgroundNativeIsConnected()
+		.catch(console.error);
 	if (nativeIsConnected) {
 		chrome.runtime.sendMessage({
 			id: 'showSection',
@@ -58,10 +57,10 @@ document.addEventListener('click', async e => {
 });
 
 
-chrome.storage.onChanged.addListener(async (changes, area) => {
-	if (area !== "session") return;
+port.onMessage.addListener(async function onMessage(message) {
+	if (!message || typeof message !== 'object') throw new Error('MESSAGE_SHOULD_BE_AN_OBJECT');
 
-	if (chromeNativeConnectedStorageKey in changes) {
+	if (message.id === 'isConnected') {
 		location.reload();
 	}
 });

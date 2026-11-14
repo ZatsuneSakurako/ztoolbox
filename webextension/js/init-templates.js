@@ -1,4 +1,4 @@
-import {getSessionNativeIsConnected} from "./classes/chrome-native-settings.js";
+import {getBackgroundNativeIsConnected} from "./classes/chrome-preferences.js";
 
 /**
  *
@@ -35,7 +35,7 @@ async function getNunjucks() {
  * @return {any}
  */
 export async function nunjucksRender(templateName, context, async=false) {
-	const isConnected = await getSessionNativeIsConnected();
+	const isConnected = await getBackgroundNativeIsConnected();
 	if (isConnected) {
 		const result = await chrome.runtime.sendMessage(chrome.runtime.id, {
 			id: 'nunjucksRender',

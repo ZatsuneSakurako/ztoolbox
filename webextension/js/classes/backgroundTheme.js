@@ -1,7 +1,7 @@
 'use strict';
 
+import {port} from "../panel/panel-port.js";
 import {getPreferences} from './chrome-preferences.js';
-import {chromeNativeConnectedStorageKey} from "./chrome-native-settings.js";
 
 class Color {
 	constructor(hexColorCode){
@@ -130,15 +130,14 @@ export async function theme_update(currentTheme, background_color) {
 	}
 }
 
-chrome.storage.onChanged.addListener(async (changes, area) => {
-	if (area === "session" && chromeNativeConnectedStorageKey in changes) {
-		theme_update()
-			.catch(console.error)
-		;
-	}
-	if (area === "local" && ("theme" in changes || "background_color" in changes)) {
-		theme_update()
-			.catch(console.error)
-		;
+port.onMessage.addListener(async function onMessage(message) {
+	if (!message || typeof message !== 'object') throw new Error('MESSAGE_SHOULD_BE_AN_OBJECT');
+
+	if (message.id === 'preference_update') {
+		const {changes} = message;
+		if ("theme" in changes || "background_color" in changes) {
+			theme_update()
+				.catch(console.error);
+		}
 	}
 });

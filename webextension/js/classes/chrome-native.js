@@ -1,14 +1,10 @@
-import {
-	chromeNativeConnectedStorageKey,
-	chromeNativeSettingsStorageKey,
-	getElectronSettings
-} from "./chrome-native-settings.js";
 import {getCurrentTab} from "../utils/getCurrentTab.js";
 import {io} from "../../lib/socket.io.esm.min.js";
 import {isServiceWorker} from "../utils/browserDetect.js";
 import {contentStyles, updateStyles} from "../variousFeatures/contentStyles.js";
 import {contentScripts} from "../variousFeatures/contentScripts.js";
 import {_tabStylesStoreKey} from "../constants.js";
+import {getPanelPorts} from "../panelPort.js";
 
 
 /**
@@ -99,22 +95,23 @@ socket.on('connect_error', function (err) {
 	console.error('[ws error]', 'Socket encountered error: ' + err.message);
 });
 
+let isConnected = false;
 socket.on('ws open', function (err) {
 	console.log('[NativeMessaging]', 'ws open', err);
 
-	chrome.storage.session.set({
-		[chromeNativeConnectedStorageKey]: true
-	})
-		.catch(console.error)
-	;
+	isConnected = true;
+	for (let panelPort of getPanelPorts()) {
+		panelPort.postMessage({
+			id: 'isConnected',
+			data: isConnected,
+		});
+	}
 
 	sendSocketData()
-		.catch(console.error)
-	;
+		.catch(console.error);
 
 	getSyncAllowedPreferences()
-		.catch(console.error)
-	;
+		.catch(console.error);
 
 	updateStyles()
 		.catch(console.error);
@@ -132,6 +129,10 @@ socket.on('ws open', function (err) {
 		.catch(console.error);
 });
 
+export function isNativeConnected() {
+	return isConnected;
+}
+
 socket.on('doRestart', function () {
 	chrome.runtime.restart();
 });
@@ -147,11 +148,13 @@ socket.on('updateAvailableUpdate', function (isUpdateAvailable) {
 socket.on('disconnect', function (reason, description) {
 	console.log('[NativeMessaging]', 'ws close', reason, description);
 
-	chrome.storage.session.set({
-		[chromeNativeConnectedStorageKey]: false
-	})
-		.catch(console.error)
-	;
+	isConnected = true;
+	for (let panelPort of getPanelPorts()) {
+		panelPort.postMessage({
+			id: 'isConnected',
+			data: isConnected,
+		});
+	}
 });
 
 socket.on('log', function (...args) {
@@ -200,8 +203,7 @@ socket.on('closeActiveUrl', async (url) => {
 
 socket.on('onSettingUpdate', function (preference) {
 	updateSyncAllowedPreferences(preference)
-		.catch(console.error)
-	;
+		.catch(console.error);
 });
 
 
@@ -432,7 +434,7 @@ async function getIsUpdateAvailable() {
  * @param {string[]} ids
  * @return {Promise<Map<string, undefined|*>>}
  */
-export async function getPreferences(ids) {
+async function getPreferences(ids) {
 	const {result} = await socket.timeout(timeout).emitWithAck('getPreferences', ids),
 		output = new Map()
 	;
@@ -444,19 +446,18 @@ export async function getPreferences(ids) {
 
 
 
+/**
+ *
+ * @type {Map<string, any | undefined>}
+ */
+const syncPreferences = new Map();
 async function getSyncAllowedPreferences() {
-	const output = {},
-		newPreferences = await getPreferences([])
-	;
+	const newPreferences = await getPreferences([]);
 
+	syncPreferences.clear();
 	for (let [id, value] of newPreferences) {
-		if (value === undefined) continue;
-		output[id] = value;
+		syncPreferences.set(id, value);
 	}
-
-	await chrome.storage.local.set({
-		[chromeNativeSettingsStorageKey]: output
-	});
 }
 async function updateSyncAllowedPreferences(data) {
 	if (!data.id) {
@@ -464,18 +465,31 @@ async function updateSyncAllowedPreferences(data) {
 	}
 
 	console.log('[NativeMessaging] onSettingUpdate', data);
-	const {id, newValue} = data,
-		currentPreferences = await getElectronSettings()
-	;
+	const {id, newValue} = data;
 	if (newValue === undefined) {
-		delete currentPreferences[id];
+		syncPreferences.delete(id);
 	} else {
-		currentPreferences[id] = newValue;
+		syncPreferences.set(id, newValue);
 	}
 
-	await chrome.storage.local.set({
-		[chromeNativeSettingsStorageKey]: currentPreferences
-	});
+	for (let panelPort of getPanelPorts()) {
+		panelPort.postMessage({
+			id: 'preference_update',
+			changes: {
+				[id]: newValue,
+			},
+		});
+	}
+
+}
+
+/**
+ *
+ * @param {string} id
+ * @return {*}
+ */
+export function getPreference(id) {
+	return syncPreferences.get(id);
 }
 
 

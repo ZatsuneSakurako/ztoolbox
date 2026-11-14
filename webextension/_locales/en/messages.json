@@ -39,26 +39,6 @@
 		"message": "Open option page"
 	},
 
-	"theme_title": {
-		"message": "Panel theme"
-	},
-	"theme_description": {
-		"message": "Choose the theme of the panel"
-	},
-	"theme_dark": {
-		"message": "Dark"
-	},
-	"theme_light": {
-		"message": "Light"
-	},
-
-	"background_color_title": {
-		"message": "Panel color"
-	},
-	"background_color_description": {
-		"message": "Choose base color of the panel"
-	},
-
 	"footer_title": {
 		"message": "Addon under GPL v3 licence."
 	},
@@ -71,5 +51,5 @@
 	},
 	"clear": {
 		"message": "Clear"
-	},
+	}
 }

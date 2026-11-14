@@ -1,8 +1,7 @@
 'use strict';
 
 import * as browserDetect from '../utils/browserDetect.js';
-import {getSessionNativeIsConnected} from '../classes/chrome-native-settings.js';
-import {loadPreferencesNodes} from "./preference-basic-ui.js";
+import {getBackgroundNativeIsConnected} from "../classes/chrome-preferences.js";
 import {theme_update, THEME_LS_PREF_CACHE_KEY} from "../classes/backgroundTheme.js";
 
 
@@ -16,19 +15,15 @@ if (browserDetect.isFirefox) {
 
 
 
-export const port = chrome.runtime.connect(chrome.runtime.id, {
-	name: 'panel',
-});
 import("./tabUserStyles.js")
 	.catch(console.error);
 
 
 
 async function baseInit() {
-	const chromeNativeConnected = await getSessionNativeIsConnected()
-		.catch(console.error)
-	;
-	document.body.classList.toggle('delegated-version', chromeNativeConnected);
+	const chromeNativeConnected = await getBackgroundNativeIsConnected()
+		.catch(console.error);
+	document.body.classList.toggle('delegated-version', !!chromeNativeConnected);
 
 	/**
 	 *
@@ -38,12 +33,6 @@ async function baseInit() {
 	if ($settings) {
 		$settings.disabled = !chromeNativeConnected;
 		$settings.classList.remove('hide');
-	}
-
-	if (!chromeNativeConnected) {
-		loadPreferencesNodes()
-			.catch(console.error)
-		;
 	}
 }
 

@@ -39,26 +39,6 @@
 		"message": "Ouvrir la page d'option"
 	},
 
-	"theme_title": {
-		"message": "Thème du panel"
-	},
-	"theme_description": {
-		"message": "Choix du thème pour le panel"
-	},
-	"theme_dark": {
-		"message": "Sombre"
-	},
-	"theme_light": {
-		"message": "Clair"
-	},
-
-	"background_color_title": {
-		"message": "Couleur du panel"
-	},
-	"background_color_description": {
-		"message": "Choix de la couleur de base du panel"
-	},
-
 	"footer_title": {
 		"message": "Addon sous licence GPL v3."
 	},
@@ -71,5 +51,5 @@
 	},
 	"clear": {
 		"message": "Nettoyer"
-	},
+	}
 }
