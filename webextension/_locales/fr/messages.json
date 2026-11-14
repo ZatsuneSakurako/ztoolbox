@@ -72,16 +72,4 @@
 	"clear": {
 		"message": "Nettoyer"
 	},
-
-	"windowId": {
-		"message": "Fenêtre ($TAB_COUNT$)",
-		"placeholders": {
-			"tab_count" : {
-				"content" : "$1"
-			}
-		}
-	},
-	"newWindow": {
-		"message": "Nouvelle fenêtre"
-	}
 }

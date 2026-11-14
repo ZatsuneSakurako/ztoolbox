@@ -45,7 +45,7 @@ export async function update() {
 	 * @type {HTMLElement}
 	 */
 	const tabMoverButton = document.querySelector('#userscript-__tabMover');
-	if (!(browserWindows.length)) {
+	if (!browserWindows.length) {
 		tabMoverButton && tabMoverButton.remove();
 		return;
 	}
@@ -55,27 +55,14 @@ export async function update() {
 	 * @type {RegisterMenuCommand[]}
 	 */
 	const menuCommands = [];
-	if (browserWindows.length) {
-		for (const win of browserWindows) {
-			menuCommands.push({
-				id: 'tabMover-' + win.id,
-				fileName: tabMoverItemId,
-				order: menuCommands.length,
-
-				name: `${truncateString(win.currentTabTitle ?? win.id.toString())} (${win.tabs.length})`,
-				title: win.currentTabTitle ?? win.id.toString(),
-				icon: 'tab_move',
-				autoClose: true,
-			});
-		}
-	}
-	if (!browserWindows.length) {
+	for (const win of browserWindows) {
 		menuCommands.push({
-			id: 'tabMover-newWindow',
+			id: 'tabMover-' + win.id,
 			fileName: tabMoverItemId,
 			order: menuCommands.length,
 
-			name: chrome.i18n.getMessage("newWindow"),
+			name: `${truncateString(win.currentTabTitle ?? win.id.toString())} (${win.tabs.length})`,
+			title: win.currentTabTitle ?? win.id.toString(),
 			icon: 'tab_move',
 			autoClose: true,
 		});
@@ -111,22 +98,14 @@ export async function tabMover_mvTab(windowId) {
 
 	const winId = parseInt(windowId);
 	if (!winId || isNaN(winId)) {
-		await chrome.windows.create({
-			"tabId": activeTab.id
-		})
-			.catch(console.error);
-	} else {
-		await chrome.tabs.move(activeTab.id, {
-			"windowId": winId,
-			"index": -1
-		})
-			.catch(console.error);
+		throw new Error('INVALID_WINDOW_ID');
 	}
 
-	await chrome.tabs.update(activeTab.id, {
-		"active": activeTab.active
-	})
-		.catch(console.error);
+	await chrome.tabs.move(activeTab.id, {
+		"windowId": winId,
+		"index": -1,
+		"active": activeTab.active,
+	}).catch(console.error);
 }
 
 document.addEventListener('click', async e => {

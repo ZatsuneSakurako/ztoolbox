@@ -72,16 +72,4 @@
 	"clear": {
 		"message": "Clear"
 	},
-
-	"windowId": {
-		"message": "Fenêtre ($TAB_COUNT$)",
-		"placeholders": {
-			"tab_count" : {
-				"content" : "$1"
-			}
-		}
-	},
-	"newWindow": {
-		"message": "New window"
-	}
 }
