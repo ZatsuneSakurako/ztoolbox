@@ -53,8 +53,6 @@ window.onload = function () {
 	(async () => {
 		import('../panel/panel.js')
 			.catch(console.error);
-		import('../panel/tabMover.js')
-			.catch(console.error);
 		baseInit()
 			.catch(console.error);
 	})()

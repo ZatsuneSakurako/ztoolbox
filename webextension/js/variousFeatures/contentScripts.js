@@ -411,63 +411,6 @@ const znmUserscriptApi = {
 			"world": "MAIN",
 		});
 	},
-
-	/**
-	 *
-	 * @param {string} fileName
-	 * @param {chrome.tabs.Tab} tab
-	 * @returns {Promise<(chrome.windows.Window & { currentTabTitle?: string, currentTabUrl?:string, tabCount?: number })[]>}
-	 */
-	async getWindows(fileName, tab) {
-		const windows = await chrome.windows.getAll({
-		   populate: true,
-			windowTypes: ['normal'],
-		});
-		for (let win of windows) {
-			const activeTab = win.tabs.find(tab => {
-				return tab.active;
-			});
-			win.isCurrentTab = win.id === tab.windowId;
-			win.currentTabTitle = activeTab.title;
-			win.currentTabUrl = activeTab.url;
-			win.tabCount = win.tabs.length;
-			win.tabs = undefined;
-		}
-		return windows;
-	},
-
-	/**
-	 *
-	 * @param {string} fileName
-	 * @param {chrome.tabs.Tab} tab
-	 * @param { [{ windowId?: number, index?: number }] } data
-	 * @returns {Promise<boolean>}
-	 */
-	async moveTab(fileName, tab, data) {
-		const [mvTabOpts] = data;
-		if (typeof mvTabOpts !== 'object') throw new Error('INVALID_OPTIONS');
-
-		try {
-			if (!mvTabOpts.windowId || isNaN(mvTabOpts.windowId)) {
-				await chrome.windows.create({
-					"tabId": tab.id
-				})
-					.catch(console.error)
-				;
-			} else {
-				await chrome.tabs.move(tab.id, {
-					"windowId": mvTabOpts.windowId,
-					"index": -1
-				})
-					.catch(console.error)
-				;
-			}
-			return true;
-		} catch (error) {
-			console.error(error);
-			return false;
-		}
-	}
 };
 
 

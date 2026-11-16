@@ -1,8 +1,8 @@
 # WIP
+* i : Code cleaning
 * \- : Remove HTTP status badge
 * \- : Remove new tab page
-* i : Simplify tab mover
-* i : Code cleaning
+* \- : Remove tab mover
 * \- : UserScript manual `run-at` support removed
 
 # 3.8.0
