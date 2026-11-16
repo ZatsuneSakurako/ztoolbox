@@ -27,7 +27,6 @@
 	},
 	"default_locale": "en",
 	"permissions": [
-		"alarms",
 		"bookmarks",
 		"clipboardWrite",
 		"contextMenus",

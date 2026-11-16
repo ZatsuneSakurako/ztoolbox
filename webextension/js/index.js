@@ -101,11 +101,6 @@ async function onStart_deleteOldPreferences() {
 		console.warn(`Deleting old preference "${key}"`);
 		await chrome.storage.local.remove(key);
 	}
-
-	if ('alarms' in chrome) {
-		await chrome.alarms.clearAll()
-			.catch(console.error);
-	}
 }
 chrome.runtime.onStartup.addListener(function () {
 	onStart_deleteOldPreferences()
