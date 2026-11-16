@@ -1,5 +1,6 @@
 # WIP
 * i : Code cleaning
+* i : Move from Nunjuck templates to native [Web Component](https://developer.mozilla.org/en-US/docs/Web/API/Web_components)
 * \- : Remove HTTP status badge
 * \- : Remove new tab page
 * \- : Remove tab mover

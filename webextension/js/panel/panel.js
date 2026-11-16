@@ -65,15 +65,6 @@ port.onMessage.addListener(async function onMessage(message) {
 	}
 });
 
-async function updatePanelData() {
-	console.log("Updating panel data");
-
-	const activeTab = await getCurrentTab();
-	tabUserStyles.updateData(activeTab)
-		.catch(console.error)
-	;
-}
-
 
 
 async function current_version(version) {
@@ -107,6 +98,7 @@ loadTranslations()
 	.catch(console.error)
 ;
 
-updatePanelData()
-	.catch(console.error)
-;
+
+const activeTab = await getCurrentTab();
+tabUserStyles.updateData(activeTab)
+	.catch(console.error);

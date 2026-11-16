@@ -6,7 +6,6 @@
 	"type": "module",
 	"dependencies": {
 		"material-symbols": "^0.40.2",
-		"nunjucks": "^3.2.4",
 		"socket.io-client": "^4.8.1"
 	},
 	"devDependencies": {

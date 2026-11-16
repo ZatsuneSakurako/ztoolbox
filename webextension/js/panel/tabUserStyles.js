@@ -5,8 +5,7 @@ import {
 	_userStylesStateStoreKey,
 	_userStylesStoreKey,
 } from "../constants.js";
-import {appendTo, replaceWith} from "../utils/appendTo.js";
-import {nunjucksRender} from "../init-templates.js";
+import {ZPanelItem} from "./ZPanelItem.js";
 import {matchesChromePattern} from "../matchesChromePattern.js";
 import {getCurrentTab} from "../utils/getCurrentTab.js";
 import {port} from "./panel-port.js";
@@ -170,6 +169,12 @@ function userScriptToRenderData(userStyle, tabData) {
 
 /**
  *
+ * @type {HTMLElement|null}
+ */
+const $tabUserStyles = document.querySelector(`#${idTabUserStyles}`);
+
+/**
+ *
  * @param {chrome.tabs.Tab} activeTab
  * @returns {Promise<void>}
  */
@@ -177,10 +182,7 @@ export async function updateData(activeTab) {
 	currentTab = activeTab;
 	const dataPromise = getTabUserStyles(activeTab);
 
-	const $tabUserStyles = document.querySelector(`#${idTabUserStyles}`);
-	for (let node of [...$tabUserStyles.children]) {
-		node.remove();
-	}
+	$tabUserStyles.replaceChildren();
 
 	if (!activeTab) {
 		return;
@@ -188,13 +190,9 @@ export async function updateData(activeTab) {
 
 	const tabData = await dataPromise;
 	if (!tabData.userStyles.length && !tabData.userScripts.length) {
-		appendTo($tabUserStyles, await nunjucksRender("tabUserStyles", {
-			items: [
-				{
-					title: activeTab.title,
-					data: false,
-				},
-			],
+		$tabUserStyles.append(ZPanelItem.build({
+			title: activeTab.title,
+			data: false,
 		}));
 		return;
 	}
@@ -209,11 +207,9 @@ export async function updateData(activeTab) {
 			return a.index - b.index;
 		});
 
-	const renderData = {
-		items: [],
-	};
-
 	for (let userStyle of tabDataList.values()) {
+		$tabUserStyles.append(ZPanelItem.build(userScriptToRenderData(userStyle, tabData)));
+
 		if ('script' in userStyle && userStyle.enabled) {
 			if (tabData.executedScripts.has(userStyle.fileName)) {
 				chrome.runtime.sendMessage(chrome.runtime.id, {
@@ -239,10 +235,7 @@ export async function updateData(activeTab) {
 					.catch(console.error);
 			}
 		}
-		renderData.items.push(userScriptToRenderData(userStyle, tabData));
 	}
-
-	appendTo($tabUserStyles, await nunjucksRender("tabUserStyles", renderData));
 }
 
 /**
@@ -280,12 +273,15 @@ const onUserScriptUpdate = debounceWithArgumentPreserving(async function onUserS
 			throw new Error(`[UserScript] ${userScriptId} not found`);
 		}
 
-		const $target = document.querySelector(`[id=${JSON.stringify(`userscript-${targetUserScript.fileName}`)}]`);
-		replaceWith($target, await nunjucksRender("tabUserStyles", {
-			items: [
-				userScriptToRenderData(targetUserScript, tabData),
-			]
-		}));
+		/**
+		 *
+		 * @type {ZPanelItem}
+		 */
+		const $target = $tabUserStyles.children.namedItem(`userScript-${targetUserScript.fileName}`);
+		if (!$target) {
+			console.error(`Item not found "userScript-${targetUserScript.fileName}"`);
+		}
+		$target.item = userScriptToRenderData(targetUserScript, tabData);
 	}
 }, 100);
 
