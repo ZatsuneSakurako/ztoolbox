@@ -16,20 +16,6 @@ document.addEventListener('click', e => {
 });
 
 document.addEventListener('click', async e => {
-	const elm = e.target.closest('#settings');
-	if (!elm) return;
-
-	const nativeIsConnected = await getBackgroundNativeIsConnected()
-		.catch(console.error);
-	if (nativeIsConnected) {
-		chrome.runtime.sendMessage({
-			id: 'showSection',
-			data: 'settings'
-		}).catch(console.error);
-	}
-});
-
-document.addEventListener('click', async e => {
 	const elm = e.target.closest('#refreshUserStyles');
 	if (!elm) return;
 
@@ -41,21 +27,6 @@ document.addEventListener('click', async e => {
 			window.close();
 		});
 });
-
-document.addEventListener('click', async e => {
-	const elm = e.target.closest('#openDelegatedMain');
-	if (!elm) return;
-
-	const nativeIsConnected = await getBackgroundNativeIsConnected()
-		.catch(console.error);
-	if (nativeIsConnected) {
-		chrome.runtime.sendMessage({
-			id: 'showSection',
-			data: 'main'
-		}).catch(console.error);
-	}
-});
-
 
 port.onMessage.addListener(async function onMessage(message) {
 	if (!message || typeof message !== 'object') throw new Error('MESSAGE_SHOULD_BE_AN_OBJECT');

@@ -27,12 +27,11 @@ async function baseInit() {
 
 	/**
 	 *
-	 * @type {HTMLButtonElement}
+	 * @type {HTMLAnchorElement}
 	 */
-	const $settings = document.querySelector('button#settings');
+	const $settings = document.querySelector('a#settings');
 	if ($settings) {
-		$settings.disabled = !chromeNativeConnected;
-		$settings.classList.remove('hide');
+		$settings.classList.toggle('hide', !chromeNativeConnected);
 	}
 }
 

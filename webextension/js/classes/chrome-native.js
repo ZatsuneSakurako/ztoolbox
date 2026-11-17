@@ -504,16 +504,6 @@ async function getDefaultValues() {
 }
 self.getDefaultValues = getDefaultValues;
 
-/**
- *
- * @param {string} sectionName
- * @return {Promise<*>}
- */
-export async function showSection(sectionName) {
-	const {result} = await socket.timeout(timeout).emitWithAck('showSection', sectionName);
-	return result;
-}
-
 
 
 /**
@@ -619,21 +609,6 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
 				console.error(e);
 				sendResponse({
 					response: e,
-					isError: true
-				});
-			})
-		;
-		return true;
-	} else if (message.id === 'showSection') {
-		showSection(...message.data)
-			.then(() => {
-				sendResponse({
-					isError: false
-				});
-			})
-			.catch(err => {
-				console.error(err);
-				sendResponse({
 					isError: true
 				});
 			})

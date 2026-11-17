@@ -52,6 +52,11 @@ header {
 	a {
 		text-decoration: none;
 	}
+
+	button,
+	[role="button"] {
+		min-height: 36px;
+	}
 }
 
 header button,
