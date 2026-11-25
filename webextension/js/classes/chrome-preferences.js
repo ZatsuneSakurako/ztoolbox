@@ -25,13 +25,3 @@ export async function getPreferences(...prefIds) {
 	}
 	return output;
 }
-
-export async function getBackgroundNativeIsConnected() {
-	try {
-		const response = await chrome.runtime.sendMessage({ id: 'isNativeConnected', data: {} });
-		return response === true;
-	} catch (e) {
-		console.error(e);
-	}
-	return false;
-}

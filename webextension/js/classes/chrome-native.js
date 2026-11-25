@@ -115,18 +115,6 @@ socket.on('ws open', function (err) {
 
 	updateStyles()
 		.catch(console.error);
-
-	getIsUpdateAvailable()
-		.then(isUpdateAvailable => {
-			if (isUpdateAvailable !== null) {
-				chrome.storage.local.set({
-					_checkUpdate: !!isUpdateAvailable
-				})
-					.catch(console.error)
-				;
-			}
-		})
-		.catch(console.error);
 });
 
 export function isNativeConnected() {
@@ -135,14 +123,6 @@ export function isNativeConnected() {
 
 socket.on('doRestart', function () {
 	chrome.runtime.restart();
-});
-
-socket.on('updateAvailableUpdate', function (isUpdateAvailable) {
-	chrome.storage.local.set({
-		_checkUpdate: !!isUpdateAvailable
-	})
-		.catch(console.error)
-	;
 });
 
 socket.on('disconnect', function (reason, description) {
@@ -418,19 +398,6 @@ self.ping = ping;
 
 /**
  *
- * @return {Promise<boolean|null>}
- */
-async function getIsUpdateAvailable() {
-	try {
-		const {result} = await socket.timeout(timeout).emitWithAck('isUpdateAvailable');
-		return result;
-	} catch (e) {
-		console.error(e);
-	}
-}
-
-/**
- *
  * @param {string[]} ids
  * @return {Promise<Map<string, undefined|*>>}
  */
@@ -480,7 +447,6 @@ async function updateSyncAllowedPreferences(data) {
 			},
 		});
 	}
-
 }
 
 /**
@@ -491,18 +457,6 @@ async function updateSyncAllowedPreferences(data) {
 export function getPreference(id) {
 	return syncPreferences.get(id);
 }
-
-
-
-/**
- *
- * @return {Promise<*[]>}
- */
-async function getDefaultValues() {
-	const {result} = await socket.timeout(timeout).emitWithAck('getDefaultValues');
-	return result;
-}
-self.getDefaultValues = getDefaultValues;
 
 
 
@@ -573,46 +527,3 @@ socket.on('userScriptDataUpdated', async function (fileName, newData) {
 export async function writeClipboard(data) {
 	return await socket.timeout(timeout).emitWithAck('writeClipboard', data);
 }
-
-
-
-
-
-/**
- *
- * @param {string} browserName
- * @param {string} url
- * @return {Promise<void>}
- */
-export async function openUrl(browserName, url) {
-	const {result} = await socket.timeout(timeout).emitWithAck('openUrl', browserName, url);
-	console.dir(result)
-	return result;
-}
-
-chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
-	if (sender.id !== chrome.runtime.id) {
-		return;
-	}
-
-	if (message.id === 'ztoolbox_nativeOpenUrl') {
-		const {data} = message;
-
-		openUrl(data.browserName, data.url)
-			.then(response => {
-				sendResponse({
-					response: response?.response ?? false,
-					isError: false
-				});
-			})
-			.catch(e => {
-				console.error(e);
-				sendResponse({
-					response: e,
-					isError: true
-				});
-			})
-		;
-		return true;
-	}
-});

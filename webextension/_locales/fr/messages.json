@@ -6,50 +6,5 @@
 	"extShortDesc": {
 		"message": "Web Extension pour tester diverses choses.",
 		"description": "this will be used as short description in web stores: MUST BE 132 characters OR LESS"
-	},
-	"language": {
-		"message": "fr"
-	},
-
-
-
-	"ExternalNotifications": {
-		"message": "Notification externes activées"
-	},
-	"ExternalNotificationsDisabled": {
-		"message": "Notification externes désactivées"
-	},
-
-	"openDelegatedMain": {
-		"message": "Ouvrir section principal"
-	},
-	"Settings": {
-		"message": "Options"
-	},
-
-	"refreshUserscripts": {
-		"message": "Rafraichir les UserScripts"
-	},
-
-	"permission_missing": {
-		"message": "Permission(s) manquante(s)"
-	},
-
-	"open_optionpage": {
-		"message": "Ouvrir la page d'option"
-	},
-
-	"footer_title": {
-		"message": "Addon sous licence GPL v3."
-	},
-	"footer_by": {
-		"message": "par"
-	},
-
-	"none": {
-		"message": "Aucun"
-	},
-	"clear": {
-		"message": "Nettoyer"
 	}
 }

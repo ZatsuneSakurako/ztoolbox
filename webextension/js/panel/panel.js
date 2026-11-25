@@ -1,8 +1,5 @@
-import {loadTranslations} from '../translation-api.js';
 import * as tabUserStyles from "./tabUserStyles.js";
-import {getBackgroundNativeIsConnected} from "../classes/chrome-preferences.js";
 import {getCurrentTab} from "../utils/getCurrentTab.js";
-import * as browserDetect from '../utils/browserDetect.js';
 import {port} from "./panel-port.js";
 
 document.addEventListener('click', e => {
@@ -68,40 +65,6 @@ port.onMessage.addListener(async function onMessage(message) {
 		location.reload();
 	}
 });
-
-
-
-async function current_version(version) {
-	/**
-	 *
-	 * @type {HTMLSpanElement|null}
-	 */
-	const current_version_node = document.querySelector("span#current_version");
-	if (!current_version_node) return;
-
-	current_version_node.textContent = ` (v${version})`;
-
-	if (browserDetect.isChrome) {
-		const nativeConnected = !!(await chrome.storage.session.get(['_nativeConnected']))?._nativeConnected,
-			hasUpdate = nativeConnected && !!(await chrome.storage.local.get(['_checkUpdate']))?._checkUpdate;
-
-		current_version_node.dataset.hasUpdate = hasUpdate.toString();
-
-		if (!hasUpdate) {
-			// if no update (or not local), no text
-			current_version_node.dataset.translateTitle = '';
-		}
-	}
-}
-current_version(chrome.runtime.getManifest().version)
-	.catch(console.error)
-;
-
-
-loadTranslations()
-	.catch(console.error)
-;
-
 
 const activeTab = await getCurrentTab();
 tabUserStyles.updateData(activeTab)

@@ -13,7 +13,6 @@
 	<link rel="preload" href="js/panel/panel-init.js" as="script" crossorigin="anonymous" />
 	<link rel="preload" href="js/classes/chrome-preferences.js" as="script" crossorigin="anonymous" />
 	<link rel="preload" href="js/constants.js" as="script" crossorigin="anonymous" />
-	<link rel="preload" href="js/translation-api.js" as="script" crossorigin="anonymous" />
 	<link rel="preload" href="js/utils/browserDetect.js" as="script" crossorigin="anonymous" />
 	<link rel="preload" href="js/utils/getCurrentTab.js" as="script" crossorigin="anonymous" />
 
@@ -29,27 +28,19 @@
 </head>
 <body class="page-panel">
 	<header>
-		<a id="openDelegatedMain" href="ztoolbox://start" data-translate-title="openDelegatedMain" class=" if-delegated-version" role="button"><span class="material-symbols-outlined">house_siding</span></a>
-		<button id="refreshUserStyles" class="if-delegated-version" data-translate-title="refreshUserscripts">
+		<a id="openDelegatedMain" href="ztoolbox://start" title="Open main section" role="button"><span class="material-symbols-outlined">house_siding</span></a>
+		<button id="refreshUserStyles" title="Refresh UserScripts">
 			<span class="material-symbols-outlined">refresh</span>
 		</button>
-		<a id="settings" class="hide" href="ztoolbox://settings" data-translate-title="Settings" role="button"><span class="material-symbols-outlined">settings</span></a>
+		<a id="settings" href="ztoolbox://settings" title="Settings" role="button"><span class="material-symbols-outlined">settings</span></a>
 	</header>
 
-	<main id="panelContent">
-		<div id="requestPermissionItem" class="button buttonItem hide">
-			<span class="icon"><span class="material-symbols-outlined">lock</span></span>
-			<div class="title" data-translate-id="permission_missing">Permission missing !</div>
-		</div>
-		<div id="idTabUserStyles" class="fui-list fui-list_no-padding fui-list_no-pointer"></div>
-	</main>
+	<main id="idTabUserStyles" class="fui-list fui-list_no-padding fui-list_no-pointer"></main>
 
 	<footer>
-		<span data-translate-id="footer_title">Addon under GPL v3 licence</span>
-		<div>
-			<span data-translate-id="footer_by">By</span><!--
-			--> <a href="https://github.com/ZatsuneSakurako/" target="_blank">ZatsuneSakurako</a><!--
-			--> <span id="current_version"></span>
+		Addon under GPL v3 licence
+		<div><!--
+			-->By<a href="https://github.com/ZatsuneSakurako/" target="_blank">ZatsuneSakurako</a>
 		</div>
 	</footer>
 

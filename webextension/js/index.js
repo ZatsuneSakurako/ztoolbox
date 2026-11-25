@@ -89,7 +89,6 @@ chrome.runtime.onInstalled.addListener(function (installReason) {
 async function onStart_deleteOldPreferences() {
 	const localKeyToKeep = new Set([
 		'chrome_native_token',
-		'_checkUpdate',
 		'theme',
 		'background_color',
 	]);

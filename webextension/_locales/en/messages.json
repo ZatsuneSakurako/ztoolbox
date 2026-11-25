@@ -6,50 +6,5 @@
 	"extShortDesc": {
 		"message": "Web Extension to test various things.",
 		"description": "this will be used as short description in web stores: MUST BE 132 characters OR LESS"
-	},
-	"language": {
-		"message": "en"
-	},
-
-
-
-	"ExternalNotifications": {
-		"message": "External notification enabled"
-	},
-	"ExternalNotificationsDisabled": {
-		"message": "External notification disabled"
-	},
-
-	"openDelegatedMain": {
-		"message": "Open main section"
-	},
-	"Settings": {
-		"message": "Settings"
-	},
-
-	"refreshUserscripts": {
-		"message": "Refresh UserScripts"
-	},
-
-	"permission_missing": {
-		"message": "Permission(s) missing(s)"
-	},
-
-	"open_optionpage": {
-		"message": "Open option page"
-	},
-
-	"footer_title": {
-		"message": "Addon under GPL v3 licence."
-	},
-	"footer_by": {
-		"message": "by"
-	},
-
-	"none": {
-		"message": "None"
-	},
-	"clear": {
-		"message": "Clear"
 	}
 }
