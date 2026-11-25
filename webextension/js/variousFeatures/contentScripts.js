@@ -1,7 +1,7 @@
 import {_userScriptsStateStoreKey, _userScriptsStoreKey} from "../constants.js";
 import {contentStyles} from "./contentStyles.js";
 import {getBasicNotificationOptions} from "./contentScripts/chrome-notification.js";
-import {getUserscriptData, setUserscriptData, writeClipboard} from "../classes/chrome-native.js";
+import {getUserscriptData, setUserscriptData} from "../classes/chrome-native.js";
 import {errorToString} from "../utils/errorToString.js";
 import dateUtils from '../utils/dateUtils.js';
 import {getPanelPorts} from "../panelPort.js";
@@ -182,30 +182,6 @@ const znmUserscriptApi = {
 			url: opts.url,
 			active: opts.loadInBackground !== undefined ? !opts.loadInBackground : undefined,
 			index: opts.insert !== undefined ? opts.insert : undefined,
-		});
-	},
-	/**
-	 *
-	 * @param {string} fileName
-	 * @param {chrome.tabs.Tab} tab
-	 * @param {[string, { type: 'text'|'html'|'rtf', mimetype: string } ]} data
-	 * @returns {Promise<boolean>}
-	 */
-	async setClipboard(fileName, tab, data) {
-		let opts = {};
-		if (Array.isArray(data)) {
-			const [clipboardData, info] = data;
-			opts = {
-				data: clipboardData,
-				info
-			};
-		} else {
-			throw new Error('INVALID_ARGUMENTS');
-		}
-		if (!opts.info?.type || typeof opts.info.type !== 'string') throw new Error('INVALID TYPE');
-		if (opts.data === undefined) throw new Error('INVALID DATA');
-		return await writeClipboard({
-			[opts.info.type]: opts.data,
 		});
 	},
 
@@ -571,11 +547,13 @@ function userScriptApiLoader(context, dateUtils, slugify) {
 	 *
 	 * @param {any} request
 	 * @param {chrome.runtime.MessageSender} sender
+	 * @param {function(data:any): void} sendResponse
 	 */
-	function onMessage(request, sender) {
+	function onMessage(request, sender, sendResponse) {
 		if ((sender !== null && sender.id !== chrome.runtime.id) || request.type !== 'userScriptEvent') return;
 		if (!(request.eventName in listeners) || request.target !== context.fileName) return;
 
+		const output = [];
 		for (const listener of listeners[request.eventName]) {
 			if (typeof listener !== 'function') continue;
 			if (request.data === undefined) {
@@ -583,7 +561,11 @@ function userScriptApiLoader(context, dateUtils, slugify) {
 				continue;
 			}
 			const arrData = Array.isArray(request.data) ? request.data : [request.data];
-			listener(...(arrData ?? []));
+			output.push(listener(...(arrData ?? [])));
+		}
+
+		if (typeof sendResponse === 'function') {
+			sendResponse(output);
 		}
 	}
 

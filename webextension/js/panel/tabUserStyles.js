@@ -309,17 +309,44 @@ document.addEventListener('click', function (ev) {
 	if (!target || !eventName) return;
 
 	console.log(eventName, target, element.dataset.userscriptAutoClose !== undefined);
-	userScriptSendEvent(eventName, target, {
-		shiftKey: ev.shiftKey,
-		altKey: ev.altKey,
-		ctrlKey: ev.ctrlKey,
-	})
-		.catch(console.error)
-		.finally(() => {
-			if (element.dataset.userscriptAutoClose !== undefined) {
-				window.close();
+	(async () => {
+		let response = null;
+		try {
+			response = await userScriptSendEvent(eventName, target, {
+				shiftKey: ev.shiftKey,
+				altKey: ev.altKey,
+				ctrlKey: ev.ctrlKey,
+			});
+
+			if (response && Array.isArray(response.data)) {
+				for (let responseItem of response.data) {
+					for (const [key, data] of Object.entries(responseItem)) {
+						switch (key) {
+							case 'setClipboard': {
+								const clipboardItem = new ClipboardItem({
+									[data[1].mimetype]: data[0],
+								});
+								await navigator.clipboard.write([clipboardItem]);
+								break;
+							}
+							default:
+								console.error(`userScriptSendEvent unexpected response ${JSON.stringify(response)}`)
+								break;
+						}
+					}
+				}
+			} else {
+				// noinspection ExceptionCaughtLocallyJS
+				throw new Error('userScriptSendEvent unexpected response', JSON.stringify(response));
 			}
-		});
+		} catch (e) {
+			console.error(e);
+		}
+
+		if (element.dataset.userscriptAutoClose !== undefined) {
+			window.close();
+		}
+	})().catch(console.error);
 });
 
 /**
@@ -333,7 +360,7 @@ async function userScriptSendEvent(eventName, target, eventData, tab) {
 	if (!tab) tab = await getCurrentTab();
 	console.info('Sending to tab ', tab, 'the event', eventName, 'for ', target);
 
-	await chrome.runtime.sendMessage(chrome.runtime.id, {
+	return await chrome.runtime.sendMessage(chrome.runtime.id, {
 		id: 'user_script_panel_event',
 		data: {
 			target: target,
