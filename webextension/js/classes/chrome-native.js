@@ -2,7 +2,6 @@ import {getCurrentTab} from "../utils/getCurrentTab.js";
 import {io} from "../../lib/socket.io.esm.min.js";
 import {isServiceWorker} from "../utils/browserDetect.js";
 import {contentStyles, updateStyles} from "../variousFeatures/contentStyles.js";
-import {contentScripts} from "../variousFeatures/contentScripts.js";
 import {_tabStylesStoreKey} from "../constants.js";
 import {getPanelPorts} from "../panelPort.js";
 
@@ -480,34 +479,3 @@ export async function getUserscripts() {
 	const {result} = await socket.timeout(timeout).emitWithAck('getUserscripts');
 	return result;
 }
-
-/**
- *
- * @param {string} fileName
- * @returns {Promise<Dict<any>>}
- */
-export async function getUserscriptData(fileName) {
-	const {result} = await socket.timeout(timeout).emitWithAck('getUserscriptData', fileName);
-	return result;
-}
-/**
- *
- * @param {string} fileName
- * @param {Dict<any>} newData
- * @returns {Promise<boolean>}
- */
-export async function setUserscriptData(fileName, newData) {
-	const {result} = await socket.timeout(timeout).emitWithAck('setUserscriptData', fileName, newData);
-	return result;
-}
-
-socket.on('userScriptDataUpdated', async function (fileName, newData) {
-	console.debug('[NativeMessaging] userScriptDataUpdated', fileName, newData);
-	for (const cb of (await contentScripts).onUserScriptDataUpdatedCbList) {
-		try {
-			cb(fileName, newData);
-		} catch (e) {
-			console.error(e);
-		}
-	}
-});

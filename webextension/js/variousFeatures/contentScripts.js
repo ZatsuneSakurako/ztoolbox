@@ -1,66 +1,10 @@
 import {_userScriptsStateStoreKey, _userScriptsStoreKey} from "../constants.js";
 import {contentStyles} from "./contentStyles.js";
 import {getBasicNotificationOptions} from "./contentScripts/chrome-notification.js";
-import {getUserscriptData, setUserscriptData} from "../classes/chrome-native.js";
 import {errorToString} from "../utils/errorToString.js";
 import dateUtils from '../utils/dateUtils.js';
 import {getPanelPorts} from "../panelPort.js";
 import {slugify} from "../utils/slugify.js";
-
-// noinspection JSUnusedGlobalSymbols,JSUnusedLocalSymbols
-const znmDataApi = {
-	async setValue(fileName, tab, [key, value]) {
-		const currentData = (await znmUserscriptApi.getData(fileName)) ?? {};
-		currentData[key] = value;
-		await znmUserscriptApi.setData(fileName, tab, [currentData]);
-	},
-	async getValue(fileName, tab, [key, defaultValue]) {
-		const currentData = (await znmUserscriptApi.getData(fileName)) ?? {};
-		return currentData[key] ?? defaultValue;
-	},
-	async deleteValue(fileName, tab, [key]) {
-		const currentData = (await znmUserscriptApi.getData(fileName)) ?? {};
-		delete currentData[key];
-		await znmUserscriptApi.setData(fileName, tab, [currentData]);
-	},
-	async listValues(fileName, tab) {
-		const currentData = (await znmUserscriptApi.getData(fileName)) ?? {};
-		return Array.from(Object.keys(currentData));
-	},
-	async setValues(fileName, tab, [values]) {
-		const currentData = (await znmUserscriptApi.getData(fileName)) ?? {};
-		for (let [key, value] of Object.entries(values)) {
-			currentData[key] = value;
-		}
-		await znmUserscriptApi.setData(fileName, tab, [currentData]);
-	},
-	async getValues(fileName, tab, [keysOrDefaults]) {
-		const currentData = (await znmUserscriptApi.getData(fileName)) ?? {},
-			output = {}
-		;
-		if (Array.isArray(currentData)) {
-			for (let key of keysOrDefaults) {
-				output[key] = currentData[key];
-			}
-		} else {
-			for (let [key, defaultValue] of Object.entries(keysOrDefaults)) {
-				output[key] = currentData[key] ?? defaultValue;
-			}
-		}
-		return output;
-	},
-	async deleteValues(fileName, tab, [keys]) {
-		const currentData = (await znmUserscriptApi.getData(fileName)) ?? {};
-		for (let key of keys) {
-			if (key in currentData) {
-				delete currentData[key];
-			}
-		}
-		await znmUserscriptApi.setData(fileName, tab, [currentData]);
-	},
-};
-
-
 
 // noinspection JSUnusedGlobalSymbols,JSUnusedLocalSymbols
 const znmUserscriptApi = {
@@ -184,49 +128,6 @@ const znmUserscriptApi = {
 			index: opts.insert !== undefined ? opts.insert : undefined,
 		});
 	},
-
-	/**
-	 *
-	 * @param {string} fileName
-	 * @returns {Promise<Dict<any>>}
-	 */
-	async getData(fileName) {
-		if (!fileName || typeof fileName !== 'string') {
-			// noinspection ExceptionCaughtLocallyJS
-			throw new Error('INVALID FILE_NAME');
-		}
-		return await getUserscriptData(fileName);
-	},
-	/**
-	 *
-	 * @param {string} fileName
-	 * @param {chrome.tabs.Tab} tab
-	 * @param {[Dict<any>|null]} data
-	 * @returns {Promise<boolean>}
-	 */
-	async setData(fileName, tab, data) {
-		const [newData] = data;
-		if (!fileName || typeof fileName !== 'string') {
-			// noinspection ExceptionCaughtLocallyJS
-			throw new Error(`INVALID FILE_NAME ${JSON.stringify(fileName)}`);
-		}
-		if (typeof newData !== 'object') {
-			// noinspection ExceptionCaughtLocallyJS
-			throw new Error('INVALID DATA');
-		}
-		const result = await setUserscriptData(fileName, newData);
-		try {
-			const exceptTab = [];
-			if (tab !== undefined) {
-				exceptTab.push(tab.id);
-			}
-			await ContentScripts.instance.triggerUserScriptDataUpdated(fileName, newData ?? {}, new Set(exceptTab));
-		} catch (error) {
-			console.error(error);
-		}
-		return result;
-	},
-	...znmDataApi,
 
 	/**
 	 * @typedef {object} RegisterMenuCommand
@@ -706,11 +607,6 @@ class ContentScripts {
 	 * @type {Dict<boolean> | null}
 	 */
 	#userScriptsStates= null;
-	/**
-	 *
-	 * @type {((fileName: string, newData: Dict<any>) => void)[]}
-	 */
-	onUserScriptDataUpdatedCbList = [];
 
 	/**
 	 * Map<tabId base36, Port>
@@ -871,12 +767,6 @@ class ContentScripts {
 			} catch (e) {
 				console.error(e);
 			}
-		});
-
-		const _this = this;
-		this.onUserScriptDataUpdatedCbList.push(() => {
-			_this.triggerUserScriptDataUpdated()
-				.catch(console.error);
 		});
 	}
 
@@ -1132,42 +1022,6 @@ class ContentScripts {
 
 
 		console.log('[UserScript] Now registered UserScripts', await chrome.userScripts.getScripts());
-	}
-
-
-
-
-	/**
-	 *
-	 * @param {string} fileName
-	 * @param {Dict<any>} newData
-	 * @param {Set<number>} [exceptTabs]
-	 * @returns {Promise<void>}
-	 */
-	async triggerUserScriptDataUpdated(fileName, newData, exceptTabs) {
-		const tabs = await chrome.tabs.query({
-			windowType: 'normal'
-		});
-		const message = {
-			type: "userScriptEvent",
-			target: fileName,
-			eventName: 'dataUpdated',
-			data: [newData],
-		};
-
-		if (this.#ports.size) {
-			for (let [_tabId, port] of this.#ports) {
-				const tabId = parseInt(_tabId, 36);
-				if (exceptTabs && exceptTabs.has(tabId)) continue;
-				port.postMessage(message);
-			}
-			return;
-		}
-		for (let tab of tabs) {
-			if (exceptTabs && exceptTabs.has(tab.id)) continue;
-			await chrome.tabs.sendMessage(tab.id, message)
-				.catch(console.error);
-		}
 	}
 }
 
